@@ -81,6 +81,9 @@
   vector< MccPlacerPairStat::_PlacerPairStruc* > *ppsv;
   MccPlacerPairStat::_PlacerPairStruc *pps;
   MccPlacerResidueName *prr;
+  vector< MccPlacerResidueName* > *prrv;
+  vector< MccPlacerBacktrackStat::_GenBTStruc* > *pbtsv;
+  MccPlacerBacktrackStat::_GenBTStruc *pbts;
   //!
 }
 
@@ -191,6 +194,7 @@
 %token TOK_PLACER_SEQUENCE
 %token TOK_PLACER_CONNECT
 %token TOK_PLACER_PAIR
+%token TOK_PLACER_BACKTRACK
 //!
 
 %type <mccval> statement
@@ -320,6 +324,12 @@
 %type <ppsv> placer_pairdef_plus
 %type <pps> placer_pairdef
 %type <prr> placer_residueRef
+%type <prrv> placer_residueRef_star
+%type <prrv> placer_residueRef_plus
+%type <prr> placer_residueRef_opt
+%type <mccval> placer_backtrack
+%type <pbtsv> placer_res_place_plus
+%type <pbts> placer_res_place
 //!
 
 %type <textval> ident_plus
@@ -376,6 +386,7 @@ statement:   sequence { $$ = $1; }
            | placer_sequence { $$ = $1; }
            | placer_connect { $$ = $1; }
            | placer_pair { $$ = $1; }
+           | placer_backtrack { $$ = $1; }
 
 
 ;
@@ -1328,6 +1339,30 @@ placer_pairdef:   placer_residueRef placer_residueRef queryexp sampling
 	    }
 ;
 
+
+placer_residueRef_star:   /* empty */ { $$ = new vector< MccPlacerResidueName* > (); }
+                 | placer_residueRef_star placer_residueRef
+                    {
+		      $$ = $1;
+		      $$->push_back ($2);
+		    }
+;
+
+
+placer_residueRef_plus:   placer_residueRef { $$ = new vector< MccPlacerResidueName* > (1, $1); }
+                 | placer_residueRef_plus placer_residueRef
+                    {
+		      $$ = $1;
+		      $$->push_back ($2);
+		    }
+;
+		 
+
+placer_residueRef_opt:   /* empty */ { $$ = 0; }
+                | placer_residueRef { $$ = $1; }
+;
+
+
 placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
             | TOK_RESNAME
                {
@@ -1340,6 +1375,42 @@ placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
 	       }
 ;
 
+
+
+placer_backtrack: TOK_PLACER_BACKTRACK TOK_LPAREN /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
+               {
+		 MccPlacerBacktrackStat *tmp = new MccPlacerBacktrackStat ();
+
+// 		 if ($3)
+// 		   tmp->GenFGStruc ($3);
+// 		 tmp->AddBTStrucs ($4);
+		 tmp->AddBTStrucs ($3);
+		 $$ = tmp;
+	       }
+;
+
+
+placer_res_place_plus:   placer_res_place
+                   {
+		     $$ = new vector< MccPlacerBacktrackStat::_GenBTStruc* > (1, $1);
+		   }
+                | placer_res_place_plus placer_res_place
+                   {
+		     $$ = $1;
+		     $$->push_back ($2);
+		   }
+;
+
+
+placer_res_place:  TOK_LPAREN placer_residueRef placer_residueRef_star TOK_RPAREN
+             {
+	       $$ = new MccPlacerBacktrackStat::_BTStruc ($2, $3);
+	     }
+//           | TOK_PLACE TOK_LPAREN residueRef residueRef fgRef TOK_RPAREN
+//              {
+// 	       $$ = new MccBacktrackExpr::_PlaceStruc ($3, $4, $5);
+// 	     }
+;
 
 // TODO!
 // placer_clashCst: TOK_PLACER_CLASHCST TOK_LPAREN TOK_IDENT flt TOK_RPAREN

@@ -7371,6 +7371,457 @@ struct MccPlacerPairStat : public MccPStruct
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
+/**
+ * @short Struct representing the AST node of the "placer_backtrack" expression.
+ *
+ * The struct contains a local hierarchy of statements: _GenBTStruc (the
+ * parent), _FGStruc (for the fraggen reference), _BTStruc (for the residue
+ * enumeration) and _PlaceStruc (for the "place" statement).
+ *
+ * Usage: first generate a MccBacktrackExpr object and then you can fill its
+ * _GenBTStruc* vector using the GenFGStruc, GenBTStruc and GenPlaceStruc
+ * methods.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccPlacerBacktrackStat : public MccPStruct //public MccFGExp
+{
+  /**
+   * @short Parent struct for the MccBacktrackExpr sub-structures.
+   *
+   * @author Martin Larose <larosem@iro.umontreal.ca>
+   */
+  struct _GenBTStruc
+  {
+    /**
+     * The name of the reference residue.
+     */
+    MccPlacerResidueName *ref;
+
+    /**
+     * The name of the remote residue.
+     */
+    MccPlacerResidueName *res;
+
+    /**
+     * The FG.  It is optionnal.
+     */
+    MccFragGenStruc *fg_struc;
+
+    /**
+     * The vector of residu names.
+     */
+    vector< MccPlacerResidueName* > *res_v;
+
+    
+    // LIFECYCLE ------------------------------------------------------------
+
+  protected:
+    /**
+     * Initializes the object.  It should never be used.
+     */
+    _GenBTStruc () : ref (0), res (0), fg_struc (0), res_v (0) { }
+  public:
+
+    /**
+     * Initializes the object.
+     * @param rf the name of the reference residue.
+     * @param rs the name of the remote residue.
+     * @param f the FG structure.
+     * @param rv the vector of residue names.
+     */
+    _GenBTStruc (MccPlacerResidueName *rf, MccPlacerResidueName *rs,
+		 MccFragGenStruc *f, vector< MccPlacerResidueName* > *rv)
+      : ref (rf), res (rs), fg_struc (f), res_v (rv) { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _GenBTStruc (const _GenBTStruc &right);
+
+    /**
+     * Destroys the object.  The destruction is controlled by the children
+     * of the structure.
+     */
+    virtual ~_GenBTStruc () { }
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    virtual _GenBTStruc& operator= (const _GenBTStruc &right);
+
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Replicates the object.  The replication is controlled by the children.
+     * @return a copy of the current object.
+     */
+    virtual _GenBTStruc* clone () const = 0;
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor) = 0;
+
+    // I/O ------------------------------------------------------------------
+
+    /**
+     * Displays the structure.  Nothing to do here, every output is
+     * controlled by the children structures.
+     * @param os the output stream where the message is displayed.
+     */
+    virtual void display (ostream &os) const = 0;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
+  };
+  
+
+//   /**
+//    * @short Struct containing the placement of a FG in the backtrack.
+//    *
+//    * @author Martin Larose <larosem@iro.umontreal.ca>
+//    */
+//   struct _FGStruc : public _GenBTStruc
+//   {
+//     // LIFECYCLE ------------------------------------------------------------
+
+//   private:
+//     /**
+//      * Initializes the object.  It should never be used.
+//      */
+//     _FGStruc () : _GenBTStruc () { }
+//   public:
+
+//     /**
+//      * Initializes the object.
+//      * @param f the FG structure.
+//      */
+//     _FGStruc (MccFragGenStruc *f) : _GenBTStruc (0, 0, f, 0) { }
+
+//     /**
+//      * Initializes the object with the rights content.
+//      * @param right the object to copy.
+//      */
+//     _FGStruc (const _FGStruc &right) : _GenBTStruc (right) { }
+    
+//     /**
+//      * Destroys the object.
+//      */
+//     virtual ~_FGStruc () { delete fg_struc; }
+
+//     // OPERATORS ------------------------------------------------------------
+
+//     /**
+//      * Assigns the rights content into the object.
+//      * @param right the object to copy.
+//      * @return itself.
+//      */
+//     virtual _FGStruc& operator= (const _FGStruc &right);
+    
+//     // ACCESS ---------------------------------------------------------------
+    
+//     // METHODS --------------------------------------------------------------
+
+//     /**
+//      * Replicates the object.
+//      * @return a copy of the current object.
+//      */
+//     virtual _FGStruc* clone () const { return new _FGStruc (*this); }
+    
+//     /**
+//      * Accepts the visitor and calls it on itself.
+//      * @param visitor the visitor.
+//      */
+//     virtual void Accept (MccVisitor *visitor);
+
+//     // I/O ------------------------------------------------------------------
+    
+//     /**
+//      * Displays the structure.
+//      * @param os the output stream where the message is displayed.
+//      */
+//     virtual void display (ostream &os) const { fg_struc->display (os); }
+
+//     /**
+//      * Displays the script in human readable form.
+//      * @param os the output stream used.
+//      * @param ident the identation level.
+//      */
+//     virtual void ppdisplay (ostream &os, int indent = 0) const;
+//   };
+  
+
+  /**
+   * @short Struct containing the placement of several residues.
+   *
+   * @author Martin Larose <larosem@iro.umontreal.ca>
+   */
+  struct _BTStruc : public _GenBTStruc
+  {
+    // LIFECYCLE ------------------------------------------------------------
+
+  private:
+    /**
+     * Initializes the object. It should never be used.
+     */
+    _BTStruc () : _GenBTStruc () { }
+  public:
+
+    /**
+     * Initializes the object.
+     * @param rf the name of the reference residue.
+     * @param rv the residue name vector.
+     */
+    _BTStruc (MccPlacerResidueName *rf, vector< MccPlacerResidueName* > *rv)
+      : _GenBTStruc (rf, 0, 0, rv) { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _BTStruc (const _BTStruc &right) : _GenBTStruc (right) { }
+    
+    /**
+     * Destroys the object.
+     */
+    virtual ~_BTStruc ();
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    virtual _BTStruc& operator= (const _BTStruc &right);
+    
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    virtual _BTStruc* clone () const { return new _BTStruc (*this); }
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor);
+
+    // I/O ------------------------------------------------------------------
+    
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    virtual void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
+  };
+  
+
+//   /**
+//    * @short Struct containing the placement of a FG relative to some residues.
+//    *
+//    * @author Martin Larose <larosem@iro.umontreal.ca>
+//    */
+//   struct _PlaceStruc : public _GenBTStruc
+//   {
+//     // LIFECYCLE ------------------------------------------------------------
+
+//   private:
+//     /**
+//      * Initializes the object. It should never be used.
+//      */
+//     _PlaceStruc () : _GenBTStruc () { }
+//   public:
+
+//     /**
+//      * Initializes the object.
+//      * @param rf the name of the reference residue.
+//      * @param fs the name of the remote residue.
+//      * @param fg the FG structure.
+//      */
+//     _PlaceStruc (MccResidueName *rf, MccResidueName *rs, MccFragGenStruc *fg)
+//       : _GenBTStruc (rf, rs, fg, 0) { }
+
+//     /**
+//      * Initializes the object with the rights content.
+//      * @param right the object to copy.
+//      */
+//     _PlaceStruc (const _PlaceStruc &right) : _GenBTStruc (right) { }
+    
+//     /**
+//      * Destroys the object.
+//      */
+//     virtual ~_PlaceStruc () { delete ref; delete res; delete fg_struc; }
+
+//     // OPERATORS ------------------------------------------------------------
+
+//     /**
+//      * Assigns the rights content into the object.
+//      * @param right the object to copy.
+//      * @return itself.
+//      */
+//     virtual _PlaceStruc& operator= (const _PlaceStruc &right);
+    
+//     // ACCESS ---------------------------------------------------------------
+    
+//     // METHODS --------------------------------------------------------------
+
+//     /**
+//      * Replicates the object.
+//      * @return a copy of the current object.
+//      */
+//     virtual _PlaceStruc* clone () const { return new _PlaceStruc (*this); }
+    
+//     /**
+//      * Accepts the visitor and calls it on itself.
+//      * @param visitor the visitor.
+//      */
+//     virtual void Accept (MccVisitor *visitor);
+    
+//     // I/O ------------------------------------------------------------------
+    
+//     /**
+//      * Displays the structure.
+//      * @param os the output stream where the message is displayed.
+//      */
+//     virtual void display (ostream &os) const;
+
+//     /**
+//      * Displays the script in human readable form.
+//      * @param os the output stream used.
+//      * @param ident the identation level.
+//      */
+//     virtual void ppdisplay (ostream &os, int indent = 0) const;
+//   };
+
+  /**
+   * The vector containing the different backtrack sub-structures.
+   */
+  vector< _GenBTStruc* > *strucs;
+
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccPlacerBacktrackStat () : strucs (new vector< _GenBTStruc* > ()) { }
+
+  /**
+   * Initializes the object.
+   * @param s the vector containing the different backtrack sub-structures.
+   */
+  MccPlacerBacktrackStat (vector< _GenBTStruc* > *s) : strucs (s) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccPlacerBacktrackStat (const MccPlacerBacktrackStat &right);
+  
+  /**
+   * Destroys the object.  It clears the sub-structures contained in the
+   * vector.
+   */
+  virtual ~MccPlacerBacktrackStat ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccPlacerBacktrackStat& operator= (const MccPlacerBacktrackStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccPlacerBacktrackStat* clone () const
+  { return new MccPlacerBacktrackStat (*this); }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  /**
+   * Generates a new FG sub-structure and puts it in the vector.
+   * @param f the FG structure.
+   */
+//   void GenFGStruc (MccFragGenStruc *f)
+//   { strucs->push_back (new _FGStruc (f)); }
+
+  /**
+   * Generates a new BT sub-structure and puts it in the vector.
+   * @param rf the name of the reference residue.
+   * @param rv the residue name vector.
+   */
+  void GenBTStruc (MccPlacerResidueName *rf, vector< MccPlacerResidueName* > *rv)
+  { strucs->push_back (new _BTStruc (rf, rv)); }
+
+  /**
+   * Generates a new Place sub-structure and puts it in the vector.
+   * @param rf the name of the reference residue.
+   * @param rs the name of the remote residue.
+   * @param fg the FG structure.
+   */
+//   void GenPlaceStruc (MccResidueName *rf, MccResidueName *rs,
+// 		      MccFragGenStruc *fg)
+//   { strucs->push_back (new _PlaceStruc (rf, rs, fg)); }
+
+  /**
+   * Adds the vector of backtrack structures in the vector.
+   * @param bts the vector of backtrack structures.
+   */
+  void AddBTStrucs (vector< _GenBTStruc* > *bts)
+  { strucs->insert (strucs->end (), bts->begin (), bts->end ()); delete bts; }
+
+  // I/O ------------------------------------------------------------------
+    
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
 
 
 //!
@@ -7833,6 +8284,19 @@ public:
    * @param struc the MccPlacerResidueName structure.
    */
   virtual void Visit (MccPlacerResidueName *struc) = 0;
+
+  /**
+   * Visits the MccPlacerBacktrackStat::_BTStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerBacktrackStat::_BTStruc *struc) = 0;
+  
+  /**
+   * Visits the MccPlacerBacktrackStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerBacktrackStat *struc) = 0;
+  
   
   //!
 

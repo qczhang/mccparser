@@ -1,3 +1,43 @@
+2003-03-17  Philippe Thibault  <thibaup@iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
+	[with-placer] : Added rules and AST nodes for placer_sequence,
+	placer_connect and placer_pair.  They parse as their original counterpart,
+	only the visit method is changed.
+
+2002-10-31  Labo Lbit  <adbit@flanelle.iro.umontreal.ca>
+
+	* lib/mccp.y: *** empty log message ***
+
+	* lib/mccp.y: Minor errors corrected.
+
+2002-10-23  Philippe Thibault  <thibaup@iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
+	Added model sorter expression to library fg.
+
+2002-05-07  Philippe Thibault  <thibaup@iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Manual.tex:
+	Added moses expression and updated doc
+
+2002-02-22  Patrick Gendron  <gendrop@flanelle.iro.umontreal.ca>
+
+	* lib/Makefile.in, docs/Makefile.in, Makefile.in:
+	Modified makefiles to remove automatic generation of doc.
+
+2001-12-20  Martin Larose  <larosem@flanelle.iro.umontreal.ca>
+
+	* configure, lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Manual.tex, configure.in, NEWS:
+	Grammar rules changed to introduce exploreLV and a new kind of cache.
+
+2001-12-04  Martin Larose  <larosem@flanelle.iro.umontreal.ca>
+
+	* ChangeLog: *** empty log message ***
+
+	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc, docs/Manual.tex, docs/Makefile.in, ChangeLog:
+	Merge between [prob-search] and main branch.
+
 2001-12-04  Martin Larose  <larosem@iro.umontreal.ca>
 
 	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc, docs/Manual.tex, docs/Makefile.in, ChangeLog:

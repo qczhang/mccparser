@@ -4726,6 +4726,223 @@ MccPlacerPairStat::ppdisplay (ostream &os, int indent) const
   os << ')' << endl;
 }
 
+MccPlacerBacktrackStat::_GenBTStruc::_GenBTStruc (const MccPlacerBacktrackStat::_GenBTStruc &right)
+  : ref (0), res (0), fg_struc (0), res_v (0)
+{
+  if (right.ref)
+    ref = new MccPlacerResidueName (*right.ref);
+  if (right.res)
+    res = new MccPlacerResidueName (*right.res);
+  if (right.fg_struc)
+    fg_struc = new MccFragGenStruc (*right.fg_struc);
+  if (right.res_v)
+    {
+      vector< MccPlacerResidueName* >::const_iterator cit;
+      
+      res_v = new vector< MccPlacerResidueName* > ();
+      for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
+	res_v->push_back (new MccPlacerResidueName (**cit));
+    }
+}
+
+
+
+MccPlacerBacktrackStat::_GenBTStruc&
+MccPlacerBacktrackStat::_GenBTStruc::operator= (const MccPlacerBacktrackStat::_GenBTStruc &right)
+{
+  if (this != &right)
+    {
+      if (ref)
+	{
+	  delete ref;
+	  ref = 0;
+	}
+      if (right.ref)
+	ref = new MccPlacerResidueName (*right.ref);
+      if (res)
+	{
+	  delete res;
+	  res = 0;
+	}
+      if (right.res)
+	res = new MccPlacerResidueName (*right.res);
+      if (fg_struc)
+	{
+	  delete fg_struc;
+	  fg_struc = 0;
+	  }
+      if (right.fg_struc)
+	fg_struc = new MccFragGenStruc (*right.fg_struc);
+      if (res_v)
+	{
+	  vector< MccPlacerResidueName* >::iterator it;
+
+	  for (it = res_v->begin (); it != res_v->end (); it++)
+	    delete *it;
+	  delete res_v;
+	  res_v = 0;
+	}
+      if (right.res_v)
+	{
+	  vector< MccPlacerResidueName* >::const_iterator cit;
+	  
+	  res_v = new vector< MccPlacerResidueName* > ();
+	  for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
+	    res_v->push_back (new MccPlacerResidueName (**cit));
+	  
+	}
+    }
+  return *this;
+}
+
+
+MccPlacerBacktrackStat::_BTStruc::~_BTStruc ()
+{
+  vector< MccPlacerResidueName* >::iterator it;
+
+  delete ref;
+  for (it = res_v->begin (); it != res_v->end (); it++)
+    delete *it;
+  delete res_v;
+}
+
+
+
+void
+MccPlacerBacktrackStat::_BTStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+MccPlacerBacktrackStat::_BTStruc&
+MccPlacerBacktrackStat::_BTStruc::operator= (const MccPlacerBacktrackStat::_BTStruc &right)
+{
+  if (this != &right)
+    MccPlacerBacktrackStat::_BTStruc::operator= (right);
+  return *this;
+}
+
+
+
+void
+MccPlacerBacktrackStat::_BTStruc::display (ostream &os) const
+{
+  vector< MccPlacerResidueName* >::iterator it;
+
+  os << '(';
+  ref->display (os);
+  for (it = res_v->begin (); it != res_v->end (); it++)
+    {
+      os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerBacktrackStat::_BTStruc::ppdisplay (ostream &os, int indent) const
+{
+  vector< MccPlacerResidueName* >::iterator it;
+
+  os << endl;
+  whitespaces (os, indent);
+  os << '(';
+  ref->ppdisplay (os, indent);
+  for (it = res_v->begin (); it != res_v->end (); it++)
+    {
+      os << ' ';
+      (*it)->ppdisplay (os, indent);
+    }
+  os << ')';
+}
+
+
+MccPlacerBacktrackStat::MccPlacerBacktrackStat (const MccPlacerBacktrackStat &right)
+  : strucs (new vector< MccPlacerBacktrackStat::_GenBTStruc* > ())
+{
+  vector< MccPlacerBacktrackStat::_GenBTStruc* >::const_iterator cit;
+
+  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+    strucs->push_back ((*cit)->clone ());
+}
+
+
+
+MccPlacerBacktrackStat::~MccPlacerBacktrackStat ()
+{
+  vector< _GenBTStruc* >::iterator it;
+
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    delete *it;
+  delete strucs;
+}
+
+
+
+MccPlacerBacktrackStat&
+MccPlacerBacktrackStat::operator= (const MccPlacerBacktrackStat &right)
+{
+  if (this != &right)
+    {
+      vector< MccPlacerBacktrackStat::_GenBTStruc* >::const_iterator cit;
+      vector< MccPlacerBacktrackStat::_GenBTStruc* >::iterator it;
+
+      for (it = strucs->begin (); it != strucs->end (); it++)
+	delete *it;
+      strucs->clear ();
+      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+	strucs->push_back ((*cit)->clone ());
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerBacktrackStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerBacktrackStat::display (ostream &os) const
+{
+  vector< _GenBTStruc* >::iterator it;
+
+  os << "placer_backtrack (";
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    {
+      if (it != strucs->begin ())
+	os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerBacktrackStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _GenBTStruc* >::iterator it;
+
+  os << "placer_backtrack" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
 //!
 
 
