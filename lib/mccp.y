@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Tue May  7 12:30:04 2002
- * Update Count     : 16
+ * Last Modified On : Wed Oct 23 09:20:53 2002
+ * Update Count     : 17
  * Status           : Ok.
  */
 
@@ -71,6 +71,7 @@
   MccSamplingSize *smpls;
   cutoffs *ctfs;
   MccModelFilterStrategy *mf;
+  MccModelSorterStrategy *ms;
   MccMosesQueries *mqs;
   pair< MccQueryExpr*, MccSamplingSize* > *qsssp;
 }
@@ -97,6 +98,7 @@
 %token TOK_ALIGN
 %token TOK_ALLATOMS
 %token TOK_ANGLE
+%token TOK_ANGSTROMS
 %token TOK_ANY
 %token TOK_BBATOMS
 %token TOK_BACKTRACK
@@ -106,6 +108,7 @@
 %token TOK_CGAUPAIRDEF
 %token TOK_CGAURESDEF
 %token TOK_CHANGEID
+%token TOK_CLUSTERED
 %token TOK_CONFOCUT
 %token TOK_CONNECT
 %token TOK_CYCLE
@@ -153,6 +156,7 @@
 %token TOK_SOURCE
 %token TOK_STEMCONDEF
 %token TOK_STRIP
+%token TOK_THEOCONFO
 %token TOK_TIMELIMIT
 %token TOK_TRANSFO
 %token TOK_TFOCUT
@@ -176,6 +180,7 @@
 %type <mccval> sequence
 %type <mccval> assign
 %type <smpls> sampling
+%type <boolval> theo_confo
 %type <mccval> residue
 %type <rsv> resdef_plus
 %type <rs> resdef
@@ -192,6 +197,8 @@
 %type <expo> output_mode
 %type <mf> model_filter_opt
 %type <mf> model_filter
+%type <ms> model_sorter_opt
+%type <ms> model_sorter
 %type <tlv>  timelimit_opt
 %type <tlv>  timelimit_exp
 %type <tlv>  timelimit_plus
@@ -369,9 +376,9 @@ resdef_plus:   resdef
 ;
 
 
-resdef:  residueRef residueRef_opt queryexp sampling
+resdef:  residueRef residueRef_opt queryexp sampling theo_confo
            {
-	     $$ = new MccResidueStat::_ResidueStruc ($1, $2, $3, $4);
+	     $$ = new MccResidueStat::_ResidueStruc ($1, $2, $3, $4, $5);
 	   }
 ;
 
@@ -818,6 +825,9 @@ sampling: TOK_INTEGER             { $$ = new MccSamplingSize ($1, true); }
           | flt TOK_PERCENT       { $$ = new MccSamplingSize ($1, false); }
 ;
 
+theo_confo:  /* empty */     { $$ = false; }
+             | TOK_THEOCONFO { $$ = true; }
+
 
 queryexp_plus:   queryexp
                   {
@@ -953,9 +963,9 @@ align_opt:   /* empty */ { $$ = false; }
 ;
 
 
-libraryexp:   TOK_LIBRARY TOK_LPAREN input_mode libopt_star TOK_RPAREN
+libraryexp:   TOK_LIBRARY TOK_LPAREN input_mode model_sorter_opt libopt_star TOK_RPAREN
               {
-		$$ = new MccLibraryExpr ($3, $4);
+		$$ = new MccLibraryExpr ($3, $4, $5);
 	      }
 ;
 
@@ -977,6 +987,20 @@ input_mode:   TOK_PDB TOK_STRING  /* deprecated */
 		$$ = new MccSocketBinaryInput ($3, $4, $5);
 	      }
 
+
+model_sorter_opt: /* empty */ { $$ = 0; }
+                  | model_sorter { $$ = $1 }
+;
+
+
+model_sorter:   TOK_CLUSTERED TOK_LPAREN TOK_INTEGER atomset_opt atomsetopt_opt TOK_RPAREN
+                {
+		  $$ = new MccClusteredModelSorterStrategy ($3, $4, $5);
+		}
+             | TOK_CLUSTERED TOK_LPAREN flt TOK_ANGSTROMS atomset_opt atomsetopt_opt TOK_RPAREN
+                {
+		  $$ = new MccClusteredModelSorterStrategy ((float)$3, $5, $6);
+		}
 
 libopt_star:   /* empty */
                 {

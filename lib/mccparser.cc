@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Tue May  7 12:30:06 2002
-// Update Count     : 14
+// Last Modified On : Wed Oct 23 09:20:58 2002
+// Update Count     : 15
 // Status           : Ok.
 // 
 
@@ -23,6 +23,12 @@ bool interactive_parser;
 
 CMccInput *input_class;
 
+
+ostream& operator<< (ostream& os, MccPStruct& obj)
+{
+  obj.ppdisplay (os, 0);
+  return os;
+}
 
 
 void
@@ -2445,6 +2451,7 @@ MccLibraryExpr::_ChangeIdStruc::ppdisplay (ostream &os, int indent) const
 
 MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
   : inputMode (right.inputMode->clone ()),
+    sorter (right.sorter ? right.sorter->clone () : NULL),
     strucs (new vector< MccLibraryExpr::_LibStruc* > ())
 {
   vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
@@ -2460,6 +2467,8 @@ MccLibraryExpr::~MccLibraryExpr ()
   vector< _LibStruc* >::iterator it;
 
   delete inputMode;
+  if (sorter)
+    delete sorter;
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
   delete strucs;
@@ -2477,6 +2486,13 @@ MccLibraryExpr::operator= (const MccLibraryExpr &right)
 
       delete inputMode;
       inputMode = right.inputMode->clone ();
+      if (sorter)
+	{
+	  delete sorter;
+	  sorter = NULL;
+	}
+      if (right.sorter)
+	sorter = right.sorter->clone ();
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
       strucs->clear ();
@@ -2503,6 +2519,8 @@ MccLibraryExpr::display (ostream &os) const
 
   os << "library (";
   inputMode->display (os);
+  if (sorter)
+    sorter->display (os);
   for (it = strucs->begin (); it != strucs->end (); it++)
     {
       os << ' ';
@@ -2523,6 +2541,8 @@ MccLibraryExpr::ppdisplay (ostream &os, int indent) const
   os << '(' << endl;
   whitespaces (os, indent + 4);
   inputMode->ppdisplay (os, indent);
+  if (sorter)
+    sorter->ppdisplay (os, indent);
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
   os << endl;
@@ -3427,7 +3447,8 @@ MccResidueStat::_ResidueStruc::_ResidueStruc (const MccResidueStat::_ResidueStru
   : res1 (new MccResidueName (*right.res1)),
     res2 (0),
     expr (new MccQueryExpr (*right.expr)),
-    ssize (new MccSamplingSize (*right.ssize))
+    ssize (new MccSamplingSize (*right.ssize)),
+    theo_flag (right.theo_flag)
 {
   if (right.res2)
     res2 = new MccResidueName (*right.res2);
@@ -3452,6 +3473,7 @@ MccResidueStat::_ResidueStruc::operator= (const MccResidueStat::_ResidueStruc &r
       expr = new MccQueryExpr (*right.expr);
       delete ssize;
       ssize = new MccSamplingSize (*right.ssize);
+      theo_flag = right.theo_flag;
     }
   return *this;
 }
@@ -3715,6 +3737,66 @@ MccRmsdModelFilterStrategy::ppdisplay (ostream &os, int indent) const
   display (os);
 }
 
+
+MccClusteredModelSorterStrategy&
+MccClusteredModelSorterStrategy::operator= (const MccClusteredModelSorterStrategy &right)
+{
+  if (this != &right)
+    {
+      partitions = right.partitions;
+      rmsBound = right.rmsBound;
+      atom_set = right.atom_set;
+      atom_set_opt = right.atom_set_opt;
+    }
+  return *this;
+}
+
+
+
+void
+MccClusteredModelSorterStrategy::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccClusteredModelSorterStrategy::display (ostream &os) const
+{
+  os << " clustered (";
+  if (rmsBound < 0)
+    os << partitions;
+  else
+    os << rmsBound << " Angstroms";
+  switch (atom_set)
+    {
+    case MCC_ALL_AS:
+      os << " all";
+      break;
+    case MCC_BASE_AS:
+      os << " base_only";
+      break;
+    case MCC_BACKBONE_AS:
+      os << " backbone_only";
+      break;
+    case MCC_PSE_AS:
+      os << " pse_only";
+      break;
+    default:
+      break;
+    }
+  if (atom_set_opt == MCC_NO_HYDROGEN)
+    os << " no_hydrogen";
+  os << ")";
+}
+
+
+void
+MccClusteredModelSorterStrategy::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+}
 
 
 MccSamplingSize::MccSamplingSize (float ssize, bool pflag)

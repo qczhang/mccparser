@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Tue May  7 12:30:05 2002
- * Update Count     : 14
+ * Last Modified On : Wed Oct 23 09:20:56 2002
+ * Update Count     : 15
  * Status           : Ok.
  */
 
@@ -79,12 +79,17 @@ adjacency    return TOK_ADJACENCY;
 align        return TOK_ALIGN;
 all          return TOK_ALLATOMS;
 angle        return TOK_ANGLE;
+angstroms    return TOK_ANGSTROMS;
+Angstroms    return TOK_ANGSTROMS;
+angstrom     return TOK_ANGSTROMS;
+Angstrom     return TOK_ANGSTROMS;
 backbone_only return TOK_BBATOMS;
 backtrack    return TOK_BACKTRACK;
 backtrack_size return TOK_BACKTRACKSIZE;
 base_only    return TOK_BASEATOMS;
 cache        return TOK_CACHE;
 change_id    return TOK_CHANGEID;
+clustered    return TOK_CLUSTERED;
 confo_cutoff return TOK_CONFOCUT;
 connect      return TOK_CONNECT;
 cycle        return TOK_CYCLE;
@@ -146,7 +151,9 @@ hr           return TOK_HR;
 hours        return TOK_HR;
 days         return TOK_DAY;
 d            return TOK_DAY;
-
+t            return TOK_THEOCONFO;
+T            return TOK_THEOCONFO;
+theo         return TOK_THEOCONFO;
 
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;

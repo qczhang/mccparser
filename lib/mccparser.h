@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Tue May  7 12:30:09 2002
-// Update Count     : 20
+// Last Modified On : Wed Oct 23 09:21:00 2002
+// Update Count     : 21
 // Status           : Ok.
 // 
 
@@ -225,7 +225,7 @@ struct MccPStruct
   virtual void ppdisplay (ostream &os, int indent = 0)  const = 0;
 };
 
-
+ostream& operator<< (ostream& os, MccPStruct& obj);
 
 /**
  * @short Parent structure for the fragment generator expressions.
@@ -656,6 +656,62 @@ public:
   virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };  
 
+
+/**
+ * @short Struct representing the abstract model sorter strategy.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccModelSorterStrategy
+{
+
+public:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccModelSorterStrategy () { }
+  
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccModelSorterStrategy* clone () const = 0;
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccModelSorterStrategy () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor) = 0;
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const = 0;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
+};  
 
 
 /**
@@ -4585,6 +4641,11 @@ struct MccLibraryExpr : public MccFGExp
   MccInputMode *inputMode;
 
   /**
+   *  The model sorted cache.
+   */
+  MccModelSorterStrategy *sorter;
+
+  /**
    * The vector containing the sub-structures.
    */
   vector< _LibStruc* > *strucs;
@@ -4605,8 +4666,9 @@ public:
    * @param im the input model mode.
    * @param lsv the vector containing the library sub-structures.
    */
-  MccLibraryExpr (MccInputMode *im, vector< _LibStruc* > *lsv)
-    : inputMode (im), strucs (lsv) { }
+  MccLibraryExpr (MccInputMode *im, MccModelSorterStrategy *mss, 
+		  vector< _LibStruc* > *lsv)
+    : inputMode (im), sorter (mss), strucs (lsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -5747,6 +5809,11 @@ struct MccResidueStat : public MccPStruct
      */
     MccSamplingSize *ssize;
 
+    /**
+     * 
+     */
+    bool theo_flag;
+
   protected:
     
     // LIFECYCLE ------------------------------------------------------------
@@ -5766,8 +5833,8 @@ struct MccResidueStat : public MccPStruct
      * @param ss the sampling size struct.
      */
     _ResidueStruc (MccResidueName *r1, MccResidueName *r2,
-		   MccQueryExpr *exp, MccSamplingSize *ss)
-      : res1 (r1), res2 (r2), expr (exp), ssize (ss) 
+		   MccQueryExpr *exp, MccSamplingSize *ss, bool tf = false)
+      : res1 (r1), res2 (r2), expr (exp), ssize (ss), theo_flag (tf) 
       { }
 
     /**
@@ -6106,6 +6173,121 @@ public:
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };  
 
+
+/**
+ * @short Struct representing the clustered sorter cache.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccClusteredModelSorterStrategy : public MccModelSorterStrategy
+{
+  /**
+   * The number of partitions.
+   */
+  int partitions;
+
+  /**
+   * The rms bound.
+   */
+  float rmsBound;
+
+  /**
+   * The set of atoms used to calculate the rms.
+   */
+  MccAS atom_set;
+
+  /**
+   * The options on the atom set.
+   */
+  MccAS atom_set_opt;
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+  
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccClusteredModelSorterStrategy () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param part the number of partitions.
+   * @param af the align flag.
+   * @param as the atom filter.
+   * @param aso the atom filter option.
+   */
+  MccClusteredModelSorterStrategy (int part, MccAS as, MccAS aso)
+    : partitions (part), rmsBound (-1), atom_set (as), atom_set_opt (aso) { }
+
+  /**
+   * Initializes the object.
+   * @param rb the rms bound.
+   * @param af the align flag.
+   * @param as the atom filter.
+   * @param aso the atom filter option.
+   */
+  MccClusteredModelSorterStrategy (float rb, MccAS as, MccAS aso)
+    :  partitions (1), rmsBound (rb), atom_set (as), atom_set_opt (aso) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccClusteredModelSorterStrategy (const MccClusteredModelSorterStrategy &right)
+    : rmsBound (right.rmsBound),
+      atom_set (right.atom_set),
+      atom_set_opt (right.atom_set_opt)
+  { }
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccModelSorterStrategy* clone () const 
+  { return new MccClusteredModelSorterStrategy (*this); }
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccClusteredModelSorterStrategy () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccClusteredModelSorterStrategy& operator= (const MccClusteredModelSorterStrategy &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};  
 
 
 /**
@@ -6777,6 +6959,12 @@ public:
    */
   virtual void Visit (MccClashCstStat *struc) = 0;
   
+  /**
+   * Visits the MccClusteredModelSorterStrategy structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccClusteredModelSorterStrategy *struc) = 0;
+
   /**
    * Visits the MccConnectStat::_ConnectStruc sub-structure.
    * @param struc the evaluated structure.
