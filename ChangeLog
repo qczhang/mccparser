@@ -1,3 +1,23 @@
+2000-09-14  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* configure, src/mccparser.h, src/mccparser.cc, src/mccp.yy, docs/Manual.tex, configure.in, NEWS:
+	The parser now includes a interactive interface that can be coupled with
+	different kind of input buffers.
+
+2000-09-06  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* docs/Manual.tex, src/mccparser.h, src/mccp.yy, src/mccp.y, src/Makefile.in:
+	mcc prefix added in the lexer and parser to enable multiple parsers.
+
+2000-09-05  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* src/mccparser.h, src/mccparser.cc: Rearranged hierarchy.
+
+	* src/mccparser.h, src/mccparser.cc, src/mccp.y:
+	MccFGExp structure added.
+
+	* src/mccp.y: Concatenation bug corrected in rule ident_plus.
+
 2000-09-01  Martin Larose  <larosem@iro.umontreal.ca>
 
 	* src/mccp.yy, src/mccp.y, docs/Manual.tex, docs/Makefile.in:
