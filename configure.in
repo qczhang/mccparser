@@ -4,8 +4,8 @@
 # Author           : Martin Larose
 # Created On       : Thu Aug 31 13:07:53 2000
 # Last Modified By : Martin Larose
-# Last Modified On : Thu Aug 31 13:09:10 2000
-# Update Count     : 1
+# Last Modified On : Fri Sep  1 14:08:31 2000
+# Update Count     : 2
 # Status           : Ok.
 # 
 
@@ -46,12 +46,8 @@ case "$host" in
 esac
 
 
-AC_C_BIGENDIAN
 AC_PROG_INSTALL
 AC_PATH_PROG(AR,ar)
-
-AC_CHECK_FUNCS(strsep)
-
 
 AC_ARG_WITH(malloc,
 [  --with-malloc           replace STL allocator with malloc],

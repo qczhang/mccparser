@@ -1,4 +1,17 @@
+2000-09-01  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* src/mccp.yy, src/mccp.y, docs/Manual.tex, docs/Makefile.in:
+	Final revision version 1.0.
+
 2000-08-31  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* src/mccparser.cc: stdio.h inclusion moved to mccparser.h.
+
+	* src/mccparser.h: stdio.h inclusion added.
+
+	* src/mccparser.h: yyparse and yyin declaration added.
+
+	* ChangeLog: Initial release.
 
 	* configure.in: Header added.
 
