@@ -1,16 +1,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; -*- Mode: Outline -*- ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NEWS
-;; Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
+;; Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 ;; Author           : Martin Larose
 ;; Created On       : Mon Aug 21 15:57:05 2000
 ;; Last Modified By : Martin Larose
-;; Last Modified On : Wed Jul  4 12:05:37 2001
-;; Update Count     : 6
+;; Last Modified On : Thu Aug 23 15:35:40 2001
+;; Update Count     : 7
 ;; Status           : Ok.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 * Version 1.2
+
+The library expression is able to read from different input forms: pdb
+files, binary files and through socket communication.  See the manual for
+syntax.
+
+The explore and restore statements can dump models in different forms: pdb
+and binary files or compressed files and through socket communication.  See
+the manual for syntax.
 
 Query face operator (/) added in the grammar.  See mcsym NEWS file.
 
