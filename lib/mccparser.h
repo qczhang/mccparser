@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Fri Feb  9 10:51:42 2001
-// Update Count     : 14
+// Last Modified On : Thu Aug 16 19:12:37 2001
+// Update Count     : 15
 // Status           : Ok.
 // 
 
@@ -3113,12 +3113,68 @@ struct MccDistCstStat : public MccPStruct
 
 
 /**
- * @short Struct representing the file option on AST nodes "explore" and
+ * @short Abstract class for output models.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccExploreOutput
+{
+  
+public:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccExploreOutput () { }
+
+  /**
+   * Copies the object.
+   * @return a clone of itself.
+   */
+  virtual MccExploreOutput* clone () const = 0;
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccExploreOutput () { }
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor) = 0;
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const = 0;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
+};
+
+
+
+/**
+ * @short Class representing the file option on AST nodes "explore" and
  * "restore" 
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccExpfile
+struct MccExpfile : public MccExploreOutput
 {
   /**
    * The C form that will be used for file output.
@@ -3133,11 +3189,13 @@ struct MccExpfile
 
   // LIFECYCLE ------------------------------------------------------------
 
-private:
+protected:
+  
   /**
    * Initializes the object.  It should never be used.
    */
   MccExpfile () { }
+  
 public:
 
   /**
@@ -3154,9 +3212,15 @@ public:
   MccExpfile (const MccExpfile &right);
 
   /**
+   * Copies the object.
+   * @return a clone of the current object.
+   */
+  virtual MccExploreOutput* clone () const { return new MccExpfile (*this); }
+    
+  /**
    * Destructs the object.
    */
-  ~MccExpfile () { delete[] form; }
+  virtual ~MccExpfile () { delete[] form; }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -3171,16 +3235,10 @@ public:
   // METHODS --------------------------------------------------------------
 
   /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  MccExpfile* Copy () const { return new MccExpfile (*this); }
-    
-  /**
    * Accepts the visitor and calls it on itself.
    * @param visitor the visitor.
    */
-  void Accept (MccVisitor *visitor);
+  virtual void Accept (MccVisitor *visitor);
 
   // I/O  -----------------------------------------------------------------
   
@@ -3188,14 +3246,112 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  void display (ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Class representing the socket binary option on AST nodes "explore"
+ *        and "restore".
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccSocketBinaryOutput : public MccExploreOutput
+{
+  /**
+   * The server name.
+   */
+  char *serverName;
+
+  /**
+   * The port number.
+   */
+  int port;
+
+  /**
+   * The C form that will be used for the model name.
+   */
+  char *modelName;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+  
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccSocketBinaryOutput () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param n the server name.
+   * @param p the server port number.
+   * @param m the C form that will be used for the model name.
+   */
+  MccSocketBinaryOutput (char *n, int p, char *m)
+    : serverName (n), port (p), modelName (m) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccSocketBinaryOutput (const MccSocketBinaryOutput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of the current object.
+   */
+  virtual MccExploreOutput* clone () const
+  { return new MccSocketBinaryOutput (*this); }
+    
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccSocketBinaryOutput ()
+  { delete[] serverName; delete[] modelName; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccSocketBinaryOutput& operator= (const MccSocketBinaryOutput &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -3215,7 +3371,7 @@ struct MccExploreStat : public MccPStruct
   /**
    * The explore output file structure.
    */
-  MccExpfile *efile;
+  MccExploreOutput *expOutput;
   
 
   // LIFECYCLE ------------------------------------------------------------
@@ -3232,8 +3388,8 @@ public:
    * @param fg the FG struct to explore.
    * @param ef the explore output file structure.
    */
-  MccExploreStat (MccFragGenStruc* fg, MccExpfile *ef)
-    : fg_struc (fg), efile (ef) { }
+  MccExploreStat (MccFragGenStruc* fg, MccExploreOutput *ef)
+    : fg_struc (fg), expOutput (ef) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3244,7 +3400,7 @@ public:
   /**
    * Destructs the object.
    */
-  virtual ~MccExploreStat () { delete fg_struc; if (efile) delete efile; }
+  virtual ~MccExploreStat () { delete fg_struc; if (expOutput) delete expOutput; }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4585,7 +4741,7 @@ struct MccRestoreStat : public MccPStruct
   /**
    * The explore output file structure.
    */
-  MccExpfile *efile;
+  MccExploreOutput *expOutput;
   
 
   // LIFECYCLE ------------------------------------------------------------
@@ -4602,7 +4758,8 @@ public:
    * @param fi the file name of the status file.
    * @param ef the explore output file structure.
    */
-  MccRestoreStat (char *fi, MccExpfile *ef) : filename (fi), efile (ef) { }
+  MccRestoreStat (char *fi, MccExploreOutput *ef)
+    : filename (fi), expOutput (ef) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4613,7 +4770,7 @@ public:
   /**
    * Deletes the object.
    */
-  ~MccRestoreStat () { delete[] filename; if (efile) delete efile; }
+  ~MccRestoreStat () { delete[] filename; if (expOutput) delete expOutput; }
 
   // OPERATORS -----------------------------------------------------------
 
@@ -5372,6 +5529,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccExpfile *struc) = 0;
+  
+  /**
+   * Visits the MccSocketBinaryOutput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccSocketBinaryOutput *struc) = 0;
   
   /**
    * Visits the MccExploreStat structure.

@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Wed Jul  4 11:41:48 2001
- * Update Count     : 6
+ * Last Modified On : Thu Aug 16 19:12:27 2001
+ * Update Count     : 7
  * Status           : Ok.
  */
 
@@ -113,6 +113,7 @@ residue_align return TOK_RESIDUEALIGN;
 restore      return TOK_RESTORE;
 rmsd_bound   return TOK_RMSDBOUND;
 sequence     return TOK_SEQUENCE;
+socket_bin   return TOK_SOCKET_BINARY;
 source       return TOK_SOURCE;
 strip        return TOK_STRIP;
 tfo          return TOK_TRANSFO;

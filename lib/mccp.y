@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Fri Jul  6 14:05:59 2001
- * Update Count     : 10
+ * Last Modified On : Thu Aug 16 19:12:25 2001
+ * Update Count     : 11
  * Status           : Ok.
  */
 
@@ -60,7 +60,7 @@
   MccResidueName *rr;
   MccFragGenStruc *fgr;
   MccFGExp *fgs;
-  MccExpfile *expf;
+  MccExploreOutput *expo;
   cutoffs *ctfs;
 }
 
@@ -122,6 +122,7 @@
 %token TOK_RESTORE
 %token TOK_RMSDBOUND
 %token TOK_SEQUENCE
+%token TOK_SOCKET_BINARY
 %token TOK_SOURCE
 %token TOK_STRIP
 %token TOK_TRANSFO
@@ -151,8 +152,8 @@
 %type <ps> pairdef
 %type <mccval> explore
 %type <mccval> restore
-%type <expf> expfile_opt
-%type <expf> expfile
+%type <expo> exploreOutput_opt
+%type <expo> exploreOutput
 %type <boolval> zfile_opt
 %type <mccval> source
 %type <mccval> adjacencyCst
@@ -363,29 +364,33 @@ pairdef:   residueRef residueRef queryexp TOK_INTEGER
 ;
 
 
-explore:   TOK_EXPLORE TOK_LPAREN fgRef expfile_opt TOK_RPAREN
+explore:   TOK_EXPLORE TOK_LPAREN fgRef exploreOutput_opt TOK_RPAREN
             {
 	      $$ = new MccExploreStat ($3, $4);
 	    }
 ;
 
 
-restore:   TOK_RESTORE TOK_LPAREN TOK_STRING expfile_opt TOK_RPAREN
+restore:   TOK_RESTORE TOK_LPAREN TOK_STRING exploreOutput_opt TOK_RPAREN
             {
 	      $$ = new MccRestoreStat ($3, $4);
 	    }
 ;
 
 
-expfile_opt:   /* empty */ { $$ = 0; }
-             | expfile { $$ = $1; }
+exploreOutput_opt:   /* empty */ { $$ = 0; }
+                   | exploreOutput { $$ = $1; }
 ;
 
 
-expfile:   TOK_PDB TOK_LPAREN TOK_STRING TOK_RPAREN zfile_opt
-            {
-	      $$ = new MccExpfile ($3, $5);
-	    }
+exploreOutput:   TOK_PDB TOK_LPAREN TOK_STRING TOK_RPAREN zfile_opt
+                 {
+		   $$ = new MccExpfile ($3, $5);
+		 }
+               | TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
+                 {
+		   $$ = new MccSocketBinaryOutput ($3, $4, $5);
+		 }
 ;
 
 

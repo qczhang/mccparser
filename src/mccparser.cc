@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Fri Feb  9 10:51:40 2001
-// Update Count     : 8
+// Last Modified On : Thu Aug 16 19:12:30 2001
+// Update Count     : 9
 // Status           : Ok.
 // 
 
@@ -1868,12 +1868,53 @@ MccExpfile::display (ostream &os) const
 
 
 
+MccSocketBinaryOutput::MccSocketBinaryOutput (const MccSocketBinaryOutput &right)
+  : serverName (strdup (right.serverName)),
+    port (right.port),
+    modelName (strdup (right.modelName))
+{ }
+
+
+
+MccSocketBinaryOutput&
+MccSocketBinaryOutput::operator= (const MccSocketBinaryOutput &right)
+{
+  if (this != &right)
+    {
+      delete[] serverName;
+      serverName = strdup (right.serverName);
+      port = right.port;
+      delete[] modelName;
+      modelName = strdup (right.modelName);
+    }
+  return *this;
+}
+
+
+
+void
+MccSocketBinaryOutput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccSocketBinaryOutput::display (ostream &os) const
+{
+  os << "socket_bin (\"" << serverName << "\" " << port
+     << " \"" << modelName << "\")";
+}
+
+
+
 MccExploreStat::MccExploreStat (const MccExploreStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc)),
-    efile (0)
+    expOutput (0)
 {
-  if (right.efile)
-    efile = new MccExpfile (*right.efile);
+  if (right.expOutput)
+    expOutput = right.expOutput->clone ();
 }
 
 
@@ -1885,13 +1926,13 @@ MccExploreStat::operator= (const MccExploreStat &right)
     {
       delete fg_struc;
       fg_struc = new MccFragGenStruc (*right.fg_struc);
-      if (efile)
+      if (expOutput)
 	{
-	  delete efile;
-	  efile = 0;
+	  delete expOutput;
+	  expOutput = 0;
 	}
-      if (right.efile)
-	efile = new MccExpfile (*right.efile);
+      if (right.expOutput)
+	expOutput = right.expOutput->clone ();
     }
   return *this;
 }
@@ -1911,10 +1952,10 @@ MccExploreStat::display (ostream &os) const
 {
   os << "explore (";
   fg_struc->display (os);
-  if (efile)
+  if (expOutput)
     {
       os << ' ';
-      efile->display (os);
+      expOutput->display (os);
     }
   os << ')';
 }
@@ -1929,11 +1970,11 @@ MccExploreStat::ppdisplay (ostream &os, int indent) const
   os << '(' << endl;
   whitespaces (os, indent + 4);
   fg_struc->ppdisplay (os, indent + 4);
-  if (efile)
+  if (expOutput)
     {
       os << endl;
       whitespaces (os, indent + 4);
-      efile->ppdisplay (os, indent + 4);
+      expOutput->ppdisplay (os, indent + 4);
     }
   os << endl;
   whitespaces (os, indent + 2);
@@ -2732,12 +2773,11 @@ MccResidueStat::ppdisplay (ostream &os, int indent) const
 
 
 MccRestoreStat::MccRestoreStat (const MccRestoreStat &right)
-  : efile (0)
+  : filename (strdup (right.filename)),
+    expOutput (0)
 {
-  filename = new char[strlen (right.filename) + 1];
-  strcpy (filename, right.filename);
-  if (efile)
-    efile = new MccExpfile (*right.efile);
+  if (right.expOutput)
+    expOutput = right.expOutput->clone ();
 }
 
 
@@ -2748,15 +2788,14 @@ MccRestoreStat::operator= (const MccRestoreStat &right)
   if (this != &right)
     {
       delete[] filename;
-      filename = new char[strlen (right.filename) + 1];
-      strcpy (filename, right.filename);
-      if (efile)
+      filename = strdup (right.filename);
+      if (expOutput)
 	{
-	  delete efile;
-	  efile = 0;
+	  delete expOutput;
+	  expOutput = 0;
 	}
-      if (right.efile)
-	efile = new MccExpfile (*right.efile);
+      if (right.expOutput)
+	expOutput = right.expOutput->clone ();
     }
   return *this;
 }
@@ -2775,8 +2814,8 @@ void
 MccRestoreStat::display (ostream &os) const
 {
   os << "restore (" << filename;
-  if (efile)
-    efile->display (os);
+  if (expOutput)
+    expOutput->display (os);
   os << ')';
 }
 
@@ -2790,11 +2829,11 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
   os << '(' << endl;
   whitespaces (os, indent + 4);
   os << "\"" << filename << "\"";
-  if (efile)
+  if (expOutput)
     {
       os << endl;
       whitespaces (os, indent + 4);
-      efile->ppdisplay (os, indent + 4);
+      expOutput->ppdisplay (os, indent + 4);
     }
   os << endl;
   whitespaces (os, indent + 2);
