@@ -395,6 +395,7 @@ zfile_opt:   /* empty */ { $$ = false; }
 
 source:   TOK_SOURCE TOK_LPAREN TOK_STRING TOK_RPAREN
            {
+	     mcclineno = 0;
 	     $$ = new MccSourceStat ($3);
 	   }
 ;
