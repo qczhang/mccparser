@@ -3,9 +3,9 @@
  * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Martin Larose
- * Last Modified On : Wed Mar 21 17:30:42 2001
- * Update Count     : 10
+ * Last Modified By : Philippe Thibault
+ * Last Modified On : Wed May  9 15:49:47 2001
+ * Update Count     : 11
  * Status           : Ok.
  */
 
@@ -15,6 +15,7 @@
   #include <vector.h>
   #include <stdlib.h>
   #include <string.h>
+  #include <math.h>
 
   #include "mccparser.h"
 
@@ -61,6 +62,9 @@
   MccFragGenStruc *fgr;
   MccFGExp *fgs;
   MccExpfile *expf;
+  MccBacktrackSize *btsz;
+  vector< int > *tlv;
+  MccSamplingSize *smpls;
   cutoffs *ctfs;
 }
 
@@ -71,6 +75,7 @@
 %token TOK_COLON
 %token TOK_LBRACKET
 %token TOK_RBRACKET
+%token TOK_PERCENT
 %token TOK_LPAREN
 %token TOK_RPAREN
 %token TOK_ASSIGN
@@ -84,6 +89,7 @@
 %token TOK_ANGLE
 %token TOK_BBATOMS
 %token TOK_BACKTRACK
+%token TOK_BACKTRACKSIZE
 %token TOK_BASEATOMS
 %token TOK_CACHE
 %token TOK_CHANGEID
@@ -121,14 +127,22 @@
 %token TOK_RESTORE
 %token TOK_RMSDBOUND
 %token TOK_SEQUENCE
+%token TOK_SAMPLINGFACT
 %token TOK_SOURCE
 %token TOK_STRIP
+%token TOK_TIMELIMIT
 %token TOK_TRANSFO
 %token TOK_TFOCUT
 %token TOK_TORSION
 %token TOK_VDWDIST
 %token TOK_VERSION
 %token TOK_ZIPPED
+
+%token TOK_SEC
+%token TOK_MIN
+%token TOK_HR
+%token TOK_DAY
+
 %token <intval> TOK_INTEGER
 %token <floatval> TOK_FLOAT
 %token <textval> TOK_RESNAME
@@ -140,6 +154,7 @@
 %type <mccval> statement
 %type <mccval> sequence
 %type <mccval> assign
+%type <smpls> sampling
 %type <mccval> residue
 %type <rsv> resdef_plus
 %type <rs> resdef
@@ -154,7 +169,14 @@
 %type <mccval> restore
 %type <expf> expfile_opt
 %type <expf> expfile
+%type <btsz> backtracksize
+%type <btsz> backtracksize_opt
+%type <tlv>  timelimit_opt
+%type <tlv>  timelimit_exp
+%type <tlv>  timelimit_plus
+%type <intval> timelimit
 %type <boolval> zfile_opt
+%type <mccval> samplingfact
 %type <mccval> source
 %type <mccval> adjacencyCst
 %type <mccval> angleCst
@@ -222,6 +244,7 @@
 %type <fgr> fgRef_opt
 %type <fgr> fgRef
 
+
 %type <textval> ident_plus
 %type <floatval> flt
 %expect 1
@@ -254,6 +277,7 @@ statement:   sequence { $$ = $1; }
            | explore { $$ = $1; }
            | exploreLV { $$ = $1; }
            | restore { $$ = $1; }
+           | samplingfact { $$ = $1; }
            | source { $$ = $1; }
            | adjacencyCst { $$ = $1; }
            | angleCst { $$ = $1; }
@@ -287,6 +311,10 @@ assign:    TOK_IDENT TOK_ASSIGN fgexp { $$ = new MccAssignStat ($1, $3); }
 ;
 
 
+sampling:   flt TOK_PERCENT         { $$ = new MccSamplingSize ($1, true); }
+          | TOK_INTEGER             { $$ = new MccSamplingSize ($1, false); }
+;
+
 residue:   TOK_RESIDUE TOK_LPAREN resdef_plus TOK_RPAREN
             {
 	      $$ = new MccResidueStat ($3);
@@ -306,7 +334,7 @@ resdef_plus:   resdef
 ;
 
 
-resdef:  residueRef residueRef_opt queryexp TOK_INTEGER
+resdef:  residueRef residueRef_opt queryexp sampling
            {
 	     $$ = new MccResidueStat::_ResidueStruc ($1, $2, $3, $4);
 	   }
@@ -332,12 +360,12 @@ condef_plus:   condef
 ;
 
 
-condef:   residueRef residueRef queryexp TOK_INTEGER
+condef:   residueRef residueRef queryexp sampling
            {
 	     $$ = new MccConnectStat::_ConnectStruc ($1, new MccQueryExpr (),
 						     $2, new MccQueryExpr (), $3, $4);
 	   }
-        | residueRef queryexp residueRef queryexp queryexp TOK_INTEGER
+        | residueRef queryexp residueRef queryexp queryexp sampling
 	   {  
 	      $$ = new MccConnectStat::_ConnectStruc ($1, $2, $3, $4, $5, $6);
 	   }
@@ -363,15 +391,22 @@ pairdef_plus:   pairdef
 ;
 
 
-pairdef:   residueRef residueRef queryexp TOK_INTEGER
+pairdef:   residueRef residueRef queryexp sampling
             {
 	      $$ = new MccPairStat::_PairStruc ($1, new MccQueryExpr(), 
 						$2, new MccQueryExpr(), $3, $4);
 	    }
-         | residueRef queryexp residueRef queryexp queryexp TOK_INTEGER
+         | residueRef queryexp residueRef queryexp queryexp sampling
             {
 	      $$ = new MccPairStat::_PairStruc ($1, $2, $3, $4, $5, $6);
 	    }
+;
+
+
+samplingfact:  TOK_SAMPLINGFACT TOK_LPAREN flt TOK_RPAREN
+             {
+	       $$ = new MccSamplingFact ($3);
+             }
 ;
 
 
@@ -382,9 +417,9 @@ explore:   TOK_EXPLORE TOK_LPAREN fgRef expfile_opt TOK_RPAREN
 ;
 
 
-exploreLV:   TOK_EXPLORELV TOK_LPAREN fgRef expfile_opt TOK_RPAREN
+exploreLV: TOK_EXPLORELV TOK_LPAREN fgRef expfile_opt backtracksize_opt timelimit_opt TOK_RPAREN
             {
-	      $$ = new MccExploreLVStat ($3, $4);
+	      $$ = new MccExploreLVStat ($3, $4, $5, $6);
 	    }
 ;
 
@@ -405,6 +440,42 @@ expfile:   TOK_PDB TOK_LPAREN TOK_STRING TOK_RPAREN zfile_opt
             {
 	      $$ = new MccExpfile ($3, $5);
 	    }
+;
+
+backtracksize_opt:  /* empty */ { $$ = 0; }
+                   | backtracksize { $$ = $1; }
+;
+
+backtracksize:   TOK_BACKTRACKSIZE TOK_LPAREN TOK_INTEGER TOK_INTEGER TOK_RPAREN
+                  {
+		    $$ = new MccBacktrackSize ($3, $4);
+		  }
+;
+
+timelimit_opt:  /* empty */ { $$ = 0; }
+               | timelimit_exp { $$ = $1; }
+;
+
+
+timelimit_exp:   TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN
+                   { $$ = $3; }
+;
+
+timelimit_plus:  timelimit
+                   { 
+		     $$ = new vector< int > (1, $1);
+		   }
+                | timelimit_plus timelimit
+                   {
+		     $$ = $1;
+		     $$->push_back ($2);
+                   }
+;
+
+timelimit:     TOK_INTEGER TOK_SEC { $$ = $1; }
+             | flt TOK_MIN { $$ = (int)rint ($1 * 60.0); }
+             | flt TOK_HR  { $$ = (int)rint ($1 * 3600.0); }
+             | flt TOK_DAY { $$ = (int)rint ($1 * 86400.0); }
 ;
 
 

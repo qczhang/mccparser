@@ -3,9 +3,9 @@
  * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Martin Larose
- * Last Modified On : Thu Mar 22 17:53:15 2001
- * Update Count     : 8
+ * Last Modified By : Philippe Thibault
+ * Last Modified On : Wed May  9 15:49:54 2001
+ * Update Count     : 9
  * Status           : Ok.
  */
 
@@ -57,13 +57,14 @@ INTEGER_LIT  (-?{DIGIT}+)
              char *mccstring_buf_ptr = mccstring_buf;
 
 
-<INITIAL,QUERIES>[\n\r]    ++mcclineno;           
+<INITIAL,QUERIES>[\n\r]    ++mcclineno;          
 <INITIAL,QUERIES>[ \t]+       
 <INITIAL,QUERIES>\/\/.*
 ,            return TOK_COMMA;
 :            return TOK_COLON;
 \[           return TOK_LBRACKET;
 \]           return TOK_RBRACKET;
+\%           return TOK_PERCENT;
 <INITIAL,QUERIES>\(        return TOK_LPAREN;
 <INITIAL,QUERIES>\)        return TOK_RPAREN;
 =            return TOK_ASSIGN;
@@ -78,6 +79,7 @@ all          return TOK_ALLATOMS;
 angle        return TOK_ANGLE;
 backbone_only return TOK_BBATOMS;
 backtrack    return TOK_BACKTRACK;
+backtrack_size return TOK_BACKTRACKSIZE;
 base_only    return TOK_BASEATOMS;
 cache        return TOK_CACHE;
 change_id    return TOK_CHANGEID;
@@ -113,14 +115,26 @@ residue_align return TOK_RESIDUEALIGN;
 restore      return TOK_RESTORE;
 rmsd_bound   return TOK_RMSDBOUND;
 sequence     return TOK_SEQUENCE;
+sampling_factor   return TOK_SAMPLINGFACT;
 source       return TOK_SOURCE;
 strip        return TOK_STRIP;
+time_limit   return TOK_TIMELIMIT;
 tfo          return TOK_TRANSFO;
 tfo_cutoff   return TOK_TFOCUT;
 torsion      return TOK_TORSION;
 vdw_distance return TOK_VDWDIST;
 version      return TOK_VERSION;
 zipped       return TOK_ZIPPED;
+
+sec     return TOK_SEC;
+seconds return TOK_SEC;
+min     return TOK_MIN;
+minutes return TOK_MIN;
+hr      return TOK_HR;
+hours   return TOK_HR;
+days    return TOK_DAY;
+d       return TOK_DAY;
+
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
 
@@ -137,6 +151,8 @@ zipped       return TOK_ZIPPED;
                                        mcclval.textval = mcccopy (mcctext);
 				       return TOK_IDENT;
                                      }
+
+
 
 
            /** Definition of QUOTES indentifiers.  */
