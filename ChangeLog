@@ -4,14 +4,6 @@
 	include/mccparser-$(VERSION) directory.  Version number added in
 	the libraries. 
 
-	* src/mccparser.h, src/mccparser.cc: MccVisitor class added.
-	Accept method added for each structures.  Assignment returns a non
-	const structure.
-
-	* docs/Manual.tex: MccVisitor documentation added.
-
-	* configure.in, configure: Version 1.2
-
 2001-01-04  Martin Larose  <larosem@iro.umontreal.ca>
 
 	* src/mccp.yy, NEWS: Parser corrected to accept ^M lines
