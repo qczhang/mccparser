@@ -801,6 +801,97 @@ public:
 
 
 /**
+ * @short Struct representing the AST face statement in queries.
+ *
+ * @author Patrick Gendron <gendrop@iro.umontreal.ca>
+ */
+struct MccQFaceFunc : public MccQFunc
+{
+  /**
+   * The left query struc of the operation.
+   */
+  MccQFunc *left;
+
+  /**
+   * The right query struc of the operation.
+   */
+  MccQFunc *right;
+
+
+  // LIFECYCLE ------------------------------------------------------------
+
+private:
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccQFaceFunc () { }
+public:
+
+  /**
+   * Initializes the object.
+   * @param l the left query struc of the operation.
+   * @param r the right query struc of the operation.
+   */
+  MccQFaceFunc (MccQFunc *l, MccQFunc *r) : left (l), right (r) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right_val the object to copy.
+   */
+  MccQFaceFunc (const MccQFaceFunc &right_val)
+    : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
+  
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccQFaceFunc () { delete left; delete right; }
+
+  // OPERATORS ------------------------------------------------------------
+  
+  /**
+   * Assigns the rights content in the object.
+   * @param right_val the object to copy.
+   * @return itself.
+   */
+  virtual MccQFaceFunc& operator= (const MccQFaceFunc &right_val);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccQFaceFunc* Copy () const { return new MccQFaceFunc (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const
+  { os << "("; left->display (os); os << " / "; right->display (os);
+    os << ")"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+ 
+
+
+/**
  * @short Struct representing the AST and statement in queries.
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
@@ -2369,19 +2460,9 @@ struct MccConnectStat : public MccPStruct
     MccResidueName *res1;
 
     /**
-     * The query expression structure for properties related to res1.
-     */
-    MccQueryExpr *expr_res1;
-
-    /**
      * The name of the second residue in the relation.
      */
     MccResidueName *res2;
-
-    /**
-     * The query expression structure for properties related to res2.
-     */
-    MccQueryExpr *expr_res2;
 
     /**
      * The query expression structure.
@@ -2406,16 +2487,13 @@ struct MccConnectStat : public MccPStruct
     /**
      * Initializes the object.
      * @param r1 the name of the first residue in the relation.
-     * @param e1 the query expression for properties related to res1.
      * @param r2 the name of the second residue in the relation.
-     * @param e2 the query expression for properties related to res2.
      * @param e the query expression structure.
      * @param s the size of the sampling.
      */
-    _ConnectStruc (MccResidueName *r1, MccQueryExpr *e1, 
-		   MccResidueName *r2, MccQueryExpr *e2, MccQueryExpr *e,
-		   int s)
-      : res1 (r1), expr_res1 (e1), res2 (r2), expr_res2 (e2), expr (e), ssize (s) { }
+    _ConnectStruc (MccResidueName *r1, MccResidueName *r2, 
+		   MccQueryExpr *e, int s)
+      : res1 (r1), res2 (r2), expr (e), ssize (s) { }
 
     /**
      * Initializes the object with the rights content.
@@ -2426,8 +2504,7 @@ struct MccConnectStat : public MccPStruct
     /**
      * Destructs the object.
      */
-    ~_ConnectStruc () { delete res1; delete expr_res1; delete res2; 
-                        delete expr_res2; delete expr; }
+    ~_ConnectStruc () { delete res1; delete res2; delete expr; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -2529,13 +2606,12 @@ struct MccConnectStat : public MccPStruct
    * Generates a new connect sub-structure and puts it in the vector.
    * @param r1 the name of the first residue.
    * @param r2 the name of the second residue.
-   * @param e2 the query expression for properties related to res2.
    * @param e the query expression structure.
    * @param s the size of the sampling.
    */
-  void GenConnectStruc (MccResidueName *r1, MccQueryExpr *e1, MccResidueName *r2,
-			MccQueryExpr *e2, MccQueryExpr *e, int s)
-  { strucs->push_back (new _ConnectStruc (r1, e1, r2, e2, e, s)); }
+  void GenConnectStruc (MccResidueName *r1, MccResidueName *r2,
+			MccQueryExpr *e, int s)
+  { strucs->push_back (new _ConnectStruc (r1, r2, e, s)); }
 
   // I/O ------------------------------------------------------------------
   
@@ -3829,19 +3905,9 @@ struct MccPairStat : public MccPStruct
     MccResidueName *res1;
 
     /**
-     * The query expression for properties related to res1.
-     */
-    MccQueryExpr *expr_res1;
-
-    /**
      * The name of the second residue in the relation.
      */
     MccResidueName *res2;
-
-    /**
-     * The query expression for properties related to res2.
-     */
-    MccQueryExpr *expr_res2;
 
     /**
      * The query expression structure.
@@ -3866,15 +3932,13 @@ struct MccPairStat : public MccPStruct
     /**
      * Initializes the object.
      * @param r1 the name of the first residue.
-     * @param e1 the query expression for properties related to res1.
      * @param r2 the name of the second residue.
-     * @param e2 the query expression for properties related to res2.
      * @param e the query expression structure.
      * @param s the sampling size.
      */
-    _PairStruc (MccResidueName *r1, MccQueryExpr *e1, 
-		MccResidueName *r2, MccQueryExpr *e2, MccQueryExpr *e, int s)
-      : res1 (r1), expr_res1 (e1), res2 (r2), expr_res2 (e2), expr (e), ssize (s) { }
+    _PairStruc (MccResidueName *r1, 
+		MccResidueName *r2, MccQueryExpr *e, int s)
+      : res1 (r1), res2 (r2), expr (e), ssize (s) { }
 
     /**
      * Initializes the object with the rights content.
@@ -3885,8 +3949,7 @@ struct MccPairStat : public MccPStruct
     /**
      * Destructs the object.
      */
-    ~_PairStruc () { delete res1; delete expr_res1; delete res2; 
-                     delete expr_res2; delete expr; }
+    ~_PairStruc () { delete res1; delete res2; delete expr; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -3987,15 +4050,13 @@ struct MccPairStat : public MccPStruct
   /**
    * Generates a new pairing sub-structures and puts it in the vector.
    * @param r1 the name of the first residue.
-   * @param e1 the query expression for properties related to res1.
    * @param r2 the name of the second residue.
-   * @param e2 the query expression for properties related to res2.
    * @param e the query expression structure.
    * @param s the sampling size.
    */   
-  void GenPairStruc (MccResidueName *r1, MccQueryExpr *e1, MccResidueName *r2,
-		     MccQueryExpr *e2, MccQueryExpr *e, int s)
-  { strucs->push_back (new _PairStruc (r1, e1, r2, e2, e, s)); }
+  void GenPairStruc (MccResidueName *r1, MccResidueName *r2,
+		     MccQueryExpr *e, int s)
+  { strucs->push_back (new _PairStruc (r1, r2, e, s)); }
   
   // I/O  -----------------------------------------------------------------
   
@@ -5167,6 +5228,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccQNotFunc *struc) = 0;
+
+  /**
+   * Visits the MccQFaceFunc structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccQFaceFunc *struc) = 0;
 
   /**
    * Visits the MccQAndFunc structure.

@@ -67,6 +67,7 @@ INTEGER_LIT  (-?{DIGIT}+)
 <INITIAL,QUERIES>\(        return TOK_LPAREN;
 <INITIAL,QUERIES>\)        return TOK_RPAREN;
 =            return TOK_ASSIGN;
+<INITIAL,QUERIES>\/           return TOK_FACE;
 <INITIAL,QUERIES>\|\|         return TOK_OR;
 <INITIAL,QUERIES>&&           return TOK_AND;
 <INITIAL,QUERIES>!            return TOK_NOT;

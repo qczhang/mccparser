@@ -173,6 +173,39 @@ MccQNotFunc::ppdisplay (ostream &os, int indent) const
 
 
 
+MccQFaceFunc&
+MccQFaceFunc::operator= (const MccQFaceFunc &right_val)
+{
+  if (this != &right_val)
+    {
+      delete left;
+      left = right_val.left->Copy ();
+      delete right;
+      right = right_val.right->Copy ();
+    }
+  return *this;
+}
+
+
+
+void
+MccQFaceFunc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccQFaceFunc::ppdisplay (ostream &os, int indent) const
+{
+  left->ppdisplay (os, indent);
+  os << " / ";
+  right->ppdisplay (os, indent);
+}
+
+
+
 MccQAndFunc&
 MccQAndFunc::operator= (const MccQAndFunc &right_val)
 {
@@ -1308,9 +1341,7 @@ MccClashCstStat::ppdisplay (ostream &os, int indent) const
 
 MccConnectStat::_ConnectStruc::_ConnectStruc (const MccConnectStat::_ConnectStruc &right)
   : res1 (new MccResidueName (*right.res1)),
-    expr_res1 (new MccQueryExpr (*right.expr_res1)),
     res2 (new MccResidueName (*right.res2)),
-    expr_res2 (new MccQueryExpr (*right.expr_res2)),
     expr (new MccQueryExpr (*right.expr)),
     ssize (right.ssize)
 { }
@@ -1324,12 +1355,8 @@ MccConnectStat::_ConnectStruc::operator= (const MccConnectStat::_ConnectStruc &r
     {
       delete res1;
       res1 = new MccResidueName (*right.res1);
-      delete expr_res1;
-      expr_res1 = new MccQueryExpr (*right.expr_res1);
       delete res2;      
       res2 = new MccResidueName (*right.res2);
-      delete expr_res2;
-      expr_res2 = new MccQueryExpr (*right.expr_res2);
       delete expr;
       expr = new MccQueryExpr (*right.expr);
       ssize = right.ssize;
@@ -1352,11 +1379,7 @@ MccConnectStat::_ConnectStruc::display (ostream &os) const
 {
   res1->display (os);
   os << ' ';
-  expr_res1->display (os);
-  os << ' ';
   res2->display (os);
-  os << ' ';
-  expr_res2->display (os);
   os << ' ';
   expr->display (os);
   os << ' ' << ssize;
@@ -1371,11 +1394,7 @@ MccConnectStat::_ConnectStruc::ppdisplay (ostream &os, int indent) const
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ' ';
-  expr_res1->ppdisplay (os, indent);
-  os << ' ';
   res2->ppdisplay (os, indent);
-  os << ' ';
-  expr_res2->ppdisplay (os, indent);
   os << ' ';
   expr->ppdisplay (os, indent);
   os << ' ' << ssize;
@@ -2318,9 +2337,7 @@ MccNotesStat::ppdisplay (ostream &os, int indent) const
 
 MccPairStat::_PairStruc::_PairStruc (const MccPairStat::_PairStruc &right)
   : res1 (new MccResidueName (*right.res1)),
-    expr_res1 (new MccQueryExpr (*right.expr_res1)),
     res2 (new MccResidueName (*right.res2)),
-    expr_res2 (new MccQueryExpr (*right.expr_res2)),
     expr (new MccQueryExpr (*right.expr)),
     ssize (right.ssize)
 { }
@@ -2334,12 +2351,8 @@ MccPairStat::_PairStruc::operator= (const MccPairStat::_PairStruc &right)
     {
       delete res1;
       res1 = new MccResidueName (*right.res1);
-      delete expr_res1;
-      expr_res1 = new MccQueryExpr (*right.expr_res1);
       delete res2;
       res2 = new MccResidueName (*right.res2);
-      delete expr_res2;
-      expr_res2 = new MccQueryExpr (*right.expr_res2);
       delete expr;
       expr = new MccQueryExpr (*right.expr);
       ssize = right.ssize;
@@ -2362,11 +2375,7 @@ MccPairStat::_PairStruc::display (ostream &os) const
 {
   res1->display (os);
   os << ' ';
-  expr_res1->display (os);
-  os << ' ';
   res2->display (os);
-  os << ' ';
-  expr_res2->display (os);
   os << ' ';
   expr->display (os);
   os << ' ' << ssize;
@@ -2381,11 +2390,7 @@ MccPairStat::_PairStruc::ppdisplay (ostream &os, int indent) const
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ' ';
-  expr_res1->ppdisplay (os, indent);
-  os << ' ';
   res2->ppdisplay (os, indent);
-  os << ' ';
-  expr_res2->ppdisplay (os, indent);
   os << ' ';
   expr->ppdisplay (os, indent);
   os << ' ' << ssize;

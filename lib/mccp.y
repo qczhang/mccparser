@@ -1,6 +1,6 @@
 /*                               -*- Mode: C -*- 
  * mccp.y
- * Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
@@ -77,6 +77,7 @@
 %token TOK_OR
 %token TOK_AND
 %token TOK_NOT
+%token TOK_FACE
 %token TOK_ADDPDB
 %token TOK_ADJACENCY
 %token TOK_ALIGN
@@ -197,6 +198,7 @@
 %type <qfunc> queryandexp
 %type <qfunc> querynotexp
 %type <qfunc> queryidentexp
+%type <qfunc> queryfaceexp
 
 %type <fgs> fgexp
 %type <fgs> backtrackexp
@@ -330,12 +332,7 @@ condef_plus:   condef
 
 condef:   residueRef residueRef queryexp TOK_INTEGER
            {
-	     $$ = new MccConnectStat::_ConnectStruc ($1, new MccQueryExpr (),
-						     $2, new MccQueryExpr (), $3, $4);
-	   }
-        | residueRef queryexp residueRef queryexp queryexp TOK_INTEGER
-	   {  
-	      $$ = new MccConnectStat::_ConnectStruc ($1, $2, $3, $4, $5, $6);
+	     $$ = new MccConnectStat::_ConnectStruc ($1, $2, $3, $4);
 	   }
 ;
 
@@ -361,12 +358,7 @@ pairdef_plus:   pairdef
 
 pairdef:   residueRef residueRef queryexp TOK_INTEGER
             {
-	      $$ = new MccPairStat::_PairStruc ($1, new MccQueryExpr(), 
-						$2, new MccQueryExpr(), $3, $4);
-	    }
-         | residueRef queryexp residueRef queryexp queryexp TOK_INTEGER
-            {
-	      $$ = new MccPairStat::_PairStruc ($1, $2, $3, $4, $5, $6);
+	      $$ = new MccPairStat::_PairStruc ($1, $2, $3, $4);
 	    }
 ;
 
@@ -706,14 +698,22 @@ queryorexp:   queryandexp { $$ = $1; }
 ;
 
 
-queryandexp:   querynotexp { $$ = $1; }
-             | queryandexp querynotexp
+queryandexp:   queryfaceexp { $$ = $1; }
+             | queryandexp queryfaceexp
                 {
 		  $$ = new MccQAndFunc ($1, $2);
 		}
-             | queryandexp TOK_AND querynotexp
+             | queryandexp TOK_AND queryfaceexp
                 {
 		  $$ = new MccQAndFunc ($1, $3);
+		}
+;
+
+
+queryfaceexp:  querynotexp { $$ = $1 }
+             | queryfaceexp TOK_FACE querynotexp 
+                {
+		  $$ = new MccQFaceFunc ($1, $3);
 		}
 ;
 
@@ -726,10 +726,12 @@ querynotexp:   queryidentexp { $$ = $1; }
 ;
 
 
-queryidentexp:   TOK_IDENT { $$ = new MccQIdentFunc ($1); }
+
+queryidentexp: TOK_IDENT { $$ = new MccQIdentFunc ($1); }
                | TOK_LPAREN queryorexp TOK_RPAREN { $$ = $2; }
 ;
 
+ 
 
 fgexp:   backtrackexp { $$ = $1; }
        | cacheexp { $$ = $1; }
