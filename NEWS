@@ -4,8 +4,8 @@
 ;; Author           : Martin Larose
 ;; Created On       : Mon Aug 21 15:57:05 2000
 ;; Last Modified By : Martin Larose
-;; Last Modified On : Fri Feb  9 10:59:47 2001
-;; Update Count     : 4
+;; Last Modified On : Fri Feb  9 11:00:03 2001
+;; Update Count     : 5
 ;; Status           : Ok.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -15,6 +15,7 @@
 Evaluation of the parser generated structure can now be done via a Visitor
 derived from MccVisitor.  The Visitor defines what has to be made for each
 tree node.
+
 
 * Version 1.1
 
