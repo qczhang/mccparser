@@ -330,7 +330,12 @@ condef_plus:   condef
 
 condef:   residueRef residueRef queryexp TOK_INTEGER
            {
-	     $$ = new MccConnectStat::_ConnectStruc ($1, $2, $3, $4);
+	     $$ = new MccConnectStat::_ConnectStruc ($1, new MccQueryExpr (),
+						     $2, new MccQueryExpr (), $3, $4);
+	   }
+        | residueRef queryexp residueRef queryexp queryexp TOK_INTEGER
+	   {  
+	      $$ = new MccConnectStat::_ConnectStruc ($1, $2, $3, $4, $5, $6);
 	   }
 ;
 
@@ -346,7 +351,7 @@ pairdef_plus:   pairdef
                  {
 		   $$ = new vector< MccPairStat::_PairStruc* > (1, $1);
 		 }
-              | pairdef_plus pairdef
+             | pairdef_plus pairdef
                 {
 		  $$ = $1;
 		  $$->push_back ($2);
@@ -356,7 +361,12 @@ pairdef_plus:   pairdef
 
 pairdef:   residueRef residueRef queryexp TOK_INTEGER
             {
-	      $$ = new MccPairStat::_PairStruc ($1, $2, $3, $4);
+	      $$ = new MccPairStat::_PairStruc ($1, new MccQueryExpr(), 
+						$2, new MccQueryExpr(), $3, $4);
+	    }
+         | residueRef queryexp residueRef queryexp queryexp TOK_INTEGER
+            {
+	      $$ = new MccPairStat::_PairStruc ($1, $2, $3, $4, $5, $6);
 	    }
 ;
 

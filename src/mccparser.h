@@ -2231,14 +2231,24 @@ struct MccConnectStat : public MccPStruct
   struct _ConnectStruc
   {
     /**
-     * The name of the reference residue.
+     * The name of the first residue in the relation.
      */
     MccResidueName *res1;
 
     /**
-     * The name of the remote residue.
+     * The query expression structure for properties related to res1.
+     */
+    MccQueryExpr *expr_res1;
+
+    /**
+     * The name of the second residue in the relation.
      */
     MccResidueName *res2;
+
+    /**
+     * The query expression structure for properties related to res2.
+     */
+    MccQueryExpr *expr_res2;
 
     /**
      * The query expression structure.
@@ -2262,14 +2272,17 @@ struct MccConnectStat : public MccPStruct
 
     /**
      * Initializes the object.
-     * @param r1 the name of the reference residue.
-     * @param r2 the name of the remote residue.
+     * @param r1 the name of the first residue in the relation.
+     * @param e1 the query expression for properties related to res1.
+     * @param r2 the name of the second residue in the relation.
+     * @param e2 the query expression for properties related to res2.
      * @param e the query expression structure.
      * @param s the size of the sampling.
      */
-    _ConnectStruc (MccResidueName *r1, MccResidueName *r2, MccQueryExpr *e,
+    _ConnectStruc (MccResidueName *r1, MccQueryExpr *e1, 
+		   MccResidueName *r2, MccQueryExpr *e2, MccQueryExpr *e,
 		   int s)
-      : res1 (r1), res2 (r2), expr (e), ssize (s) { }
+      : res1 (r1), expr_res1 (e1), res2 (r2), expr_res2 (e2), expr (e), ssize (s) { }
 
     /**
      * Initializes the object with the rights content.
@@ -2280,7 +2293,8 @@ struct MccConnectStat : public MccPStruct
     /**
      * Destructs the object.
      */
-    ~_ConnectStruc () { delete res1; delete res2; delete expr; }
+    ~_ConnectStruc () { delete res1; delete expr_res1; delete res2; 
+                        delete expr_res2; delete expr; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -2370,14 +2384,15 @@ struct MccConnectStat : public MccPStruct
     
   /**
    * Generates a new connect sub-structure and puts it in the vector.
-   * @param r1 the name of the reference residue.
-   * @param r2 the name of the remote residue.
+   * @param r1 the name of the first residue.
+   * @param r2 the name of the second residue.
+   * @param e2 the query expression for properties related to res2.
    * @param e the query expression structure.
    * @param s the size of the sampling.
    */
-  void GenConnectStruc (MccResidueName *r1, MccResidueName *r2,
-			MccQueryExpr *e, int s)
-  { strucs->push_back (new _ConnectStruc (r1, r2, e, s)); }
+  void GenConnectStruc (MccResidueName *r1, MccQueryExpr *e1, MccResidueName *r2,
+			MccQueryExpr *e2, MccQueryExpr *e, int s)
+  { strucs->push_back (new _ConnectStruc (r1, e1, r2, e2, e, s)); }
 
   // I/O ------------------------------------------------------------------
   
@@ -3595,14 +3610,24 @@ struct MccPairStat : public MccPStruct
   struct _PairStruc
   {
     /**
-     * The name of the remote residue.
+     * The name of the first residue in the relation.
      */
-    MccResidueName *res;
+    MccResidueName *res1;
 
     /**
-     * The name of the reference residue.
+     * The query expression for properties related to res1.
      */
-    MccResidueName *ref;
+    MccQueryExpr *expr_res1;
+
+    /**
+     * The name of the second residue in the relation.
+     */
+    MccResidueName *res2;
+
+    /**
+     * The query expression for properties related to res2.
+     */
+    MccQueryExpr *expr_res2;
 
     /**
      * The query expression structure.
@@ -3626,13 +3651,16 @@ struct MccPairStat : public MccPStruct
 
     /**
      * Initializes the object.
-     * @param r1 the name of the remote residue.
-     * @param r2 the name of the reference residue.
+     * @param r1 the name of the first residue.
+     * @param e1 the query expression for properties related to res1.
+     * @param r2 the name of the second residue.
+     * @param e2 the query expression for properties related to res2.
      * @param e the query expression structure.
      * @param s the sampling size.
      */
-    _PairStruc (MccResidueName *r1, MccResidueName *r2, MccQueryExpr *e, int s)
-      : res (r1), ref (r2), expr (e), ssize (s) { }
+    _PairStruc (MccResidueName *r1, MccQueryExpr *e1, 
+		MccResidueName *r2, MccQueryExpr *e2, MccQueryExpr *e, int s)
+      : res1 (r1), expr_res1 (e1), res2 (r2), expr_res2 (e2), expr (e), ssize (s) { }
 
     /**
      * Initializes the object with the rights content.
@@ -3643,7 +3671,8 @@ struct MccPairStat : public MccPStruct
     /**
      * Destructs the object.
      */
-    ~_PairStruc () { delete res; delete ref; delete expr; }
+    ~_PairStruc () { delete res1; delete expr_res1; delete res2; 
+                     delete expr_res2; delete expr; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -3731,14 +3760,16 @@ struct MccPairStat : public MccPStruct
     
   /**
    * Generates a new pairing sub-structures and puts it in the vector.
-   * @param r1 the name of the remote residue.
-   * @param r2 the name of the reference residue.
+   * @param r1 the name of the first residue.
+   * @param e1 the query expression for properties related to res1.
+   * @param r2 the name of the second residue.
+   * @param e2 the query expression for properties related to res2.
    * @param e the query expression structure.
    * @param s the sampling size.
    */   
-  void GenPairStruc (MccResidueName *r1, MccResidueName *r2,
-		     MccQueryExpr *e, int s)
-  { strucs->push_back (new _PairStruc (r1, r2, e, s)); }
+  void GenPairStruc (MccResidueName *r1, MccQueryExpr *e1, MccResidueName *r2,
+		     MccQueryExpr *e2, MccQueryExpr *e, int s)
+  { strucs->push_back (new _PairStruc (r1, e1, r2, e2, e, s)); }
   
   // I/O  -----------------------------------------------------------------
   

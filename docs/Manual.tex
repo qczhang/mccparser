@@ -305,9 +305,13 @@ Changes from {\sc mcsym} version 3.2.4:
 \end{grammarrule}
 \begin{grammarrule}{condef}{\nonterminal{residueRef} \nonterminal{residueRef}
     \nonterminal{queryexp} \token{INTEGER}}
+  \altrule{\nonterminal{residueRef} \nonterminal{queryexp} \nonterminal{residueRef}
+    \nonterminal{queryexp} \nonterminal{queryexp} \token{INTEGER}}
 \end{grammarrule}
 \begin{grammarrule}{pairdef}{\nonterminal{residueRef} \nonterminal{residueRef}
     \nonterminal{queryexp} \token{INTEGER}}
+  \altrule{\nonterminal{residueRef} \nonterminal{queryexp} \nonterminal{residueRef}
+    \nonterminal{queryexp} \nonterminal{queryexp} \token{INTEGER}}
 \end{grammarrule}
 \begin{grammarrule}{expfile}{\terminal{fileName\_\,pdb} \terminal{(}
     \token{STRING} \terminal{)} \terminal{zipped}?}
