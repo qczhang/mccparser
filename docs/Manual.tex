@@ -4,8 +4,8 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Thu Sep 14 11:46:22 2000
-%% Update Count     : 6
+%% Last Modified On : Thu Sep 14 13:30:24 2000
+%% Update Count     : 7
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -192,6 +192,57 @@ character.  The implementation of CMccInput's nextchar is a simple {\tt getc
   ()} call.  If you want to implement a different input procedure (buffered,
 string buffered, etc) you can build a child class of CMccInput and modify
 it's {\tt nextchar ()} method.
+
+To read from a string instead of a file, you can follow these instructions:
+\begin{itemize}
+\item create a {\tt YY\_BUFFER\_STATE} handle with {\tt mcc\_scan\_string
+    ()};
+\item switch the input from {\tt mccin} to the handle by {\tt
+    mcc\_switch\_buffer ()};
+\item set {\tt interactive\_buffer} to {\tt false};
+\item call {\tt mccparse ()};
+\item delete the string handle with {\tt mcc\_delete\_buffer ()}.
+\end{itemize}
+
+\noindent {\bf Example for non-interactive string parser}
+\begin{verbatim}
+void
+eval (const char *str)
+{
+  vector< MccPStruct* > *last_astv = astv;
+  bool last_interactive = interactive_parser;
+  FILE *last_mccin = mccin;
+
+  try
+    {
+      vector< MccPStruct* >::iterator it;
+      YY_BUFFER_STATE handle = mcc_scan_string (a);
+      
+      mcc_switch_to_buffer (handle);
+      interactive_parser = false;
+      astv = 0;
+
+      mccparse ();
+      
+      for (it = astv->begin (); it != astv->end (); ++it)
+        eval (*it);
+
+      mcc_delete_buffer (handle);
+      for (it = astv->begin (); it != astv->end (); ++it)
+        delete *it;
+      delete astv;
+    }
+  catch (...)
+    {
+      ...
+    }
+  astv = last_astv;
+  interactive_parser = last_interactive;
+  // mccin is reassign and repositionned using this procedure.
+  mccrestart (last_mccin);
+}
+\end{verbatim}
+
 
 \section{Changes}
 
