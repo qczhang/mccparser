@@ -3,9 +3,9 @@
  * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Philippe Thibault
- * Last Modified On : Wed May  9 15:49:54 2001
- * Update Count     : 9
+ * Last Modified By : Labo Lbit
+ * Last Modified On : Mon Jul  9 15:22:10 2001
+ * Update Count     : 10
  * Status           : Ok.
  */
 
@@ -79,19 +79,17 @@ all          return TOK_ALLATOMS;
 angle        return TOK_ANGLE;
 backbone_only return TOK_BBATOMS;
 backtrack    return TOK_BACKTRACK;
-backtrack_size return TOK_BACKTRACKSIZE;
+ /*  backtrack_size return TOK_BACKTRACKSIZE; */
 base_only    return TOK_BASEATOMS;
 cache        return TOK_CACHE;
 change_id    return TOK_CHANGEID;
 confo_cutoff return TOK_CONFOCUT;
 connect      return TOK_CONNECT;
 cycle        return TOK_CYCLE;
-deviation    return TOK_RMSCST;
-direction    return TOK_DIRECTION;
 display_fg   return TOK_DISPLAYFG;
 distance     return TOK_DISTANCE;
 explore      return TOK_EXPLORE;
-exploreLV    return TOK_EXPLORELV;
+ /*  exploreLV    return TOK_EXPLORELV; */
 fileName_pdb return TOK_PDB;
 fixed_distance return TOK_FIXEDDIST;
 library      return TOK_LIBRARY;
@@ -102,7 +100,6 @@ notes        return TOK_NOTES;
 pair         return TOK_PAIR;
 pdb          return TOK_PDB;
 place        return TOK_PLACE;
-prop         return TOK_PROPERTIES;
 pse_only     return TOK_PSEATOMS;
 quit         return TOK_QUIT;
 remark       return TOK_REMARK;
@@ -111,14 +108,13 @@ res_clash    return TOK_RESCLASH;
 reset        return TOK_RESET;
 reset_db     return TOK_RESETDB;
 residue      return TOK_RESIDUE;
-residue_align return TOK_RESIDUEALIGN;
 restore      return TOK_RESTORE;
 rmsd_bound   return TOK_RMSDBOUND;
 sequence     return TOK_SEQUENCE;
-sampling_factor   return TOK_SAMPLINGFACT;
+ /*  sampling_factor   return TOK_SAMPLINGFACT; */
 source       return TOK_SOURCE;
 strip        return TOK_STRIP;
-time_limit   return TOK_TIMELIMIT;
+ /*  time_limit   return TOK_TIMELIMIT; */
 tfo          return TOK_TRANSFO;
 tfo_cutoff   return TOK_TFOCUT;
 torsion      return TOK_TORSION;
@@ -126,14 +122,14 @@ vdw_distance return TOK_VDWDIST;
 version      return TOK_VERSION;
 zipped       return TOK_ZIPPED;
 
-sec     return TOK_SEC;
-seconds return TOK_SEC;
-min     return TOK_MIN;
-minutes return TOK_MIN;
-hr      return TOK_HR;
-hours   return TOK_HR;
-days    return TOK_DAY;
-d       return TOK_DAY;
+ /*  sec     return TOK_SEC; */
+ /*  seconds return TOK_SEC; */
+ /*  min     return TOK_MIN; */
+ /*  minutes return TOK_MIN; */
+ /*  hr      return TOK_HR; */
+ /*  hours   return TOK_HR; */
+ /*  days    return TOK_DAY; */
+ /*  d       return TOK_DAY; */
 
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;

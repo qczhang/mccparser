@@ -1,11 +1,11 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.h
-// Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
-// Last Modified By : Philippe Thibault
-// Last Modified On : Wed May  9 15:49:59 2001
-// Update Count     : 15
+// Last Modified By : Labo Lbit
+// Last Modified On : Mon Jul  9 15:22:19 2001
+// Update Count     : 16
 // Status           : Ok.
 // 
 
@@ -366,6 +366,7 @@ public:
 };
 
 
+
 /**
  * @short Struct representing the sampling size on AST nodes "residue",
  * "connect" and "pair" 
@@ -374,46 +375,47 @@ public:
  */
 struct MccSamplingSize
 {
-  
-  /**
-   * Contains either an absolute value or a proportion factor
-   * of a set size
-   */
-  union
-  {
+//    /**
+//     * Contains either an absolute value or a proportion factor
+//     * of a set size
+//     */
+//    union
+//    {
     int absVal;    // absolute size
-    float propFact;    // proportion of whole set
-  };
+//      float propFact;    // proportion of whole set
+//    };
 
-  /** flag indicating current union value is a proportion */
-  bool isProp;
+//    /**
+//     * Indicates if the current union value is a proportion.
+//     */
+//    bool isProp;
 
+protected:
 
   // LIFECYCLE ------------------------------------------------------------
 
-private:
   /**
    * Initializes the object.  It should never be used.
    */
   MccSamplingSize () { }
+  
 public:
-
   
   /**
    * Initializes the object.
-   * @param ssize  set sampling size, either an absolute value or a proportion
-   *               (%) of whole set, depending on pflag value.
-   * @param pflag flag indicating if ssize is a proportion or an absolute value
+   * @param ssize  set sampling size, either an absolute value or a
+   * proportion (%) of whole set, depending on pflag value.
+   * @param pflag flag indicating if ssize is a proportion or an absolute
+   * value. 
    */
-  MccSamplingSize (float ssize, bool pflag);
-
+//    MccSamplingSize (float ssize, bool pflag);
+  MccSamplingSize (int ssize);
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
   MccSamplingSize (const MccSamplingSize &right);
-
 
   /**
    * Destructs the object.
@@ -426,9 +428,15 @@ public:
    * Assigns the right struct values to the object.
    * @param right the struct to copy.
    */
-  const MccSamplingSize& operator= (const MccSamplingSize &right);
+  MccSamplingSize& operator= (const MccSamplingSize &right);
 
   // ACCESS ---------------------------------------------------------------
+
+  /**
+   * Gets the desired set size.
+   * @return the requested set size.
+   */
+  int getSize () const { return absVal; }
   
   // METHODS --------------------------------------------------------------
 
@@ -453,6 +461,7 @@ public:
    */
   void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
+
 
 
 /**

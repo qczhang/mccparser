@@ -1,11 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -*- Mode: Latex -*- %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Manual.tex
-%% Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+%% Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
-%% Last Modified By : Philippe Thibault
-%% Last Modified On : Wed May  9 15:47:12 2001
-%% Update Count     : 9
+%% Last Modified By : Labo Lbit
+%% Last Modified On : Mon Jul  9 15:21:59 2001
+%% Update Count     : 10
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -250,18 +250,18 @@ Changes from {\sc mcsym} version 3.2.4:
 \begin{itemize}
 \item residue, connect and pair statements must contain at least one
   definition;
-\item sampling size for residue, connect and pair statements can be specified
-  as either an integer or a percentage, which represents a proportion
-  of whole set;
-\item sampling\_\,factor statement added, apply a real factor to sampling sizes 
-  for every residue, connect and pair statements specified below this statement; 
+% \item sampling size for residue, connect and pair statements can be specified
+%   as either an integer or a percentage, which represents a proportion
+%   of whole set;
+% \item sampling\_\,factor statement added, apply a real factor to sampling sizes 
+%   for every residue, connect and pair statements specified below this statement; 
+% \item exploreLV statement added, perform a probabilistic search;
 \item angle, cycle, distance and torsion statements must contain at least
   one definition;
 \item fixed\_\,distance, vdw\_\,distance atomset and atomsetopt options must
   be in order in the res\_\,clash statement;
 \item align, rmsd\_\,bound, atomset and atomsetopt options must be in order
   in the cache statement;
-\item exploreLV statement added, perform a probabilistic search;
 \end{itemize}
 
 \appendix
@@ -277,11 +277,11 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\terminal{residue} \terminal{(} \nonterminal{resdef}+ \terminal{)}}
   \altrule{\terminal{connect} \terminal{(} \nonterminal{condef}+ \terminal{)}}
   \altrule{\terminal{pair} \terminal{(} \nonterminal{pairdef}+ \terminal{)}}
-  \altrule{\terminal{sampling\_\,factor} \terminal{(} \token{FLOAT} \terminal{)}}
+%   \altrule{\terminal{sampling\_\,factor} \terminal{(} \token{FLOAT} \terminal{)}}
   \altrule{\terminal{explore} \terminal{(} \nonterminal{fgRef}
     \nonterminal{expfile}? \terminal{)}}
-  \altrule{\terminal{exploreLV} \terminal{(} \nonterminal{fgRef}
-    \nonterminal{expfile}? \nonterminal{backtracksize}? \nonterminal{timelimit\_\,exp}? \terminal{)}}
+%   \altrule{\terminal{exploreLV} \terminal{(} \nonterminal{fgRef}
+%     \nonterminal{expfile}? \nonterminal{backtracksize}? \nonterminal{timelimit\_\,exp}? \terminal{)}}
   \altrule{\terminal{restore} \terminal{(} \token{STRING}
   \nonterminal{expfile}? \terminal{)}}
   \altrule{\terminal{source} \terminal{(} \token{STRING} \terminal{)}}
@@ -322,27 +322,28 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\nonterminal{residueRef} \nonterminal{queryexp} \nonterminal{residueRef}
     \nonterminal{queryexp} \nonterminal{queryexp} \nonterminal{sampling}}
 \end{grammarrule}
-\begin{grammarrule}{sampling}{\token{INTEGER} \token{PERCENT}}
-  \altrule{\token{INTEGER}}
+\begin{grammarrule}{sampling}%{\token{INTEGER} \terminal{\%}}
+%   \altrule{\token{INTEGER}}
+  {\token{INTEGER}}
 \end{grammarrule}
 \begin{grammarrule}{expfile}{\terminal{fileName\_\,pdb} \terminal{(}
     \token{STRING} \terminal{)} \terminal{zipped}?}
 \end{grammarrule}
-\begin{grammarrule}{backtracksize}{\terminal{backtrack\_\,size} \terminal{(}
-    \token{INTEGER} \token{INTEGER} \terminal{)}}
-\end{grammarrule}
-\begin{grammarrule}{timelimit\_\,exp}{\terminal{time\_\,limit} \terminal{(}
-    \nonterminal{timelimit}+ \terminal{)}}
-\end{grammarrule}
-\begin{grammarrule}{timelimit}{\token{INTEGER} \terminal{seconds}}
-  \altrule{\token{INTEGER} \terminal{sec}}
-  \altrule{\token{FLOAT} \terminal{minutes}}
-  \altrule{\token{FLOAT} \terminal{min}}
-  \altrule{\token{FLOAT} \terminal{hours}}
-  \altrule{\token{FLOAT} \terminal{hr}}
-  \altrule{\token{FLOAT} \terminal{days}}
-  \altrule{\token{FLOAT} \terminal{d}}	
-\end{grammarrule}
+% \begin{grammarrule}{backtracksize}{\terminal{backtrack\_\,size} \terminal{(}
+%     \token{INTEGER} \token{INTEGER} \terminal{)}}
+% \end{grammarrule}
+% \begin{grammarrule}{timelimit\_\,exp}{\terminal{time\_\,limit} \terminal{(}
+%     \nonterminal{timelimit}+ \terminal{)}}
+% \end{grammarrule}
+% \begin{grammarrule}{timelimit}{\token{INTEGER} \terminal{seconds}}
+%   \altrule{\token{INTEGER} \terminal{sec}}
+%   \altrule{\token{FLOAT} \terminal{minutes}}
+%   \altrule{\token{FLOAT} \terminal{min}}
+%   \altrule{\token{FLOAT} \terminal{hours}}
+%   \altrule{\token{FLOAT} \terminal{hr}}
+%   \altrule{\token{FLOAT} \terminal{days}}
+%   \altrule{\token{FLOAT} \terminal{d}}  
+% \end{grammarrule}
 \begin{biggrammarrule}{angledef}
   {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
     \nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}}
@@ -445,7 +446,6 @@ Changes from {\sc mcsym} version 3.2.4:
   QUOTED\_\,IDENT \= = \/ \= \kill
   INTEGER \> = \> \verb|-?[0-9]+| \\
   FLOAT \> = \> \verb|(-?[0-9]+)(.[0-9]*)?| \\
-  PERCENT \> = \> \verb|%| \\
   RESNAME \> = \> \verb|[a-zA-Z][0-9]+| \\
   IDENT \> = \> \verb|[-_<>a-zA-Z][-_<>\'%$\.a-zA-Z0-9]*| \\
   STRING \> = \> \verb|\"[^\\\"]*\"| \\

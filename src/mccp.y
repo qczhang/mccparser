@@ -3,9 +3,9 @@
  * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Philippe Thibault
- * Last Modified On : Wed May  9 15:49:47 2001
- * Update Count     : 11
+ * Last Modified By : Labo Lbit
+ * Last Modified On : Mon Jul  9 15:22:07 2001
+ * Update Count     : 12
  * Status           : Ok.
  */
 
@@ -62,8 +62,8 @@
   MccFragGenStruc *fgr;
   MccFGExp *fgs;
   MccExpfile *expf;
-  MccBacktrackSize *btsz;
-  vector< int > *tlv;
+/*    MccBacktrackSize *btsz; */
+/*    vector< int > *tlv; */
   MccSamplingSize *smpls;
   cutoffs *ctfs;
 }
@@ -96,12 +96,10 @@
 %token TOK_CONFOCUT
 %token TOK_CONNECT
 %token TOK_CYCLE
-%token TOK_RMSCST
-%token TOK_DIRECTION
 %token TOK_DISPLAYFG
 %token TOK_DISTANCE
 %token TOK_EXPLORE
-%token TOK_EXPLORELV
+/*  %token TOK_EXPLORELV */
 %token TOK_FILENAME
 %token TOK_PDB
 %token TOK_FIXEDDIST
@@ -113,7 +111,6 @@
 %token TOK_PAIR
 %token TOK_PDB
 %token TOK_PLACE
-%token TOK_PROPERTIES
 %token TOK_PSEATOMS
 %token TOK_QUIT
 %token TOK_REMARK
@@ -123,14 +120,13 @@
 %token TOK_RESET
 %token TOK_RESETDB
 %token TOK_RESIDUE
-%token TOK_RESIDUEALIGN
 %token TOK_RESTORE
 %token TOK_RMSDBOUND
 %token TOK_SEQUENCE
-%token TOK_SAMPLINGFACT
+/*  %token TOK_SAMPLINGFACT */
 %token TOK_SOURCE
 %token TOK_STRIP
-%token TOK_TIMELIMIT
+/*  %token TOK_TIMELIMIT */
 %token TOK_TRANSFO
 %token TOK_TFOCUT
 %token TOK_TORSION
@@ -138,10 +134,10 @@
 %token TOK_VERSION
 %token TOK_ZIPPED
 
-%token TOK_SEC
-%token TOK_MIN
-%token TOK_HR
-%token TOK_DAY
+/*  %token TOK_SEC */
+/*  %token TOK_MIN */
+/*  %token TOK_HR */
+/*  %token TOK_DAY */
 
 %token <intval> TOK_INTEGER
 %token <floatval> TOK_FLOAT
@@ -165,18 +161,18 @@
 %type <psv> pairdef_plus
 %type <ps> pairdef
 %type <mccval> explore
-%type <mccval> exploreLV
+/*  %type <mccval> exploreLV */
 %type <mccval> restore
 %type <expf> expfile_opt
 %type <expf> expfile
-%type <btsz> backtracksize
-%type <btsz> backtracksize_opt
-%type <tlv>  timelimit_opt
-%type <tlv>  timelimit_exp
-%type <tlv>  timelimit_plus
-%type <intval> timelimit
+/*  %type <btsz> backtracksize */
+/*  %type <btsz> backtracksize_opt */
+/*  %type <tlv>  timelimit_opt */
+/*  %type <tlv>  timelimit_exp */
+/*  %type <tlv>  timelimit_plus */
+/*  %type <intval> timelimit */
 %type <boolval> zfile_opt
-%type <mccval> samplingfact
+/*  %type <mccval> samplingfact */
 %type <mccval> source
 %type <mccval> adjacencyCst
 %type <mccval> angleCst
@@ -275,9 +271,9 @@ statement:   sequence { $$ = $1; }
            | connect { $$ = $1; }
            | pair { $$ = $1; }
            | explore { $$ = $1; }
-           | exploreLV { $$ = $1; }
+/*             | exploreLV { $$ = $1; } */
            | restore { $$ = $1; }
-           | samplingfact { $$ = $1; }
+/*             | samplingfact { $$ = $1; } */
            | source { $$ = $1; }
            | adjacencyCst { $$ = $1; }
            | angleCst { $$ = $1; }
@@ -310,10 +306,6 @@ sequence:  TOK_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
 assign:    TOK_IDENT TOK_ASSIGN fgexp { $$ = new MccAssignStat ($1, $3); }
 ;
 
-
-sampling:   flt TOK_PERCENT         { $$ = new MccSamplingSize ($1, true); }
-          | TOK_INTEGER             { $$ = new MccSamplingSize ($1, false); }
-;
 
 residue:   TOK_RESIDUE TOK_LPAREN resdef_plus TOK_RPAREN
             {
@@ -403,11 +395,11 @@ pairdef:   residueRef residueRef queryexp sampling
 ;
 
 
-samplingfact:  TOK_SAMPLINGFACT TOK_LPAREN flt TOK_RPAREN
-             {
-	       $$ = new MccSamplingFact ($3);
-             }
-;
+/*  samplingfact:  TOK_SAMPLINGFACT TOK_LPAREN flt TOK_RPAREN */
+/*               { */
+/*  	       $$ = new MccSamplingFact ($3); */
+/*               } */
+/*  ; */
 
 
 explore:   TOK_EXPLORE TOK_LPAREN fgRef expfile_opt TOK_RPAREN
@@ -417,11 +409,11 @@ explore:   TOK_EXPLORE TOK_LPAREN fgRef expfile_opt TOK_RPAREN
 ;
 
 
-exploreLV: TOK_EXPLORELV TOK_LPAREN fgRef expfile_opt backtracksize_opt timelimit_opt TOK_RPAREN
-            {
-	      $$ = new MccExploreLVStat ($3, $4, $5, $6);
-	    }
-;
+/*  exploreLV: TOK_EXPLORELV TOK_LPAREN fgRef expfile_opt backtracksize_opt timelimit_opt TOK_RPAREN */
+/*              { */
+/*  	      $$ = new MccExploreLVStat ($3, $4, $5, $6); */
+/*  	    } */
+/*  ; */
 
 
 restore:   TOK_RESTORE TOK_LPAREN TOK_STRING expfile_opt TOK_RPAREN
@@ -442,41 +434,41 @@ expfile:   TOK_PDB TOK_LPAREN TOK_STRING TOK_RPAREN zfile_opt
 	    }
 ;
 
-backtracksize_opt:  /* empty */ { $$ = 0; }
-                   | backtracksize { $$ = $1; }
-;
+/*  backtracksize_opt:  /* empty * / { $$ = 0; } */
+/*                     | backtracksize { $$ = $1; } */
+/*  ; */
 
-backtracksize:   TOK_BACKTRACKSIZE TOK_LPAREN TOK_INTEGER TOK_INTEGER TOK_RPAREN
-                  {
-		    $$ = new MccBacktrackSize ($3, $4);
-		  }
-;
+/*  backtracksize:   TOK_BACKTRACKSIZE TOK_LPAREN TOK_INTEGER TOK_INTEGER TOK_RPAREN */
+/*                    { */
+/*  		    $$ = new MccBacktrackSize ($3, $4); */
+/*  		  } */
+/*  ; */
 
-timelimit_opt:  /* empty */ { $$ = 0; }
-               | timelimit_exp { $$ = $1; }
-;
+/*  timelimit_opt:  /* empty * / { $$ = 0; } */
+/*                 | timelimit_exp { $$ = $1; } */
+/*  ; */
 
 
-timelimit_exp:   TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN
-                   { $$ = $3; }
-;
+/*  timelimit_exp:   TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN */
+/*                     { $$ = $3; } */
+/*  ; */
 
-timelimit_plus:  timelimit
-                   { 
-		     $$ = new vector< int > (1, $1);
-		   }
-                | timelimit_plus timelimit
-                   {
-		     $$ = $1;
-		     $$->push_back ($2);
-                   }
-;
+/*  timelimit_plus:  timelimit */
+/*                     {  */
+/*  		     $$ = new vector< int > (1, $1); */
+/*  		   } */
+/*                  | timelimit_plus timelimit */
+/*                     { */
+/*  		     $$ = $1; */
+/*  		     $$->push_back ($2); */
+/*                     } */
+/*  ; */
 
-timelimit:     TOK_INTEGER TOK_SEC { $$ = $1; }
-             | flt TOK_MIN { $$ = (int)rint ($1 * 60.0); }
-             | flt TOK_HR  { $$ = (int)rint ($1 * 3600.0); }
-             | flt TOK_DAY { $$ = (int)rint ($1 * 86400.0); }
-;
+/*  timelimit:     TOK_INTEGER TOK_SEC { $$ = $1; } */
+/*               | flt TOK_MIN { $$ = (int)rint ($1 * 60.0); } */
+/*               | flt TOK_HR  { $$ = (int)rint ($1 * 3600.0); } */
+/*               | flt TOK_DAY { $$ = (int)rint ($1 * 86400.0); } */
+/*  ; */
 
 
 zfile_opt:   /* empty */ { $$ = false; }
@@ -732,6 +724,13 @@ version:   TOK_VERSION { $$ = new MccVersion (); }
 
 
 quit:   TOK_QUIT { $$ = new MccQuitStat (); }
+;
+
+
+sampling: TOK_INTEGER             { $$ = new MccSamplingSize ($1);
+}
+/*            | TOK_INTEGER             { $$ = new MccSamplingSize ($1, false); } */
+/*            | flt TOK_PERCENT         { $$ = new MccSamplingSize ($1, true); } */
 ;
 
 

@@ -1,11 +1,11 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.cc
-// Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
-// Last Modified By : Philippe Thibault
-// Last Modified On : Wed May  9 15:49:56 2001
-// Update Count     : 9
+// Last Modified By : Labo Lbit
+// Last Modified On : Mon Jul  9 15:22:14 2001
+// Update Count     : 10
 // Status           : Ok.
 // 
 
@@ -2684,51 +2684,58 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccSamplingSize::MccSamplingSize (float ssize, bool pflag)
-{
-  isProp = pflag;
-  if (isProp)
-    propFact = ssize / 100.0;
-  else
-    absVal = (int)rint (ssize);
-}
+
+//  MccSamplingSize::MccSamplingSize (float ssize, bool pflag)
+//  {
+//    isProp = pflag;
+//    if (isProp)
+//      propFact = ssize / 100.0;
+//    else
+//      absVal = (int)rint (ssize);
+//  }
+
+MccSamplingSize::MccSamplingSize (int ssize)
+  : absVal (ssize)
+{ }
+
 
 
 MccSamplingSize::MccSamplingSize (const MccSamplingSize &right)
+//    : isProp (right.isProp)
 {
-  isProp = right.isProp;
-  if (isProp)
-    propFact = right.propFact;
-  else
+//    if (isProp)
+//      propFact = right.propFact;
+//    else
     absVal = right.absVal;
 }
 
 
-const MccSamplingSize&
+
+MccSamplingSize&
 MccSamplingSize::operator= (const MccSamplingSize &right)
 {
   if (this != &right)
     {
-      isProp = right.isProp;
-      if (isProp)
-	propFact = right.propFact;
-      else
+//        isProp = right.isProp;
+//        if (isProp)
+//  	propFact = right.propFact;
+//        else
 	absVal = right.absVal;
     }
   return *this;
 }
 
 
+
 void
 MccSamplingSize::display (ostream &os) const
 {
-  os << "sampling (";
-  if (isProp)
-    os << propFact * 100.0 << '%';
-  else
+//    if (isProp)
+//      os << propFact * 100.0 << '%';
+//    else
     os << absVal;
-  os << ')';
 }
+
 
 
 MccSequenceStat::MccSequenceStat (const MccSequenceStat &right)
