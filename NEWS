@@ -4,15 +4,59 @@
 ;; Author           : Martin Larose
 ;; Created On       : Mon Aug 21 15:57:05 2000
 ;; Last Modified By : Martin Larose
-;; Last Modified On : Mon Nov 26 12:09:04 2001
-;; Update Count     : 8
+;; Last Modified On : Thu Dec 20 09:47:58 2001
+;; Update Count     : 9
 ;; Status           : Ok.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 * Version 1.2
 
-Relation (pairing/stacking) constraint added.  Its grammar is:
+** cache statement syntax changed.
+
+To gives us the ability to choose between several types of filters, the
+cache syntax is changed to this form:
+
+      cache ( <fg> <filter> )
+
+where:
+
+      filter :: rmsd ( INTEGER align? <atom set>? no_hydrogen? )
+
+
+** Las Vegas exploration added.
+
+With the Las Vegas exploration in mcsym, a new statement was added.  It's
+grammar is:
+
+  exploreLV ( <fg> <filter>? <output form>? <time limit>? <backtrack size>? )
+
+where:
+
+  filter :: rmsd ( INTEGER align? <atom set>? no_hydrogen? )
+  time limit :: time_limit ( <timelimits>+ )
+  timelimits :: INTEGER seconds
+              | INTEGER sec
+	      | FLOAT minutes
+	      | FLOAT min
+	      | FLOAT hours
+	      | FLOAT hr
+	      | FLOAT days
+	      | FLOAT d
+  backtrack size :: backtrack_size ( INTEGER INTEGER )
+
+
+** explore syntax changed.
+
+Uniform output cache information inserted in explore statement.  The new
+syntax is:
+
+ explore ( <fg> <filter>? <output form>? )
+
+
+** Relation (pairing/stacking) constraint added.
+
+Its grammar is:
 
 	 relation :: relation ( <relation definition>+ )
 	 relation definition :: <ref> <res> <query>

@@ -4,8 +4,8 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Tue Dec  4 14:51:54 2001
-%% Update Count     : 13
+%% Last Modified On : Thu Dec 20 09:48:04 2001
+%% Update Count     : 14
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -254,6 +254,9 @@ eval (const char *str)
 
 Changes from {\sc mcsym} version 3.2.4:
 \begin{itemize}
+\item the model filter in the cache, explore and exploreLV statements is
+  changed;
+\item the exploration statement gets a dedicated cache;
 \item the relation constraint was added;
 \item binary and socket binary input and output forms are added;
 \item the explore and restore forms are changed;
@@ -287,10 +290,10 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\terminal{connect} \terminal{(} \nonterminal{condef}+ \terminal{)}}
   \altrule{\terminal{pair} \terminal{(} \nonterminal{pairdef}+ \terminal{)}}
   \altrule{\terminal{explore} \terminal{(} \nonterminal{fgRef}
-    \nonterminal{outputform}? \terminal{)}}
+    \nonterminal{model filter}? \nonterminal{outputform}? \terminal{)}}
   \altrule{\terminal{exploreLV} \terminal{(} \nonterminal{fgRef}
-    \nonterminal{outputform}? \nonterminal{jobs}? \nonterminal{time limit}?
-    \nonterminal{backtrack size}? \terminal{)}}
+    \nonterminal{model filter}? \nonterminal{outputform}?
+    \nonterminal{time limit}? \nonterminal{backtrack size}? \terminal{)}}
   \altrule{\terminal{restore} \terminal{(} \token{STRING}
     \nonterminal{outputform}? \terminal{)}}
   \altrule{\terminal{source} \terminal{(} \token{STRING} \terminal{)}}
@@ -333,18 +336,19 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\nonterminal{residueRef} \nonterminal{queryexp} \nonterminal{residueRef}
     \nonterminal{queryexp} \nonterminal{queryexp} \nonterminal{sampling}}
 \end{grammarrule}
-\begin{grammarrule}{sampling}{\token{INTEGER} \terminal{\%}}
+\begin{grammarrule}{sampling}{\token{FLOAT} \terminal{\%}}
   \altrule{\token{INTEGER}}
+\end{grammarrule}
+\begin{grammarrule}{model filter}{\terminal{rmsd} \terminal{(} \token{INTEGER}
+    \terminal{align}? \nonterminal{atomset}? \terminal{no\_\,hydrogen}? 
+    \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{outputform}{\terminal{file\_pdb} \terminal{(}
     \token{STRING} \terminal{zipped}? \terminal{)}}
   \altrule{\terminal{file\_bin} \terminal{(} \token{STRING}
     \terminal{zipped}? \terminal{)}}
   \altrule{\terminal{socket\_bin} \terminal{(} \token{STRING}
-    \token{INTEGER} \terminal{)}}
-\end{grammarrule}
-\begin{grammarrule}{jobs}{\terminal{jobs} \terminal{(} \token{INTEGER}
-  \terminal{)}}
+    \token{INTEGER} \token{STRING} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{time limit}{\terminal{time\_\,limit} \terminal{(}
     \nonterminal{timelimit}+ \terminal{)}}
@@ -422,14 +426,12 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\terminal{!} \nonterminal{querynotexp}}
 \end{grammarrule}
 \begin{grammarrule}{queryidentexp}{\token{IDENT}}
-  \altrule{\terminal{any}}
   \altrule{\terminal{(} \nonterminal{queryorexp} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{fgexp}{\terminal{backtrack} \terminal{(} \nonterminal{fgRef}?
     \nonterminal{res\_\,place}+ \terminal{)}}
   \altrule{\terminal{cache} \terminal{(} \nonterminal{fgRef}
-    \terminal{align}? \nonterminal{rmsd}? \nonterminal{atomset}?
-    \terminal{no\_\,hydrogen}? \terminal{)}}
+    \nonterminal{model filter} \terminal{)}}
   \altrule{\terminal{library} \terminal{(} \nonterminal{inputform}
     \nonterminal{libopt}* \terminal{)}}
 \end{grammarrule}
@@ -438,13 +440,11 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\terminal{place} \terminal{(} \nonterminal{residueRef}
     \nonterminal{residueRef} \nonterminal{fgRef} \terminal{)}}
 \end{grammarrule}
-\begin{grammarrule}{rmsd}{\terminal{rmsd\_\,bound} \token{FLOAT}}
-\end{grammarrule}
 \begin{grammarrule}{inputform}{\terminal{file\_pdb} \terminal{(}
     \token{STRING} \terminal{)}}
   \altrule{\terminal{file\_bin} \terminal{(} \token{STRING} \terminal{)}}
   \altrule{\terminal{socket\_bin} \terminal{(} \token{STRING}
-    \token{INTEGER} \terminal{)}}
+    \token{INTEGER} \token{STRING} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{libopt}{\terminal{strip} \terminal{(}
     \nonterminal{residueRef}+ \terminal{)}}

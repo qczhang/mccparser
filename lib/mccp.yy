@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Tue Dec  4 14:52:06 2001
- * Update Count     : 12
+ * Last Modified On : Thu Dec 20 09:48:09 2001
+ * Update Count     : 13
  * Status           : Ok.
  */
 
@@ -95,7 +95,6 @@ fileName_pdb return TOK_PDB;
 file_bin     return TOK_FILE_BINARY;
 file_pdb     return TOK_FILE_PDB;
 fixed_distance return TOK_FIXEDDIST;
-jobs         return TOK_JOBS;
 library      return TOK_LIBRARY;
 new_tag      return TOK_NEWTAG;
 no_hydrogen  return TOK_NOHYDRO;
@@ -114,7 +113,7 @@ reset        return TOK_RESET;
 reset_db     return TOK_RESETDB;
 residue      return TOK_RESIDUE;
 restore      return TOK_RESTORE;
-rmsd_bound   return TOK_RMSDBOUND;
+rmsd         return TOK_RMSD;
 sequence     return TOK_SEQUENCE;
 socket_bin   return TOK_SOCKET_BINARY;
 source       return TOK_SOURCE;

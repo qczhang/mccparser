@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Dec  4 14:52:02 2001
-// Update Count     : 18
+// Last Modified On : Thu Dec 20 09:48:16 2001
+// Update Count     : 19
 // Status           : Ok.
 // 
 
@@ -179,6 +179,12 @@ struct MccPStruct
   MccPStruct (const MccPStruct &right) { }
   
   /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccPStruct* clone () const = 0;
+
+  /**
    * Destroys the structure.  Nothing to do.
    */
   virtual ~MccPStruct () { }
@@ -190,17 +196,11 @@ struct MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccPStruct& operator= (const MccPStruct &right) { return *this; }
+  MccPStruct& operator= (const MccPStruct &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
   
   // METHODS --------------------------------------------------------------
-
-  /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  virtual MccPStruct* clone () const = 0;
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -497,6 +497,64 @@ public:
    */
   void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
+
+
+
+/**
+ * @short Struct representing the abstract model filter strategy.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccModelFilterStrategy
+{
+
+public:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccModelFilterStrategy () { }
+  
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccModelFilterStrategy* clone () const = 0;
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccModelFilterStrategy () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor) = 0;
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const = 0;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
+};  
 
 
 
@@ -2346,49 +2404,30 @@ struct MccCacheExpr : public MccFGExp
    * The FG structure to cache.
    */
   MccFragGenStruc *fgref;
+
+  /**
+   * The model cache.
+   */
+  MccModelFilterStrategy *filter;
   
-  /**
-   * The rms bound under wich a FG is not kept.
-   */
-  float rms_bound;
-
-  /**
-   * The set of atoms used to calculate the rms.
-   */
-  MccAS atom_set;
-
-  /**
-   * The options on the atom set.
-   */
-  MccAS atom_set_opt;
-
-  /**
-   * The variable specifying if Align is made.
-   */
-  bool align;
-
+protected:
   
   // LIFECYCLE ------------------------------------------------------------
 
-private:
   /**
    * Initializes the object.  It should never be used.
    */
   MccCacheExpr () { }
+
 public:
 
   /**
    * Initializes the object.
    * @param f the FG structure to cache.
-   * @param rms the rms bound under wich a FG is not kept.
-   * @param as the atom set used to calculate the rms.
-   * @param aso the options on the atom set.
-   * @param al the variable specifying if Align is made.
+   * @param c the model filter structure.
    */
-  MccCacheExpr (MccFragGenStruc *f, float rms, MccAS as, MccAS aso,
-	      bool al)
-    : fgref (f), rms_bound (rms), atom_set (as), atom_set_opt (aso),
-      align (al) { }
+  MccCacheExpr (MccFragGenStruc *f, MccModelFilterStrategy *c)
+    : fgref (f), filter (c) { }
 
   /**
    * Initializes the object with the rights content.
@@ -2399,7 +2438,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccCacheExpr () { delete fgref; }
+  virtual ~MccCacheExpr () { delete fgref; delete filter; }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -3282,7 +3321,7 @@ public:
 
 /**
  * @short Class representing the file option on AST nodes "explore" and
- * "restore" 
+ * "restore".
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
@@ -3976,27 +4015,35 @@ struct MccExploreStat : public MccPStruct
   MccFragGenStruc *fg_struc;
 
   /**
+   * The model cache.
+   */
+  MccModelFilterStrategy *filter;
+
+  /**
    * The explore output file structure.
    */
   MccOutputMode *expOutput;
   
-
+protected:
+  
   // LIFECYCLE ------------------------------------------------------------
 
-private:
   /**
    * Initializes the object.  It should never be used.
    */
   MccExploreStat () { }
+  
 public:
 
   /**
    * Initializes the object.
    * @param fg the FG struct to explore.
+   * @param mc the model cache.
    * @param ef the explore output file structure.
    */
-  MccExploreStat (MccFragGenStruc* fg, MccOutputMode *ef)
-    : fg_struc (fg), expOutput (ef) { }
+  MccExploreStat (MccFragGenStruc* fg, MccModelFilterStrategy *f,
+		  MccOutputMode *ef)
+    : fg_struc (fg), filter (f), expOutput (ef) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4005,9 +4052,22 @@ public:
   MccExploreStat (const MccExploreStat &right);
 
   /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccExploreStat* clone () const { return new MccExploreStat (*this); }
+    
+  /**
    * Destroys the object.
    */
-  virtual ~MccExploreStat () { delete fg_struc; if (expOutput) delete expOutput; }
+  virtual ~MccExploreStat ()
+  {
+    delete fg_struc;
+    if (filter)
+      delete filter;
+    if (expOutput)
+      delete expOutput;
+  }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4022,12 +4082,6 @@ public:
   
   // METHODS --------------------------------------------------------------
 
-  /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  virtual MccExploreStat* clone () const { return new MccExploreStat (*this); }
-    
   /**
    * Accepts the visitor and calls it on itself.
    * @param visitor the visitor.
@@ -4065,14 +4119,14 @@ struct MccExploreLVStat : public MccPStruct
   MccFragGenStruc *fg_struc;
 
   /**
+   * The model cache.
+   */
+  MccModelFilterStrategy *filter;
+
+  /**
    * The explore output file structure.
    */
   MccOutputMode *expOutput;
-
-  /**
-   * The number of processes in parallel exploration.
-   */
-  int jobs;
 
   /**
    * vector of time limits (sec)
@@ -4103,13 +4157,16 @@ public:
   /**
    * Initializes the object.
    * @param fg the FG struct to explore.
+   * @param mc the model cache.
    * @param ef the output mode structure.
    * @param bs size of the backtrack phase
    * @param tl exploration time limits
    */
-  MccExploreLVStat (MccFragGenStruc* fg, MccOutputMode *ef, 
-		    int j, vector< int > *tl, MccBacktrackSize *bs);
-
+  MccExploreLVStat (MccFragGenStruc *fg,
+		    MccModelFilterStrategy *f,
+		    MccOutputMode *ef, 
+		    vector< int > *tl,
+		    MccBacktrackSize *bs);
 
   /**
    * Initializes the object with the rights content.
@@ -4130,6 +4187,8 @@ public:
   virtual ~MccExploreLVStat () 
   {
     delete fg_struc;
+    if (filter)
+      delete filter;
     if (expOutput)
       delete expOutput; 
     if (btsize)
@@ -5731,6 +5790,111 @@ public:
 
 
 
+/**
+ * @short Struct representing the rmsd filter cache.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccRmsdModelFilterStrategy : public MccModelFilterStrategy
+{
+  /**
+   * The rms bound.
+   */
+  float rmsBound;
+
+  /**
+   * The align flag.
+   */
+  bool alignFlag;
+
+  /**
+   * The set of atoms used to calculate the rms.
+   */
+  MccAS atom_set;
+
+  /**
+   * The options on the atom set.
+   */
+  MccAS atom_set_opt;
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+  
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccRmsdModelFilterStrategy () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param rb the rms bound.
+   * @param af the align flag.
+   * @param as the atom filter.
+   * @param aso the atom filter option.
+   */
+  MccRmsdModelFilterStrategy (float rb, bool af, MccAS as, MccAS aso)
+    : rmsBound (rb), alignFlag (af), atom_set (as), atom_set_opt (aso) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccRmsdModelFilterStrategy (const MccRmsdModelFilterStrategy &right)
+    : rmsBound (right.rmsBound),
+      alignFlag (right.alignFlag),
+      atom_set (right.atom_set),
+      atom_set_opt (right.atom_set_opt)
+  { }
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccModelFilterStrategy* clone () const { return new MccRmsdModelFilterStrategy (*this); }
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccRmsdModelFilterStrategy () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccRmsdModelFilterStrategy& operator= (const MccRmsdModelFilterStrategy &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};  
+
 
 
 /**
@@ -6509,7 +6673,7 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccLibraryExpr *struc) = 0;
-  
+
   /**
    * Visits the MccNewTagStat structure.
    * @param struc the evaluated structure.
@@ -6593,6 +6757,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccRestoreStat *struc) = 0;
+  
+  /**
+   * Visits the MccRmsdModelFilterStrategy structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccRmsdModelFilterStrategy *struc) = 0;
   
   /**
    * Visits the MccSamplingSize structure.

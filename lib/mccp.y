@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Tue Dec  4 14:52:04 2001
- * Update Count     : 14
+ * Last Modified On : Thu Dec 20 09:48:07 2001
+ * Update Count     : 15
  * Status           : Ok.
  */
 
@@ -69,6 +69,7 @@
   vector< int > *tlv;
   MccSamplingSize *smpls;
   cutoffs *ctfs;
+  MccModelFilterStrategy *mf;
 }
 
 
@@ -130,7 +131,7 @@
 %token TOK_RESETDB
 %token TOK_RESIDUE
 %token TOK_RESTORE
-%token TOK_RMSDBOUND
+%token TOK_RMSD
 %token TOK_SAMPLINGFACT
 %token TOK_SEQUENCE
 %token TOK_SOCKET_BINARY
@@ -173,8 +174,8 @@
 %type <mccval> restore
 %type <expo> output_mode_opt
 %type <expo> output_mode
-%type <intval> jobs_opt
-%type <intval> jobs
+%type <mf> model_filter_opt
+%type <mf> model_filter
 %type <tlv>  timelimit_opt
 %type <tlv>  timelimit_exp
 %type <tlv>  timelimit_plus
@@ -237,7 +238,6 @@
 %type <bts> res_place
 %type <fgs> cacheexp
 %type <boolval> align_opt
-%type <floatval> rmsd_opt
 %type <fgs> libraryexp
 %type <inmo> input_mode
 %type <lsv> libopt_star
@@ -398,9 +398,9 @@ pairdef:   residueRef residueRef queryexp sampling
 ;
 
 
-explore:   TOK_EXPLORE TOK_LPAREN fgRef output_mode_opt TOK_RPAREN
+explore:   TOK_EXPLORE TOK_LPAREN fgRef model_filter_opt output_mode_opt TOK_RPAREN
             {
-	      $$ = new MccExploreStat ($3, $4);
+	      $$ = new MccExploreStat ($3, $4, $5);
 	    }
 ;
 
@@ -412,7 +412,7 @@ restore:   TOK_RESTORE TOK_LPAREN TOK_STRING output_mode_opt TOK_RPAREN
 ;
 
 
-exploreLV: TOK_EXPLORELV TOK_LPAREN fgRef output_mode_opt jobs_opt timelimit_opt backtracksize_opt TOK_RPAREN
+exploreLV: TOK_EXPLORELV TOK_LPAREN fgRef model_filter_opt output_mode_opt timelimit_opt backtracksize_opt TOK_RPAREN
             {
 	      $$ = new MccExploreLVStat ($3, $4, $5, $6, $7);
 	    }
@@ -420,9 +420,24 @@ exploreLV: TOK_EXPLORELV TOK_LPAREN fgRef output_mode_opt jobs_opt timelimit_opt
 
 
 
+model_filter_opt: /* empty */ { $$ = 0; }
+                  | model_filter { $$ = $1 }
+;
+
+
+
+model_filter: TOK_RMSD TOK_LPAREN flt align_opt atomset_opt atomsetopt_opt TOK_RPAREN
+             {
+	       $$ = new MccRmsdModelFilterStrategy ($3, $4, $5, $6);
+	     }
+;
+
+
+
 output_mode_opt:   /* empty */ { $$ = 0; }
                    | output_mode { $$ = $1; }
 ;
+
 
 
 output_mode:   /* deprecated */
@@ -445,21 +460,11 @@ output_mode:   /* deprecated */
 ;
 
 
-jobs_opt:  /* empty */ { $$ = 1; }
-          | jobs { $$ = $1; }
-;
-
-
-
-jobs:  TOK_JOBS TOK_LPAREN TOK_INTEGER TOK_RPAREN
-       { $$ = $3; }
-;
-
-
 
 timelimit_opt:  /* empty */ { $$ = 0; }
                | timelimit_exp { $$ = $1; }
 ;
+
 
 
 timelimit_exp:   TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN
@@ -905,20 +910,15 @@ res_place:  TOK_LPAREN residueRef residueRef_star TOK_RPAREN
 ;
 
 
-cacheexp:   TOK_CACHE TOK_LPAREN fgRef align_opt rmsd_opt atomset_opt atomsetopt_opt TOK_RPAREN
+cacheexp:   TOK_CACHE TOK_LPAREN fgRef model_filter TOK_RPAREN
              {
-	       $$ = new MccCacheExpr ($3, $5, $6, $7, $4);
+	       $$ = new MccCacheExpr ($3, $4);
 	     }
 ;
 
 
 align_opt:   /* empty */ { $$ = false; }
            | TOK_ALIGN { $$ = true; }
-;
-
-
-rmsd_opt:   /* empty */ { $$ = 0; }
-          | TOK_RMSDBOUND flt { $$ = $2; }
 ;
 
 

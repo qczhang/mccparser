@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Dec  4 14:51:57 2001
-// Update Count     : 12
+// Last Modified On : Thu Dec 20 09:48:12 2001
+// Update Count     : 13
 // Status           : Ok.
 // 
 
@@ -1136,11 +1136,8 @@ MccBacktrackExpr::ppdisplay (ostream &os, int indent) const
 
 
 MccCacheExpr::MccCacheExpr (const MccCacheExpr &right)
-  : fgref (new MccFragGenStruc (*right.fgref)),
-    rms_bound (right.rms_bound),
-    atom_set (right.atom_set),
-    atom_set_opt (right.atom_set_opt),
-    align (right.align)
+  : fgref (right.fgref->clone ()),
+    filter (right.filter->clone ())
 { }
 
 
@@ -1151,11 +1148,9 @@ MccCacheExpr::operator= (const MccCacheExpr &right)
   if (this != &right)
     {
       delete fgref;
-      fgref = new MccFragGenStruc (*right.fgref);
-      rms_bound = right.rms_bound;
-      atom_set = right.atom_set;
-      atom_set_opt = right.atom_set_opt;
-      align = right.align;
+      fgref = right.fgref->clone ();
+      delete filter;
+      filter = right.filter->clone ();
     }
   return *this;
 }
@@ -1175,29 +1170,8 @@ MccCacheExpr::display (ostream &os) const
 {
   os << "cache (";
   fgref->display (os);
-  if (align)
-    os << " align";
-  if (rms_bound != 0.0)
-    os << " rmsd_bound " << rms_bound;
-  switch (atom_set)
-    {
-    case MCC_ALL_AS:
-      os << " all";
-      break;
-    case MCC_BASE_AS:
-      os << " base_only";
-      break;
-    case MCC_BACKBONE_AS:
-      os << " backbone_only";
-      break;
-    case MCC_PSE_AS:
-      os << " pse_only";
-      break;
-    default:
-      break;
-    }
-  if (atom_set_opt == MCC_NO_HYDROGEN)
-    os << " no_hydrogen";
+  os << " ";
+  filter->display (os);
   os << ')';
 }
 
@@ -1208,29 +1182,9 @@ MccCacheExpr::ppdisplay (ostream &os, int indent) const
 {
   os << "cache (";
   fgref->ppdisplay (os, indent);
-  if (align)
-    os << " align";
-  if (rms_bound != 0.0)
-    os << " rmsd_bound " << rms_bound;
-  switch (atom_set)
-    {
-    case MCC_ALL_AS:
-      os << " all";
-      break;
-    case MCC_BASE_AS:
-      os << " base_only";
-      break;
-    case MCC_BACKBONE_AS:
-      os << " backbone_only";
-      break;
-    case MCC_PSE_AS:
-      os << " pse_only";
-      break;
-    default:
-      break;
-    }
-  if (atom_set_opt == MCC_NO_HYDROGEN)
-    os << " no_hydrogen";
+  os << endl;
+  whitespaces (os, indent + 4);
+  filter->ppdisplay (os, indent);
   os << ')' << endl;
 }
 
@@ -1881,10 +1835,10 @@ MccFilePdbOutput::Accept (MccVisitor *visitor)
 void
 MccFilePdbOutput::display (ostream &os) const
 {
-  os << "file_pdb (\"" << form;
+  os << "file_pdb (\"" << form << "\"";
   if (zipped)
     os << " zipped";
-  os << "\")";
+  os << ")";
 }
 
 
@@ -1921,10 +1875,10 @@ MccFileBinaryOutput::Accept (MccVisitor *visitor)
 void
 MccFileBinaryOutput::display (ostream &os) const
 {
-  os << "file_bin (\"" << form;
+  os << "file_bin (\"" << form << "\"";
   if (zipped)
     os << " zipped";
-  os << "\")";
+  os << ")";
 }
 
 
@@ -2083,8 +2037,11 @@ MccSocketBinaryInput::display (ostream &os) const
 
 MccExploreStat::MccExploreStat (const MccExploreStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc)),
+    filter (0),
     expOutput (0)
 {
+  if (right.filter)
+    filter = right.filter->clone ();
   if (right.expOutput)
     expOutput = right.expOutput->clone ();
 }
@@ -2098,6 +2055,13 @@ MccExploreStat::operator= (const MccExploreStat &right)
     {
       delete fg_struc;
       fg_struc = right.fg_struc->clone ();
+      if (filter)
+	{
+	  delete filter;
+	  filter = 0;
+	}
+      if (right.filter)
+	filter = right.filter->clone ();
       if (expOutput)
 	{
 	  delete expOutput;
@@ -2124,6 +2088,11 @@ MccExploreStat::display (ostream &os) const
 {
   os << "explore (";
   fg_struc->display (os);
+  if (filter)
+    {
+      os << ' ';
+      filter->display (os);
+    }
   if (expOutput)
     {
       os << ' ';
@@ -2138,28 +2107,38 @@ void
 MccExploreStat::ppdisplay (ostream &os, int indent) const
 {
   os << "explore" << endl;
-  whitespaces (os, indent + 2);
+  whitespaces (os, indent);
   os << '(' << endl;
-  whitespaces (os, indent + 4);
-  fg_struc->ppdisplay (os, indent + 4);
+  whitespaces (os, indent + 2);
+  fg_struc->ppdisplay (os, indent + 2);
+  if (filter)
+    {
+      os << endl;
+      whitespaces (os, indent + 2);
+      filter->ppdisplay (os, indent + 2);
+    }
   if (expOutput)
     {
       os << endl;
-      whitespaces (os, indent + 4);
-      expOutput->ppdisplay (os, indent + 4);
+      whitespaces (os, indent + 2);
+      expOutput->ppdisplay (os, indent + 2);
     }
   os << endl;
-  whitespaces (os, indent + 2);
+  whitespaces (os, indent);
   os << ')' << endl;
 }
 
 
 
-MccExploreLVStat::MccExploreLVStat (MccFragGenStruc *fg, MccOutputMode *ef,
-				    int j, vector< int > *tl,
+MccExploreLVStat::MccExploreLVStat (MccFragGenStruc *fg,
+				    MccModelFilterStrategy *f,
+				    MccOutputMode *ef,
+				    vector< int > *tl,
 				    MccBacktrackSize *bs)
-  : MccPStruct (), fg_struc (fg), expOutput (ef),
-    jobs (j),
+  : MccPStruct (),
+    fg_struc (fg),
+    filter (f),
+    expOutput (ef),
     vtlimits (tl),
     tlimit (-1),
     btsize (bs)
@@ -2179,12 +2158,14 @@ MccExploreLVStat::MccExploreLVStat (MccFragGenStruc *fg, MccOutputMode *ef,
 MccExploreLVStat::MccExploreLVStat (const MccExploreLVStat &right)
   : MccPStruct (right),
     fg_struc (right.fg_struc->clone ()),
+    filter (0),
     expOutput (0),
-    jobs (right.jobs),
     vtlimits (0),
     tlimit (-1),
     btsize (0)
 {
+  if (right.filter)
+    filter = right.filter->clone ();
   if (right.expOutput)
     expOutput = right.expOutput->clone ();
   if (right.btsize)
@@ -2206,6 +2187,13 @@ MccExploreLVStat::operator= (const MccExploreLVStat &right)
       MccPStruct::operator= (right);
       delete fg_struc;
       fg_struc = right.fg_struc->clone ();
+      if (filter)
+	{
+	  delete filter;
+	  filter = 0;
+	}
+      if (right.filter)
+	filter = right.filter->clone ();
       if (expOutput)
 	{
 	  delete expOutput;
@@ -2213,7 +2201,6 @@ MccExploreLVStat::operator= (const MccExploreLVStat &right)
 	}
       if (right.expOutput)
 	expOutput = right.expOutput->clone ();
-      jobs = right.jobs;
       if (vtlimits)
         {
 	  delete vtlimits;
@@ -2251,13 +2238,16 @@ MccExploreLVStat::display (ostream &os) const
 {
   os << "exploreLV (";
   fg_struc->display (os);
+  if (filter)
+    {
+      os << ' ';
+      filter->display (os);
+    }
   if (expOutput)
     {
       os << ' ';
       expOutput->display (os);
     }
-  if (jobs != 1)
-    os << " jobs (" << jobs << ')';
   if (vtlimits)
     os << " time_limit (" << tlimit << " sec)";
   if (btsize)
@@ -2275,36 +2265,36 @@ void
 MccExploreLVStat::ppdisplay (ostream &os, int indent) const
 {
   os << "exploreLV" << endl;
-  whitespaces (os, indent + 2);
+  whitespaces (os, indent);
   os << '(' << endl;
-  whitespaces (os, indent + 4);
-  fg_struc->ppdisplay (os, indent + 4);
+  whitespaces (os, indent + 2);
+  fg_struc->ppdisplay (os, indent + 2);
+  if (filter)
+    {
+      os << endl;
+      whitespaces (os, indent + 2);
+      filter->ppdisplay (os, indent + 2);
+    }
   if (expOutput)
     {
       os << endl;
-      whitespaces (os, indent + 4);
-      expOutput->ppdisplay (os, indent + 4);
-    }
-  if (jobs != 1)
-    {
-      os << endl;
-      whitespaces (os, indent + 4);
-      os << " jobs (" << jobs << ')';
+      whitespaces (os, indent + 2);
+      expOutput->ppdisplay (os, indent + 2);
     }
   if (vtlimits)
     {
       os << endl;
-      whitespaces (os, indent + 4);
-      os << " time_limit (" << tlimit << " sec)";
+      whitespaces (os, indent + 2);
+      os << "time_limit (" << tlimit << " sec)";
     }
   if (btsize)
     {
       os << endl;
-      whitespaces (os, indent + 4);
-      btsize->ppdisplay (os, indent + 4);
+      whitespaces (os, indent + 2);
+      btsize->ppdisplay (os, indent + 2);
     }
   os << endl;
-  whitespaces (os, indent + 2);
+  whitespaces (os, indent);
   os << ')' << endl;
 }
 
@@ -3321,6 +3311,67 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
   os << endl;
   whitespaces (os, indent + 2);
   os << ')' << endl;
+}
+
+
+
+MccRmsdModelFilterStrategy&
+MccRmsdModelFilterStrategy::operator= (const MccRmsdModelFilterStrategy &right)
+{
+  if (this != &right)
+    {
+      rmsBound = right.rmsBound;
+      alignFlag = right.alignFlag;
+      atom_set = right.atom_set;
+      atom_set_opt = right.atom_set_opt;
+    }
+  return *this;
+}
+
+
+
+void
+MccRmsdModelFilterStrategy::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccRmsdModelFilterStrategy::display (ostream &os) const
+{
+  os << "rmsd (" << rmsBound;
+  if (alignFlag)
+    os << " align";
+  switch (atom_set)
+    {
+    case MCC_ALL_AS:
+      os << " all";
+      break;
+    case MCC_BASE_AS:
+      os << " base_only";
+      break;
+    case MCC_BACKBONE_AS:
+      os << " backbone_only";
+      break;
+    case MCC_PSE_AS:
+      os << " pse_only";
+      break;
+    default:
+      break;
+    }
+  if (atom_set_opt == MCC_NO_HYDROGEN)
+    os << " no_hydrogen";
+  os << ")";
+}
+
+
+
+void
+MccRmsdModelFilterStrategy::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
 }
 
 
