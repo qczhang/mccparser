@@ -4,8 +4,8 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Thu Sep 14 13:30:24 2000
-%% Update Count     : 7
+%% Last Modified On : Thu Sep 14 14:49:44 2000
+%% Update Count     : 8
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -371,7 +371,7 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\terminal{(} \nonterminal{queryorexp} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{fgexp}{\terminal{backtrack} \terminal{(} \nonterminal{fgRef}?
-    \nonterminal{res\_\,place} \terminal{)}}
+    \nonterminal{res\_\,place}+ \terminal{)}}
   \altrule{\terminal{cache} \terminal{(} \nonterminal{fgRef}
     \terminal{align}? \nonterminal{rmsd}? \nonterminal{atomset}?
     \terminal{no\_\,hydrogen}? \terminal{)}}
