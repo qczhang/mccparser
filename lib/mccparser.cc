@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Aug 31 14:49:42 2000
-// Update Count     : 2
+// Last Modified On : Tue Sep  5 13:36:16 2000
+// Update Count     : 3
 // Status           : Ok.
 // 
 
@@ -19,7 +19,18 @@
 vector< MccPStruct* > *astv;
 
 
+
 bool interactive_parser;
+
+
+
+const MccFGExp&
+MccFGExp::operator= (const MccFGExp &right)
+{
+  if (this != &right)
+    MccPStruct::operator= (right);
+  return *this;
+}
 
 
 
@@ -709,7 +720,7 @@ MccBacktrackExpr::_PlaceStruc::display (ostream &os) const
 
 
 MccBacktrackExpr::MccBacktrackExpr (const MccBacktrackExpr &right)
-  : MccPStruct (right),
+  : MccFGExp (right),
     strucs (new vector< MccBacktrackExpr::_GenBTStruc* > ())
 {
   vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
@@ -739,7 +750,7 @@ MccBacktrackExpr::operator= (const MccBacktrackExpr &right)
       vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
       vector< MccBacktrackExpr::_GenBTStruc* >::iterator it;
 
-      MccPStruct::operator= (right);
+      MccFGExp::operator= (right);
       
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -770,7 +781,7 @@ MccBacktrackExpr::display (ostream &os) const
 
 
 MccCacheExpr::MccCacheExpr (const MccCacheExpr &right)
-  : MccPStruct (right),
+  : MccFGExp (right),
     fgref (new MccFragGenStruc (*right.fgref)),
     rms_bound (right.rms_bound),
     atom_set (right.atom_set),
@@ -785,7 +796,7 @@ MccCacheExpr::operator= (const MccCacheExpr &right)
 {
   if (this != &right)
     {
-      MccPStruct::operator= (right);
+      MccFGExp::operator= (right);
       delete fgref;
       fgref = new MccFragGenStruc (*right.fgref);
       rms_bound = right.rms_bound;
@@ -1404,7 +1415,7 @@ MccLibraryExpr::_ChangeIdStruc::operator= (const MccLibraryExpr::_ChangeIdStruc 
 
 
 MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
-  : MccPStruct (right),
+  : MccFGExp (right),
     strucs (new vector< MccLibraryExpr::_LibStruc* > ())
 {
   vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
@@ -1437,7 +1448,7 @@ MccLibraryExpr::operator= (const MccLibraryExpr &right)
       vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
       vector< MccLibraryExpr::_LibStruc* >::iterator it;
 
-      MccPStruct::operator= (right);
+      MccFGExp::operator= (right);
       str = new char[strlen (right.str) + 1];
       strcpy (str, right.str);
       for (it = strucs->begin (); it != strucs->end (); it++)

@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Aug 31 14:48:21 2000
-// Update Count     : 4
+// Last Modified On : Tue Sep  5 13:36:24 2000
+// Update Count     : 5
 // Status           : Ok.
 // 
 
@@ -128,6 +128,64 @@ struct MccPStruct
    * @return a copy of the current object.
    */
   virtual MccPStruct* Copy () const { return new MccPStruct (*this); }
+  
+  // I/O ------------------------------------------------------------------
+
+  /**
+   * Displays the script.  It normally never reaches this method.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const { }
+};
+
+
+
+/**
+ * @short Parent structure for the fragment generator expressions.
+ *
+ * These structures are used for building an abstract syntax tree for the
+ * fg expressions.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccFGExp : public MccPStruct
+{
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the structure.  Nothing to do.
+   */
+  MccFGExp () : MccPStruct () { }
+
+  /**
+   * Initializes the struct with the rights contents.
+   * @param right the object to copy.
+   */
+  MccFGExp (const MccFGExp &right) : MccPStruct () { }
+  
+  /**
+   * Destructs the structure.  Nothing to do.
+   */
+  virtual ~MccFGExp () { }
+
+  //OPERATORS -------------------------------------------------------------
+
+  /**
+   * Assigns the rights content in the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual const MccFGExp& operator= (const MccFGExp &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccFGExp* Copy () const { return new MccFGExp (*this); }
   
   // I/O ------------------------------------------------------------------
 
@@ -1375,7 +1433,7 @@ public:
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccBacktrackExpr : public MccPStruct
+struct MccBacktrackExpr : public MccFGExp
 {
   /**
    * @short Parent struct for the MccBacktrackExpr sub-structures.
@@ -1669,14 +1727,14 @@ struct MccBacktrackExpr : public MccPStruct
    * Initializes the object.
    */
   MccBacktrackExpr ()
-    : MccPStruct (), strucs (new vector< _GenBTStruc* > ()) { }
+    : MccFGExp (), strucs (new vector< _GenBTStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param s the vector containing the different backtrack sub-structures.
    */
   MccBacktrackExpr (vector< _GenBTStruc* > *s)
-    : MccPStruct (), strucs (s) { }
+    : MccFGExp (), strucs (s) { }
 
   /**
    * Initializes the object with the rights content.
@@ -1758,7 +1816,7 @@ struct MccBacktrackExpr : public MccPStruct
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccCacheExpr : public MccPStruct
+struct MccCacheExpr : public MccFGExp
 {
   /**
    * The FG structure to cache.
@@ -1792,7 +1850,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccCacheExpr () : MccPStruct () { }
+  MccCacheExpr () : MccFGExp () { }
 public:
 
   /**
@@ -2692,7 +2750,7 @@ public:
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccLibraryExpr : public MccPStruct
+struct MccLibraryExpr : public MccFGExp
 {
   /**
    * @short Parent struct for the MccLibraryExpr sub-structures.
@@ -2916,7 +2974,8 @@ struct MccLibraryExpr : public MccPStruct
    * Initializes the object.
    * @param s the C form representing the name and path of the library.
    */
-  MccLibraryExpr (char *s) : str (s), strucs (new vector< _LibStruc* > ()) { }
+  MccLibraryExpr (char *s)
+    : MccFGExp (), str (s), strucs (new vector< _LibStruc* > ()) { }
 
   /**
    * Initializes the object.
@@ -2924,7 +2983,7 @@ struct MccLibraryExpr : public MccPStruct
    * @param lsv the vector containing the library sub-structures.
    */
   MccLibraryExpr (char *s, vector< _LibStruc* > *lsv)
-    : str (s), strucs (lsv) { }
+    : MccFGExp (), str (s), strucs (lsv) { }
 
   /**
    * Initializes the object with the rights content.

@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Tue Sep  5 11:58:17 2000
- * Update Count     : 4
+ * Last Modified On : Tue Sep  5 13:36:11 2000
+ * Update Count     : 5
  * Status           : Ok.
  */
 
@@ -60,6 +60,7 @@
   vector< MccResidueName* > *rrv;
   MccResidueName *rr;
   MccFragGenStruc *fgr;
+  MccFGExp *fgs
   MccExpfile *expf;
   cutoffs *ctfs;
 }
@@ -198,14 +199,14 @@
 %type <qfunc> querynotexp
 %type <qfunc> queryidentexp
 
-%type <mccval> fgexp
-%type <mccval> backtrackexp
+%type <fgs> fgexp
+%type <fgs> backtrackexp
 %type <btsv> res_place_plus
 %type <bts> res_place
-%type <mccval> cacheexp
+%type <fgs> cacheexp
 %type <boolval> align_opt
 %type <floatval> rmsd_opt
-%type <mccval> libraryexp
+%type <fgs> libraryexp
 %type <lsv> libopt_star
 %type <ls> libopt
 
