@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Labo Lbit
-// Last Modified On : Mon Jul  9 15:22:19 2001
-// Update Count     : 16
+// Last Modified On : Mon Jul  9 16:31:25 2001
+// Update Count     : 17
 // Status           : Ok.
 // 
 
@@ -375,20 +375,7 @@ public:
  */
 struct MccSamplingSize
 {
-//    /**
-//     * Contains either an absolute value or a proportion factor
-//     * of a set size
-//     */
-//    union
-//    {
     int absVal;    // absolute size
-//      float propFact;    // proportion of whole set
-//    };
-
-//    /**
-//     * Indicates if the current union value is a proportion.
-//     */
-//    bool isProp;
 
 protected:
 
@@ -408,7 +395,6 @@ public:
    * @param pflag flag indicating if ssize is a proportion or an absolute
    * value. 
    */
-//    MccSamplingSize (float ssize, bool pflag);
   MccSamplingSize (int ssize);
 
   /**
@@ -3042,84 +3028,6 @@ public:
 };
 
 
-/**
- * @short Struct representing the backtrack size option on AST nodes "exploreLV"
- *
- * @author Philippe Thibault  <thibaup@IRO.UMontreal.CA>
- */
-struct MccBacktrackSize
-{
-
-  /** maximum number of backtracked levels */
-  int maxBT;
-
-  /** maximum number of retries on same level */
-  int maxLR;
-
-
-  // LIFECYCLE ------------------------------------------------------------
-
-private:
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccBacktrackSize () { }
-public:
-
-  /**
-   * Initializes the object.
-   * @param bt max number of backtracked levels
-   * @param lr max number of retries on same level
-   */
-  MccBacktrackSize (int bt, int lr) : maxBT (bt), maxLR (lr) { }
-
-  /**
-   * Initializes the object with the rights content.
-   * @param right the object to copy.
-   */
-  MccBacktrackSize (const MccBacktrackSize &right) 
-    : maxBT (right.maxBT), maxLR (right.maxLR) { }
-
-  /**
-   * Destructs the object.
-   */
-  ~MccBacktrackSize () { }
-
-  // OPERATORS ------------------------------------------------------------
-
-  /**
-   * Assigns the right struct values to the object.
-   * @param right the struct to copy.
-   */
-  const MccBacktrackSize& operator= (const MccBacktrackSize &right);
-
-  // ACCESS ---------------------------------------------------------------
-  
-  // METHODS --------------------------------------------------------------
-
-  /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  MccBacktrackSize* Copy () const { return new MccBacktrackSize (*this); }
-    
-  // I/O  -----------------------------------------------------------------
-  
-  /**
-   * Displays the structure.
-   * @param os the output stream where the message is displayed.
-   */
-  void display (ostream &os) const;
-
-  /**
-   * Displays the script in human readable form.
-   * @param os the output stream used.
-   * @param ident the identation level.
-   */
-  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
-};
-
-
 
 /**
  * @short Struct representing the AST node "explore".
@@ -3202,108 +3110,6 @@ public:
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
-
-
-/**
- * @short Struct representing the AST node "exploreLV".
- *
- * @author Philippe Thibault <thibaup@iro.umontreal.ca>
- */
-struct MccExploreLVStat : public MccPStruct
-{
-  /**
-   * The FG struct to explore.
-   */
-  MccFragGenStruc *fg_struc;
-
-  /**
-   * The explore output file structure.
-   */
-  MccExpfile *efile;
-
-  /**
-   * Size of the backtrack phase
-   */
-  MccBacktrackSize *btsize;
-
-  /**
-   * vector of time limits (sec)
-   */
-  vector< int > *vtlimits;
-
-  /**
-   * Exploration time limit (sec)
-   */
-  int tlimit;
-
-  // LIFECYCLE ------------------------------------------------------------
-
-private:
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccExploreLVStat () : MccPStruct () { }
-public:
-
-  /**
-   * Initializes the object.
-   * @param fg the FG struct to explore.
-   * @param ef the explore output file structure.
-   * @param bs size of the backtrack phase
-   * @param tl exploration time limits
-   */
-  MccExploreLVStat (MccFragGenStruc* fg, MccExpfile *ef, 
-		    MccBacktrackSize *bs, vector< int > *tl);
-
-
-  /**
-   * Initializes the object with the rights content.
-   * @param right the object to copy.
-   */
-  MccExploreLVStat (const MccExploreLVStat &right);
-
-  /**
-   * Destructs the object.
-   */
-  virtual ~MccExploreLVStat () 
-  { delete fg_struc; if (efile) delete efile; 
-    if (btsize) delete btsize; if (vtlimits) delete vtlimits; }
-
-  // OPERATORS ------------------------------------------------------------
-
-  /**
-   * Assigns the rights content into the object.
-   * @param right the object to copy.
-   * @return itself.
-   */
-  virtual const MccExploreLVStat& operator= (const MccExploreLVStat &right);
-  
-  // ACCESS ---------------------------------------------------------------
- 
-
-  // METHODS --------------------------------------------------------------
-  
-  /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  virtual MccExploreLVStat* Copy () const { return new MccExploreLVStat (*this); }
-    
-  // I/O  -----------------------------------------------------------------
-  
-  /**
-   * Displays the structure.
-   * @param os the output stream where the message is displayed.
-   */
-  virtual void display (ostream &os) const;
-
-  /**
-   * Displays the script in human readable form.
-   * @param os the output stream used.
-   * @param ident the identation level.
-   */
-  virtual void ppdisplay (ostream &os, int indent = 0) const;
-};
 
 
 /**

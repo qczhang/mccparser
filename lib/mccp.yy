@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Labo Lbit
- * Last Modified On : Mon Jul  9 15:22:10 2001
- * Update Count     : 10
+ * Last Modified On : Mon Jul  9 16:31:21 2001
+ * Update Count     : 11
  * Status           : Ok.
  */
 
@@ -79,7 +79,6 @@ all          return TOK_ALLATOMS;
 angle        return TOK_ANGLE;
 backbone_only return TOK_BBATOMS;
 backtrack    return TOK_BACKTRACK;
- /*  backtrack_size return TOK_BACKTRACKSIZE; */
 base_only    return TOK_BASEATOMS;
 cache        return TOK_CACHE;
 change_id    return TOK_CHANGEID;
@@ -89,7 +88,6 @@ cycle        return TOK_CYCLE;
 display_fg   return TOK_DISPLAYFG;
 distance     return TOK_DISTANCE;
 explore      return TOK_EXPLORE;
- /*  exploreLV    return TOK_EXPLORELV; */
 fileName_pdb return TOK_PDB;
 fixed_distance return TOK_FIXEDDIST;
 library      return TOK_LIBRARY;
@@ -111,25 +109,14 @@ residue      return TOK_RESIDUE;
 restore      return TOK_RESTORE;
 rmsd_bound   return TOK_RMSDBOUND;
 sequence     return TOK_SEQUENCE;
- /*  sampling_factor   return TOK_SAMPLINGFACT; */
 source       return TOK_SOURCE;
 strip        return TOK_STRIP;
- /*  time_limit   return TOK_TIMELIMIT; */
 tfo          return TOK_TRANSFO;
 tfo_cutoff   return TOK_TFOCUT;
 torsion      return TOK_TORSION;
 vdw_distance return TOK_VDWDIST;
 version      return TOK_VERSION;
 zipped       return TOK_ZIPPED;
-
- /*  sec     return TOK_SEC; */
- /*  seconds return TOK_SEC; */
- /*  min     return TOK_MIN; */
- /*  minutes return TOK_MIN; */
- /*  hr      return TOK_HR; */
- /*  hours   return TOK_HR; */
- /*  days    return TOK_DAY; */
- /*  d       return TOK_DAY; */
 
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
@@ -143,7 +130,7 @@ zipped       return TOK_ZIPPED;
 					return TOK_ATOM;
                                       }
 
-[-_<>a-zA-Z][-_<>\'%\.\*a-zA-Z0-9]*  {
+[-_<>a-zA-Z][-_<>\'\.\*a-zA-Z0-9]*  {
                                        mcclval.textval = mcccopy (mcctext);
 				       return TOK_IDENT;
                                      }
@@ -206,7 +193,7 @@ zipped       return TOK_ZIPPED;
                              return TOK_IDENT;
                            }
 <QUERIES>file              return TOK_FILENAME;
-<QUERIES>[-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]* {
+<QUERIES>[-_<>a-zA-Z][-_<>\'\.a-zA-Z0-9]* {
                                              mcclval.textval = mcccopy (mcctext);
 					     return TOK_IDENT;
                                            }

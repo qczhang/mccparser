@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Labo Lbit
-// Last Modified On : Mon Jul  9 15:22:14 2001
-// Update Count     : 10
+// Last Modified On : Mon Jul  9 16:31:23 2001
+// Update Count     : 11
 // Status           : Ok.
 // 
 
@@ -1663,23 +1663,6 @@ MccExpfile::display (ostream &os) const
 }
 
 
-const MccBacktrackSize&
-MccBacktrackSize::operator= (const MccBacktrackSize &right)
-{
-  if (this != &right) 
-    {
-      maxBT = right.maxBT;
-      maxLR = right.maxLR;
-    }
-  return *this;
-}
-    
-void
-MccBacktrackSize::display (ostream &os) const
-{
-  os << "backtrack_size (" << maxBT << " " << maxLR << ")";
-}
-
 
 MccExploreStat::MccExploreStat (const MccExploreStat &right)
   : MccPStruct (right),
@@ -1747,132 +1730,6 @@ MccExploreStat::ppdisplay (ostream &os, int indent) const
   os << ')' << endl;
 }
 
-
-MccExploreLVStat::MccExploreLVStat (MccFragGenStruc* fg, MccExpfile *ef, 
-				    MccBacktrackSize *bs, vector< int > *tl)
-  : MccPStruct (), fg_struc (fg), efile (ef),
-    btsize (bs), vtlimits (tl), tlimit (-1)
-{
-  if (vtlimits)
-    {
-      vector< int >::const_iterator it;
-      tlimit = 0;
-      for (it = vtlimits->begin (); it != vtlimits->end (); it++)
-	tlimit += *it;
-    }
-}
-
-
-
-MccExploreLVStat::MccExploreLVStat (const MccExploreLVStat &right)
-  : MccPStruct (right),
-    fg_struc (new MccFragGenStruc (*right.fg_struc)),
-    efile (0), btsize (0), vtlimits (0), tlimit (-1)
-{
-  if (right.efile)
-    efile = new MccExpfile (*right.efile);
-  if (right.btsize)
-    btsize = new MccBacktrackSize (*right.btsize);
-  if (right.vtlimits)
-    {
-      vtlimits = new vector< int > (*right.vtlimits);
-      tlimit = right.tlimit;
-    }
-}
-
-
-
-const MccExploreLVStat&
-MccExploreLVStat::operator= (const MccExploreLVStat &right)
-{
-  if (this != &right)
-    {
-      MccPStruct::operator= (right);
-      delete fg_struc;
-      fg_struc = new MccFragGenStruc (*right.fg_struc);
-      if (efile)
-	{
-	  delete efile;
-	  efile = 0;
-	}
-      if (right.efile)
-	efile = new MccExpfile (*right.efile);
-      if (btsize)
-        {
-	  delete btsize;
-	  btsize = 0;
-	}
-      if (right.btsize)
-	btsize = new MccBacktrackSize (*right.btsize);
-      if (vtlimits)
-        {
-	  delete vtlimits;
-	  vtlimits = 0;
-	  tlimit = -1;
-	}
-      if (right.vtlimits)
-        {
-	  vtlimits = new vector< int  > (*right.vtlimits);
-	  tlimit = right.tlimit;
-	}
-    }
-  return *this;
-}
-
-
-void
-MccExploreLVStat::display (ostream &os) const
-{
-  os << "exploreLV (";
-  fg_struc->display (os);
-  if (efile)
-    {
-      os << ' ';
-      efile->display (os);
-    }
-  if (btsize)
-    {
-      os << ' ';
-      btsize->display (os);
-    }
-  if (vtlimits)
-    os << " time_limit (" << tlimit << " sec)";
-  os << ')';
-}
-
-
-
-
-void
-MccExploreLVStat::ppdisplay (ostream &os, int indent) const
-{
-  os << "exploreLV" << endl;
-  whitespaces (os, indent + 2);
-  os << '(' << endl;
-  whitespaces (os, indent + 4);
-  fg_struc->ppdisplay (os, indent + 4);
-  if (efile)
-    {
-      os << endl;
-      whitespaces (os, indent + 4);
-      efile->ppdisplay (os, indent + 4);
-    }
-  if (btsize)
-    {
-      os << endl;
-      whitespaces (os, indent + 4);
-      btsize->ppdisplay (os, indent + 4);
-    }
-  if (vtlimits)
-    {
-      os << endl;
-      whitespaces (os, indent + 4);
-      os << " time_limit (" << tlimit << " sec)";
-    }
-  os << endl;
-  whitespaces (os, indent + 2);
-  os << ')' << endl;
-}
 
 
 MccLibraryExpr::_LibStruc::_LibStruc (const MccLibraryExpr::_LibStruc &right)
@@ -2685,15 +2542,6 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
 
 
 
-//  MccSamplingSize::MccSamplingSize (float ssize, bool pflag)
-//  {
-//    isProp = pflag;
-//    if (isProp)
-//      propFact = ssize / 100.0;
-//    else
-//      absVal = (int)rint (ssize);
-//  }
-
 MccSamplingSize::MccSamplingSize (int ssize)
   : absVal (ssize)
 { }
@@ -2701,11 +2549,7 @@ MccSamplingSize::MccSamplingSize (int ssize)
 
 
 MccSamplingSize::MccSamplingSize (const MccSamplingSize &right)
-//    : isProp (right.isProp)
 {
-//    if (isProp)
-//      propFact = right.propFact;
-//    else
     absVal = right.absVal;
 }
 
@@ -2715,13 +2559,7 @@ MccSamplingSize&
 MccSamplingSize::operator= (const MccSamplingSize &right)
 {
   if (this != &right)
-    {
-//        isProp = right.isProp;
-//        if (isProp)
-//  	propFact = right.propFact;
-//        else
-	absVal = right.absVal;
-    }
+    absVal = right.absVal;
   return *this;
 }
 
@@ -2730,9 +2568,6 @@ MccSamplingSize::operator= (const MccSamplingSize &right)
 void
 MccSamplingSize::display (ostream &os) const
 {
-//    if (isProp)
-//      os << propFact * 100.0 << '%';
-//    else
     os << absVal;
 }
 
