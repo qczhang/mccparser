@@ -23,6 +23,7 @@ AC_LANG_CPLUSPLUS
 AC_CANONICAL_HOST
 AC_PROG_LEX
 AC_PROG_YACC
+AC_PATH_PROG(AR,ar)
 
 if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
     case "$host" in
@@ -31,14 +32,18 @@ if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
   	DEPFLAGS="-M"
   	LDFLAGS=""
 	LDNAMEPARAM="-Wl,-soname,"
-  	LINKOPTIONS="-woff 47"
+  	LINKOPTIONS="-shared -woff 47"
+	ARXX="$AR"
+	AROPTIONS="crs"
 	;;
     *-sun-*)
-	CXXFLAGS="$CXXFLAGS -O2"
+	CXXFLAGS="$CXXFLAGS -xO2"
 	DEPFLAGS="-xM1"
         LDFLAGS=""
 	LDNAMEPARAM="-h"
 	LINKOPTIONS="-G"
+	ARXX="$CXX"
+	AROPTIONS="-xar -o"
 	;;
     esac;
 elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
@@ -47,11 +52,12 @@ elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
 	LDNAMEPARAM="-Wl,-soname,"
 	LDFLAGS=""
 	LINKOPTIONS="-shared";
+	ARXX="$AR"
+	AROPTIONS="crs"
 fi
 
 
 AC_PROG_INSTALL
-AC_PATH_PROG(AR,ar)
 
 AC_ARG_WITH(malloc,
 [  --with-malloc           replace STL allocator with malloc],
@@ -65,5 +71,7 @@ AC_SUBST(DEPFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(LDNAMEPARAM)
 AC_SUBST(LINKOPTIONS)
+AC_SUBST(ARXX)
+AC_SUBST(AROPTIONS)
 
 AC_OUTPUT( Makefile docs/Makefile lib/Makefile )

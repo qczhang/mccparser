@@ -1,14 +1,10 @@
-############################ -*- Mode: Makefile -*- ###########################
-## Makefile.in
-## Copyright © 2000-02 Laboratoire de Biologie Informatique et Théorique.
-## Author           : Martin Larose
-## Created On       : Mon Aug 21 15:57:45 2000
-## Last Modified By : Patrick Gendron
-## Last Modified On : Fri Feb 22 14:49:22 2002
-## Update Count     : 3
-## Status           : Unknown.
-###############################################################################
-
+#                            -*- Mode: Makefile -*-
+# Makefile.in
+# Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
+# Author           : Martin Larose
+# Created On       : Mon Aug 21 15:57:45 2000
+# $Revision$
+# $Id$
 
 
 PACKAGE = @PACKAGE@

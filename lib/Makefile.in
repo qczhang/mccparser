@@ -29,7 +29,8 @@ LDFLAGS = @LDFLAGS@
 LDNAMEPARAM = @LDNAMEPARAM@
 LIBS = @LIBS@
 
-AR = @AR@
+ARXX = @ARXX@
+AROPTIONS = @AROPTIONS@
 LEX = @LEX@
 YACC = @YACC@
 
@@ -78,7 +79,7 @@ $(LIBRARY).so.$(VERSION): $(OBJECTS)
 	@ ln -sf $@ $(LIBRARY).so
 
 $(LIBRARY).a: $(OBJECTS)
-	$(AR) crs $@ $^
+	$(ARXX) $(AROPTIONS) $@ $^
 
 TAGS: $(SOURCES) $(HEADERS)
 	@ etags --c++ $^
