@@ -1,3 +1,38 @@
+2005-01-24  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* mccp.y, mccp.yy, mccparser.cc, mccparser.h:
+	new version 1.5 to be used with mcsym-4.0.0
+	doc still not updated :(
+
+2004-10-08  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* mccparser.h, mccparser.cc, mccp.yy, mccp.y:
+	Major update toward new MC-Sym version 4.
+	Major syntax modifications.
+	Doc still to be updated...
+
+2004-10-08  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* mccparser.h, mccparser.cc, mccp.yy, mccp.y:
+	Major update toward new MC-Sym version 4.
+	Major syntax modifications.
+	Doc still to be updated...
+
+2004-05-17  Martin Larose  <larosem@yoda.iro.umontreal.ca>
+
+	* mccparser.h, mccparser.cc, mccp.yy, mccp.y:
+	Added SocketPdb structures.
+
+2004-05-17  Martin Larose  <larosem@fortrel.iro.umontreal.ca>
+
+	* mccparser.h, mccparser.cc, mccp.yy, mccp.y:
+	Added SocketPdb structures.
+
+2004-03-18  Philippe Thibault  <thibaup@iro.umontreal.ca>
+
+	* mccp.y, mccp.yy, mccparser.cc, mccparser.h:
+	added ast nodes for with-placer mcsym branch
+
 2004-03-18  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
 
 	* lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
