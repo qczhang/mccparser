@@ -1,0 +1,69 @@
+############################ -*- Mode: Makefile -*- ###########################
+## Makefile.in
+## Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+## Author           : Martin Larose
+## Created On       : Mon Aug 21 16:02:59 2000
+## Last Modified By : 
+## Last Modified On : 
+## Update Count     : 0
+## Status           : Ok.
+###############################################################################
+
+
+
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+datadir = @datadir@
+includedir = @includedir@
+libdir = @libdir@
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+
+
+.SUFFIXES:
+
+DISTFILES = Makefile.in
+
+
+all all-static static:
+
+install install-static:
+
+uninstall:
+
+
+mostlyclean:
+
+clean: mostlyclean
+	@ rm -f *.aux *.dvi *.log *.toc
+
+distclean: clean
+	@ rm -f Makefile
+
+topclean: distclean
+	@ echo "The project is getting _top_ clean\!"
+	@- rm -fr ii_files
+
+release:
+
+dist:
+	@ echo "Copying distribution files"
+	@ for file in $(DISTFILES); do \
+	   ln $(srcdir)/$$file ../$(PACKAGE)-$(VERSION)/doc 2> /dev/null \
+	    || cp -p $(srcdir)/$$file ../$(PACKAGE)$(VERSION)/doc; \
+	  done
+
+Makefile: $(srcdir)/Makefile.in ../config.status
+	@ cd .. && CONFIG_FILES=doc/$@ CONFIG_HEADERS= ./config.status
+
+# Tell versions [3.59,3.63) of GNU make not to export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

@@ -1,0 +1,143 @@
+############################ -*- Mode: Makefile -*- ###########################
+## Makefile.in
+## Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+## Author           : Martin Larose
+## Created On       : Mon Aug 21 16:06:06 2000
+## Last Modified By : 
+## Last Modified On : 
+## Update Count     : 0
+## Status           : Ok.
+###############################################################################
+
+
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+datadir = @datadir@
+includedir = @includedir@
+libdir = @libdir@
+
+CXX = @CXX@
+CXXFLAGS = @CXXFLAGS@
+CXXSHFLAGS = @CXXSHFLAGS@
+DEPFLAGS = @DEPFLAGS@
+DEFS = @DEFS@
+LD = @CXX@
+LIBS = @LIBS@
+
+AR = @AR@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
+YACC = @YACC@
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+
+
+.SUFFIXES:
+.SUFFIXES: .cc .o .lo .d
+
+.cc.d:
+	@ $(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(DEFS) \
+              -I$(srcdir) $< \
+	    | sed '\''s/\($*\)\.o[ :]*/\1.o \1.lo $@ : /g'\'' > $@; \
+	      [ -s $@ ] || rm -f $@'
+
+.cc.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) -c $<
+
+.cc.lo:
+	$(CXX) $(CXXSHFLAGS) $(DEFS) -c $< -o $@
+
+
+SOURCES = 
+
+HEADERS = $(SOURCES:.cc=.h)
+
+OBJECTS = $(SOURCES:.cc=.o)
+
+SHOBJECTS = $(SOURCES:.cc=.lo)
+
+LIBRARY = libmccparser
+
+DISTFILES = Makefile.in $(SOURCES) $(HEADERS) tokens.l
+
+
+all: $(LIBRARY).so TAGS
+
+all-static static: $(LIBRARY).a TAGS
+
+$(LIBRARY).so: $(SHOBJECTS)
+	$(LD) -shared $(LDFLAGS) -o $@ $^
+
+$(LIBRARY).a: $(OBJECTS)
+	$(AR) crs $@ $^
+
+TAGS: $(SOURCES) $(HEADERS)
+	@ etags --c++ $^
+
+doc: html texi docbook
+
+html: $(HEADERS)
+	@ kdoc -f html -d html -p --strip-h-path -n lib$(LIBRARY) -u "libmccparser" -z $^
+
+texi: $(HEADERS)
+	@ kdoc -f texinfo -d texi -p --strip-h-path $^
+
+docbook: $(HEADERS)
+	@ kdoc -f docbook -d docbook -p --strip-h-path $^
+
+
+install: $(LIBRARY).so
+	@ echo Installing $^ in $(libdir)
+	@ $(srcdir)/../mkinstalldirs $(libdir)
+	@ $(INSTALL_DATA) $^ $(libdir)/$^
+
+install-static: static
+	@ echo Installing $(LIBRARY).a in $(libdir)
+	@ $(srcdir)/../mkinstalldirs $(libdir)
+	@ $(INSTALL_DATA) $(LIBRARY).a $(libdir)/$(LIBRARY).a
+
+uninstall:
+	@ rm -f $(libdir)/$(LIBRARY).a
+	@ rm -f $(libdir)/$(LIBRARY).so
+
+
+mostlyclean:
+	@ rm -f *~
+
+clean: mostlyclean
+	@ echo "Cleaning project"
+	@ rm -f $(LIBRARY).so $(LIBRARY).a
+	@ rm -f $(OBJECTS) $(SHOBJECTS) TAGS
+	@ rm -f *.d
+
+distclean: clean
+	@ rm -f Makefile
+
+topclean: distclean
+	@ echo "The project is getting _top_ clean\!"
+
+release: static
+
+dist:
+	@ echo "Copying distribution files"
+	@ for file in $(DISTFILES); do \
+	   ln $(srcdir)/$$file ../$(PACKAGE)-$(VERSION)/src 2> /dev/null \
+	    || cp -p $(srcdir)/$$file ../$(PACKAGE)$(VERSION)/src; \
+	  done
+
+Makefile: $(srcdir)/Makefile.in ../config.status
+	@ cd .. && CONFIG_FILES=src/$@ CONFIG_HEADERS= ./config.status
+
+# Tell versions [3.59,3.63) of GNU make not to export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
+
+-include $(SOURCES:.cc=.d)
