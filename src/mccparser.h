@@ -1,11 +1,11 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.h
-// Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
-// Last Modified By : Martin Larose
-// Last Modified On : Fri Nov 10 18:20:38 2000
-// Update Count     : 13
+// Last Modified By : Labo Lbit
+// Last Modified On : Mon Jul  9 16:22:18 2001
+// Update Count     : 17
 // Status           : Ok.
 // 
 
@@ -151,7 +151,6 @@ struct cutoffs
    */
   cutoffs (float t = 0.5, float c = 0.5) : ctc (t), ccc (c) { }
 };
-
 
 
 /**
@@ -350,6 +349,96 @@ public:
    */
   MccFragGenStruc* Copy () const { return new MccFragGenStruc (*this); }
 
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Struct representing the sampling size on AST nodes "residue",
+ * "connect" and "pair" 
+ *
+ * @author Philippe Thibault <thibaup@IRO.UMontreal.CA>
+ */
+struct MccSamplingSize
+{
+  /**
+   * Contains either an absolute value or a proportion factor
+   * of a set size
+   */
+  union
+  {
+    int absVal;    // absolute size
+    float propFact;    // proportion of whole set
+  };
+
+  /**
+   * Indicates if the current union value is a proportion.
+   */
+  bool isProp;
+
+protected:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccSamplingSize () { }
+  
+public:
+  
+  /**
+   * Initializes the object.
+   * @param ssize  set sampling size, either an absolute value or a
+   * proportion (%) of whole set, depending on pflag value.
+   * @param pflag flag indicating if ssize is a proportion or an absolute
+   * value. 
+   */
+  MccSamplingSize (float ssize, bool pflag);
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccSamplingSize (const MccSamplingSize &right);
+
+  /**
+   * Destructs the object.
+   */
+  ~MccSamplingSize () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccSamplingSize& operator= (const MccSamplingSize &right);
+
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccSamplingSize* Copy () const { return new MccSamplingSize (*this); }
+    
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -2256,9 +2345,9 @@ struct MccConnectStat : public MccPStruct
     MccQueryExpr *expr;
 
     /**
-     * The size of the sampling.
+     * The sampling size structure.
      */
-    int ssize;
+    MccSamplingSize *ssize;
 
     
     // LIFECYCLE ------------------------------------------------------------
@@ -2277,11 +2366,11 @@ struct MccConnectStat : public MccPStruct
      * @param r2 the name of the second residue in the relation.
      * @param e2 the query expression for properties related to res2.
      * @param e the query expression structure.
-     * @param s the size of the sampling.
+     * @param s the sampling size structure.
      */
     _ConnectStruc (MccResidueName *r1, MccQueryExpr *e1, 
 		   MccResidueName *r2, MccQueryExpr *e2, MccQueryExpr *e,
-		   int s)
+		   MccSamplingSize *s)
       : res1 (r1), expr_res1 (e1), res2 (r2), expr_res2 (e2), expr (e), ssize (s) { }
 
     /**
@@ -2294,7 +2383,7 @@ struct MccConnectStat : public MccPStruct
      * Destructs the object.
      */
     ~_ConnectStruc () { delete res1; delete expr_res1; delete res2; 
-                        delete expr_res2; delete expr; }
+                        delete expr_res2; delete expr; delete ssize; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -2388,10 +2477,10 @@ struct MccConnectStat : public MccPStruct
    * @param r2 the name of the second residue.
    * @param e2 the query expression for properties related to res2.
    * @param e the query expression structure.
-   * @param s the size of the sampling.
+   * @param s the sampling size structure.
    */
   void GenConnectStruc (MccResidueName *r1, MccQueryExpr *e1, MccResidueName *r2,
-			MccQueryExpr *e2, MccQueryExpr *e, int s)
+			MccQueryExpr *e2, MccQueryExpr *e, MccSamplingSize *s)
   { strucs->push_back (new _ConnectStruc (r1, e1, r2, e2, e, s)); }
 
   // I/O ------------------------------------------------------------------
@@ -2409,7 +2498,6 @@ struct MccConnectStat : public MccPStruct
    */
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
-
 
 
 /**
@@ -2947,6 +3035,84 @@ public:
 };
 
 
+/**
+ * @short Struct representing the backtrack size option on AST nodes "exploreLV"
+ *
+ * @author Philippe Thibault  <thibaup@IRO.UMontreal.CA>
+ */
+struct MccBacktrackSize
+{
+
+  /** maximum number of backtracked levels */
+  int maxBT;
+
+  /** maximum number of retries on same level */
+  int maxLR;
+
+
+  // LIFECYCLE ------------------------------------------------------------
+
+private:
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccBacktrackSize () { }
+public:
+
+  /**
+   * Initializes the object.
+   * @param bt max number of backtracked levels
+   * @param lr max number of retries on same level
+   */
+  MccBacktrackSize (int bt, int lr) : maxBT (bt), maxLR (lr) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccBacktrackSize (const MccBacktrackSize &right) 
+    : maxBT (right.maxBT), maxLR (right.maxLR) { }
+
+  /**
+   * Destructs the object.
+   */
+  ~MccBacktrackSize () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  const MccBacktrackSize& operator= (const MccBacktrackSize &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccBacktrackSize* Copy () const { return new MccBacktrackSize (*this); }
+    
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
 
 /**
  * @short Struct representing the AST node "explore".
@@ -3029,6 +3195,108 @@ public:
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
+
+
+/**
+ * @short Struct representing the AST node "exploreLV".
+ *
+ * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+ */
+struct MccExploreLVStat : public MccPStruct
+{
+  /**
+   * The FG struct to explore.
+   */
+  MccFragGenStruc *fg_struc;
+
+  /**
+   * The explore output file structure.
+   */
+  MccExpfile *efile;
+
+  /**
+   * Size of the backtrack phase
+   */
+  MccBacktrackSize *btsize;
+
+  /**
+   * vector of time limits (sec)
+   */
+  vector< int > *vtlimits;
+
+  /**
+   * Exploration time limit (sec)
+   */
+  int tlimit;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+private:
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccExploreLVStat () : MccPStruct () { }
+public:
+
+  /**
+   * Initializes the object.
+   * @param fg the FG struct to explore.
+   * @param ef the explore output file structure.
+   * @param bs size of the backtrack phase
+   * @param tl exploration time limits
+   */
+  MccExploreLVStat (MccFragGenStruc* fg, MccExpfile *ef, 
+		    MccBacktrackSize *bs, vector< int > *tl);
+
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccExploreLVStat (const MccExploreLVStat &right);
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccExploreLVStat () 
+  { delete fg_struc; if (efile) delete efile; 
+    if (btsize) delete btsize; if (vtlimits) delete vtlimits; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual const MccExploreLVStat& operator= (const MccExploreLVStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+ 
+
+  // METHODS --------------------------------------------------------------
+  
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccExploreLVStat* Copy () const { return new MccExploreLVStat (*this); }
+    
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
 
 
 /**
@@ -3635,9 +3903,9 @@ struct MccPairStat : public MccPStruct
     MccQueryExpr *expr;
 
     /**
-     * The sampling size.
+     * The sampling size structure.
      */
-    int ssize;
+    MccSamplingSize *ssize;
 
 
     // LIFECYCLE ------------------------------------------------------------
@@ -3656,10 +3924,11 @@ struct MccPairStat : public MccPStruct
      * @param r2 the name of the second residue.
      * @param e2 the query expression for properties related to res2.
      * @param e the query expression structure.
-     * @param s the sampling size.
+     * @param s the sampling size structure.
      */
     _PairStruc (MccResidueName *r1, MccQueryExpr *e1, 
-		MccResidueName *r2, MccQueryExpr *e2, MccQueryExpr *e, int s)
+		MccResidueName *r2, MccQueryExpr *e2, 
+		MccQueryExpr *e, MccSamplingSize *s)
       : res1 (r1), expr_res1 (e1), res2 (r2), expr_res2 (e2), expr (e), ssize (s) { }
 
     /**
@@ -3672,7 +3941,7 @@ struct MccPairStat : public MccPStruct
      * Destructs the object.
      */
     ~_PairStruc () { delete res1; delete expr_res1; delete res2; 
-                     delete expr_res2; delete expr; }
+                     delete expr_res2; delete expr; delete ssize; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -3765,10 +4034,10 @@ struct MccPairStat : public MccPStruct
    * @param r2 the name of the second residue.
    * @param e2 the query expression for properties related to res2.
    * @param e the query expression structure.
-   * @param s the sampling size.
+   * @param s the sampling size structure.
    */   
   void GenPairStruc (MccResidueName *r1, MccQueryExpr *e1, MccResidueName *r2,
-		     MccQueryExpr *e2, MccQueryExpr *e, int s)
+		     MccQueryExpr *e2, MccQueryExpr *e, MccSamplingSize *s)
   { strucs->push_back (new _PairStruc (r1, e1, r2, e2, e, s)); }
   
   // I/O  -----------------------------------------------------------------
@@ -4093,10 +4362,9 @@ struct MccResidueStat : public MccPStruct
     MccQueryExpr *expr;
 
     /**
-     * The sampling size.
+     * The sampling size structure.
      */
-    int ssize;
-
+    MccSamplingSize *ssize;
 
     // LIFECYCLE ------------------------------------------------------------
 
@@ -4112,11 +4380,12 @@ struct MccResidueStat : public MccPStruct
      * @param r1 the first residue of the list.
      * @param r2 the last residue of the list.
      * @param exp the query expression struct.
-     * @param ss the sampling size.
+     * @param ss the sampling size struct.
      */
     _ResidueStruc (MccResidueName *r1, MccResidueName *r2,
-		   MccQueryExpr *exp, int ss)
-      : res1 (r1), res2 (r2), expr (exp), ssize (ss) { }
+		   MccQueryExpr *exp, MccSamplingSize *ss)
+      : res1 (r1), res2 (r2), expr (exp), ssize (ss) 
+      { }
 
     /**
      * Initializes the object with the rights content.
@@ -4127,7 +4396,8 @@ struct MccResidueStat : public MccPStruct
     /**
      * Destructs the object.
      */
-    ~_ResidueStruc () { delete res1; if (res2) delete res2; delete expr; }
+    ~_ResidueStruc () 
+    { delete res1; if (res2) delete res2; delete expr; delete ssize; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -4220,10 +4490,10 @@ struct MccResidueStat : public MccPStruct
    * @param r1 the first residue of the list.
    * @param r2 the last residue of the list.
    * @param exp the query expression struct.
-   * @param ss the sampling size.
+   * @param ss the sampling size struct.
    */   
   void GenResidueStruc (MccResidueName *r1, MccResidueName *r2,
-			MccQueryExpr *exp, int ss)
+			MccQueryExpr *exp, MccSamplingSize *ss)
   { strucs->push_back (new _ResidueStruc (r1, r2, exp, ss)); }
   
   // I/O  -----------------------------------------------------------------
@@ -4330,6 +4600,8 @@ public:
 
 
 
+
+
 /**
  * @short Struct representing the AST node for the "sequence" statement.
  *
@@ -4418,6 +4690,79 @@ public:
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
+
+/**
+ * @short Structure representing the AST node "sampling_proportion" statement.
+ *
+ * Used to apply a proportion factor to set size.
+ *
+ * @author Philippe Thibault <thibaup@IRO.UMontreal.CA>
+ */
+struct MccSamplingFact : public MccPStruct
+{
+
+  /**  proportion factor to apply to set size */
+  float pfactor;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+private:
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccSamplingFact () { }
+public:
+
+  /**
+   * Initializes the object.
+   * @param pf proportion factor to apply to set size
+   */
+  MccSamplingFact (float pf) : pfactor (pf) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccSamplingFact (const MccSamplingFact &right) : pfactor (right.pfactor) { }
+
+  /**
+   * Destructs the object.
+   */
+  ~MccSamplingFact () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  const MccSamplingFact& operator= (const MccSamplingFact &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccSamplingFact* Copy () const { return new MccSamplingFact (*this); }
+    
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
 
 
 /**

@@ -1,11 +1,11 @@
 /*                               -*- Mode: C -*- 
  * mccp.yy
- * Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Martin Larose
- * Last Modified On : Thu Sep 14 11:46:27 2000
- * Update Count     : 4
+ * Last Modified By : Labo Lbit
+ * Last Modified On : Mon Jul  9 16:22:10 2001
+ * Update Count     : 11
  * Status           : Ok.
  */
 
@@ -57,13 +57,14 @@ INTEGER_LIT  (-?{DIGIT}+)
              char *mccstring_buf_ptr = mccstring_buf;
 
 
-<INITIAL,QUERIES>\n        ++mcclineno;           
+<INITIAL,QUERIES>[\n\r]    ++mcclineno;          
 <INITIAL,QUERIES>[ \t]+       
 <INITIAL,QUERIES>\/\/.*
 ,            return TOK_COMMA;
 :            return TOK_COLON;
 \[           return TOK_LBRACKET;
 \]           return TOK_RBRACKET;
+\%           return TOK_PERCENT;
 <INITIAL,QUERIES>\(        return TOK_LPAREN;
 <INITIAL,QUERIES>\)        return TOK_RPAREN;
 =            return TOK_ASSIGN;
@@ -78,17 +79,17 @@ all          return TOK_ALLATOMS;
 angle        return TOK_ANGLE;
 backbone_only return TOK_BBATOMS;
 backtrack    return TOK_BACKTRACK;
+backtrack_size return TOK_BACKTRACKSIZE;
 base_only    return TOK_BASEATOMS;
 cache        return TOK_CACHE;
 change_id    return TOK_CHANGEID;
 confo_cutoff return TOK_CONFOCUT;
 connect      return TOK_CONNECT;
 cycle        return TOK_CYCLE;
-deviation    return TOK_RMSCST;
-direction    return TOK_DIRECTION;
 display_fg   return TOK_DISPLAYFG;
 distance     return TOK_DISTANCE;
 explore      return TOK_EXPLORE;
+exploreLV    return TOK_EXPLORELV;
 fileName_pdb return TOK_PDB;
 fixed_distance return TOK_FIXEDDIST;
 library      return TOK_LIBRARY;
@@ -99,7 +100,6 @@ notes        return TOK_NOTES;
 pair         return TOK_PAIR;
 pdb          return TOK_PDB;
 place        return TOK_PLACE;
-prop         return TOK_PROPERTIES;
 pse_only     return TOK_PSEATOMS;
 quit         return TOK_QUIT;
 remark       return TOK_REMARK;
@@ -108,18 +108,29 @@ res_clash    return TOK_RESCLASH;
 reset        return TOK_RESET;
 reset_db     return TOK_RESETDB;
 residue      return TOK_RESIDUE;
-residue_align return TOK_RESIDUEALIGN;
 restore      return TOK_RESTORE;
 rmsd_bound   return TOK_RMSDBOUND;
+sampling_factor   return TOK_SAMPLINGFACT;
 sequence     return TOK_SEQUENCE;
 source       return TOK_SOURCE;
 strip        return TOK_STRIP;
+time_limit   return TOK_TIMELIMIT;
 tfo          return TOK_TRANSFO;
 tfo_cutoff   return TOK_TFOCUT;
 torsion      return TOK_TORSION;
 vdw_distance return TOK_VDWDIST;
 version      return TOK_VERSION;
 zipped       return TOK_ZIPPED;
+sec          return TOK_SEC;
+seconds      return TOK_SEC;
+min          return TOK_MIN;
+minutes      return TOK_MIN;
+hr           return TOK_HR;
+hours        return TOK_HR;
+days         return TOK_DAY;
+d            return TOK_DAY;
+
+
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
 
@@ -127,10 +138,17 @@ zipped       return TOK_ZIPPED;
 
 {LETTER}{DIGIT}+  mcclval.textval = mcccopy (mcctext); return TOK_RESNAME;
 
-[-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]*  {
-                                     mcclval.textval = mcccopy (mcctext);
-				     return TOK_IDENT;
-                                   }
+{DIGIT}{LETTER}{LETTER}?{DIGIT}[\*M]? {
+                                        mcclval.textval = mcccopy (mcctext);
+					return TOK_ATOM;
+                                      }
+
+[-_<>a-zA-Z][-_<>\'\.\*a-zA-Z0-9]*  {
+                                       mcclval.textval = mcccopy (mcctext);
+				       return TOK_IDENT;
+                                     }
+
+
 
 
            /** Definition of QUOTES indentifiers.  */
@@ -143,7 +161,7 @@ zipped       return TOK_ZIPPED;
 		   return TOK_QUOTED_IDENT;
                  }
 
-<QUOTES>\n       *mccstring_buf_ptr++ = '\n'; mcclineno++;
+<QUOTES>[\n\r]   *mccstring_buf_ptr++ = '\n'; mcclineno++;
 
 <QUOTES>[^\']+   {
                    char *yptr = mcctext;
@@ -166,7 +184,7 @@ zipped       return TOK_ZIPPED;
 		   return TOK_STRING;
                  }
 
-<STRINGS>\n      *mccstring_buf_ptr++ = '\n'; mcclineno++;
+<STRINGS>[\n\r]  *mccstring_buf_ptr++ = '\n'; mcclineno++;
                    
 <STRINGS>\\.     *mccstring_buf_ptr++ = '\\'; *mccstring_buf_ptr++ = mcctext[1];
 
@@ -188,7 +206,7 @@ zipped       return TOK_ZIPPED;
                              return TOK_IDENT;
                            }
 <QUERIES>file              return TOK_FILENAME;
-<QUERIES>[-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]* {
+<QUERIES>[-_<>a-zA-Z][-_<>\'\.a-zA-Z0-9]* {
                                              mcclval.textval = mcccopy (mcctext);
 					     return TOK_IDENT;
                                            }
