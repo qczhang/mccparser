@@ -3,9 +3,9 @@
 // Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
-// Last Modified By : Martin Larose
-// Last Modified On : Thu Dec 20 09:48:16 2001
-// Update Count     : 19
+// Last Modified By : Philippe Thibault
+// Last Modified On : Tue May  7 12:30:09 2002
+// Update Count     : 20
 // Status           : Ok.
 // 
 
@@ -16,6 +16,7 @@
 
 #include <iostream.h>
 #include <vector.h>
+#include <pair.h>
 #include <stdio.h>
 
 
@@ -27,7 +28,7 @@ void mcc_switch_to_buffer (YY_BUFFER_STATE);
 
 class MccPStruct;
 class MccVisitor;
-
+class MccQueryExpr;
 
 
 /**
@@ -385,7 +386,6 @@ public:
 };
 
 
-
 /**
  * @short Struct representing the sampling size on AST nodes "residue",
  * "connect" and "pair" 
@@ -498,6 +498,106 @@ public:
   void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
+
+/**
+ * @short Wrapper for query expressions specified in AST node moses. 
+ *
+ * @author Philippe Thibault <thibaup@IRO.UMontreal.CA>
+ */
+struct MccMosesQueries
+{
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_cg_au_res;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_gu_res;
+  pair< MccQueryExpr*, MccSamplingSize* >* loop_res;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_connect;
+  pair< MccQueryExpr*, MccSamplingSize* >* loop_connect;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_cg_au_pair;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_gu_pair;
+
+protected:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccMosesQueries () { }
+  
+public:
+  
+  /**
+   * Initializes the object.
+   *
+   */
+  MccMosesQueries (pair< MccQueryExpr*, MccSamplingSize* >* qsp1,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp2,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp3,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp4,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp5,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp6,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp7)
+    : stem_cg_au_res (qsp1),
+      stem_gu_res (qsp2),
+      loop_res (qsp3),
+      stem_connect (qsp4),
+      loop_connect (qsp5),
+      stem_cg_au_pair (qsp6),
+      stem_gu_pair (qsp7)
+  { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccMosesQueries (const MccMosesQueries &right);
+		      
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccMosesQueries* clone () const { return new MccMosesQueries (*this); }
+    
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccMosesQueries ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccMosesQueries& operator= (const MccMosesQueries &right);
+
+  // ACCESS ---------------------------------------------------------------
+
+ 
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const;
+};
 
 
 /**
@@ -4576,6 +4676,115 @@ public:
 };
 
 
+/**
+ * @short Struct representing the AST node "moses".
+ *
+ * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+ */
+struct MccMosesExpr : public MccFGExp
+{
+  /**
+   * Residue range in the sequence in CResIdSet format
+   */
+  char* range;
+
+  /**
+   * CT file id to load
+   */
+  int ctid;
+
+  /**
+   * Queries expression used to override moses' default.
+   */
+  MccMosesQueries* queries;
+
+  /**
+   * mfold energy parameter (%)
+   */
+  int mfold_epc;
+
+  /**
+   * mfold window length
+   */
+  int mfold_win;
+  
+  /**
+   * Directory in current directory where all ouput files from mfold will be placed.
+   */
+  char* mfold_dir;
+
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccMosesExpr () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param r the residue range defining the sequence.
+   * @param cid the CT file id to load.
+   * @param epc the energy parameter in mFold.
+   * @param win the window length in mFold.
+   */
+  MccMosesExpr (char *r, int cid, MccMosesQueries* q, int epc, int win, char* dir);
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccMosesExpr (const MccMosesExpr &right);
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccMosesExpr* clone () const { return new MccMosesExpr (*this); }
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccMosesExpr ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccMosesExpr& operator= (const MccMosesExpr &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
 
 /**
  * @short Struct representing the "new_tag" statement.
@@ -5570,8 +5779,10 @@ struct MccResidueStat : public MccPStruct
     /**
      * Destroys the object.
      */
-    ~_ResidueStruc () 
+    ~_ResidueStruc ()
     { delete res1; if (res2) delete res2; delete expr; delete ssize; }
+
+    
 
     // OPERATORS ------------------------------------------------------------
 
@@ -6673,6 +6884,18 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccLibraryExpr *struc) = 0;
+
+  /**
+   * Visits the MccMosesExpr structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccMosesExpr *struc) = 0;
+
+  /**
+   * Visits the MccMosesQueries structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccMosesQueries *struc) = 0;
 
   /**
    * Visits the MccNewTagStat structure.

@@ -3,9 +3,9 @@
 // Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
-// Last Modified By : Martin Larose
-// Last Modified On : Thu Dec 20 09:48:12 2001
-// Update Count     : 13
+// Last Modified By : Philippe Thibault
+// Last Modified On : Tue May  7 12:30:06 2002
+// Update Count     : 14
 // Status           : Ok.
 // 
 
@@ -2140,7 +2140,7 @@ MccExploreLVStat::MccExploreLVStat (MccFragGenStruc *fg,
     filter (f),
     expOutput (ef),
     vtlimits (tl),
-    tlimit (-1),
+    tlimit (0),
     btsize (bs)
 {
   if (vtlimits)
@@ -2161,7 +2161,7 @@ MccExploreLVStat::MccExploreLVStat (const MccExploreLVStat &right)
     filter (0),
     expOutput (0),
     vtlimits (0),
-    tlimit (-1),
+    tlimit (0),
     btsize (0)
 {
   if (right.filter)
@@ -2205,7 +2205,7 @@ MccExploreLVStat::operator= (const MccExploreLVStat &right)
         {
 	  delete vtlimits;
 	  vtlimits = 0;
-	  tlimit = -1;
+	  tlimit = 0;
 	}
       if (right.vtlimits)
         {
@@ -2531,6 +2531,347 @@ MccLibraryExpr::ppdisplay (ostream &os, int indent) const
 }
 
 
+MccMosesExpr::MccMosesExpr (char *r, int cid, MccMosesQueries* q, 
+			    int epc, int win, char* dir)
+  : range (r),
+    ctid (cid),
+    queries (q),
+    mfold_epc (epc),
+    mfold_win (win),
+    mfold_dir (dir)
+{
+}
+
+
+MccMosesExpr::MccMosesExpr (const MccMosesExpr &right)
+  : ctid (right.ctid),
+    queries (right.queries->clone ()),
+    mfold_epc (right.mfold_epc),
+    mfold_win (right.mfold_win)
+{
+  range = right.range ? strdup (right.range) : NULL;
+  mfold_dir = right.mfold_dir ? strdup (right.mfold_dir) : NULL;
+}
+
+
+MccMosesExpr::~MccMosesExpr ()
+{
+  if (range) delete range; 
+  delete queries; 
+  if (mfold_dir) delete mfold_dir;
+}
+
+
+MccMosesExpr&
+MccMosesExpr::operator= (const MccMosesExpr &right)
+{
+  if (this != &right)
+    {
+      delete range;
+      range = right.range ? strdup (right.range) : NULL;
+      ctid = right.ctid;
+      delete queries;
+      queries = right.queries->clone ();
+      mfold_epc = right.mfold_epc;
+      mfold_win = right.mfold_win;
+      delete mfold_dir;
+      mfold_dir = right.mfold_dir ? strdup (right.mfold_dir) : NULL;
+    }
+  return *this;
+}
+
+
+void
+MccMosesExpr::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+void
+MccMosesExpr::display (ostream &os) const
+{
+  os << "moses (";
+  if (range)
+    os << ' ' << range;
+  if (ctid >= 0)
+    os << " sec_struct (" << ctid << ')';
+  os << ' ';
+  queries->display (os);
+  if (mfold_epc >= 0)
+    os << " mfold_epc (" << mfold_epc << ')';
+  if (mfold_win >= 0)
+    os << " mfold_win (" << mfold_win << ')';
+  if (mfold_dir)
+    os << " mfold_ouput (\"" << mfold_dir << "\")";
+  os << ')';
+}
+
+
+void
+MccMosesExpr::ppdisplay (ostream &os, int indent) const
+{
+  os << "moses" << endl;
+  whitespaces (os, indent);
+  os << '(' << endl;
+  if (range)
+    {
+      whitespaces (os, indent + 2);
+      os << range << endl;
+    }
+  if (ctid >= 0)
+    {
+      whitespaces (os, indent + 2);
+      os << "sec_struct (" << ctid << ')' <<  endl;
+    }
+  queries->ppdisplay (os, indent + 2);
+  if (mfold_epc >= 0)
+    {
+      whitespaces (os, indent + 2);
+      os << "mfold_epc (" << mfold_epc << ')' << endl;
+    }
+  if (mfold_win >= 0)
+    {
+      whitespaces (os, indent + 2);
+      os << "mfold_win (" << mfold_win << ')' << endl;
+    }
+  if (mfold_dir)
+    {
+      whitespaces (os, indent + 2);
+      os << "mfold_ouput (\"" << mfold_dir << "\")" << endl;
+    }
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
+MccMosesQueries::MccMosesQueries (const MccMosesQueries &right)
+{
+  stem_cg_au_res = right.stem_cg_au_res ? 
+    new pair< MccQueryExpr*, MccSamplingSize* > 
+    (right.stem_cg_au_res->first->clone (),
+     right.stem_cg_au_res->second->clone ()) 
+    : NULL;
+  stem_gu_res = right.stem_gu_res ? 
+    new pair< MccQueryExpr*, MccSamplingSize* > 
+    (right.stem_gu_res->first->clone (),
+     right.stem_gu_res->second->clone ()) 
+    : NULL;
+  loop_res = right.loop_res ? 
+    new pair< MccQueryExpr*, MccSamplingSize* > 
+    (right.loop_res->first->clone (),
+     right.loop_res->second->clone ()) 
+    : NULL;
+  stem_connect = right.stem_connect ? 
+    new pair< MccQueryExpr*, MccSamplingSize* > 
+    (right.stem_connect->first->clone (),
+     right.stem_connect->second->clone ()) 
+    : NULL;
+  loop_connect = right.loop_connect ? 
+    new pair< MccQueryExpr*, MccSamplingSize* > 
+    (right.loop_connect->first->clone (),
+     right.loop_connect->second->clone ()) 
+    : NULL;
+  stem_cg_au_pair = right.stem_cg_au_pair ? 
+    new pair< MccQueryExpr*, MccSamplingSize* > 
+    (right.stem_cg_au_pair->first->clone (),
+     right.stem_cg_au_pair->second->clone ()) 
+    : NULL;
+  stem_gu_pair = right.stem_gu_pair ? 
+    new pair< MccQueryExpr*, MccSamplingSize* > 
+    (right.stem_gu_pair->first->clone (),
+     right.stem_gu_pair->second->clone ()) 
+    : NULL;     
+}
+
+
+MccMosesQueries::~MccMosesQueries ()
+{
+  if (stem_cg_au_res) delete stem_cg_au_res; 
+  if (stem_gu_res) delete stem_gu_res; 
+  if (loop_res) delete loop_res; 
+  if (stem_connect) delete stem_connect; 
+  if (loop_connect) delete loop_connect; 
+  if (stem_cg_au_pair) delete stem_cg_au_pair; 
+  if (stem_gu_pair) delete stem_cg_au_pair; 
+}
+
+
+MccMosesQueries&
+MccMosesQueries::operator= (const MccMosesQueries &right)
+{
+  if (this != &right)
+    {
+      if (stem_cg_au_res) delete stem_cg_au_res; 
+      if (stem_gu_res) delete stem_gu_res; 
+      if (loop_res) delete loop_res; 
+      if (stem_connect) delete stem_connect; 
+      if (loop_connect) delete loop_connect; 
+      if (stem_cg_au_pair) delete stem_cg_au_pair; 
+      if (stem_gu_pair) delete stem_gu_pair; 
+      stem_cg_au_res = right.stem_cg_au_res ? 
+	new pair< MccQueryExpr*, MccSamplingSize* > 
+	(right.stem_cg_au_res->first->clone (),
+	 right.stem_cg_au_res->second->clone ()) 
+	: NULL;
+      stem_gu_res = right.stem_gu_res ? 
+	new pair< MccQueryExpr*, MccSamplingSize* > 
+	(right.stem_gu_res->first->clone (),
+	 right.stem_gu_res->second->clone ()) 
+	: NULL;
+      loop_res = right.loop_res ? 
+	new pair< MccQueryExpr*, MccSamplingSize* > 
+	(right.loop_res->first->clone (),
+	 right.loop_res->second->clone ()) 
+	: NULL;
+      stem_connect = right.stem_connect ? 
+	new pair< MccQueryExpr*, MccSamplingSize* > 
+	(right.stem_connect->first->clone (),
+	 right.stem_connect->second->clone ()) 
+	: NULL;
+      loop_connect = right.loop_connect ? 
+	new pair< MccQueryExpr*, MccSamplingSize* > 
+	(right.loop_connect->first->clone (),
+	 right.loop_connect->second->clone ()) 
+	: NULL;
+      stem_cg_au_pair = right.stem_cg_au_pair ? 
+	new pair< MccQueryExpr*, MccSamplingSize* > 
+	(right.stem_cg_au_pair->first->clone (),
+	 right.stem_cg_au_pair->second->clone ()) 
+	: NULL;
+      stem_gu_pair = right.stem_gu_pair ? 
+	new pair< MccQueryExpr*, MccSamplingSize* > 
+	(right.stem_gu_pair->first->clone (),
+	 right.stem_gu_pair->second->clone ()) 
+	: NULL;     
+    }
+  return *this;
+}
+
+
+void
+MccMosesQueries::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+void
+MccMosesQueries::display (ostream &os) const
+{
+  if (stem_cg_au_res)
+    {
+      os << " stem_cg_au_residue ";
+      stem_cg_au_res->first->display (os);
+      stem_cg_au_res->second->display (os);
+    }
+  if (stem_gu_res)
+    {
+      os << " stem_gu_residue ";
+      stem_gu_res->first->display (os);
+      stem_gu_res->second->display (os);
+    }
+ if (loop_res)
+    {
+      os << " loop_residue ";
+      loop_res->first->display (os);
+      loop_res->second->display (os);
+    }
+ if (stem_connect)
+    {
+      os << " stem_connect ";
+      stem_connect->first->display (os);
+      stem_connect->second->display (os);
+    }
+ if (loop_connect)
+    {
+      os << " loop_connect ";
+      loop_connect->first->display (os);
+      loop_connect->second->display (os);
+    }
+ if (stem_cg_au_pair)
+    {
+      os << " stem_cg_au_pair ";
+      stem_cg_au_pair->first->display (os);
+      stem_cg_au_pair->second->display (os);
+    }
+ if (stem_cg_au_pair)
+    {
+      os << " stem_gu_pair ";
+      stem_gu_pair->first->display (os);
+      stem_gu_pair->second->display (os);
+    }
+}
+
+
+void
+MccMosesQueries::ppdisplay (ostream &os, int indent) const
+{
+  if (stem_cg_au_res)
+    {
+      whitespaces (os, indent);
+      os << "stem_cg_au_residue ";
+      stem_cg_au_res->first->ppdisplay (os, indent);
+      os << ' ';
+      stem_cg_au_res->second->ppdisplay (os, indent);
+      os << endl;
+    }
+  if (stem_gu_res)
+    {
+      whitespaces (os, indent);
+      os << "stem_gu_residue ";
+      stem_gu_res->first->ppdisplay (os, indent);
+      os << ' ';
+      stem_gu_res->second->ppdisplay (os, indent);
+      os << endl;
+    }
+  if (loop_res)
+    {
+      whitespaces (os, indent);
+      os << "loop_residue ";
+      loop_res->first->ppdisplay (os, indent);
+      os << ' ';
+      loop_res->second->ppdisplay (os, indent);
+      os << endl;
+    }
+  if (stem_connect)
+    {
+      whitespaces (os, indent);
+      os << "stem_connect ";
+      stem_connect->first->ppdisplay (os, indent);
+      os << ' ';
+      stem_connect->second->ppdisplay (os, indent);
+      os << endl;
+    }
+  if (loop_connect)
+    {
+      whitespaces (os, indent);
+      os << "loop_connect ";
+      loop_connect->first->ppdisplay (os, indent);
+      os << ' ';
+      loop_connect->second->ppdisplay (os, indent);
+      os << endl;
+    }
+  if (stem_cg_au_pair)
+    {
+      whitespaces (os, indent);
+      os << "stem_cg_au_pair ";
+      stem_cg_au_pair->first->ppdisplay (os, indent);
+      os << ' ';
+      stem_cg_au_pair->second->ppdisplay (os, indent);
+      os << endl;
+    }
+  if (stem_cg_au_pair)
+    {
+      whitespaces (os, indent);
+      os << "stem_gu_pair ";
+      stem_gu_pair->first->ppdisplay (os, indent);
+      os << ' ';
+      stem_gu_pair->second->ppdisplay (os, indent);
+      os << endl;
+    }
+}
+
 
 MccNewTagStat::MccNewTagStat (const MccNewTagStat &right)
   : resq_opt (right.resq_opt),
@@ -2543,7 +2884,6 @@ MccNewTagStat::MccNewTagStat (const MccNewTagStat &right)
   for (cit = right.exprs->begin (); cit != right.exprs->end (); cit++)
     exprs->push_back (new MccQueryExpr (**cit));
 }
-
 
 
 MccNewTagStat::~MccNewTagStat ()
@@ -3087,12 +3427,11 @@ MccResidueStat::_ResidueStruc::_ResidueStruc (const MccResidueStat::_ResidueStru
   : res1 (new MccResidueName (*right.res1)),
     res2 (0),
     expr (new MccQueryExpr (*right.expr)),
-    ssize (right.ssize)
+    ssize (new MccSamplingSize (*right.ssize))
 {
   if (right.res2)
     res2 = new MccResidueName (*right.res2);
 }
-
 
 
 MccResidueStat::_ResidueStruc&
@@ -3111,7 +3450,8 @@ MccResidueStat::_ResidueStruc::operator= (const MccResidueStat::_ResidueStruc &r
 	res2 = new MccResidueName (*right.res2);
       delete expr;
       expr = new MccQueryExpr (*right.expr);
-      ssize = right.ssize;
+      delete ssize;
+      ssize = new MccSamplingSize (*right.ssize);
     }
   return *this;
 }
@@ -3179,6 +3519,7 @@ MccResidueStat::~MccResidueStat ()
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
+
   delete strucs;
 }
 

@@ -3,9 +3,9 @@
 %% Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
-%% Last Modified By : Martin Larose
-%% Last Modified On : Thu Dec 20 09:48:04 2001
-%% Update Count     : 14
+%% Last Modified By : Philippe Thibault
+%% Last Modified On : Tue May  7 12:30:01 2002
+%% Update Count     : 15
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -254,6 +254,7 @@ eval (const char *str)
 
 Changes from {\sc mcsym} version 3.2.4:
 \begin{itemize}
+\item moses expression added;
 \item the model filter in the cache, explore and exploreLV statements is
   changed;
 \item the exploration statement gets a dedicated cache;
@@ -434,6 +435,9 @@ Changes from {\sc mcsym} version 3.2.4:
     \nonterminal{model filter} \terminal{)}}
   \altrule{\terminal{library} \terminal{(} \nonterminal{inputform}
     \nonterminal{libopt}* \terminal{)}}
+  \altrule{\terminal{moses} \terminal{(} \nonterminal{resrange}? \nonterminal{ctfileid}?
+    \nonterminal{mosesqueries} \nonterminal{mfold\_epc}? \nonterminal{mfold\_win}?
+    \nonterminal{mfold\_output}? \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{res\_\,place}{\terminal{(} \nonterminal{residueRef}
     \nonterminal{residueRef}* \terminal{)}}
@@ -449,6 +453,46 @@ Changes from {\sc mcsym} version 3.2.4:
 \begin{grammarrule}{libopt}{\terminal{strip} \terminal{(}
     \nonterminal{residueRef}+ \terminal{)}}
   \altrule{\terminal{change\_\,id} \terminal{(} \token{STRING} \terminal{,}
+    \token{STRING} \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{resrange}{\token{RESNAME} \terminal{-} \token{RESNAME}}
+  \altrule{\token{INTEGER} \terminal{-} \token{INTEGER}}
+\end{grammarrule}
+\begin{grammarrule}{ctfileid}{\terminal{sec\_struct} \terminal{(}
+    \token{INTEGER} \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{mosesqueries}{\terminal{cgau\_resdef}? \terminal{gu\_resdef}?
+    \terminal{loop\_resdef}? \terminal{stem\_condef}? \terminal{loop\_condef}? 
+    \terminal{cgau\_pairdef}? \terminal{gu\_pairdef}?} 
+\end{grammarrule}
+\begin{grammarrule}{cgau\_resdef}{\terminal{stem\_cg\_au\_residue} \nonterminal{queryexp}
+    \nonterminal{sampling}}
+\end{grammarrule}
+\begin{grammarrule}{gu\_resdef}{\terminal{stem\_gu\_residue} \nonterminal{queryexp}
+    \nonterminal{sampling}}
+\end{grammarrule}
+\begin{grammarrule}{loop\_resdef}{\terminal{loop\_residue} \nonterminal{queryexp}
+    \nonterminal{sampling}}
+\end{grammarrule}
+\begin{grammarrule}{stem\_condef}{\terminal{stem\_connect} \nonterminal{queryexp}
+    \nonterminal{sampling}}
+\end{grammarrule}
+\begin{grammarrule}{loop\_condef}{\terminal{loop\_connect} \nonterminal{queryexp}
+    \nonterminal{sampling}}
+\end{grammarrule}
+\begin{grammarrule}{cgau\_pairdef}{\terminal{stem\_cg\_au\_pair} \nonterminal{queryexp}
+    \nonterminal{sampling}}
+\end{grammarrule}
+\begin{grammarrule}{gu\_pairdef}{\terminal{stem\_gu\_pair} \nonterminal{queryexp}
+    \nonterminal{sampling}}
+\end{grammarrule}
+\begin{grammarrule}{mfold\_epc}{\terminal{mfold\_epc} \terminal{(}
+    \token{INTEGER} \terminal{\%} \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{mfold\_win}{\terminal{mfold\_win} \terminal{(}
+    \token{INTEGER} \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{mfold\_output}{\terminal{mfold\_output} \terminal{(}
     \token{STRING} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{atomset}{\terminal{all}}

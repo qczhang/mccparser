@@ -3,9 +3,9 @@
  * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Martin Larose
- * Last Modified On : Thu Dec 20 09:48:09 2001
- * Update Count     : 13
+ * Last Modified By : Philippe Thibault
+ * Last Modified On : Tue May  7 12:30:05 2002
+ * Update Count     : 14
  * Status           : Ok.
  */
 
@@ -62,6 +62,7 @@ INTEGER_LIT  (-?{DIGIT}+)
 <INITIAL,QUERIES>\/\/.*
 ,            return TOK_COMMA;
 :            return TOK_COLON;
+-            return TOK_DASH;
 \[           return TOK_LBRACKET;
 \]           return TOK_RBRACKET;
 \%           return TOK_PERCENT;
@@ -96,6 +97,12 @@ file_bin     return TOK_FILE_BINARY;
 file_pdb     return TOK_FILE_PDB;
 fixed_distance return TOK_FIXEDDIST;
 library      return TOK_LIBRARY;
+loop_connect return TOK_LOOPCONDEF;
+loop_residue return TOK_LOOPRESDEF;
+mfold_epc    return TOK_MFOLD_EPC;
+mfold_output return TOK_MFOLD_OUTPUT;
+mfold_win    return TOK_MFOLD_WIN;
+moses        return TOK_MOSES;
 new_tag      return TOK_NEWTAG;
 no_hydrogen  return TOK_NOHYDRO;
 note         return TOK_NOTE;
@@ -114,9 +121,15 @@ reset_db     return TOK_RESETDB;
 residue      return TOK_RESIDUE;
 restore      return TOK_RESTORE;
 rmsd         return TOK_RMSD;
+sec_struct   return TOK_CTFILEID;
 sequence     return TOK_SEQUENCE;
 socket_bin   return TOK_SOCKET_BINARY;
 source       return TOK_SOURCE;
+stem_cg_au_pair      return TOK_CGAUPAIRDEF;
+stem_cg_au_residue   return TOK_CGAURESDEF;
+stem_connect return TOK_STEMCONDEF;
+stem_gu_pair  return TOK_GUPAIRDEF;
+stem_gu_residue return TOK_GURESDEF;
 strip        return TOK_STRIP;
 time_limit   return TOK_TIMELIMIT;
 tfo          return TOK_TRANSFO;

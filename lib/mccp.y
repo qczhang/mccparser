@@ -3,9 +3,9 @@
  * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Martin Larose
- * Last Modified On : Thu Dec 20 09:48:07 2001
- * Update Count     : 15
+ * Last Modified By : Philippe Thibault
+ * Last Modified On : Tue May  7 12:30:04 2002
+ * Update Count     : 16
  * Status           : Ok.
  */
 
@@ -13,6 +13,7 @@
 %{
   #include <iostream.h>
   #include <vector.h>
+  #include <pair.h>
   #include <stdlib.h>
   #include <string.h>
   #include <math.h>
@@ -70,6 +71,8 @@
   MccSamplingSize *smpls;
   cutoffs *ctfs;
   MccModelFilterStrategy *mf;
+  MccMosesQueries *mqs;
+  pair< MccQueryExpr*, MccSamplingSize* > *qsssp;
 }
 
 
@@ -77,6 +80,8 @@
 %token TOK_RBRACE
 %token TOK_COMMA
 %token TOK_COLON
+%token TOK_DASH
+%token TOK_CTFILEID
 %token TOK_LBRACKET
 %token TOK_RBRACKET
 %token TOK_PERCENT
@@ -98,6 +103,8 @@
 %token TOK_BACKTRACKSIZE
 %token TOK_BASEATOMS
 %token TOK_CACHE
+%token TOK_CGAUPAIRDEF
+%token TOK_CGAURESDEF
 %token TOK_CHANGEID
 %token TOK_CONFOCUT
 %token TOK_CONNECT
@@ -109,8 +116,13 @@
 %token TOK_FILENAME
 %token TOK_PDB
 %token TOK_FIXEDDIST
+%token TOK_GUPAIRDEF
+%token TOK_GURESDEF
 %token TOK_JOBS
 %token TOK_LIBRARY
+%token TOK_LOOPCONDEF
+%token TOK_LOOPRESDEF
+%token TOK_MOSES
 %token TOK_NEWTAG
 %token TOK_NOHYDRO
 %token TOK_NOTE
@@ -119,6 +131,9 @@
 %token TOK_PDB
 %token TOK_FILE_BINARY
 %token TOK_FILE_PDB
+%token TOK_MFOLD_EPC
+%token TOK_MFOLD_OUTPUT
+%token TOK_MFOLD_WIN
 %token TOK_PLACE
 %token TOK_PSEATOMS
 %token TOK_QUIT
@@ -136,6 +151,7 @@
 %token TOK_SEQUENCE
 %token TOK_SOCKET_BINARY
 %token TOK_SOURCE
+%token TOK_STEMCONDEF
 %token TOK_STRIP
 %token TOK_TIMELIMIT
 %token TOK_TRANSFO
@@ -242,6 +258,20 @@
 %type <inmo> input_mode
 %type <lsv> libopt_star
 %type <ls> libopt
+%type <fgs> mosesexp
+%type <textval> resrange_opt
+%type <intval> ctfileid_opt
+%type <mqs> mosesqueries
+%type <qsssp> cgau_resdef_opt
+%type <qsssp> gu_resdef_opt
+%type <qsssp> loop_resdef_opt
+%type <qsssp> stem_condef_opt
+%type <qsssp> loop_condef_opt
+%type <qsssp> cgau_pairdef_opt
+%type <qsssp> gu_pairdef_opt
+%type <intval> mfold_epc_opt
+%type <intval> mfold_win_opt
+%type <textval> mfold_output_opt
 
 %type <ats> atomset_opt
 %type <ats> atomsetopt_opt
@@ -872,6 +902,7 @@ queryidentexp: TOK_IDENT { $$ = new MccQIdentFunc ($1); }
 fgexp:   backtrackexp { $$ = $1; }
        | cacheexp { $$ = $1; }
        | libraryexp { $$ = $1; }
+       | mosesexp { $$ = $1; }
 ;
 
 
@@ -969,6 +1000,114 @@ libopt:   TOK_STRIP TOK_LPAREN residueRef_plus TOK_RPAREN
 	     delete[] $3;
 	     delete[] $5;
 	   }
+;
+
+
+mosesexp:  TOK_MOSES TOK_LPAREN resrange_opt ctfileid_opt mosesqueries mfold_epc_opt mfold_win_opt mfold_output_opt TOK_RPAREN
+            {
+	      $$ = new MccMosesExpr ($3, $4, $5, $6, $7, $8);
+            }
+;
+
+
+resrange_opt:    /* empty */ { $$ = 0; }
+               | TOK_RESNAME TOK_DASH TOK_RESNAME
+                  {
+		    char *str = new char[256];
+		    sprintf (str, "%s-%s", $1, $3);
+		    $$ = str;
+		    delete $1;
+		    delete $3;
+		  }
+               | TOK_INTEGER TOK_DASH TOK_INTEGER
+                  {
+		    char *str = new char[256];
+		    sprintf (str, "%d-%d", $1, $3);
+		    $$ = str;
+		  }
+;
+
+
+ctfileid_opt:    /* empty */ { $$ = -1; }
+               | TOK_CTFILEID TOK_LPAREN TOK_INTEGER TOK_RPAREN { $$ = $3; }
+;
+
+
+mosesqueries:  cgau_resdef_opt gu_resdef_opt loop_resdef_opt stem_condef_opt loop_condef_opt cgau_pairdef_opt gu_pairdef_opt 
+                {
+		  $$ = new MccMosesQueries ($1, $2, $3, $4, $5, $6, $7);
+	        }
+;
+
+
+cgau_resdef_opt:          /* empty */ { $$ = 0; }
+                      | TOK_CGAURESDEF queryexp sampling
+                         {
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			 }
+;
+
+
+gu_resdef_opt:      /* empty */ { $$ = 0; }
+                      | TOK_GURESDEF queryexp sampling
+                         {
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			 }
+;
+
+
+loop_resdef_opt:       /* empty */ { $$ = 0; }
+                      | TOK_LOOPRESDEF queryexp sampling
+                         {
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			 }
+;
+
+
+stem_condef_opt:       /* empty */ { $$ = 0; }
+                      | TOK_STEMCONDEF queryexp sampling
+                         {
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			 }
+;
+
+
+loop_condef_opt:       /* empty */ { $$ = 0; }
+                      | TOK_LOOPCONDEF queryexp sampling
+                         {
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			 }
+;
+
+
+cgau_pairdef_opt:       /* empty */ { $$ = 0; }
+                      | TOK_CGAUPAIRDEF queryexp sampling
+                         {
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			 }
+;
+
+
+gu_pairdef_opt:         /* empty */ { $$ = 0; }
+                      | TOK_GUPAIRDEF queryexp sampling
+                         {
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			 }
+;
+
+
+mfold_epc_opt:    /* empty */ { $$ = -1; }
+                | TOK_MFOLD_EPC TOK_LPAREN TOK_INTEGER TOK_PERCENT TOK_RPAREN { $$ = $3; }
+;
+
+
+mfold_win_opt:    /* empty */ { $$ = -1; }
+                | TOK_MFOLD_WIN TOK_LPAREN TOK_INTEGER TOK_RPAREN { $$ = $3; }
+;
+
+
+mfold_output_opt:    /* empty */ { $$ = 0; }
+                   | TOK_MFOLD_OUTPUT TOK_LPAREN TOK_STRING TOK_RPAREN { $$ = $3; }
 ;
 
 		  
