@@ -1,18 +1,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; -*- Mode: Outline -*- ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NEWS
-;; Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
+;; Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
 ;; Author           : Martin Larose
 ;; Created On       : Mon Aug 21 15:57:05 2000
 ;; Last Modified By : Martin Larose
-;; Last Modified On : Thu Jan  4 16:49:04 2001
-;; Update Count     : 3
+;; Last Modified On : Thu Sep 14 11:46:14 2000
+;; Update Count     : 2
 ;; Status           : Ok.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 * Version 1.1
-
-Parser corrected to accept ^M lines terminators.
 
 The parser now includes a interactive interface that can be coupled with
 different kind of input buffers.  See documentation for further
