@@ -1,12 +1,65 @@
-2001-02-09  Martin Larose  <larosem@iro.umontreal.ca>
+2001-07-09  Martin Larose  <larosem@iro.umontreal.ca>
 
-	* src/Makefile.in: headers installed in
-	include/mccparser-$(VERSION) directory.  Version number added in
-	the libraries. 
+	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y, src/Makefile.in, docs/Manual.tex, ChangeLog:
+	[prob-search] Transfer of probabilistic syntax written in 3.2.5 in this
+	branch.
 
-	* src/mccparser.h, src/mccparser.cc: MccVisitor class added.
-	Accept method added for each structures.  Assignment returns a non
-	const structure.
+	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y, docs/Manual.tex:
+	[1.1] Support for exploreLV and sampling_factor removed temporarily.
+
+2001-07-06  Martin Larose  <larosem@sonic.IRO.UMontreal.CA>
+
+	* src/mccp.y: Faces takes the not operator before the identifiers.
+
+2001-07-04  Martin Larose  <larosem@sonic.IRO.UMontreal.CA>
+
+	* NEWS, docs/Manual.tex: Grammar documentation updated.
+
+	* src/mccp.yy, src/mccp.y, configure: Grammar corrections.
+
+2001-07-03  Patrick Gendron  <gendrop@sonic.IRO.UMontreal.CA>
+
+	* src/mccp.y, src/mccp.yy, src/mccparser.cc, src/mccparser.h:
+	Added the parser functions for the pairing face operator
+
+2001-05-09  Philippe Thibault  <thibaup@sonic.IRO.UMontreal.CA>
+
+	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y:
+	added grammar rules for probabilistic search option and sampling
+
+	* docs/Manual.tex: updated documentation for probabilistic search
+	options and sampling
+
+2001-03-22  Martin Larose  <larosem@sonic.IRO.UMontreal.CA>
+
+	* src/mccp.yy: [1.1] The identifier token is modified to scan
+	atoms correctly.
+
+2001-03-21  Martin Larose  <larosem@sonic.IRO.UMontreal.CA>
+
+	* src/mccp.yy, src/mccp.y: [1.1] The atom token is added to scan
+	atoms correctly.
+
+2001-03-21  Philippe Thibault  <thibaup@sonic.IRO.UMontreal.CA>
+
+	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y:
+	[1.1] added probabilistic search
+
+2001-03-15  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* configure, ChangeLog: [1.1] Freezed release for mcsym 3.2.5.
+
+2001-02-09  Martin Larose  <larosem@sonic.IRO.UMontreal.CA>
+
+	* NEWS: Version 1.2.
+
+	* src/Makefile.in:
+	headers installed in include/mccparser-$(VERSION) directory.  Version number
+	added in the libraries.
+
+	* src/mccparser.h, src/mccparser.cc:
+	MccVisitor class added.  Accept method added for each structures.
+	Assignment returns a non const structure.
 
 	* docs/Manual.tex: MccVisitor documentation added.
 
