@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Aug 16 19:12:30 2001
-// Update Count     : 9
+// Last Modified On : Thu Aug 23 15:20:18 2001
+// Update Count     : 10
 // Status           : Ok.
 // 
 
@@ -1826,23 +1826,20 @@ MccDistCstStat::ppdisplay (ostream &os, int indent) const
 
 
 
-MccExpfile::MccExpfile (const MccExpfile &right)
-  : zipped (right.zipped)
-{
-  form = new char[strlen (right.form) + 1];
-  strcpy (form, right.form);
-}
+MccFilePdbOutput::MccFilePdbOutput (const MccFilePdbOutput &right)
+  : form (strdup (right.form)),
+    zipped (right.zipped)
+{ }
 
 
 
-MccExpfile&
-MccExpfile::operator= (const MccExpfile &right)
+MccFilePdbOutput&
+MccFilePdbOutput::operator= (const MccFilePdbOutput &right)
 {
   if (this != &right)
     {
       delete[] form;
-      form = new char[strlen (right.form) + 1];
-      strcpy (form, right.form);
+      form = strdup (right.form);
       zipped = right.zipped;
     }
   return *this;
@@ -1851,7 +1848,7 @@ MccExpfile::operator= (const MccExpfile &right)
 
 
 void
-MccExpfile::Accept (MccVisitor *visitor)
+MccFilePdbOutput::Accept (MccVisitor *visitor)
 {
   visitor->Visit (this);
 }
@@ -1859,11 +1856,52 @@ MccExpfile::Accept (MccVisitor *visitor)
 
 
 void
-MccExpfile::display (ostream &os) const
+MccFilePdbOutput::display (ostream &os) const
 {
-  os << "fileName_pdb (\"" << form << "\")";
+  os << "file_pdb (\"" << form;
   if (zipped)
     os << " zipped";
+  os << "\")";
+}
+
+
+
+MccFileBinaryOutput::MccFileBinaryOutput (const MccFileBinaryOutput &right)
+  : form (strdup (right.form)),
+    zipped (right.zipped)
+{ }
+
+
+
+MccFileBinaryOutput&
+MccFileBinaryOutput::operator= (const MccFileBinaryOutput &right)
+{
+  if (this != &right)
+    {
+      delete[] form;
+      form = strdup (right.form);
+      zipped = right.zipped;
+    }
+  return *this;
+}
+
+
+
+void
+MccFileBinaryOutput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccFileBinaryOutput::display (ostream &os) const
+{
+  os << "file_bin (\"" << form;
+  if (zipped)
+    os << " zipped";
+  os << "\")";
 }
 
 
@@ -1904,6 +1942,117 @@ void
 MccSocketBinaryOutput::display (ostream &os) const
 {
   os << "socket_bin (\"" << serverName << "\" " << port
+     << " \"" << modelName << "\")";
+}
+
+
+
+MccFilePdbInput::MccFilePdbInput (const MccFilePdbInput &right)
+  : name (strdup (right.name))
+{ }
+
+
+
+MccFilePdbInput&
+MccFilePdbInput::operator= (const MccFilePdbInput &right)
+{
+  if (this != &right)
+    {
+      delete[] name;
+      name = strdup (right.name);
+    }
+  return *this;
+}
+
+
+
+void
+MccFilePdbInput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccFilePdbInput::display (ostream &os) const
+{
+  os << "file_pdb (\"" << name << "\")";
+}
+
+
+
+MccFileBinaryInput::MccFileBinaryInput (const MccFileBinaryInput &right)
+  : name (strdup (right.name))
+{ }
+
+
+
+MccFileBinaryInput&
+MccFileBinaryInput::operator= (const MccFileBinaryInput &right)
+{
+  if (this != &right)
+    {
+      delete[] name;
+      name = strdup (right.name);
+    }
+  return *this;
+}
+
+
+
+void
+MccFileBinaryInput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccFileBinaryInput::display (ostream &os) const
+{
+  os << "file_bin (\"" << name << "\")";
+}
+
+
+
+MccSocketBinaryInput::MccSocketBinaryInput (const MccSocketBinaryInput &right)
+  : serverName (strdup (right.serverName)),
+    port (right.port),
+    modelName (strdup (right.modelName))
+{ }
+
+
+
+MccSocketBinaryInput&
+MccSocketBinaryInput::operator= (const MccSocketBinaryInput &right)
+{
+  if (this != &right)
+    {
+      delete[] serverName;
+      serverName = strdup (right.serverName);
+      port = right.port;
+      delete[] modelName;
+      modelName = strdup (right.modelName);
+    }
+  return *this;
+}
+
+
+
+void
+MccSocketBinaryInput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccSocketBinaryInput::display (ostream &os) const
+{
+  os << "socket_bin (\"" << serverName << " " << port
      << " \"" << modelName << "\")";
 }
 
@@ -2127,12 +2276,11 @@ MccLibraryExpr::_ChangeIdStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
-  : strucs (new vector< MccLibraryExpr::_LibStruc* > ())
+  : inputMode (right.inputMode->clone ()),
+    strucs (new vector< MccLibraryExpr::_LibStruc* > ())
 {
   vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
   
-  str = new char[strlen (right.str) + 1];
-  strcpy (str, right.str);
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back ((*cit)->Copy ());
 }
@@ -2143,7 +2291,7 @@ MccLibraryExpr::~MccLibraryExpr ()
 {
   vector< _LibStruc* >::iterator it;
 
-  delete[] str;
+  delete inputMode;
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
   delete strucs;
@@ -2159,8 +2307,8 @@ MccLibraryExpr::operator= (const MccLibraryExpr &right)
       vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
       vector< MccLibraryExpr::_LibStruc* >::iterator it;
 
-      str = new char[strlen (right.str) + 1];
-      strcpy (str, right.str);
+      delete inputMode;
+      inputMode = right.inputMode->clone ();
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
       strucs->clear ();
@@ -2185,7 +2333,8 @@ MccLibraryExpr::display (ostream &os) const
 {
   vector< _LibStruc* >::iterator it;
 
-  os << "library (pdb \"" << str << "\"";
+  os << "library (";
+  inputMode->display (os);
   for (it = strucs->begin (); it != strucs->end (); it++)
     {
       os << ' ';
@@ -2205,7 +2354,7 @@ MccLibraryExpr::ppdisplay (ostream &os, int indent) const
   whitespaces (os, indent + 2);
   os << '(' << endl;
   whitespaces (os, indent + 4);
-  os << "pdb \"" << str << "\"";
+  inputMode->ppdisplay (os, indent);
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
   os << endl;

@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Aug 16 19:12:37 2001
-// Update Count     : 15
+// Last Modified On : Thu Aug 23 15:20:33 2001
+// Update Count     : 16
 // Status           : Ok.
 // 
 
@@ -3117,7 +3117,7 @@ struct MccDistCstStat : public MccPStruct
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccExploreOutput
+struct MccOutputMode
 {
   
 public:
@@ -3127,18 +3127,18 @@ public:
   /**
    * Initializes the object.
    */
-  MccExploreOutput () { }
+  MccOutputMode () { }
 
   /**
    * Copies the object.
    * @return a clone of itself.
    */
-  virtual MccExploreOutput* clone () const = 0;
+  virtual MccOutputMode* clone () const = 0;
 
   /**
    * Destructs the object.
    */
-  virtual ~MccExploreOutput () { }
+  virtual ~MccOutputMode () { }
 
   // ACCESS ---------------------------------------------------------------
   
@@ -3174,7 +3174,7 @@ public:
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccExpfile : public MccExploreOutput
+struct MccFilePdbOutput : public MccOutputMode
 {
   /**
    * The C form that will be used for file output.
@@ -3194,7 +3194,7 @@ protected:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccExpfile () { }
+  MccFilePdbOutput () { }
   
 public:
 
@@ -3203,24 +3203,24 @@ public:
    * @param f the C form that will be used for file output.
    * @param z the boolean indicating if the files will be zipped.
    */
-  MccExpfile (char *f, bool z) : form (f), zipped (z) { }
+  MccFilePdbOutput (char *f, bool z) : form (f), zipped (z) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccExpfile (const MccExpfile &right);
+  MccFilePdbOutput (const MccFilePdbOutput &right);
 
   /**
    * Copies the object.
    * @return a clone of the current object.
    */
-  virtual MccExploreOutput* clone () const { return new MccExpfile (*this); }
+  virtual MccOutputMode* clone () const { return new MccFilePdbOutput (*this); }
     
   /**
    * Destructs the object.
    */
-  virtual ~MccExpfile () { delete[] form; }
+  virtual ~MccFilePdbOutput () { delete[] form; }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -3228,7 +3228,98 @@ public:
    * Assigns the right struct values to the object.
    * @param right the struct to copy.
    */
-  MccExpfile& operator= (const MccExpfile &right);
+  MccFilePdbOutput& operator= (const MccFilePdbOutput &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Class representing the binary file option on AST nodes "explore"
+ * and "restore" 
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccFileBinaryOutput : public MccOutputMode
+{
+  /**
+   * The C form that will be used for file output.
+   */
+  char *form;
+
+  /**
+   * The boolean indicating if the files will be zipped.
+   */
+  bool zipped;
+
+
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+  
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccFileBinaryOutput () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param f the C form that will be used for file output.
+   * @param z the boolean indicating if the files will be zipped.
+   */
+  MccFileBinaryOutput (char *f, bool z) : form (f), zipped (z) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccFileBinaryOutput (const MccFileBinaryOutput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of the current object.
+   */
+  virtual MccOutputMode* clone () const
+  { return new MccFileBinaryOutput (*this); }
+    
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccFileBinaryOutput () { delete[] form; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccFileBinaryOutput& operator= (const MccFileBinaryOutput &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -3264,7 +3355,7 @@ public:
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccSocketBinaryOutput : public MccExploreOutput
+struct MccSocketBinaryOutput : public MccOutputMode
 {
   /**
    * The server name.
@@ -3311,7 +3402,7 @@ public:
    * Copies the object.
    * @return a clone of the current object.
    */
-  virtual MccExploreOutput* clone () const
+  virtual MccOutputMode* clone () const
   { return new MccSocketBinaryOutput (*this); }
     
   /**
@@ -3357,6 +3448,326 @@ public:
 
 
 /**
+ * @short Abstract class for input model modes.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccInputMode
+{
+  
+public:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccInputMode () { }
+
+  /**
+   * Copies the object.
+   * @return a clone of itself.
+   */
+  virtual MccInputMode* clone () const = 0;
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccInputMode () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor) = 0;
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const = 0;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
+};
+
+
+
+/**
+ * @short Input model class for pdb files.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccFilePdbInput : public MccInputMode
+{
+  /**
+   * The file name.  It is usually in C form.
+   */
+  char *name;  
+  
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should not be used.
+   */
+  MccFilePdbInput () { }
+
+public:
+
+  /**
+   * Initializes the object with a name.
+   * @param n the name of the input file(s).
+   */
+  MccFilePdbInput (char *n) : name (n) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccFilePdbInput (const MccFilePdbInput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of itself.
+   */
+  virtual MccFilePdbInput* clone () const
+  { return new MccFilePdbInput (*this); }
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccFilePdbInput () { delete[] name; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccFilePdbInput& operator= (const MccFilePdbInput &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Input model class for binary files.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccFileBinaryInput : public MccInputMode
+{
+  /**
+   * The file name.  It is usually in C form.
+   */
+  char *name;  
+  
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should not be used.
+   */
+  MccFileBinaryInput () { }
+
+public:
+
+  /**
+   * Initializes the object with a name.
+   * @param n the name of the input file(s).
+   */
+  MccFileBinaryInput (char *n) : name (n) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccFileBinaryInput (const MccFileBinaryInput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of itself.
+   */
+  virtual MccFileBinaryInput* clone () const
+  { return new MccFileBinaryInput (*this); }
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccFileBinaryInput () { delete[] name; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccFileBinaryInput& operator= (const MccFileBinaryInput &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Input model class for binary sockets.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccSocketBinaryInput : public MccInputMode
+{
+  /**
+   * The server name.
+   */
+  char *serverName;
+
+  /**
+   * The server port number.
+   */
+  int port;
+  
+  /**
+   * The file name.  It is usually in C form.
+   */
+  char *modelName;  
+  
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should not be used.
+   */
+  MccSocketBinaryInput () { }
+
+public:
+
+  /**
+   * Initializes the object with a name.
+   * @param sn the server name.
+   * @param p the port number.
+   * @param mn the name of the input models.
+   */
+  MccSocketBinaryInput (char *sn, int p, char *mn)
+    : serverName (sn), port (p), modelName (mn) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccSocketBinaryInput (const MccSocketBinaryInput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of itself.
+   */
+  virtual MccSocketBinaryInput* clone () const
+  { return new MccSocketBinaryInput (*this); }
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccSocketBinaryInput () { delete[] serverName; delete[] modelName; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccSocketBinaryInput& operator= (const MccSocketBinaryInput &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
  * @short Struct representing the AST node "explore".
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
@@ -3371,7 +3782,7 @@ struct MccExploreStat : public MccPStruct
   /**
    * The explore output file structure.
    */
-  MccExploreOutput *expOutput;
+  MccOutputMode *expOutput;
   
 
   // LIFECYCLE ------------------------------------------------------------
@@ -3388,7 +3799,7 @@ public:
    * @param fg the FG struct to explore.
    * @param ef the explore output file structure.
    */
-  MccExploreStat (MccFragGenStruc* fg, MccExploreOutput *ef)
+  MccExploreStat (MccFragGenStruc* fg, MccOutputMode *ef)
     : fg_struc (fg), expOutput (ef) { }
 
   /**
@@ -3691,31 +4102,33 @@ struct MccLibraryExpr : public MccFGExp
   };
 
   /**
-   * The C form representing the name and path of the library.
+   * The input model mode.
    */
-  char *str;
+  MccInputMode *inputMode;
 
   /**
    * The vector containing the sub-structures.
    */
   vector< _LibStruc* > *strucs;
 
+protected:
   
   // LIFECYCLE ------------------------------------------------------------
     
   /**
-   * Initializes the object.
-   * @param s the C form representing the name and path of the library.
+   * Initializes the object.  It should not be used.
    */
-  MccLibraryExpr (char *s) : str (s), strucs (new vector< _LibStruc* > ()) { }
+  MccLibraryExpr () { }
+
+public:
 
   /**
    * Initializes the object.
-   * @param s the C form representing the name and path of the library.
+   * @param im the input model mode.
    * @param lsv the vector containing the library sub-structures.
    */
-  MccLibraryExpr (char *s, vector< _LibStruc* > *lsv)
-    : str (s), strucs (lsv) { }
+  MccLibraryExpr (MccInputMode *im, vector< _LibStruc* > *lsv)
+    : inputMode (im), strucs (lsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4741,7 +5154,7 @@ struct MccRestoreStat : public MccPStruct
   /**
    * The explore output file structure.
    */
-  MccExploreOutput *expOutput;
+  MccOutputMode *expOutput;
   
 
   // LIFECYCLE ------------------------------------------------------------
@@ -4758,7 +5171,7 @@ public:
    * @param fi the file name of the status file.
    * @param ef the explore output file structure.
    */
-  MccRestoreStat (char *fi, MccExploreOutput *ef)
+  MccRestoreStat (char *fi, MccOutputMode *ef)
     : filename (fi), expOutput (ef) { }
 
   /**
@@ -5525,16 +5938,40 @@ public:
   virtual void Visit (MccDistCstStat *struc) = 0;
   
   /**
-   * Visits the MccExpfile structure.
+   * Visits the MccFilePdbOutput structure.
    * @param struc the evaluated structure.
    */
-  virtual void Visit (MccExpfile *struc) = 0;
+  virtual void Visit (MccFilePdbOutput *struc) = 0;
+  
+  /**
+   * Visits the MccFileBinaryOutput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccFileBinaryOutput *struc) = 0;
   
   /**
    * Visits the MccSocketBinaryOutput structure.
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccSocketBinaryOutput *struc) = 0;
+  
+  /**
+   * Visits the MccFilePdbInput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccFilePdbInput *struc) = 0;
+  
+  /**
+   * Visits the MccFileBinaryInput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccFileBinaryInput *struc) = 0;
+  
+  /**
+   * Visits the MccSocketBinaryInput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccSocketBinaryInput *struc) = 0;
   
   /**
    * Visits the MccExploreStat structure.

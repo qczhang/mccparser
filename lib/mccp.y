@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Thu Aug 16 19:12:25 2001
- * Update Count     : 11
+ * Last Modified On : Thu Aug 23 15:20:09 2001
+ * Update Count     : 12
  * Status           : Ok.
  */
 
@@ -60,7 +60,8 @@
   MccResidueName *rr;
   MccFragGenStruc *fgr;
   MccFGExp *fgs;
-  MccExploreOutput *expo;
+  MccOutputMode *expo;
+  MccInputMode *inmo;
   cutoffs *ctfs;
 }
 
@@ -107,6 +108,8 @@
 %token TOK_NOTES
 %token TOK_PAIR
 %token TOK_PDB
+%token TOK_FILE_BINARY
+%token TOK_FILE_PDB
 %token TOK_PLACE
 %token TOK_PROPERTIES
 %token TOK_PSEATOMS
@@ -152,8 +155,8 @@
 %type <ps> pairdef
 %type <mccval> explore
 %type <mccval> restore
-%type <expo> exploreOutput_opt
-%type <expo> exploreOutput
+%type <expo> output_mode_opt
+%type <expo> output_mode
 %type <boolval> zfile_opt
 %type <mccval> source
 %type <mccval> adjacencyCst
@@ -209,6 +212,7 @@
 %type <boolval> align_opt
 %type <floatval> rmsd_opt
 %type <fgs> libraryexp
+%type <inmo> input_mode
 %type <lsv> libopt_star
 %type <ls> libopt
 
@@ -364,33 +368,42 @@ pairdef:   residueRef residueRef queryexp TOK_INTEGER
 ;
 
 
-explore:   TOK_EXPLORE TOK_LPAREN fgRef exploreOutput_opt TOK_RPAREN
+explore:   TOK_EXPLORE TOK_LPAREN fgRef output_mode_opt TOK_RPAREN
             {
 	      $$ = new MccExploreStat ($3, $4);
 	    }
 ;
 
 
-restore:   TOK_RESTORE TOK_LPAREN TOK_STRING exploreOutput_opt TOK_RPAREN
+restore:   TOK_RESTORE TOK_LPAREN TOK_STRING output_mode_opt TOK_RPAREN
             {
 	      $$ = new MccRestoreStat ($3, $4);
 	    }
 ;
 
 
-exploreOutput_opt:   /* empty */ { $$ = 0; }
-                   | exploreOutput { $$ = $1; }
+output_mode_opt:   /* empty */ { $$ = 0; }
+                   | output_mode { $$ = $1; }
 ;
 
 
-exploreOutput:   TOK_PDB TOK_LPAREN TOK_STRING TOK_RPAREN zfile_opt
-                 {
-		   $$ = new MccExpfile ($3, $5);
-		 }
-               | TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
-                 {
-		   $$ = new MccSocketBinaryOutput ($3, $4, $5);
-		 }
+output_mode:   /* deprecated */
+	       TOK_PDB TOK_LPAREN TOK_STRING TOK_RPAREN zfile_opt
+               {
+		 $$ = new MccFilePdbOutput ($3, $5);
+	       }
+             | TOK_FILE_PDB TOK_LPAREN TOK_STRING zfile_opt TOK_RPAREN
+               {
+		 $$ = new MccFilePdbOutput ($3, $4);
+	       }
+             | TOK_FILE_BINARY TOK_LPAREN TOK_STRING zfile_opt TOK_RPAREN
+               {
+		 $$ = new MccFileBinaryOutput ($3, $4);
+	       }
+             | TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
+               {
+		 $$ = new MccSocketBinaryOutput ($3, $4, $5);
+	       }
 ;
 
 
@@ -788,11 +801,29 @@ rmsd_opt:   /* empty */ { $$ = 0; }
 ;
 
 
-libraryexp:   TOK_LIBRARY TOK_LPAREN TOK_PDB TOK_STRING libopt_star TOK_RPAREN
-               {
-		 $$ = new MccLibraryExpr ($4, $5);
-	       }
+libraryexp:   TOK_LIBRARY TOK_LPAREN input_mode libopt_star TOK_RPAREN
+              {
+		$$ = new MccLibraryExpr ($3, $4);
+	      }
 ;
+
+
+input_mode:   TOK_PDB TOK_STRING  /* deprecated */
+              {
+		$$ = new MccFilePdbInput ($2);
+	      }
+            | TOK_FILE_BINARY TOK_LPAREN TOK_STRING TOK_RPAREN
+              {
+		$$ = new MccFileBinaryInput ($3);
+	      }
+            | TOK_FILE_PDB TOK_LPAREN TOK_STRING TOK_RPAREN
+              {
+		$$ = new MccFilePdbInput ($3);
+	      }
+            | TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
+              {
+		$$ = new MccSocketBinaryInput ($3, $4, $5);
+	      }
 
 
 libopt_star:   /* empty */

@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Thu Aug 16 19:12:27 2001
- * Update Count     : 7
+ * Last Modified On : Thu Aug 23 15:20:12 2001
+ * Update Count     : 8
  * Status           : Ok.
  */
 
@@ -91,6 +91,8 @@ display_fg   return TOK_DISPLAYFG;
 distance     return TOK_DISTANCE;
 explore      return TOK_EXPLORE;
 fileName_pdb return TOK_PDB;
+file_bin     return TOK_FILE_BINARY;
+file_pdb     return TOK_FILE_PDB;
 fixed_distance return TOK_FIXEDDIST;
 library      return TOK_LIBRARY;
 new_tag      return TOK_NEWTAG;
