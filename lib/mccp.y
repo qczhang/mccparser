@@ -80,6 +80,7 @@
   MccPlacerConnectStat::_PlacerConnectStruc *pcs;
   vector< MccPlacerPairStat::_PlacerPairStruc* > *ppsv;
   MccPlacerPairStat::_PlacerPairStruc *pps;
+  MccPlacerResidueName *prr;
   //!
 }
 
@@ -318,6 +319,7 @@
 %type <mccval> placer_pair
 %type <ppsv> placer_pairdef_plus
 %type <pps> placer_pairdef
+%type <prr> placer_residueRef
 //!
 
 %type <textval> ident_plus
@@ -1267,7 +1269,7 @@ flt:   TOK_INTEGER { $$ = $1; }
 
 //! placer
 
-placer_sequence:  TOK_PLACER_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
+placer_sequence:  TOK_PLACER_SEQUENCE TOK_LPAREN TOK_IDENT placer_residueRef ident_plus TOK_RPAREN
 {
   if (strlen ($3) != 1)
     throw CParserException ("Invalid sequence type.");
@@ -1294,7 +1296,7 @@ placer_condef_plus:   placer_condef
 ;
 
 
-placer_condef:   residueRef residueRef queryexp sampling
+placer_condef:   placer_residueRef placer_residueRef queryexp sampling
            {
 	     $$ = new MccPlacerConnectStat::_PlacerConnectStruc ($1, $2, $3, $4);
 	   }
@@ -1320,12 +1322,23 @@ placer_pairdef_plus:   placer_pairdef
 ;
 
 
-placer_pairdef:   residueRef residueRef queryexp sampling
+placer_pairdef:   placer_residueRef placer_residueRef queryexp sampling
             {
 	      $$ = new MccPlacerPairStat::_PlacerPairStruc ($1, $2, $3, $4);
 	    }
 ;
 
+placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
+            | TOK_RESNAME
+               {
+		 char tmp_char;
+		 int tmp_int;
+		 
+		 sscanf ($1, "%c%d", &tmp_char, &tmp_int); 
+		 $$ = new MccPlacerResidueName (tmp_char, tmp_int);
+		 delete $1;
+	       }
+;
 
 
 // TODO!

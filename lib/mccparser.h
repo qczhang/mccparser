@@ -6816,7 +6816,7 @@ struct MccPlacerSequenceStat : public MccPStruct
   /**
    * The residue name of the first residue in the sequence.
    */
-  MccResidueName *res;
+  MccPlacerResidueName *res;
 
   /**
    * The sequence.
@@ -6840,7 +6840,7 @@ public:
    * @param res the residue name of the first residue in the sequence.
    * @param str the sequence.
    */
-  MccPlacerSequenceStat (char typ, MccResidueName *r, char *str)
+  MccPlacerSequenceStat (char typ, MccPlacerResidueName *r, char *str)
     : type (typ), res (r), seq (str)
   { }
 
@@ -6916,12 +6916,12 @@ struct MccPlacerConnectStat : public MccPStruct
     /**
      * The name of the first residue in the relation.
      */
-    MccResidueName *res1;
+    MccPlacerResidueName *res1;
 
     /**
      * The name of the second residue in the relation.
      */
-    MccResidueName *res2;
+    MccPlacerResidueName *res2;
 
     /**
      * The query expression structure.
@@ -6950,7 +6950,7 @@ struct MccPlacerConnectStat : public MccPStruct
      * @param e the query expression structure.
      * @param s the sampling size structure.
      */
-    _PlacerConnectStruc (MccResidueName *r1, MccResidueName *r2, 
+    _PlacerConnectStruc (MccPlacerResidueName *r1, MccPlacerResidueName *r2, 
 		   MccQueryExpr *e, MccSamplingSize *s)
       : res1 (r1), res2 (r2), expr (e), ssize (s) { }
 
@@ -7068,7 +7068,7 @@ struct MccPlacerConnectStat : public MccPStruct
    * @param e the query expression structure.
    * @param s the sampling size structure.
    */
-  void GenPlacerConnectStruc (MccResidueName *r1, MccResidueName *r2,
+  void GenPlacerConnectStruc (MccPlacerResidueName *r1, MccPlacerResidueName *r2,
 			MccQueryExpr *e, MccSamplingSize *s)
   { strucs->push_back (new _PlacerConnectStruc (r1, r2, e, s)); }
 
@@ -7109,12 +7109,12 @@ struct MccPlacerPairStat : public MccPStruct
     /**
      * The name of the first residue in the relation.
      */
-    MccResidueName *res1;
+    MccPlacerResidueName *res1;
 
     /**
      * The name of the second residue in the relation.
      */
-    MccResidueName *res2;
+    MccPlacerResidueName *res2;
 
     /**
      * The query expression structure.
@@ -7144,8 +7144,8 @@ struct MccPlacerPairStat : public MccPStruct
      * @param e the query expression structure.
      * @param s the sampling size structure.
      */
-    _PlacerPairStruc (MccResidueName *r1, 
-		MccResidueName *r2, MccQueryExpr *e, MccSamplingSize *s)
+    _PlacerPairStruc (MccPlacerResidueName *r1, 
+		MccPlacerResidueName *r2, MccQueryExpr *e, MccSamplingSize *s)
       : res1 (r1), res2 (r2), expr (e), ssize (s) { }
 
     /**
@@ -7262,7 +7262,7 @@ struct MccPlacerPairStat : public MccPStruct
    * @param e the query expression structure.
    * @param s the sampling size structure.
    */   
-  void GenPlacerPairStruc (MccResidueName *r1, MccResidueName *r2,
+  void GenPlacerPairStruc (MccPlacerResidueName *r1, MccPlacerResidueName *r2,
 		     MccQueryExpr *e, MccSamplingSize *s)
   { strucs->push_back (new _PlacerPairStruc (r1, r2, e, s)); }
   
@@ -7281,6 +7281,96 @@ struct MccPlacerPairStat : public MccPStruct
    */
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
+
+
+/**
+ * @short Struct representing the residue reference.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccPlacerResidueName
+{
+  /**
+   * The chain id of the residue.
+   */
+  char id;
+
+  /**
+   * The residue number of the residue.
+   */
+  int no;
+
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+private:
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccPlacerResidueName () { }
+public:
+
+  /**
+   * Initializes the object.
+   * @param n the residue number of the residue.
+   */
+  MccPlacerResidueName (int n) : id (' '), no (n) { }
+
+  /**
+   * Initializes the object.
+   * @param i the chain id of the residue.
+   * @param n the residue number of the residue.
+   */
+  MccPlacerResidueName (char i, int n) : id (i), no (n) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccPlacerResidueName (const MccPlacerResidueName &right)
+    : id (right.id), no (right.no) { }
+  
+  /**
+   * Destroys the object.
+   */
+  ~MccPlacerResidueName () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  MccPlacerResidueName& operator= (const MccPlacerResidueName &right);
+  
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccPlacerResidueName* clone () const { return new MccPlacerResidueName (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  void Accept (MccVisitor *visitor);
+  
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const { if (id != ' ') os << id; os << no; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
 
 
 //!
@@ -7737,6 +7827,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccPlacerPairStat *struc) = 0;
+
+  /**
+   * Visits the MccPlacerResidueName structure.
+   * @param struc the MccPlacerResidueName structure.
+   */
+  virtual void Visit (MccPlacerResidueName *struc) = 0;
   
   //!
 
