@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Fri May 23 10:24:03 2003
-// Update Count     : 29
+// Last Modified On : Wed May 28 10:42:35 2003
+// Update Count     : 30
 // Status           : Ok.
 // 
 
@@ -7709,6 +7709,100 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
 //   };
 
   /**
+   * @short Struct containing clash engine parameter
+   *
+   * Negative value keeps default.
+   *
+   * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+   */
+  struct _ClashStruc
+  {
+    
+    /**
+     * Tag for engine mode
+     *
+     * 'n': naive mode.
+     *
+     * 'b': bounding box mode.
+     *
+     */
+    char mode;
+
+    /**
+     * Atomic clash area radius .
+     */
+    float radius;
+    
+    // LIFECYCLE ------------------------------------------------------------
+    
+    /**
+     * Initializes the object.
+     */
+    _ClashStruc ()
+      : mode ('n'), radius (-1) { }
+
+    /**
+     * Initializes the object.
+     * @param t the engine 
+     */
+    _ClashStruc (char m, float r)
+      : mode (m), radius (r) { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _ClashStruc (const _ClashStruc &right)
+      : mode (right.mode), radius (right.radius) { }
+    
+    /**
+     * Destroys the object.
+     */
+    ~_ClashStruc () { }
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    _ClashStruc& operator= (const _ClashStruc &right);
+    
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    _ClashStruc* clone () const { return new _ClashStruc (*this); }
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
+    // I/O ------------------------------------------------------------------
+    
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
+  };
+  
+  
+  /**
    * @short Struct containing closure engine parameter
    *
    * Negative value keeps default.
@@ -7806,7 +7900,12 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
    */
   struct _RibStruc
   {
-
+    
+    /**
+     * Build error threshold (A*A)
+     */
+    float build_error;
+    
     /**
      * Torsion shift threshold in optimization (rad). 
      */
@@ -7827,16 +7926,22 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
     /**
      * Initializes the object.
      */
-    _RibStruc () : min_shift (-1), min_drop (-1), shift_rate (-1) { }
+    _RibStruc ()
+      : build_error (-1),
+	min_shift (-1),
+	min_drop (-1),
+	shift_rate (-1) { }
 
     /**
      * Initializes the object.
+     * @param be the build error threshold.
      * @param ms the shift threshold.
      * @param md the drop threshold.
      * @param sr the shift rate.
      */
-    _RibStruc (float ms, float md, float sr)
-      : min_shift (ms),
+    _RibStruc (float be, float ms = -1, float md = -1, float sr = -1)
+      : build_error (be),
+	min_shift (ms),
 	min_drop (md),
 	shift_rate (sr)
     { }
@@ -7846,7 +7951,8 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
      * @param right the object to copy.
      */
     _RibStruc (const _RibStruc &right)
-      : min_shift (right.min_shift),
+      : build_error (right.build_error),
+	min_shift (right.min_shift),
 	min_drop (right.min_drop),
 	shift_rate (right.shift_rate)
     { }
@@ -7898,6 +8004,10 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
   };
   
 
+  /**
+   * Structure for the clash constraint type.
+   */
+  _ClashStruc* clash;
   
   /**
    * Structure for the closure constraint type.
@@ -7925,23 +8035,27 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
 
   /**
    * Initializes the object.
+   * @param ch the clash constraint type.
    * @param cl the closure constraint type.
    * @param ro the ribose optimizer parameters.
    */
-  MccPlacerBuildStat (_ClosureStruc* cl, _RibStruc* ro)
-    : closure (cl),
+  MccPlacerBuildStat (_ClashStruc* ch, _ClosureStruc* cl, _RibStruc* ro)
+    : clash (ch),
+      closure (cl),
       ribopt (ro),
       strucs (new vector< _GenBTStruc* > ())
   { }
 
   /**
    * Initializes the object.
+   * @param ch the clash constraint type.
    * @param cl the closure constraint type.
    * @param ro the ribose optimizer parameters.
    * @param s the vector containing the different backtrack sub-structures.
    */
-  MccPlacerBuildStat (_ClosureStruc* cl, _RibStruc* ro, vector< _GenBTStruc* > *s)
-    : closure (cl),
+  MccPlacerBuildStat (_ClashStruc* ch, _ClosureStruc* cl, _RibStruc* ro, vector< _GenBTStruc* > *s)
+    : clash (ch),
+      closure (cl),
       ribopt (ro),
       strucs (s)
   { }
@@ -8674,6 +8788,12 @@ public:
    */
   virtual void Visit (MccPlacerBuildStat::_BTStruc *struc) = 0;
 
+  /**
+   * Visits the MccPlacerBuildStat::_ClashStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerBuildStat::_ClashStruc *struc) = 0;
+  
   /**
    * Visits the MccPlacerBuildStat::_ClosureStruc sub-structure.
    * @param struc the evaluated structure.

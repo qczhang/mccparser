@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Fri May 23 10:24:02 2003
-// Update Count     : 25
+// Last Modified On : Wed May 28 10:42:34 2003
+// Update Count     : 26
 // Status           : Ok.
 // 
 
@@ -4855,6 +4855,49 @@ MccPlacerBuildStat::_BTStruc::ppdisplay (ostream &os, int indent) const
 }
 
 
+MccPlacerBuildStat::_ClashStruc&
+MccPlacerBuildStat::_ClashStruc::operator= (const MccPlacerBuildStat::_ClashStruc& right)
+{
+  if (this != &right)
+    {
+      mode = right.mode;
+      radius = right.radius;
+    }
+  return *this;
+}
+
+
+void
+MccPlacerBuildStat::_ClashStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+void
+MccPlacerBuildStat::_ClashStruc::display (ostream &os) const
+{
+  os << "clash (";
+
+  switch (mode)
+    {
+    case 'n': os << "naive";  break;
+    case 'b': os << "bbox";  break;
+    default:  os << "???";  break;
+    }
+
+  os << ' ' << radius << ')';
+}
+
+
+void
+MccPlacerBuildStat::_ClashStruc::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  display (os);
+  os << endl;
+}
+
+
 MccPlacerBuildStat::_ClosureStruc&
 MccPlacerBuildStat::_ClosureStruc::operator= (const MccPlacerBuildStat::_ClosureStruc& right)
 {
@@ -4906,6 +4949,7 @@ MccPlacerBuildStat::_RibStruc::operator= (const MccPlacerBuildStat::_RibStruc& r
 {
   if (this != &right)
     {
+      build_error = right.build_error;
       min_shift = right.min_shift;
       min_drop = right.min_drop;
       shift_rate = right.shift_rate;
@@ -4923,7 +4967,11 @@ MccPlacerBuildStat::_RibStruc::Accept (MccVisitor *visitor)
 void
 MccPlacerBuildStat::_RibStruc::display (ostream &os) const
 {
-  os << "ribose (" << min_shift << ' ' << min_drop << ' ' << shift_rate << ')';
+  os << "ribose ("
+     << build_error << ' '
+     << min_shift << ' '
+     << min_drop << ' '
+     << shift_rate << ')';
 }
 
 
@@ -4959,6 +5007,7 @@ MccPlacerBuildStat::~MccPlacerBuildStat ()
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
   delete strucs;
+  delete clash;
   delete closure;
   delete ribopt;
 }
@@ -4976,6 +5025,8 @@ MccPlacerBuildStat::operator= (const MccPlacerBuildStat &right)
       headmap = right.headmap;
       tailmap = right.tailmap;
 
+      delete clash;
+      clash = right.clash->clone ();
       delete closure;
       closure = right.closure->clone ();
       delete ribopt;
@@ -5066,8 +5117,10 @@ MccPlacerBuildStat::display (ostream &os) const
   vector< _GenBTStruc* >::iterator it;
 
   os << "placer_build (";
-  closure->display (os);
-  ribopt->display (os);
+  clash->display (os);
+  closure->display (os << ' ');
+  ribopt->display (os << ' ');
+  os << ' ';
   for (it = strucs->begin (); it != strucs->end (); it++)
     {
       if (it != strucs->begin ())
@@ -5087,6 +5140,7 @@ MccPlacerBuildStat::ppdisplay (ostream &os, int indent) const
   os << "placer_build" << endl;
   whitespaces (os, indent + 2);
   os << '(' << endl;
+  clash->ppdisplay (os, indent + 4);
   closure->ppdisplay (os, indent + 4);
   ribopt->ppdisplay (os, indent + 4);
   for (it = strucs->begin (); it != strucs->end (); it++)
