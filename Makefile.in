@@ -1,11 +1,11 @@
 ############################ -*- Mode: Makefile -*- ###########################
 ## Makefile.in
-## Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+## Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 15:57:45 2000
 ## Last Modified By : Martin Larose
-## Last Modified On : Thu Aug 31 13:07:01 2000
-## Update Count     : 1
+## Last Modified On : Tue Sep 25 15:57:52 2001
+## Update Count     : 2
 ## Status           : Unknown.
 ###############################################################################
 
@@ -29,7 +29,7 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
-SUBDIRS = src docs
+SUBDIRS = lib docs
 
 RELEASESUBDIRS = $(SUBDIRS)
 

@@ -4,8 +4,8 @@
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:06:06 2000
 ## Last Modified By : Martin Larose
-## Last Modified On : Tue Aug 28 15:13:49 2001
-## Update Count     : 4
+## Last Modified On : Tue Sep 25 15:57:58 2001
+## Update Count     : 5
 ## Status           : Ok.
 ###############################################################################
 
@@ -168,12 +168,12 @@ release: static
 dist:
 	@ echo "Copying distribution files"
 	@ for file in $(DISTFILES); do \
-	   ln $(srcdir)/$$file ../$(PACKAGE)-$(VERSION)/src 2> /dev/null \
-	    || cp -p $(srcdir)/$$file ../$(PACKAGE)$(VERSION)/src; \
+	   ln $(srcdir)/$$file ../$(PACKAGE)-$(VERSION)/lib 2> /dev/null \
+	    || cp -p $(srcdir)/$$file ../$(PACKAGE)$(VERSION)/lib; \
 	  done
 
 Makefile: $(srcdir)/Makefile.in ../config.status
-	@ cd .. && CONFIG_FILES=src/$@ CONFIG_HEADERS= ./config.status
+	@ cd .. && CONFIG_FILES=lib/$@ CONFIG_HEADERS= ./config.status
 
 # Tell versions [3.59,3.63) of GNU make not to export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
