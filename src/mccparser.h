@@ -3,9 +3,9 @@
 // Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
-// Last Modified By : Martin Larose
-// Last Modified On : Fri Nov 10 18:20:38 2000
-// Update Count     : 13
+// Last Modified By : Philippe Thibault
+// Last Modified On : Wed Mar 21 11:19:58 2001
+// Update Count     : 14
 // Status           : Ok.
 // 
 
@@ -3029,6 +3029,88 @@ public:
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
+
+
+/**
+ * @short Struct representing the AST node "exploreLV".
+ *
+ * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+ */
+struct MccExploreLVStat : public MccPStruct
+{
+  /**
+   * The FG struct to explore.
+   */
+  MccFragGenStruc *fg_struc;
+
+  /**
+   * The explore output file structure.
+   */
+  MccExpfile *efile;
+  
+
+  // LIFECYCLE ------------------------------------------------------------
+
+private:
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccExploreLVStat () : MccPStruct () { }
+public:
+
+  /**
+   * Initializes the object.
+   * @param fg the FG struct to explore.
+   * @param ef the explore output file structure.
+   */
+  MccExploreLVStat (MccFragGenStruc* fg, MccExpfile *ef)
+    : MccPStruct (), fg_struc (fg), efile (ef) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccExploreLVStat (const MccExploreLVStat &right);
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccExploreLVStat () { delete fg_struc; if (efile) delete efile; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual const MccExploreLVStat& operator= (const MccExploreLVStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccExploreLVStat* Copy () const { return new MccExploreLVStat (*this); }
+    
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
 
 
 /**

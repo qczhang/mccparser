@@ -3,9 +3,9 @@
 // Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
-// Last Modified By : Martin Larose
-// Last Modified On : Fri Nov 10 18:20:36 2000
-// Update Count     : 7
+// Last Modified By : Philippe Thibault
+// Last Modified On : Wed Mar 21 11:19:56 2001
+// Update Count     : 8
 // Status           : Ok.
 // 
 
@@ -1729,6 +1729,74 @@ MccExploreStat::ppdisplay (ostream &os, int indent) const
   os << ')' << endl;
 }
 
+
+
+MccExploreLVStat::MccExploreLVStat (const MccExploreLVStat &right)
+  : MccPStruct (right),
+    fg_struc (new MccFragGenStruc (*right.fg_struc)),
+    efile (0)
+{
+  if (right.efile)
+    efile = new MccExpfile (*right.efile);
+}
+
+
+
+const MccExploreLVStat&
+MccExploreLVStat::operator= (const MccExploreLVStat &right)
+{
+  if (this != &right)
+    {
+      MccPStruct::operator= (right);
+      delete fg_struc;
+      fg_struc = new MccFragGenStruc (*right.fg_struc);
+      if (efile)
+	{
+	  delete efile;
+	  efile = 0;
+	}
+      if (right.efile)
+	efile = new MccExpfile (*right.efile);
+    }
+  return *this;
+}
+
+
+
+void
+MccExploreLVStat::display (ostream &os) const
+{
+  os << "exploreLV (";
+  fg_struc->display (os);
+  if (efile)
+    {
+      os << ' ';
+      efile->display (os);
+    }
+  os << ')';
+}
+
+
+
+
+void
+MccExploreLVStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "exploreLV" << endl;
+  whitespaces (os, indent + 2);
+  os << '(' << endl;
+  whitespaces (os, indent + 4);
+  fg_struc->ppdisplay (os, indent + 4);
+  if (efile)
+    {
+      os << endl;
+      whitespaces (os, indent + 4);
+      efile->ppdisplay (os, indent + 4);
+    }
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
 
 
 MccLibraryExpr::_LibStruc::_LibStruc (const MccLibraryExpr::_LibStruc &right)

@@ -3,9 +3,9 @@
  * Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Martin Larose
- * Last Modified On : Fri Nov 10 18:20:34 2000
- * Update Count     : 8
+ * Last Modified By : Philippe Thibault
+ * Last Modified On : Wed Mar 21 11:19:29 2001
+ * Update Count     : 9
  * Status           : Ok.
  */
 
@@ -95,6 +95,7 @@
 %token TOK_DISPLAYFG
 %token TOK_DISTANCE
 %token TOK_EXPLORE
+%token TOK_EXPLORELV
 %token TOK_FILENAME
 %token TOK_PDB
 %token TOK_FIXEDDIST
@@ -148,6 +149,7 @@
 %type <psv> pairdef_plus
 %type <ps> pairdef
 %type <mccval> explore
+%type <mccval> exploreLV
 %type <mccval> restore
 %type <expf> expfile_opt
 %type <expf> expfile
@@ -249,6 +251,7 @@ statement:   sequence { $$ = $1; }
            | connect { $$ = $1; }
            | pair { $$ = $1; }
            | explore { $$ = $1; }
+           | exploreLV { $$ = $1; }
            | restore { $$ = $1; }
            | source { $$ = $1; }
            | adjacencyCst { $$ = $1; }
@@ -374,6 +377,13 @@ pairdef:   residueRef residueRef queryexp TOK_INTEGER
 explore:   TOK_EXPLORE TOK_LPAREN fgRef expfile_opt TOK_RPAREN
             {
 	      $$ = new MccExploreStat ($3, $4);
+	    }
+;
+
+
+exploreLV:   TOK_EXPLORELV TOK_LPAREN fgRef expfile_opt TOK_RPAREN
+            {
+	      $$ = new MccExploreLVStat ($3, $4);
 	    }
 ;
 

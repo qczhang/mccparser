@@ -3,9 +3,9 @@
  * Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Martin Larose
- * Last Modified On : Thu Jan  4 16:49:06 2001
- * Update Count     : 5
+ * Last Modified By : Philippe Thibault
+ * Last Modified On : Wed Mar 21 11:19:52 2001
+ * Update Count     : 6
  * Status           : Ok.
  */
 
@@ -89,6 +89,7 @@ direction    return TOK_DIRECTION;
 display_fg   return TOK_DISPLAYFG;
 distance     return TOK_DISTANCE;
 explore      return TOK_EXPLORE;
+exploreLV    return TOK_EXPLORELV;
 fileName_pdb return TOK_PDB;
 fixed_distance return TOK_FIXEDDIST;
 library      return TOK_LIBRARY;
