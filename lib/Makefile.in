@@ -3,9 +3,9 @@
 ## Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:06:06 2000
-## Last Modified By : 
-## Last Modified On : 
-## Update Count     : 0
+## Last Modified By : Martin Larose
+## Last Modified On : Thu Aug 31 13:07:19 2000
+## Update Count     : 1
 ## Status           : Ok.
 ###############################################################################
 
@@ -32,7 +32,6 @@ LIBS = @LIBS@
 
 AR = @AR@
 LEX = @LEX@
-LEXLIB = @LEXLIB@
 YACC = @YACC@
 
 INSTALL = @INSTALL@
@@ -50,23 +49,24 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 	      [ -s $@ ] || rm -f $@'
 
 .cc.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) -c $<
+	$(CXX) $(CXXFLAGS) -I$(srcdir) $(DEFS) -c $<
 
 .cc.lo:
-	$(CXX) $(CXXSHFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(CXXSHFLAGS) -I$(srcdir) $(DEFS) -c $< -o $@
 
+SOURCES = mccparser.cc
 
-SOURCES = 
+CSOURCES = lex.yy.c y.tab.c
 
 HEADERS = $(SOURCES:.cc=.h)
 
-OBJECTS = $(SOURCES:.cc=.o)
+OBJECTS = $(CSOURCES:.c=.o) $(SOURCES:.cc=.o)
 
-SHOBJECTS = $(SOURCES:.cc=.lo)
+SHOBJECTS = $(CSOURCES:.c=.lo) $(SOURCES:.cc=.lo)
 
 LIBRARY = libmccparser
 
-DISTFILES = Makefile.in $(SOURCES) $(HEADERS) tokens.l
+DISTFILES = Makefile.in $(SOURCES) $(HEADERS) mccp.yy mccp.y
 
 
 all: $(LIBRARY).so TAGS
@@ -82,40 +82,65 @@ $(LIBRARY).a: $(OBJECTS)
 TAGS: $(SOURCES) $(HEADERS)
 	@ etags --c++ $^
 
-doc: html texi docbook
+lex.yy.c: mccp.yy
+	$(LEX) $<
 
-html: $(HEADERS)
-	@ kdoc -f html -d html -p --strip-h-path -n lib$(LIBRARY) -u "libmccparser" -z $^
+y.tab.c y.tab.h: mccp.y
+	$(YACC) -d $^
 
-texi: $(HEADERS)
-	@ kdoc -f texinfo -d texi -p --strip-h-path $^
+lex.yy.o: lex.yy.c y.tab.h
+	$(CXX) $(CXXFLAGS) -I. -I$(srcdir) $(DEFS) -c $<
 
-docbook: $(HEADERS)
-	@ kdoc -f docbook -d docbook -p --strip-h-path $^
+lex.yy.lo: lex.yy.c y.tab.h
+	$(CXX) $(CXXSHFLAGS) -I. -I$(srcdir) $(DEFS) -c $< -o $@
+
+y.tab.o: y.tab.c y.tab.h
+	$(CXX) $(CXXFLAGS) -I. -I$(srcdir) $(DEFS) -c $<
+
+y.tab.lo: y.tab.c y.tab.h
+	$(CXX) $(CXXSHFLAGS) -I. -I$(srcdir) $(DEFS) -c $< -o $@
+
+
+doc:
 
 
 install: $(LIBRARY).so
 	@ echo Installing $^ in $(libdir)
 	@ $(srcdir)/../mkinstalldirs $(libdir)
+	@ $(srcdir)/../mkinstalldirs $(includedir)
 	@ $(INSTALL_DATA) $^ $(libdir)/$^
+	@ for file in $(HEADERS); do \
+	   echo Installing $$file in $(includedir); \
+           $(INSTALL_DATA) $(srcdir)/$$file $(includedir)/$$file; \
+          done;
 
 install-static: static
 	@ echo Installing $(LIBRARY).a in $(libdir)
 	@ $(srcdir)/../mkinstalldirs $(libdir)
+	@ $(srcdir)/../mkinstalldirs $(includedir)
 	@ $(INSTALL_DATA) $(LIBRARY).a $(libdir)/$(LIBRARY).a
+	@ for file in $(HEADERS); do \
+	   echo Installing $$file in $(includedir); \
+           $(INSTALL_DATA) $(srcdir)/$$file $(includedir)/$$file; \
+          done;
 
 uninstall:
 	@ rm -f $(libdir)/$(LIBRARY).a
 	@ rm -f $(libdir)/$(LIBRARY).so
+	@ for file in $(HEADERS); do \
+           rm -f $(includedir)/$$file; \
+          done;
 
 
 mostlyclean:
 	@ rm -f *~
+	@ rm -f core
 
 clean: mostlyclean
 	@ echo "Cleaning project"
 	@ rm -f $(LIBRARY).so $(LIBRARY).a
 	@ rm -f $(OBJECTS) $(SHOBJECTS) TAGS
+	@ rm -f lex.yy.c y.tab.c y.tab.h
 	@ rm -f *.d
 
 distclean: clean

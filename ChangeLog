@@ -1,0 +1,29 @@
+2000-08-31  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* configure.in: Header added.
+
+	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y, src/Makefile.in, docs/Manual.tex, docs/Makefile.in, configure.in, configure, README, NEWS, Makefile.in, INSTALL:
+	Initial release.
+
+	* src/CRemarkStat.h, src/CResetDBStat.h, src/CResetStat.h, src/CResidueName.h, src/CResidueStat.cc, src/CResidueStat.h, src/CRestoreStat.cc, src/CRestoreStat.h, src/CSequenceStat.cc, src/CSequenceStat.h, src/CSourceStat.cc, src/CSourceStat.h, src/CTorsionCstStat.cc, src/CTorsionCstStat.h, src/CVersionStat.h, src/CAddPdbStat.cc, src/CAdjacencyCstStat.cc, src/CAdjacencyCstStat.h, src/CAngleCstStat.cc, src/CAngleCstStat.h, src/CAssignStat.cc, src/CAssignStat.h, src/CBacktrackExpr.cc, src/CBacktrackExpr.h, src/CCacheExpr.cc, src/CCacheExpr.h, src/CClashCstStat.cc, src/CClashCstStat.h, src/CConnectStat.cc, src/CConnectStat.h, src/CCycleCstStat.cc, src/CCycleCstStat.h, src/CDisplayFGStat.cc, src/CDisplayFGStat.h, src/CDistCstStat.cc, src/CDistCstStat.h, src/CExploreStat.cc, src/CExploreStat.h, src/CFragGenStruc.h, src/CLibraryExpr.cc, src/CLibraryExpr.h, src/CNewTagStat.cc, src/CNewTagStat.h, src/CNoteStat.h, src/CNotesStat.h, src/CPairStat.cc, src/CPairStat.h, src/CQueryExpr.cc, src/CQueryExpr.h, src/CAddPdbStat.h:
+	Files transferred in mccparser.h.
+
+2000-08-22  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* src/lex.yy, src/mccp.yy: Renamed lex.yy to mccp.yy.
+
+	* src/lex.yy, src/tokens.l: Renamed tokens.l to lex.yy.
+
+2000-08-21  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* src/CStat.h, src/CFGExpr.h, src/CQExpr.h, src/CResidueName.cc, src/CFragGenStruc.cc, src/CEnv.cc, src/CEnv.h, src/CEvalException.cc, src/CEvalException.h:
+	Unneeded file removed.
+
+	* src/CEnv.cc, src/CEnv.h, src/CBacktrackExpr.h, src/CCacheExpr.cc, src/CCacheExpr.h, src/CClashCstStat.cc, src/CClashCstStat.h, src/CConnectStat.cc, src/CEvalException.h, src/CExploreStat.cc, src/CExploreStat.h, src/CFGExpr.h, src/CFragGenStruc.cc, src/CFragGenStruc.h, src/CLibraryExpr.cc, src/CQueryExpr.cc, src/CQueryExpr.h, src/CRemarkStat.h, src/CResetDBStat.h, src/CResetStat.h, src/CResidueName.cc, src/CResidueName.h, src/CStat.h, src/CTorsionCstStat.cc, src/CTorsionCstStat.h, src/CVersionStat.h, src/CAddPdbStat.cc, src/CAddPdbStat.h, src/CAdjacencyCstStat.cc, src/CAdjacencyCstStat.h, src/CAngleCstStat.cc, src/CAngleCstStat.h, src/CAssignStat.cc, src/CAssignStat.h, src/CBacktrackExpr.cc, src/CConnectStat.h, src/CCycleCstStat.cc, src/CCycleCstStat.h, src/CDisplayFGStat.cc, src/CDisplayFGStat.h, src/CDistCstStat.cc, src/CDistCstStat.h, src/CEvalException.cc, src/CLibraryExpr.h, src/CNewTagStat.cc, src/CNewTagStat.h, src/CNoteStat.h, src/CNotesStat.h, src/CPairStat.cc, src/CPairStat.h, src/CQExpr.h, src/CResidueStat.cc, src/CResidueStat.h, src/CRestoreStat.cc, src/CRestoreStat.h, src/CSequenceStat.cc, src/CSequenceStat.h, src/CSourceStat.cc, src/CSourceStat.h:
+	Imported files.
+
+	* ChangeLog, INSTALL, Makefile.in, NEWS, README, config.guess, config.sub, configure, configure.in, docs/Makefile.in, install-sh, mkinstalldirs, src/Makefile.in, src/tokens.l:
+	Created directory structure
+
+	* ChangeLog, INSTALL, Makefile.in, NEWS, README, config.guess, config.sub, configure, configure.in, docs/Makefile.in, install-sh, mkinstalldirs, src/Makefile.in, src/tokens.l:
+	New file.

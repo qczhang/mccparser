@@ -1,0 +1,44 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -*- Mode: Latex -*- %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Manual.tex
+%% Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+%% Author           : Martin Larose
+%% Created On       : Thu Aug 31 12:48:48 2000
+%% Last Modified By : Martin Larose
+%% Last Modified On : Thu Aug 31 13:07:16 2000
+%% Update Count     : 2
+%% Status           : Ok.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[11pt]{report}
+\usepackage{makeidx}
+\usepackage{times}
+\usepackage[ps2pdf,backref,hyperindex,colorlinks,bookmarks]{hyperref}
+
+
+\begin{document}
+
+This manual is intended for internal use.  It describes the general
+operation of the {\sc Mc-Sym} script parser ({\sc mccparser}).
+
+grammar comes from mcsym 3.1 using pccts
+
+produced files (libmccparser, mccparser.h)
+general preparation of the application for parser inclusion
+include mccparser.h in the application
+variable vector< MccPStruc* > *astv
+variable bool interactive_parser
+calling yyparse
+link to application with -lmccparser -fl
+
+lexer description
+ o lexer in file mccp.yy
+ o 4 states INITIAL, STRING, QUOTES and QUERIES
+ o throws CLexerExeption on unrecognized token
+
+parser description
+ o parser in file mccp.y 
+ o throws CParserException
+ o grammar definition
+ 
+\end{document}

@@ -3,9 +3,9 @@
 ## Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 15:57:45 2000
-## Last Modified By : 
-## Last Modified On : 
-## Update Count     : 0
+## Last Modified By : Martin Larose
+## Last Modified On : Thu Aug 31 13:07:01 2000
+## Update Count     : 1
 ## Status           : Unknown.
 ###############################################################################
 
@@ -29,7 +29,7 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
-SUBDIRS = src doc
+SUBDIRS = src docs
 
 RELEASESUBDIRS = $(SUBDIRS)
 
@@ -52,22 +52,24 @@ install install-static:
 	   echo "Building $@ in $$subdir"; \
 	   (cd $$subdir && $(MAKE) $@) || exit 1; \
 	  done
-	@ for file in NEWS DBNEWS; do \
+	@ $(srcdir)/mkinstalldirs $(datadir)/$(PACKAGE)/$(VERSION)/doc
+	@ for file in ChangeLog NEWS README; do \
            $(INSTALL_DATA) $(srcdir)/$$file $(datadir)/$(PACKAGE)/$(VERSION)/doc; \
 	  done
 
 uninstall:
-	@ for file in NEWS DBNEWS; do \
+	@ for file in ChangeLog NEWS README; do \
            rm -f $(datadir)/$(PACKAGE)/$(VERSION)/doc/$$file; \
 	  done
 	@ for subdir in $(SUBDIRS); do \
-	   echo "Building $@ in $$subdir"; \
+	   echo Making $@ in $$subdir; \
 	   (cd $$subdir && $(MAKE) $@) || exit 1; \
 	  done
+	@- rmdir -p $(datadir)/$(PACKAGE)/$(VERSION)/doc
 
 
 doc:
-	cd doc && $(MAKE) $@
+	@ cd docs && $(MAKE) $@
 
 
 
@@ -137,13 +139,13 @@ dist:
 
 
 Makefile: $(srcdir)/Makefile.in config.status
-	CONFIG_FILES=$@ CONFIG_HEADERS= ./config.status
+	@ CONFIG_FILES=$@ CONFIG_HEADERS= ./config.status
 
 config.status: configure
-	./config.status --recheck
+	@ ./config.status --recheck
 
 configure: configure.in
-	cd $(srcdir) && autoconf configure.in > configure
+	@ cd $(srcdir) && autoconf configure.in > configure
 
 # Tell versions [3.59,3.63) of GNU make not to export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

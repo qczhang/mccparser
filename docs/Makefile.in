@@ -3,9 +3,9 @@
 ## Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:02:59 2000
-## Last Modified By : 
-## Last Modified On : 
-## Update Count     : 0
+## Last Modified By : Martin Larose
+## Last Modified On : Thu Aug 31 13:07:11 2000
+## Update Count     : 1
 ## Status           : Ok.
 ###############################################################################
 
@@ -29,13 +29,42 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
 
 .SUFFIXES:
+.SUFFIXES: .tex
 
-DISTFILES = Makefile.in
+DISTFILES = Makefile.in Manual.tex
 
 
 all all-static static:
 
-install install-static:
+doc: Manual.pdf Manual.html html texi docbook
+
+html: $(srcdir)/../src/mccparser.h
+	@- kdoc -f html -d html -p --strip-h-path -n libmccparser -u "libmccparser" -z $^
+
+texi: $(srcdir)/../src/mccparser.h
+	@- kdoc -f texinfo -d texi -p --strip-h-path $^
+
+docbook: $(srcdir)/../src/mccparser.h
+	@- kdoc -f docbook -d docbook -p --strip-h-path $^
+
+
+Manual.dvi: Manual.tex
+	@ latex $<
+	@- makeindex Manual
+	@ latex $<
+
+Manual.ps: Manual.dvi
+	@ dvips -z -Pcm -o $@ $^
+
+Manual.pdf: Manual.ps
+	@ ps2pdf $^ $@
+
+Manual.html: Manual.dvi
+	@- ln -s $(srcdir)/Manual.tex 2> /dev/null
+	@ latex2html -address "<a href=\"mailto:Webmaster <adbit@iro.umontreal.ca>\">Webmaster</a>" -info "" -no_navigation Manual.tex
+
+
+install install-static: doc
 
 uninstall:
 
@@ -47,6 +76,7 @@ clean: mostlyclean
 
 distclean: clean
 	@ rm -f Makefile
+	@ rm -fr docbook html texi
 
 topclean: distclean
 	@ echo "The project is getting _top_ clean\!"
@@ -57,12 +87,12 @@ release:
 dist:
 	@ echo "Copying distribution files"
 	@ for file in $(DISTFILES); do \
-	   ln $(srcdir)/$$file ../$(PACKAGE)-$(VERSION)/doc 2> /dev/null \
-	    || cp -p $(srcdir)/$$file ../$(PACKAGE)$(VERSION)/doc; \
+	   ln $(srcdir)/$$file ../$(PACKAGE)-$(VERSION)/docs 2> /dev/null \
+	    || cp -p $(srcdir)/$$file ../$(PACKAGE)$(VERSION)/docs; \
 	  done
 
 Makefile: $(srcdir)/Makefile.in ../config.status
-	@ cd .. && CONFIG_FILES=doc/$@ CONFIG_HEADERS= ./config.status
+	@ cd .. && CONFIG_FILES=docs/$@ CONFIG_HEADERS= ./config.status
 
 # Tell versions [3.59,3.63) of GNU make not to export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

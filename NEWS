@@ -3,13 +3,16 @@
 ;; Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
 ;; Author           : Martin Larose
 ;; Created On       : Mon Aug 21 15:57:05 2000
-;; Last Modified By : 
-;; Last Modified On : 
-;; Update Count     : 0
-;; Status           : .
+;; Last Modified By : Martin Larose
+;; Last Modified On : Thu Aug 31 13:07:03 2000
+;; Update Count     : 1
+;; Status           : Ok.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 
-* Version 0.1
+* Version 1.0
 
+This package contains a parser for Mc-Sym scripts (.mcc).  It is based on
+earlier pccts parsers, but this one uses flex and bison for a greater
+portability.  The grammar is described in the manual in the docs directory.

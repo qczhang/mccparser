@@ -3,8 +3,8 @@ This is the README file for the MC-SYM script parser library.
 For instructions on how to install the mccparser package see the INSTALL file.
 For a release history, new features and bug-fix notes see the NEWS file.
 
-The User Manual is available in postscript and pdf version under the name
-UserManual.ps and UserManual.pdf in the doc directory.
+The Manual is available in postscript and pdf version under the name
+Manual.ps and Manual.pdf in the docs directory.
 
 You may either contact us via our web page http://www-lbit.iro.umontreal.ca
 or via email mcsym@iro.umontreal.ca
@@ -25,8 +25,6 @@ Sébastien Lemieux,
 Patrick Gendron,
 Daniel St-Arnaud,
 Martin Larose,
-Étienne Tourigny-Manning,
-Alexandre Dionne-Laporte,
 Michel Boivin.
 
 
@@ -36,5 +34,5 @@ If you find a bug or have a suggestion please send your informations to
 mcsym-bug@iro.umontreal.ca
 
 
-Copyright © 1999, 2000 Laboratoire de Biologie Informatique et Théorique,
+Copyright © 2000 Laboratoire de Biologie Informatique et Théorique,
 Université de Montréal.
