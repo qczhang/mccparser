@@ -3,9 +3,9 @@
  * Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Labo Lbit
- * Last Modified On : Thu Oct 31 10:38:52 2002
- * Update Count     : 19
+ * Last Modified By : Martin Larose
+ * Last Modified On : Fri Nov 14 16:08:34 2003
+ * Update Count     : 20
  * Status           : Ok.
  */
 
@@ -350,6 +350,7 @@ sequence:  TOK_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
 	      if (strlen ($3) != 1)
 		throw CParserException ("Invalid sequence type.");
 	      $$ = new MccSequenceStat ($3[0], $4, $5);
+	      delete[] $3;
 	    }
 ;
 
