@@ -1,11 +1,11 @@
-/*                               -*- Mode: C -*- 
+/*                               -*- Mode: C++ -*- 
  * mccp.yy
  * Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Thu Aug 23 15:20:12 2001
- * Update Count     : 8
+ * Last Modified On : Mon Nov 26 12:09:15 2001
+ * Update Count     : 9
  * Status           : Ok.
  */
 
@@ -105,6 +105,7 @@ place        return TOK_PLACE;
 prop         return TOK_PROPERTIES;
 pse_only     return TOK_PSEATOMS;
 quit         return TOK_QUIT;
+relation     return TOK_RELATION;
 remark       return TOK_REMARK;
 res          return TOK_RES;
 res_clash    return TOK_RESCLASH;

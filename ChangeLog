@@ -1,3 +1,56 @@
+2001-11-26  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc, docs/Manual.tex, NEWS:
+	Relation constraint parsing added.
+
+2001-09-26  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* configure, configure.in: LDFLAGS must not be crunched by it's
+	new definition.
+
+	* lib/Makefile.in: -p option removed due to install standards.
+
+2001-09-25  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* configure, lib/Makefile.in, configure.in, README, Makefile.in:
+	Files from src directory transferred to lib directory.
+
+	* configure.in, configure: Host detection modified to accept GNU
+	compiler on SGI.
+
+2001-08-28  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/Makefile.in: Added -p in INSTALL_DATA variable to preserve
+	time-stamp of copied files.
+
+2001-08-23  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* docs/Manual.tex, NEWS: Documentation updated.
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
+	Library loads files in pdb, bin and socket forms.  explore and
+	restore saves in pdb, bin and socket forms.
+
+2001-08-16  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
+	Added the socket_bin option on explore and restore.
+
+2001-07-09  Labo Lbit  <adbit@fortrel.iro.umontreal.ca>
+
+	* docs/Manual.tex, lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y [1.1]: 
+	Transfer of probabilistic syntax in prob-search branch.
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, lib/Makefile.in, docs/Manual.tex, ChangeLog [prob-search]:
+	Transfer of probabilistic syntax written in 3.2.5 in this branch.
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Manual.tex [1.1]:
+	Support for exploreLV and sampling_factor removed temporarily.
+
+2001-07-06  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccp.y: Faces takes the not operator before the identifiers.
+
 2001-07-04  Martin Larose  <larosem@iro.umontreal.ca>
 
 	* NEWS, docs/Manual.tex: Grammar documentation updated.

@@ -1,11 +1,11 @@
-/*                               -*- Mode: C -*- 
+/*                               -*- Mode: C++ -*- 
  * mccp.y
  * Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Thu Aug 23 15:20:09 2001
- * Update Count     : 12
+ * Last Modified On : Mon Nov 26 12:09:13 2001
+ * Update Count     : 13
  * Status           : Ok.
  */
 
@@ -44,6 +44,8 @@
   vector< MccDistCstStat::_DistStruc* > *dsv;
   MccDistCstStat::_DistStruc *ds;
   vector< MccTorsionCstStat::_TorsionStruc* > *tsv;
+  MccRelationCstStat::_RelationStruc *rels;
+  vector< MccRelationCstStat::_RelationStruc* > *relsv;
   MccTorsionCstStat::_TorsionStruc *ts;
   vector< MccAddPdbStat::_AddPdbStruc* > *addsv;
   MccAddPdbStat::_AddPdbStruc *adds;
@@ -114,6 +116,7 @@
 %token TOK_PROPERTIES
 %token TOK_PSEATOMS
 %token TOK_QUIT
+%token TOK_RELATION
 %token TOK_REMARK
 %token TOK_RES
 %token TOK_RESIDUE
@@ -187,6 +190,9 @@
 %type <mccval> displayfg
 %type <mccval> note
 %type <mccval> notes
+%type <relsv> relationdef_plus
+%type <rels> relationdef
+%type <mccval> relationCst
 %type <mccval> remark
 %type <mccval> reset
 %type <mccval> resetdb
@@ -263,6 +269,7 @@ statement:   sequence { $$ = $1; }
            | clashCst { $$ = $1; }
            | cycleCst { $$ = $1; }
            | distCst { $$ = $1; }
+           | relationCst { $$ = $1; }
            | torsionCst { $$ = $1; }
            | newtag { $$ = $1; }
            | addpdb { $$ = $1; }
@@ -518,6 +525,32 @@ distdef_plus:   distdef
 distdef:   residueRef TOK_COLON atomRef residueRef TOK_COLON atomRef flt flt
              {
 	       $$ = new MccDistCstStat::_DistStruc ($1, $3, $4, $6, $7, $8);
+	     }
+;
+
+
+relationCst:   TOK_RELATION TOK_LPAREN relationdef_plus TOK_RPAREN
+               {
+		 $$ = new MccRelationCstStat ($3);
+	       }
+;
+
+
+relationdef_plus:   relationdef
+                  {
+		    $$ = new vector< MccRelationCstStat::_RelationStruc* > (1, $1);
+		  }
+               | relationdef_plus relationdef
+                  {
+		    $$ = $1;
+		    $$->push_back ($2);
+		  }
+;
+
+
+relationdef:   residueRef residueRef queryexp
+             {
+	       $$ = new MccRelationCstStat::_RelationStruc ($1, $2, $3);
 	     }
 ;
 

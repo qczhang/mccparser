@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Aug 23 15:20:18 2001
-// Update Count     : 10
+// Last Modified On : Mon Nov 26 12:09:08 2001
+// Update Count     : 11
 // Status           : Ok.
 // 
 
@@ -2684,6 +2684,158 @@ MccQuitStat::ppdisplay (ostream &os, int indent) const
 {
   display (os);
   os << endl;
+}
+
+
+
+MccRelationCstStat::_RelationStruc::_RelationStruc (const MccRelationCstStat::_RelationStruc &right)
+  : ref (right.ref->Copy ()),
+    res (right.res->Copy ()),
+    expr (right.expr->Copy ())
+{
+}
+
+  
+
+MccRelationCstStat::_RelationStruc::~_RelationStruc ()
+{
+  delete ref;
+  delete res;
+  delete expr;
+}
+
+
+
+MccRelationCstStat::_RelationStruc&
+MccRelationCstStat::_RelationStruc::operator= (const MccRelationCstStat::_RelationStruc &right)
+{
+  if (this != &right)
+    {
+      delete ref;
+      ref = right.ref->Copy ();
+      delete res;
+      res = right.res->Copy ();
+      delete expr;
+      expr = right.expr->Copy ();
+    }
+  return *this;
+}
+
+  
+
+void
+MccRelationCstStat::_RelationStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccRelationCstStat::_RelationStruc::display (ostream &os) const
+{
+  ref->display (os);
+  os << ' ';
+  res->display (os);
+  os << ' ';
+  expr->display (os);
+}
+
+
+
+void
+MccRelationCstStat::_RelationStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  ref->ppdisplay (os, indent);
+  os << ' ';
+  res->ppdisplay (os, indent);
+  os << ' ';
+  expr->ppdisplay (os, indent);
+}
+
+
+
+MccRelationCstStat::MccRelationCstStat (const MccRelationCstStat &right)
+  : strucs (new vector< MccRelationCstStat::_RelationStruc* > ())
+{
+  vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
+
+  for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
+    strucs->push_back ((*cit)->Copy ());
+}
+
+
+
+MccRelationCstStat::~MccRelationCstStat ()
+{
+  vector< _RelationStruc* >::iterator it;
+
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    delete *it;
+  delete strucs;
+}
+
+
+
+MccRelationCstStat&
+MccRelationCstStat::operator= (const MccRelationCstStat &right)
+{
+  if (this != &right)
+    {
+      vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
+      vector< MccRelationCstStat::_RelationStruc* >::iterator it;
+
+      for (it = strucs->begin (); it != strucs->end (); it++)
+	delete *it;
+      strucs->clear ();
+      for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
+	strucs->push_back ((*cit)->Copy ());
+    }
+  return *this;
+}
+
+
+
+void
+MccRelationCstStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccRelationCstStat::display (ostream &os) const
+{
+  vector< _RelationStruc* >::iterator it;
+
+  os << "relation (";
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    {
+      if (it != strucs->begin ())
+	os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccRelationCstStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _RelationStruc* >::iterator it;
+
+  os << "relation" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
 }
 
 

@@ -4,13 +4,21 @@
 ;; Author           : Martin Larose
 ;; Created On       : Mon Aug 21 15:57:05 2000
 ;; Last Modified By : Martin Larose
-;; Last Modified On : Thu Aug 23 15:35:40 2001
-;; Update Count     : 7
+;; Last Modified On : Mon Nov 26 12:09:04 2001
+;; Update Count     : 8
 ;; Status           : Ok.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 * Version 1.2
+
+Relation (pairing/stacking) constraint added.  Its grammar is:
+
+	 relation :: relation ( <relation definition>+ )
+	 relation definition :: <ref> <res> <query>
+
+this constraint will accept a relation only if its properties satisfies the
+query.
 
 The library expression is able to read from different input forms: pdb
 files, binary files and through socket communication.  See the manual for

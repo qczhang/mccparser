@@ -4,8 +4,8 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Thu Aug 23 15:35:44 2001
-%% Update Count     : 11
+%% Last Modified On : Mon Nov 26 12:09:05 2001
+%% Update Count     : 12
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -254,6 +254,7 @@ eval (const char *str)
 
 Changes from {\sc mcsym} version 3.2.4:
 \begin{itemize}
+\item the relation constraint was added;
 \item binary and socket binary input and output forms are added;
 \item the explore and restore forms are changed;
 \item the library form is changed;
@@ -304,6 +305,8 @@ Changes from {\sc mcsym} version 3.2.4:
     \terminal{)}}
   \altrule{\terminal{note} \terminal{(} \token{STRING} \terminal{)}}
   \altrule{\terminal{notes}}
+  \altrule{\terminal{relation} \terminal{(} \nonterminal{relationdef}+
+    \terminal{)}}
   \altrule{\terminal{remark} \terminal{(} \token{STRING} \terminal{)}}
   \altrule{\terminal{reset}}
   \altrule{\terminal{reset\_\,db}}
@@ -347,6 +350,9 @@ Changes from {\sc mcsym} version 3.2.4:
     \nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}}
   {\token{FLOAT} \token{FLOAT}}
 \end{biggrammarrule}
+\begin{grammarrule}{relationdef}
+  {\nonterminal{residueRef} \nonterminal{residueRef} \nonterminal{queryexp}}
+\end{grammarrule}
 \begin{biggrammarrule}{torsiondef}
   {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
     \nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}}

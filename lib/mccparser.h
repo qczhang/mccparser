@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Aug 23 15:20:33 2001
-// Update Count     : 16
+// Last Modified On : Mon Nov 26 12:09:11 2001
+// Update Count     : 17
 // Status           : Ok.
 // 
 
@@ -96,7 +96,7 @@ public:
   CMccInput () { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~CMccInput () { }
 
@@ -180,7 +180,7 @@ struct MccPStruct
   MccPStruct (const MccPStruct &right) { }
   
   /**
-   * Destructs the structure.  Nothing to do.
+   * Destroys the structure.  Nothing to do.
    */
   virtual ~MccPStruct () { }
 
@@ -251,7 +251,7 @@ struct MccFGExp
   MccFGExp (const MccFGExp &right) { }
   
   /**
-   * Destructs the structure.  Nothing to do.
+   * Destroys the structure.  Nothing to do.
    */
   virtual ~MccFGExp () { }
 
@@ -340,7 +340,7 @@ public:
   MccFragGenStruc (const MccFragGenStruc &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   ~MccFragGenStruc () { delete[] ident; }
 
@@ -435,7 +435,7 @@ public:
     : id (right.id), no (right.no) { }
   
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   ~MccResidueName () { }
 
@@ -502,7 +502,7 @@ struct MccQFunc
   MccQFunc (const MccQFunc &right) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccQFunc () { }
 
@@ -570,7 +570,7 @@ struct MccQTrueFunc : public MccQFunc
   MccQTrueFunc (const MccQTrueFunc &right) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccQTrueFunc () { }
 
@@ -652,7 +652,7 @@ public:
   MccQIdentFunc (const MccQIdentFunc &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccQIdentFunc () { delete[] str; }
 
@@ -740,7 +740,7 @@ public:
   MccQNotFunc (const MccQNotFunc &right) : fn (right.fn->Copy ()) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccQNotFunc () { delete fn; }
 
@@ -842,7 +842,7 @@ public:
     : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
   
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccQFaceFunc () { delete left; delete right; }
 
@@ -933,7 +933,7 @@ public:
     : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
   
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccQAndFunc () { delete left; delete right; }
 
@@ -1023,7 +1023,7 @@ public:
     : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
   
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccQOrFunc () { delete left; delete right; }
 
@@ -1112,7 +1112,7 @@ struct MccQueryExpr
   MccQueryExpr (const MccQueryExpr &right);
   
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   ~MccQueryExpr ();
 
@@ -1228,7 +1228,7 @@ struct MccAddPdbStat : public MccPStruct
     _AddPdbStruc (const _AddPdbStruc &right);
      
     /**
-     * Destructs the structure.  Clears the vector of file names.
+     * Destroys the structure.  Clears the vector of file names.
      */
     ~_AddPdbStruc ();
 
@@ -1299,7 +1299,7 @@ struct MccAddPdbStat : public MccPStruct
   MccAddPdbStat (const MccAddPdbStat &right);
   
   /**
-   * Destructs the structure.  Clears the vector of sub-structures.
+   * Destroys the structure.  Clears the vector of sub-structures.
    */
   virtual ~MccAddPdbStat ();
 
@@ -1403,7 +1403,7 @@ public:
   MccAdjacencyCstStat (const MccAdjacencyCstStat &right);
 
   /**
-   * Destructs the structure.
+   * Destroys the structure.
    */
   virtual ~MccAdjacencyCstStat () { delete fg_struc; }
 
@@ -1543,7 +1543,7 @@ struct MccAngleCstStat : public MccPStruct
     _AngleStruc (const _AngleStruc &right);
 
     /**
-     * Destructs the residue names and atom names.
+     * Destroys the residue names and atom names.
      */
     ~_AngleStruc ();
 
@@ -1614,7 +1614,7 @@ struct MccAngleCstStat : public MccPStruct
   MccAngleCstStat (const MccAngleCstStat &right);
   
   /**
-   * Destructs the vector of sub-structures.
+   * Destroys the vector of sub-structures.
    */
   virtual ~MccAngleCstStat ();
 
@@ -1721,7 +1721,7 @@ public:
   MccAssignStat (const MccAssignStat &right);
   
   /**
-   * Destructs the variable and the expression.
+   * Destroys the variable and the expression.
    */
   virtual ~MccAssignStat () { delete [] ident; delete expr; }
 
@@ -1838,7 +1838,7 @@ struct MccBacktrackExpr : public MccFGExp
     _GenBTStruc (const _GenBTStruc &right);
 
     /**
-     * Destructs the object.  The destruction is controlled by the children
+     * Destroys the object.  The destruction is controlled by the children
      * of the structure.
      */
     virtual ~_GenBTStruc () { }
@@ -1915,7 +1915,7 @@ struct MccBacktrackExpr : public MccFGExp
     _FGStruc (const _FGStruc &right) : _GenBTStruc (right) { }
     
     /**
-     * Destructs the object.
+     * Destroys the object.
      */
     virtual ~_FGStruc () { delete fg_struc; }
 
@@ -1992,7 +1992,7 @@ struct MccBacktrackExpr : public MccFGExp
     _BTStruc (const _BTStruc &right) : _GenBTStruc (right) { }
     
     /**
-     * Destructs the object.
+     * Destroys the object.
      */
     virtual ~_BTStruc ();
 
@@ -2070,7 +2070,7 @@ struct MccBacktrackExpr : public MccFGExp
     _PlaceStruc (const _PlaceStruc &right) : _GenBTStruc (right) { }
     
     /**
-     * Destructs the object.
+     * Destroys the object.
      */
     virtual ~_PlaceStruc () { delete ref; delete res; delete fg_struc; }
 
@@ -2141,7 +2141,7 @@ struct MccBacktrackExpr : public MccFGExp
   MccBacktrackExpr (const MccBacktrackExpr &right);
   
   /**
-   * Destructs the object.  It clears the sub-structures contained in the
+   * Destroys the object.  It clears the sub-structures contained in the
    * vector.
    */
   virtual ~MccBacktrackExpr ();
@@ -2284,7 +2284,7 @@ public:
   MccCacheExpr (const MccCacheExpr &right);
   
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccCacheExpr () { delete fgref; }
 
@@ -2391,7 +2391,7 @@ public:
   MccClashCstStat (const MccClashCstStat &right);
   
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccClashCstStat () { delete fg_struc; }
 
@@ -2502,7 +2502,7 @@ struct MccConnectStat : public MccPStruct
     _ConnectStruc (const _ConnectStruc &right);
   
     /**
-     * Destructs the object.
+     * Destroys the object.
      */
     ~_ConnectStruc () { delete res1; delete res2; delete expr; }
 
@@ -2573,7 +2573,7 @@ struct MccConnectStat : public MccPStruct
   MccConnectStat (const MccConnectStat &right);
   
   /**
-   * Destructs the object.  Clears the vector of sub-structures.
+   * Destroys the object.  Clears the vector of sub-structures.
    */
   virtual ~MccConnectStat ();
 
@@ -2692,7 +2692,7 @@ struct MccCycleCstStat : public MccPStruct
     _CycleStruc (const _CycleStruc &right);
     
     /**
-     * Destructs the object.
+     * Destroys the object.
      */
     ~_CycleStruc () { delete res1; delete res2; }
 
@@ -2763,7 +2763,7 @@ struct MccCycleCstStat : public MccPStruct
    MccCycleCstStat (const MccCycleCstStat &right);
   
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccCycleCstStat ();
 
@@ -2855,7 +2855,7 @@ public:
   MccDisplayFGStat (const MccDisplayFGStat &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccDisplayFGStat () { delete fg_struc; }
 
@@ -2981,7 +2981,7 @@ struct MccDistCstStat : public MccPStruct
     _DistStruc (const _DistStruc &right);
 
     /**
-     * Destructs the object.
+     * Destroys the object.
      */
     ~_DistStruc () { delete res1; delete[] at1; delete res2; delete[] at2; }
 
@@ -3052,7 +3052,7 @@ struct MccDistCstStat : public MccPStruct
   MccDistCstStat (const MccDistCstStat &right);
 
   /**
-   * Destructs the object.  Clears the vector of sub-structures.
+   * Destroys the object.  Clears the vector of sub-structures.
    */
   virtual ~MccDistCstStat ();
 
@@ -3136,7 +3136,7 @@ public:
   virtual MccOutputMode* clone () const = 0;
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccOutputMode () { }
 
@@ -3218,7 +3218,7 @@ public:
   virtual MccOutputMode* clone () const { return new MccFilePdbOutput (*this); }
     
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccFilePdbOutput () { delete[] form; }
 
@@ -3309,7 +3309,7 @@ public:
   { return new MccFileBinaryOutput (*this); }
     
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccFileBinaryOutput () { delete[] form; }
 
@@ -3406,7 +3406,7 @@ public:
   { return new MccSocketBinaryOutput (*this); }
     
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccSocketBinaryOutput ()
   { delete[] serverName; delete[] modelName; }
@@ -3471,7 +3471,7 @@ public:
   virtual MccInputMode* clone () const = 0;
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccInputMode () { }
 
@@ -3548,7 +3548,7 @@ public:
   { return new MccFilePdbInput (*this); }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccFilePdbInput () { delete[] name; }
 
@@ -3631,7 +3631,7 @@ public:
   { return new MccFileBinaryInput (*this); }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccFileBinaryInput () { delete[] name; }
 
@@ -3727,7 +3727,7 @@ public:
   { return new MccSocketBinaryInput (*this); }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccSocketBinaryInput () { delete[] serverName; delete[] modelName; }
 
@@ -3809,7 +3809,7 @@ public:
   MccExploreStat (const MccExploreStat &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccExploreStat () { delete fg_struc; if (expOutput) delete expOutput; }
 
@@ -3915,7 +3915,7 @@ struct MccLibraryExpr : public MccFGExp
     _LibStruc (const _LibStruc &right);
 
     /**
-     * Destructs the object.  The destruction is controlled by the children
+     * Destroys the object.  The destruction is controlled by the children
      * of the structure.
      */
     virtual ~_LibStruc ();
@@ -4137,7 +4137,7 @@ public:
   MccLibraryExpr (const MccLibraryExpr &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccLibraryExpr ();
 
@@ -4248,7 +4248,7 @@ public:
   MccNewTagStat (const MccNewTagStat &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccNewTagStat ();
 
@@ -4332,7 +4332,7 @@ public:
   MccNoteStat (const MccNoteStat &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccNoteStat () { delete[] str; }
 
@@ -4403,7 +4403,7 @@ struct MccNotesStat : public MccPStruct
   MccNotesStat (const MccNotesStat &right) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccNotesStat () { }
 
@@ -4516,7 +4516,7 @@ struct MccPairStat : public MccPStruct
     _PairStruc (const _PairStruc &right);
 
     /**
-     * Destructs the object.
+     * Destroys the object.
      */
     ~_PairStruc () { delete res1; delete res2; delete expr; }
 
@@ -4587,7 +4587,7 @@ struct MccPairStat : public MccPStruct
   MccPairStat (const MccPairStat &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccPairStat ();
 
@@ -4668,7 +4668,7 @@ struct MccQuitStat : public MccPStruct
   MccQuitStat (const MccQuitStat &right) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccQuitStat () { }
 
@@ -4704,6 +4704,186 @@ struct MccQuitStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { os << "quit"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+
+/**
+ * @short Struct representing the "relation" statement.
+ *
+ * This statement generate constraints between two residues related together
+ * by properties.  This struct owns a local struct _RelationStruc
+ * that contains the informations on the constraints.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccRelationCstStat : public MccPStruct
+{
+  /**
+   * @short Sub-struct containing a relation constraint description.
+   *
+   * @author Martin Larose <larosem@iro.umontreal.ca>
+   */
+  struct _RelationStruc
+  {
+    /**
+     * The first residue name.
+     */
+    MccResidueName *ref;
+
+    /**
+     * The second residue name.
+     */
+    MccResidueName *res;
+
+    /**
+     * The query expression structure.
+     */
+    MccQueryExpr *expr;
+    
+  protected:
+    
+    // LIFECYCLE ------------------------------------------------------------
+
+    /**
+     * Initializes the object.  It should never be used.
+     */
+    _RelationStruc () { }
+
+  public:
+
+    /**
+     * Initializes the object.
+     * @param r1 the first residue name.
+     * @param r2 the second residue name.
+     * @param e the query expression.
+     */
+    _RelationStruc (MccResidueName *r1, MccResidueName *r2, MccQueryExpr *e)
+      : ref (r1), res (r2), expr (e)
+    { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _RelationStruc (const _RelationStruc &right);
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    _RelationStruc* Copy () const { return new _RelationStruc (*this); }
+
+    /**
+     * Destroys the residue names and atom names.
+     */
+    ~_RelationStruc ();
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    _RelationStruc& operator= (const _RelationStruc &right);
+    
+    // ACCESS ---------------------------------------------------------------
+
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+    
+    // I/O  -----------------------------------------------------------------
+
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
+  };
+
+  /**
+   * The vector of _RelationStruc.
+   */
+  vector< _RelationStruc* > *strucs;
+
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccRelationCstStat () : strucs (new vector< _RelationStruc* > ()) { }
+
+  /**
+   * Initializes the object.
+   * @param asv the relation sub-structure vector.
+   */
+  MccRelationCstStat (vector< _RelationStruc* > *asv) : strucs (asv) { }
+  
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccRelationCstStat (const MccRelationCstStat &right);
+  
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccRelationCstStat* Copy () const
+  { return new MccRelationCstStat (*this); }
+
+  /**
+   * Destroys the vector of sub-structures.
+   */
+  virtual ~MccRelationCstStat ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccRelationCstStat& operator= (const MccRelationCstStat &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O ------------------------------------------------------------------
+
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
@@ -4823,7 +5003,7 @@ struct MccResetDBStat : public MccPStruct
   MccResetDBStat (const MccResetDBStat &right) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccResetDBStat () { }
 
@@ -4894,7 +5074,7 @@ struct MccResetStat : public MccPStruct
   MccResetStat (const MccResetStat &right) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccResetStat () { }
 
@@ -5007,7 +5187,7 @@ struct MccResidueStat : public MccPStruct
     _ResidueStruc (const _ResidueStruc &right);
 
     /**
-     * Destructs the object.
+     * Destroys the object.
      */
     ~_ResidueStruc () { delete res1; if (res2) delete res2; delete expr; }
 
@@ -5078,7 +5258,7 @@ struct MccResidueStat : public MccPStruct
   MccResidueStat (const MccResidueStat &right);
 
   /**
-   * Destructs the object.  Clears the vector of sub-structures.
+   * Destroys the object.  Clears the vector of sub-structures.
    */
   virtual ~MccResidueStat ();
 
@@ -5277,7 +5457,7 @@ public:
   MccSequenceStat (const MccSequenceStat &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccSequenceStat () { delete res; delete[] seq; }
 
@@ -5359,7 +5539,7 @@ public:
   MccSourceStat (const MccSourceStat &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccSourceStat () { delete[] str; }
 
@@ -5517,7 +5697,7 @@ struct MccTorsionCstStat : public MccPStruct
     _TorsionStruc (const _TorsionStruc &right);
 
     /**
-     * Destructs the residue names and atom names.
+     * Destroys the residue names and atom names.
      */
     ~_TorsionStruc ();
     
@@ -5588,7 +5768,7 @@ struct MccTorsionCstStat : public MccPStruct
   MccTorsionCstStat (const MccTorsionCstStat &right);
 
   /**
-   * Destructs the vector of sub-structures.
+   * Destroys the vector of sub-structures.
    */
   virtual ~MccTorsionCstStat ();
 
@@ -5682,7 +5862,7 @@ struct MccVersion : public MccPStruct
   MccVersion (const MccVersion &right) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccVersion () { }
 
@@ -5752,7 +5932,7 @@ public:
   MccVisitor (const MccVisitor &right) { }
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   virtual ~MccVisitor () { }
 
@@ -6034,6 +6214,18 @@ public:
   virtual void Visit (MccQuitStat *struc) = 0;
 
   /**
+   * Visits the MccRelationCstStat::_RelationStruc structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccRelationCstStat::_RelationStruc *struc) = 0;
+  
+  /**
+   * Visits the MccRelationCstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccRelationCstStat *struc) = 0;
+  
+  /**
    * Visits the MccRemarkStat structure.
    * @param struc the evaluated structure.
    */
@@ -6139,7 +6331,7 @@ public:
   CLexerException (const CLexerException &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   ~CLexerException () { delete[] str; }
 
@@ -6237,7 +6429,7 @@ public:
   CParserException (const CParserException &right);
 
   /**
-   * Destructs the object.
+   * Destroys the object.
    */
   ~CParserException () { delete[] str; }
 
