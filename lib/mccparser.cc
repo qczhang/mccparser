@@ -1,6 +1,6 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.cc
-// Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-04 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // $Revision$
@@ -2024,6 +2024,47 @@ void
 MccSocketBinaryOutput::display (ostream &os) const
 {
   os << "socket_bin (\"" << serverName << "\" " << port
+     << " \"" << modelName << "\")";
+}
+
+
+
+MccSocketPdbOutput::MccSocketPdbOutput (const MccSocketPdbOutput &right)
+  : serverName (strdup (right.serverName)),
+    port (right.port),
+    modelName (strdup (right.modelName))
+{ }
+
+
+
+MccSocketPdbOutput&
+MccSocketPdbOutput::operator= (const MccSocketPdbOutput &right)
+{
+  if (this != &right)
+    {
+      delete[] serverName;
+      serverName = strdup (right.serverName);
+      port = right.port;
+      delete[] modelName;
+      modelName = strdup (right.modelName);
+    }
+  return *this;
+}
+
+
+
+void
+MccSocketPdbOutput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccSocketPdbOutput::display (ostream &os) const
+{
+  os << "socket_pdb (\"" << serverName << "\" " << port
      << " \"" << modelName << "\")";
 }
 

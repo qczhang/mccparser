@@ -1,4 +1,160 @@
+2004-03-18  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
+	added ast nodes for with-placer mcsym branch
+
+2004-03-12  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* configure: [with-placer] : updates
+
+2003-12-22  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, lib/Makefile.in, configure.in, configure, Makefile.in:
+	Merge between mcsym 3.3.2 patches and main trunk.  Now SunPro CC and
+	MipsPro CC compilers compatible.  It also includes statements for
+	rnaml input and output.
+
+2003-12-10  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* configure: SunOS SUNWspro and SGI MIPSpro compiler compatibility
+	update.
+
+2003-12-08  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccp.y, lib/Makefile.in, configure.in: SunOS
+	SUNWspro and SGI MIPSpro compiler compatibility update.
+
+2003-11-27  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/Makefile.in, configure.in, Makefile.in: SunOS SUNWspro and SGI
+	MIPSpro compiler compatibility update.
+
+2003-11-26  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, lib/Makefile.in, configure.in:
+	SunOS SUNWspro and SGI MIPSpro compiler compatibility update.
+
+2003-11-19  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, lib/Makefile.in, configure.in:
+	SunOS SUNWspro compiler compatibility update.
+
+2003-11-14  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccp.y: String deleted, only it's intial character is used.
+
+2003-11-13  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc: The
+	'file_rnaml' statement added.
+
+2003-10-28  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
+	[with-placer]: updates
+
+2003-09-30  Patrick Gendron  <gendrop@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Makefile.in, configure.in, configure:
+	Adapted the code to GCC 3.2 and mccore 1.4.
+	Added parser classes and tokens for preliminary cycle construction.
+	Replaced the cycle constraint by a multimer constraint (undocumented).
+
+2003-09-29  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
+	[with-placer]: various updates
+
+2003-05-28  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
+	[with-placer]: Added clash cst and build error spec in ribose cst.
+
+2003-05-23  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
+	[with-placer]: Added ribose parameters to build statement and modified
+	closure statement
+
+2003-05-20  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
+	[with-placer]: cleanup
+
+2003-04-15  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
+	[with-placer]: added search parameters inside search statement.
+
+2003-03-26  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
+	[with-placer]: implemented statement placer_explore
+
+	* lib/mccparser.h, lib/mccparser.cc [with-placer]: added head resid
+	and tail resid resolution in build statement. 
+
+2003-03-24  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
+	[with-placer]: renamed placer_backtrack statement to placer_build
+
+2003-03-21  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* ChangeLog, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h
+	[with-placer]: Implemented placer_backtrack statement
+
+2003-03-19  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.cc [with-placer]: corrections
+
+	* lib/mccparser.h, lib/mccparser.cc [with-placer]: some
+	corrections.
+
+2003-03-18  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccp.y, lib/mccparser.h [with-placer]: Added AST node
+	MccPlacerResidueName.
+
+2003-03-17  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccp.yy, lib/mccp.y, lib/mccparser.cc, lib/mccparser.h:
+	*** empty log message ***
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
+	[with-placer] : Added rules and AST nodes for placer_sequence,
+	placer_connect and placer_pair.  They parse as their original
+	counterpart, only the visit method is changed.
+
+2002-10-31  Labo Lbit  <adbit@yeti.iro.umontreal.ca>
+
+	* lib/mccp.y: *** empty log message ***
+
+	* lib/mccp.y: Minor errors corrected.
+
+2002-10-23  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
+	Added model sorter expression to library fg.
+
+2002-05-07  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+
+	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Manual.tex:
+	Added moses expression and updated doc
+
+2002-02-22  Patrick Gendron  <gendrop@yeti.iro.umontreal.ca>
+
+	* lib/Makefile.in, docs/Makefile.in, Makefile.in:
+	Modified makefiles to remove automatic generation of doc.
+
+2001-12-20  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* configure, lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Manual.tex, configure.in, NEWS:
+	Grammar rules changed to introduce exploreLV and a new kind of cache.
+
 2001-12-04  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* ChangeLog: *** empty log message ***
 
 	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc, docs/Manual.tex, docs/Makefile.in, ChangeLog:
 	Merge between [prob-search] and main branch.

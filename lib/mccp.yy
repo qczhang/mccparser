@@ -1,6 +1,6 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.yy
- * Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-04 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * $Revision$
@@ -131,6 +131,7 @@ rmsd         return TOK_RMSD;
 sec_struct   return TOK_CTFILEID;
 sequence     return TOK_SEQUENCE;
 socket_bin   return TOK_SOCKET_BINARY;
+socket_pdb   return TOK_SOCKET_PDB;
 source       return TOK_SOURCE;
 stem_cg_au_pair      return TOK_CGAUPAIRDEF;
 stem_cg_au_residue   return TOK_CGAURESDEF;

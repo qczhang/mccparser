@@ -1,6 +1,6 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.h
-// Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-04 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // $Revision$
@@ -3813,6 +3813,104 @@ public:
    * @param right the struct to copy.
    */
   MccSocketBinaryOutput& operator= (const MccSocketBinaryOutput &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Class representing the socket pdb option on AST nodes "explore",
+ * "exploreLV" and "restore".
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccSocketPdbOutput : public MccOutputMode
+{
+  /**
+   * The server name.
+   */
+  char *serverName;
+
+  /**
+   * The port number.
+   */
+  int port;
+
+  /**
+   * The C form that will be used for the model name.
+   */
+  char *modelName;
+
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+  
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccSocketPdbOutput () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param n the server name.
+   * @param p the server port number.
+   * @param m the C form that will be used for the model name.
+   */
+  MccSocketPdbOutput (char *n, int p, char *m)
+    : serverName (n), port (p), modelName (m) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccSocketPdbOutput (const MccSocketPdbOutput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of the current object.
+   */
+  virtual MccOutputMode* clone () const
+  { return new MccSocketPdbOutput (*this); }
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccSocketPdbOutput ()
+  { delete[] serverName; delete[] modelName; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccSocketPdbOutput& operator= (const MccSocketPdbOutput &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -8837,6 +8935,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccSocketBinaryOutput *struc) = 0;
+  
+  /**
+   * Visits the MccSocketPdbOutput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccSocketPdbOutput *struc) = 0;
   
   /**
    * Visits the MccFileRnamlOutput structure.
