@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Sep  5 13:36:24 2000
-// Update Count     : 5
+// Last Modified On : Tue Sep  5 14:01:34 2000
+// Update Count     : 7
 // Status           : Ok.
 // 
 
@@ -1359,7 +1359,7 @@ struct MccAssignStat : public MccPStruct
   /**
    * The expression of the FG.
    */
-  MccPStruct *expr;
+  MccFGExp *expr;
 
 
   // LIFECYCLE ------------------------------------------------------------
@@ -1376,7 +1376,7 @@ public:
    * @param s the variable receiving the FG.
    * @param exp the expression of the FG.
    */
-  MccAssignStat (char *s, MccPStruct *exp)
+  MccAssignStat (char *s, MccFGExp *exp)
     : MccPStruct (), ident (s), expr (exp) { }
 
   /**
