@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Wed Mar 21 17:30:44 2001
- * Update Count     : 7
+ * Last Modified On : Thu Mar 22 17:53:15 2001
+ * Update Count     : 8
  * Status           : Ok.
  */
 
@@ -133,10 +133,10 @@ zipped       return TOK_ZIPPED;
 					return TOK_ATOM;
                                       }
 
-[-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]*  {
-                                     mcclval.textval = mcccopy (mcctext);
-				     return TOK_IDENT;
-                                   }
+[-_<>a-zA-Z][-_<>\'%\.\*a-zA-Z0-9]*  {
+                                       mcclval.textval = mcccopy (mcctext);
+				       return TOK_IDENT;
+                                     }
 
 
            /** Definition of QUOTES indentifiers.  */
