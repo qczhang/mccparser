@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Mon Mar 17 11:41:39 2003
-// Update Count     : 17
+// Last Modified On : Wed Mar 19 14:07:28 2003
+// Update Count     : 18
 // Status           : Ok.
 // 
 
@@ -4360,7 +4360,7 @@ CParserException::operator<< (const char *s)
 
 MccPlacerSequenceStat::MccPlacerSequenceStat (const MccPlacerSequenceStat &right)
   : type (right.type),
-    res (new MccResidueName (*right.res))
+    res (new MccPlacerResidueName (*right.res))
 {
   seq = new char[strlen (right.seq) + 1];
   strcpy (seq, right.seq);
@@ -4375,7 +4375,7 @@ MccPlacerSequenceStat::operator= (const MccPlacerSequenceStat &right)
     {
       type = right.type;
       delete res;
-      res = new MccResidueName (*right.res);
+      res = new MccPlacerResidueName (*right.res);
       delete[] seq;
       seq = new char[strlen (right.seq) + 1];
       strcpy (seq, right.seq);
@@ -4413,8 +4413,8 @@ MccPlacerSequenceStat::ppdisplay (ostream &os, int indent) const
 
 
 MccPlacerConnectStat::_PlacerConnectStruc::_PlacerConnectStruc (const MccPlacerConnectStat::_PlacerConnectStruc &right)
-  : res1 (new MccResidueName (*right.res1)),
-    res2 (new MccResidueName (*right.res2)),
+  : res1 (new MccPlacerResidueName (*right.res1)),
+    res2 (new MccPlacerResidueName (*right.res2)),
     expr (new MccQueryExpr (*right.expr)),
     ssize (right.ssize)
 { }
@@ -4427,9 +4427,9 @@ MccPlacerConnectStat::_PlacerConnectStruc::operator= (const MccPlacerConnectStat
   if (this != &right)
     {
       delete res1;
-      res1 = new MccResidueName (*right.res1);
+      res1 = new MccPlacerResidueName (*right.res1);
       delete res2;      
-      res2 = new MccResidueName (*right.res2);
+      res2 = new MccPlacerResidueName (*right.res2);
       delete expr;
       expr = new MccQueryExpr (*right.expr);
       ssize = right.ssize;
@@ -4561,8 +4561,8 @@ MccPlacerConnectStat::ppdisplay (ostream &os, int indent) const
 
 
 MccPlacerPairStat::_PlacerPairStruc::_PlacerPairStruc (const MccPlacerPairStat::_PlacerPairStruc &right)
-  : res1 (new MccResidueName (*right.res1)),
-    res2 (new MccResidueName (*right.res2)),
+  : res1 (new MccPlacerResidueName (*right.res1)),
+    res2 (new MccPlacerResidueName (*right.res2)),
     expr (new MccQueryExpr (*right.expr)),
     ssize (right.ssize)
 { }
@@ -4575,9 +4575,9 @@ MccPlacerPairStat::_PlacerPairStruc::operator= (const MccPlacerPairStat::_Placer
   if (this != &right)
     {
       delete res1;
-      res1 = new MccResidueName (*right.res1);
+      res1 = new MccPlacerResidueName (*right.res1);
       delete res2;
-      res2 = new MccResidueName (*right.res2);
+      res2 = new MccPlacerResidueName (*right.res2);
       delete expr;
       expr = new MccQueryExpr (*right.expr);
       ssize = right.ssize;

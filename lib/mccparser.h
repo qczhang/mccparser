@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Mon Mar 17 11:40:21 2003
-// Update Count     : 23
+// Last Modified On : Wed Mar 19 14:07:32 2003
+// Update Count     : 24
 // Status           : Ok.
 // 
 
@@ -6802,6 +6802,95 @@ struct MccVersion : public MccPStruct
 //! placer
 
 /**
+ * @short Struct representing the residue reference.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccPlacerResidueName
+{
+  /**
+   * The chain id of the residue.
+   */
+  char id;
+
+  /**
+   * The residue number of the residue.
+   */
+  int no;
+
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+private:
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccPlacerResidueName () { }
+public:
+
+  /**
+   * Initializes the object.
+   * @param n the residue number of the residue.
+   */
+  MccPlacerResidueName (int n) : id (' '), no (n) { }
+
+  /**
+   * Initializes the object.
+   * @param i the chain id of the residue.
+   * @param n the residue number of the residue.
+   */
+  MccPlacerResidueName (char i, int n) : id (i), no (n) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccPlacerResidueName (const MccPlacerResidueName &right)
+    : id (right.id), no (right.no) { }
+  
+  /**
+   * Destroys the object.
+   */
+  ~MccPlacerResidueName () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  MccPlacerResidueName& operator= (const MccPlacerResidueName &right);
+  
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccPlacerResidueName* clone () const { return new MccPlacerResidueName (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  void Accept (MccVisitor *visitor);
+  
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const { if (id != ' ') os << id; os << no; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+/**
  * @short Struct representing the AST node for the "placer_sequence" statement.
  *
  * @author Philippe Thibault <thibaup@iro.umontreal.ca>
@@ -7280,95 +7369,6 @@ struct MccPlacerPairStat : public MccPStruct
    * @param ident the identation level.
    */
   virtual void ppdisplay (ostream &os, int indent = 0) const;
-};
-
-
-/**
- * @short Struct representing the residue reference.
- *
- * @author Martin Larose <larosem@iro.umontreal.ca>
- */
-struct MccPlacerResidueName
-{
-  /**
-   * The chain id of the residue.
-   */
-  char id;
-
-  /**
-   * The residue number of the residue.
-   */
-  int no;
-
-  
-  // LIFECYCLE ------------------------------------------------------------
-
-private:
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccPlacerResidueName () { }
-public:
-
-  /**
-   * Initializes the object.
-   * @param n the residue number of the residue.
-   */
-  MccPlacerResidueName (int n) : id (' '), no (n) { }
-
-  /**
-   * Initializes the object.
-   * @param i the chain id of the residue.
-   * @param n the residue number of the residue.
-   */
-  MccPlacerResidueName (char i, int n) : id (i), no (n) { }
-
-  /**
-   * Initializes the object with the rights content.
-   * @param right the object to copy.
-   */
-  MccPlacerResidueName (const MccPlacerResidueName &right)
-    : id (right.id), no (right.no) { }
-  
-  /**
-   * Destroys the object.
-   */
-  ~MccPlacerResidueName () { }
-
-  // OPERATORS ------------------------------------------------------------
-
-  MccPlacerResidueName& operator= (const MccPlacerResidueName &right);
-  
-  // ACCESS ---------------------------------------------------------------
-
-  // METHODS --------------------------------------------------------------
-
-  /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  MccPlacerResidueName* clone () const { return new MccPlacerResidueName (*this); }
-
-  /**
-   * Accepts the visitor and calls it on itself.
-   * @param visitor the visitor.
-   */
-  void Accept (MccVisitor *visitor);
-  
-  // I/O  -----------------------------------------------------------------
-  
-  /**
-   * Displays the structure.
-   * @param os the output stream where the message is displayed.
-   */
-  void display (ostream &os) const { if (id != ' ') os << id; os << no; }
-
-  /**
-   * Displays the script in human readable form.
-   * @param os the output stream used.
-   * @param ident the identation level.
-   */
-  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
