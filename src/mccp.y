@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Fri Sep  1 13:08:54 2000
- * Update Count     : 3
+ * Last Modified On : Tue Sep  5 11:58:17 2000
+ * Update Count     : 4
  * Status           : Ok.
  */
 
@@ -879,7 +879,7 @@ ident_plus:   TOK_IDENT { $$ = $1; }
                {
 		 $$ = new char[strlen ($1) + strlen ($2) + 1];
 		 strcpy ($$, $1);
-		 strcpy ($$, $2);
+		 strcat ($$, $2);
 		 delete[] $1;
 		 delete[] $2;
 	       }
