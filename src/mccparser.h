@@ -1,11 +1,11 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.h
-// Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Fri Nov 10 18:20:38 2000
-// Update Count     : 13
+// Last Modified On : Fri Feb  9 10:51:42 2001
+// Update Count     : 14
 // Status           : Ok.
 // 
 
@@ -26,6 +26,8 @@ void mcc_delete_buffer (YY_BUFFER_STATE);
 void mcc_switch_to_buffer (YY_BUFFER_STATE);
 
 class MccPStruct;
+class MccVisitor;
+
 
 
 /**
@@ -189,8 +191,7 @@ struct MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccPStruct& operator= (const MccPStruct &right)
-  { return *this; }
+  virtual MccPStruct& operator= (const MccPStruct &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
   
@@ -200,7 +201,13 @@ struct MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccPStruct* Copy () const { return new MccPStruct (*this); }
+  virtual MccPStruct* Copy () const = 0;
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor) = 0;
   
   // I/O ------------------------------------------------------------------
 
@@ -208,14 +215,14 @@ struct MccPStruct
    * Displays the script.  It normally never reaches this method.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (ostream &os) const { }
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (ostream &os, int indent = 0)  const { }
+  virtual void ppdisplay (ostream &os, int indent = 0)  const = 0;
 };
 
 
@@ -255,7 +262,7 @@ struct MccFGExp
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccFGExp& operator= (const MccFGExp &right) { return *this; }
+  virtual MccFGExp& operator= (const MccFGExp &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
   
@@ -265,7 +272,13 @@ struct MccFGExp
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccFGExp* Copy () const { return new MccFGExp (*this); }
+  virtual MccFGExp* Copy () const = 0;
+  
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor) = 0;
   
   // I/O ------------------------------------------------------------------
 
@@ -273,14 +286,14 @@ struct MccFGExp
    * Displays the script.  It normally never reaches this method.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (ostream &os) const { }
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (ostream &os, int indent = 0) const { }
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };
 
 
@@ -338,7 +351,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  const MccFragGenStruc& operator= (const MccFragGenStruc &right);
+  MccFragGenStruc& operator= (const MccFragGenStruc &right);
 
   // ACCESS ---------------------------------------------------------------
 
@@ -350,6 +363,12 @@ public:
    */
   MccFragGenStruc* Copy () const { return new MccFragGenStruc (*this); }
 
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  void Accept (MccVisitor *visitor);
+  
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -422,7 +441,7 @@ public:
 
   // OPERATORS ------------------------------------------------------------
 
-  const MccResidueName& operator= (const MccResidueName &right);
+  MccResidueName& operator= (const MccResidueName &right);
   
   // ACCESS ---------------------------------------------------------------
 
@@ -434,6 +453,12 @@ public:
    */
   MccResidueName* Copy () const { return new MccResidueName (*this); }
 
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  void Accept (MccVisitor *visitor);
+  
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -488,7 +513,7 @@ struct MccQFunc
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccQFunc& operator= (const MccQFunc &right) { return *this; }
+  virtual MccQFunc& operator= (const MccQFunc &right) { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -498,22 +523,28 @@ struct MccQFunc
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQFunc* Copy () const { return new MccQFunc (*this); }
+  virtual MccQFunc* Copy () const = 0;
 
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor) = 0;
+  
   // I/O  -----------------------------------------------------------------
   
   /**
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (ostream &os) const { }
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (ostream &os, int indent = 0) const { }
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };
 
 
@@ -530,13 +561,13 @@ struct MccQTrueFunc : public MccQFunc
   /**
    * Initializes the object.
    */
-  MccQTrueFunc () : MccQFunc () { }
+  MccQTrueFunc () { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccQTrueFunc (const MccQTrueFunc &right) : MccQFunc (right) { }
+  MccQTrueFunc (const MccQTrueFunc &right) { }
 
   /**
    * Destructs the object.
@@ -550,7 +581,7 @@ struct MccQTrueFunc : public MccQFunc
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccQTrueFunc& operator= (const MccQTrueFunc &right);
+  virtual MccQTrueFunc& operator= (const MccQTrueFunc &right) { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -562,6 +593,12 @@ struct MccQTrueFunc : public MccQFunc
    */
   virtual MccQTrueFunc* Copy () const { return new MccQTrueFunc (*this); }
 
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+  
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -599,14 +636,14 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccQIdentFunc () : MccQFunc () { }
+  MccQIdentFunc () { }
 public:
 
   /**
    * Initializes the object.
    * @param s the name of the identifier.
    */
-  MccQIdentFunc (char *s) : MccQFunc (), str (s) { }
+  MccQIdentFunc (char *s) : str (s) { }
 
   /**
    * Initializes the object with the rights content.
@@ -626,7 +663,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccQIdentFunc& operator= (const MccQIdentFunc &right);
+  virtual MccQIdentFunc& operator= (const MccQIdentFunc &right);
   
   // ACCESS ---------------------------------------------------------------
 
@@ -643,6 +680,12 @@ public:
    * @return a copy of the current object.
    */
   virtual MccQIdentFunc* Copy () const { return new MccQIdentFunc (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
   
   // I/O  -----------------------------------------------------------------
   
@@ -681,21 +724,20 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccQNotFunc () : MccQFunc (), fn (0) { }
+  MccQNotFunc () : fn (0) { }
 public:
 
   /**
    * Initializes the object.
    * @param f the query struct that is negated.
    */
-  MccQNotFunc (MccQFunc *f) : MccQFunc (), fn (f) { }
+  MccQNotFunc (MccQFunc *f) : fn (f) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccQNotFunc (const MccQNotFunc &right)
-    : MccQFunc (right), fn (right.fn->Copy ()) { }
+  MccQNotFunc (const MccQNotFunc &right) : fn (right.fn->Copy ()) { }
 
   /**
    * Destructs the object.
@@ -709,7 +751,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccQNotFunc& operator= (const MccQNotFunc &right);
+  virtual MccQNotFunc& operator= (const MccQNotFunc &right);
   
   // ACCESS ---------------------------------------------------------------
 
@@ -732,6 +774,12 @@ public:
    * @return a copy of the current object.
    */
   virtual MccQNotFunc* Copy () const { return new MccQNotFunc (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
 
   // I/O  -----------------------------------------------------------------
   
@@ -776,7 +824,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccQAndFunc () : MccQFunc () { }
+  MccQAndFunc () { }
 public:
 
   /**
@@ -784,17 +832,14 @@ public:
    * @param l the left query struc of the operation.
    * @param r the right query struc of the operation.
    */
-  MccQAndFunc (MccQFunc *l, MccQFunc *r) : MccQFunc (), left (l), right (r) { }
+  MccQAndFunc (MccQFunc *l, MccQFunc *r) : left (l), right (r) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right_val the object to copy.
    */
   MccQAndFunc (const MccQAndFunc &right_val)
-    : MccQFunc (right_val),
-      left (right_val.left->Copy ()),
-      right (right_val.right->Copy ())
-  { }
+    : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
   
   /**
    * Destructs the object.
@@ -808,7 +853,7 @@ public:
    * @param right_val the object to copy.
    * @return itself.
    */
-  virtual const MccQAndFunc& operator= (const MccQAndFunc &right_val);
+  virtual MccQAndFunc& operator= (const MccQAndFunc &right_val);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -819,6 +864,12 @@ public:
    * @return a copy of the current object.
    */
   virtual MccQAndFunc* Copy () const { return new MccQAndFunc (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
 
   // I/O  -----------------------------------------------------------------
   
@@ -863,7 +914,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccQOrFunc () : MccQFunc () { }
+  MccQOrFunc () { }
 public:
 
   /**
@@ -871,17 +922,14 @@ public:
    * @param l the left query struc of the operation.
    * @param r the right query struc of the operation.
    */
-  MccQOrFunc (MccQFunc *l, MccQFunc *r) : MccQFunc (), left (l), right (r) { }
+  MccQOrFunc (MccQFunc *l, MccQFunc *r) : left (l), right (r) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right_val the object to copy.
    */
   MccQOrFunc (const MccQOrFunc &right_val)
-    : MccQFunc (right_val),
-      left (right_val.left->Copy ()),
-      right (right_val.right->Copy ())
-  { }
+    : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
   
   /**
    * Destructs the object.
@@ -895,7 +943,7 @@ public:
    * @param right_val the object to copy.
    * @return itself.
    */
-  virtual const MccQOrFunc& operator= (const MccQOrFunc &right_val);
+  virtual MccQOrFunc& operator= (const MccQOrFunc &right_val);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -906,6 +954,12 @@ public:
    * @return a copy of the current object.
    */
   virtual MccQOrFunc* Copy () const { return new MccQOrFunc (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
 
   // I/O  -----------------------------------------------------------------
   
@@ -978,7 +1032,7 @@ struct MccQueryExpr
    * @param right the object to copy.
    * @return itself.
    */
-  const MccQueryExpr& operator= (const MccQueryExpr &right_val);
+  MccQueryExpr& operator= (const MccQueryExpr &right_val);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -989,6 +1043,12 @@ struct MccQueryExpr
    * @return a copy of the current object.
    */
   MccQueryExpr* Copy () const { return new MccQueryExpr (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  void Accept (MccVisitor *visitor);
 
   /**
    * Puts the file name in the vector.
@@ -1088,7 +1148,7 @@ struct MccAddPdbStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    const _AddPdbStruc& operator= (const _AddPdbStruc &right);
+    _AddPdbStruc& operator= (const _AddPdbStruc &right);
 
     // ACCESS ---------------------------------------------------------------
 
@@ -1099,6 +1159,12 @@ struct MccAddPdbStat : public MccPStruct
      * @return a copy of the current object.
      */
     _AddPdbStruc* Copy () const { return new _AddPdbStruc (*this); }
+
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
 
     // I/O ------------------------------------------------------------
 
@@ -1127,14 +1193,13 @@ struct MccAddPdbStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccAddPdbStat () : MccPStruct (), strucs (new vector< _AddPdbStruc* > ()) { }
+  MccAddPdbStat () : strucs (new vector< _AddPdbStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param apsv the add_pdb sub-structure vector.
    */
-  MccAddPdbStat (vector< _AddPdbStruc* > *apsv)
-    : MccPStruct (), strucs (apsv) { }
+  MccAddPdbStat (vector< _AddPdbStruc* > *apsv) : strucs (apsv) { }
 
   /**
    * Initializes the struct with the rights content.
@@ -1154,7 +1219,7 @@ struct MccAddPdbStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccAddPdbStat& operator= (const MccAddPdbStat &right);
+  virtual MccAddPdbStat& operator= (const MccAddPdbStat &right);
   
   // ACCESS ---------------------------------------------------------------
 
@@ -1165,6 +1230,12 @@ struct MccAddPdbStat : public MccPStruct
    * @return a copy of the current object.
    */
   virtual MccAddPdbStat* Copy () const { return new MccAddPdbStat (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
 
   /**
    * Generates a new sub-structure and puts it in the vector.
@@ -1222,7 +1293,7 @@ private:
   /**
    * Initializes the object.  It should not be used.
    */
-  MccAdjacencyCstStat () : MccPStruct () { }
+  MccAdjacencyCstStat () { }
 public:
 
   /**
@@ -1232,7 +1303,7 @@ public:
    * @param mx the maximum adjacency value.
    */
   MccAdjacencyCstStat (MccFragGenStruc *f, float mn, float mx)
-    : MccPStruct (), fg_struc (f), the_min (mn), the_max (mx) { }
+    : fg_struc (f), the_min (mn), the_max (mx) { }
 
   /**
    * Initializes the object with the rights content.
@@ -1252,7 +1323,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccAdjacencyCstStat& operator= (const MccAdjacencyCstStat &right);
+  virtual MccAdjacencyCstStat& operator= (const MccAdjacencyCstStat &right);
 
   // ACCESS ---------------------------------------------------------------
 
@@ -1264,6 +1335,12 @@ public:
    */
   virtual MccAdjacencyCstStat* Copy () const
   { return new MccAdjacencyCstStat (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
 
   // I/O  -----------------------------------------------------------------
 
@@ -1386,7 +1463,7 @@ struct MccAngleCstStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    const _AngleStruc& operator= (const _AngleStruc &right);
+    _AngleStruc& operator= (const _AngleStruc &right);
     
     // ACCESS ---------------------------------------------------------------
 
@@ -1397,6 +1474,12 @@ struct MccAngleCstStat : public MccPStruct
      * @return a copy of the current object.
      */
     _AngleStruc* Copy () const { return new _AngleStruc (*this); }
+
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
     
     // I/O  -----------------------------------------------------------------
 
@@ -1425,14 +1508,13 @@ struct MccAngleCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccAngleCstStat () : MccPStruct (), strucs (new vector< _AngleStruc* > ()) { }
+  MccAngleCstStat () : strucs (new vector< _AngleStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param asv the angle sub-structure vector.
    */
-  MccAngleCstStat (vector< _AngleStruc* > *asv)
-    : MccPStruct (), strucs (asv) { }
+  MccAngleCstStat (vector< _AngleStruc* > *asv) : strucs (asv) { }
   
   /**
    * Initializes the object with the rights content.
@@ -1452,7 +1534,7 @@ struct MccAngleCstStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-  virtual const MccAngleCstStat& operator= (const MccAngleCstStat &right);
+  virtual MccAngleCstStat& operator= (const MccAngleCstStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -1464,6 +1546,12 @@ struct MccAngleCstStat : public MccPStruct
    */
   virtual MccAngleCstStat* Copy () const
   { return new MccAngleCstStat (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
 
   /**
    * Generates a new sub-structure and puts it in the vector.
@@ -1525,7 +1613,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccAssignStat () : MccPStruct () { }
+  MccAssignStat () { }
 public:
 
   /**
@@ -1533,8 +1621,7 @@ public:
    * @param s the variable receiving the FG.
    * @param exp the expression of the FG.
    */
-  MccAssignStat (char *s, MccFGExp *exp)
-    : MccPStruct (), ident (s), expr (exp) { }
+  MccAssignStat (char *s, MccFGExp *exp) : ident (s), expr (exp) { }
 
   /**
    * Initializes the object with the rights content.
@@ -1554,7 +1641,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccAssignStat& operator= (const MccAssignStat &right);
+  virtual MccAssignStat& operator= (const MccAssignStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -1565,6 +1652,12 @@ public:
    * @return a copy of the current object.
    */
   virtual MccAssignStat* Copy () const { return new MccAssignStat (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
 
   // I/O ------------------------------------------------------------------
 
@@ -1666,7 +1759,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual const _GenBTStruc& operator= (const _GenBTStruc &right);
+    virtual _GenBTStruc& operator= (const _GenBTStruc &right);
 
     // ACCESS ---------------------------------------------------------------
     
@@ -1676,8 +1769,14 @@ struct MccBacktrackExpr : public MccFGExp
      * Replicates the object.  The replication is controlled by the children.
      * @return a copy of the current object.
      */
-    virtual _GenBTStruc* Copy () const { return new _GenBTStruc (*this); }
+    virtual _GenBTStruc* Copy () const = 0;
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor) = 0;
+
     // I/O ------------------------------------------------------------------
 
     /**
@@ -1685,14 +1784,14 @@ struct MccBacktrackExpr : public MccFGExp
      * controlled by the children structures.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (ostream &os) const { }
+    virtual void display (ostream &os) const = 0;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (ostream &os, int indent = 0) const { }
+    virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
   };
   
 
@@ -1736,7 +1835,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual const _FGStruc& operator= (const _FGStruc &right);
+    virtual _FGStruc& operator= (const _FGStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -1748,6 +1847,12 @@ struct MccBacktrackExpr : public MccFGExp
      */
     virtual _FGStruc* Copy () const { return new _FGStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor);
+
     // I/O ------------------------------------------------------------------
     
     /**
@@ -1807,7 +1912,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual const _BTStruc& operator= (const _BTStruc &right);
+    virtual _BTStruc& operator= (const _BTStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -1819,6 +1924,12 @@ struct MccBacktrackExpr : public MccFGExp
      */
     virtual _BTStruc* Copy () const { return new _BTStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor);
+
     // I/O ------------------------------------------------------------------
     
     /**
@@ -1879,7 +1990,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual const _PlaceStruc& operator= (const _PlaceStruc &right);
+    virtual _PlaceStruc& operator= (const _PlaceStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -1890,6 +2001,12 @@ struct MccBacktrackExpr : public MccFGExp
      * @return a copy of the current object.
      */
     virtual _PlaceStruc* Copy () const { return new _PlaceStruc (*this); }
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor);
     
     // I/O ------------------------------------------------------------------
     
@@ -1918,15 +2035,13 @@ struct MccBacktrackExpr : public MccFGExp
   /**
    * Initializes the object.
    */
-  MccBacktrackExpr ()
-    : MccFGExp (), strucs (new vector< _GenBTStruc* > ()) { }
+  MccBacktrackExpr () : strucs (new vector< _GenBTStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param s the vector containing the different backtrack sub-structures.
    */
-  MccBacktrackExpr (vector< _GenBTStruc* > *s)
-    : MccFGExp (), strucs (s) { }
+  MccBacktrackExpr (vector< _GenBTStruc* > *s) : strucs (s) { }
 
   /**
    * Initializes the object with the rights content.
@@ -1947,7 +2062,7 @@ struct MccBacktrackExpr : public MccFGExp
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccBacktrackExpr& operator= (const MccBacktrackExpr &right);
+  virtual MccBacktrackExpr& operator= (const MccBacktrackExpr &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -1960,6 +2075,12 @@ struct MccBacktrackExpr : public MccFGExp
   virtual MccBacktrackExpr* Copy () const
   { return new MccBacktrackExpr (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   /**
    * Generates a new FG sub-structure and puts it in the vector.
    * @param f the FG structure.
@@ -2049,7 +2170,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccCacheExpr () : MccFGExp () { }
+  MccCacheExpr () { }
 public:
 
   /**
@@ -2083,7 +2204,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccCacheExpr& operator= (const MccCacheExpr &right);
+  virtual MccCacheExpr& operator= (const MccCacheExpr &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -2095,6 +2216,12 @@ public:
    */
   virtual MccCacheExpr* Copy () const { return new MccCacheExpr (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O ------------------------------------------------------------------
     
   /**
@@ -2152,7 +2279,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccClashCstStat () : MccPStruct () { }
+  MccClashCstStat () { }
 public:
 
   /**
@@ -2184,7 +2311,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccClashCstStat& operator= (const MccClashCstStat &right);
+  virtual MccClashCstStat& operator= (const MccClashCstStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -2196,6 +2323,12 @@ public:
    */
   virtual MccClashCstStat* Copy () const { return new MccClashCstStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O ------------------------------------------------------------------
     
   /**
@@ -2303,7 +2436,7 @@ struct MccConnectStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    const _ConnectStruc& operator= (const _ConnectStruc &right);
+    _ConnectStruc& operator= (const _ConnectStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -2315,6 +2448,12 @@ struct MccConnectStat : public MccPStruct
      */
     _ConnectStruc* Copy () const { return new _ConnectStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
     // I/O ------------------------------------------------------------------
     
     /**
@@ -2342,15 +2481,13 @@ struct MccConnectStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccConnectStat ()
-    : MccPStruct (), strucs (new vector< _ConnectStruc* > ()) { }
+  MccConnectStat () : strucs (new vector< _ConnectStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param csv the vector containing the connect sub-structures.
    */
-  MccConnectStat (vector< _ConnectStruc* > *csv)
-    : MccPStruct (), strucs (csv) { }
+  MccConnectStat (vector< _ConnectStruc* > *csv) : strucs (csv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -2370,7 +2507,7 @@ struct MccConnectStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccConnectStat& operator= (const MccConnectStat &right);
+  virtual MccConnectStat& operator= (const MccConnectStat &right);
     
   // ACCESS ---------------------------------------------------------------
   
@@ -2382,6 +2519,12 @@ struct MccConnectStat : public MccPStruct
    */
   virtual MccConnectStat* Copy () const { return new MccConnectStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   /**
    * Generates a new connect sub-structure and puts it in the vector.
    * @param r1 the name of the first residue.
@@ -2484,7 +2627,7 @@ struct MccCycleCstStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    const _CycleStruc& operator= (const _CycleStruc &right);
+    _CycleStruc& operator= (const _CycleStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -2496,6 +2639,12 @@ struct MccCycleCstStat : public MccPStruct
      */
     _CycleStruc* Copy () const { return new _CycleStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
     // I/O ------------------------------------------------------------------
     
     /**
@@ -2523,22 +2672,20 @@ struct MccCycleCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccCycleCstStat ()
-    : MccPStruct (), strucs (new vector< _CycleStruc* > ()) { }
+  MccCycleCstStat () : strucs (new vector< _CycleStruc* > ()) { }
   
   /**
    * Initializes the object.
    * @param csv the cycle sub-structure vector.
    */
-  MccCycleCstStat (vector< _CycleStruc* > *csv)
-    : MccPStruct (), strucs (csv) { }
+  MccCycleCstStat (vector< _CycleStruc* > *csv) : strucs (csv) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
    MccCycleCstStat (const MccCycleCstStat &right);
-    
+  
   /**
    * Destructs the object.
    */
@@ -2551,7 +2698,7 @@ struct MccCycleCstStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  const MccCycleCstStat& operator= (const MccCycleCstStat &right);
+  MccCycleCstStat& operator= (const MccCycleCstStat &right);
     
   // ACCESS ---------------------------------------------------------------
   
@@ -2563,6 +2710,12 @@ struct MccCycleCstStat : public MccPStruct
    */
   MccCycleCstStat* Copy () const { return new MccCycleCstStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   /**
    * Generates a new cycle sub-structure and puts it in the vector.
    * @param r1 the name of the first residue.
@@ -2610,14 +2763,14 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccDisplayFGStat () : MccPStruct () { }
+  MccDisplayFGStat () { }
 public:
 
   /**
    * Initializes the object.
    * @param f the FG structure to display.
    */
-  MccDisplayFGStat (MccFragGenStruc *f) : MccPStruct (), fg_struc (f) { }
+  MccDisplayFGStat (MccFragGenStruc *f) : fg_struc (f) { }
 
   /**
    * Initializes the object with the right struct.
@@ -2637,7 +2790,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccDisplayFGStat& operator= (const MccDisplayFGStat &right);
+  virtual MccDisplayFGStat& operator= (const MccDisplayFGStat &right);
 
   // ACCESS ---------------------------------------------------------------
 
@@ -2649,6 +2802,12 @@ public:
    */
   MccDisplayFGStat* Copy () const { return new MccDisplayFGStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
 
   /**
@@ -2757,7 +2916,7 @@ struct MccDistCstStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    const _DistStruc& operator= (const _DistStruc &right);
+    _DistStruc& operator= (const _DistStruc &right);
     
     // ACCESS ---------------------------------------------------------------
 
@@ -2769,6 +2928,12 @@ struct MccDistCstStat : public MccPStruct
      */
     _DistStruc* Copy () const { return new _DistStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
     // I/O  -----------------------------------------------------------------
     
     /**
@@ -2796,14 +2961,13 @@ struct MccDistCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccDistCstStat () : MccPStruct (), strucs (new vector< _DistStruc* > ()) { }
+  MccDistCstStat () : strucs (new vector< _DistStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param dsv the distance sub-structure vector.
    */
-  MccDistCstStat (vector< _DistStruc* > *dsv)
-    : MccPStruct (), strucs (dsv) { }
+  MccDistCstStat (vector< _DistStruc* > *dsv) : strucs (dsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -2823,7 +2987,7 @@ struct MccDistCstStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccDistCstStat& operator= (const MccDistCstStat &right);
+  virtual MccDistCstStat& operator= (const MccDistCstStat &right);
     
   // ACCESS ---------------------------------------------------------------
   
@@ -2835,6 +2999,12 @@ struct MccDistCstStat : public MccPStruct
    */
   virtual MccDistCstStat* Copy () const { return new MccDistCstStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   /**
    * Generates a new distance sub-structure and puts it in the vector.
    * @param r1 the struct of the first residue.
@@ -2918,7 +3088,7 @@ public:
    * Assigns the right struct values to the object.
    * @param right the struct to copy.
    */
-  const MccExpfile& operator= (const MccExpfile &right);
+  MccExpfile& operator= (const MccExpfile &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -2930,6 +3100,12 @@ public:
    */
   MccExpfile* Copy () const { return new MccExpfile (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -2972,7 +3148,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccExploreStat () : MccPStruct () { }
+  MccExploreStat () { }
 public:
 
   /**
@@ -2981,7 +3157,7 @@ public:
    * @param ef the explore output file structure.
    */
   MccExploreStat (MccFragGenStruc* fg, MccExpfile *ef)
-    : MccPStruct (), fg_struc (fg), efile (ef) { }
+    : fg_struc (fg), efile (ef) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3001,7 +3177,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccExploreStat& operator= (const MccExploreStat &right);
+  virtual MccExploreStat& operator= (const MccExploreStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3013,6 +3189,12 @@ public:
    */
   virtual MccExploreStat* Copy () const { return new MccExploreStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -3093,7 +3275,7 @@ struct MccLibraryExpr : public MccFGExp
      * Destructs the object.  The destruction is controlled by the children
      * of the structure.
      */
-    virtual ~_LibStruc () { }
+    virtual ~_LibStruc ();
 
     // OPERATORS ------------------------------------------------------------
 
@@ -3102,7 +3284,7 @@ struct MccLibraryExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual const _LibStruc& operator= (const _LibStruc &right);
+    virtual _LibStruc& operator= (const _LibStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -3112,22 +3294,28 @@ struct MccLibraryExpr : public MccFGExp
      * Replicates the object.  The replication is controlled by the children.
      * @return a copy of the current object.
      */
-    virtual _LibStruc* Copy () const { return new _LibStruc (*this); }
+    virtual _LibStruc* Copy () const = 0;
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor) = 0;
+
     // I/O  -----------------------------------------------------------------
     
     /**
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (ostream &os) const { }
+    virtual void display (ostream &os) const = 0;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (ostream &os, int indent = 0) const { }
+    virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
   };
   
   /**
@@ -3158,11 +3346,6 @@ struct MccLibraryExpr : public MccFGExp
      */
     _StripStruc (const _StripStruc &right) : _LibStruc (right) { }
 
-    /**
-     * Destructs the object.
-     */
-    ~_StripStruc ();
-
     // OPERATORS ------------------------------------------------------------
 
     /**
@@ -3170,7 +3353,7 @@ struct MccLibraryExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual const _StripStruc& operator= (const _StripStruc &right);
+    virtual _StripStruc& operator= (const _StripStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -3182,6 +3365,12 @@ struct MccLibraryExpr : public MccFGExp
      */
     virtual _StripStruc* Copy () const { return new _StripStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor);
+
     // I/O  -----------------------------------------------------------------
     
     /**
@@ -3227,11 +3416,6 @@ struct MccLibraryExpr : public MccFGExp
      */
     _ChangeIdStruc (const _ChangeIdStruc &right) : _LibStruc (right) { }
 
-    /**
-     * Destructs the object.
-     */
-    ~_ChangeIdStruc () { }
-
     // OPERATORS ------------------------------------------------------------
 
     /**
@@ -3239,7 +3423,7 @@ struct MccLibraryExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual const _ChangeIdStruc& operator= (const _ChangeIdStruc &right);
+    virtual _ChangeIdStruc& operator= (const _ChangeIdStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -3251,6 +3435,12 @@ struct MccLibraryExpr : public MccFGExp
      */
     virtual _ChangeIdStruc* Copy () const { return new _ChangeIdStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor);
+
     // I/O  -----------------------------------------------------------------
     
     /**
@@ -3285,8 +3475,7 @@ struct MccLibraryExpr : public MccFGExp
    * Initializes the object.
    * @param s the C form representing the name and path of the library.
    */
-  MccLibraryExpr (char *s)
-    : MccFGExp (), str (s), strucs (new vector< _LibStruc* > ()) { }
+  MccLibraryExpr (char *s) : str (s), strucs (new vector< _LibStruc* > ()) { }
 
   /**
    * Initializes the object.
@@ -3294,7 +3483,7 @@ struct MccLibraryExpr : public MccFGExp
    * @param lsv the vector containing the library sub-structures.
    */
   MccLibraryExpr (char *s, vector< _LibStruc* > *lsv)
-    : MccFGExp (), str (s), strucs (lsv) { }
+    : str (s), strucs (lsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3314,7 +3503,7 @@ struct MccLibraryExpr : public MccFGExp
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccLibraryExpr& operator= (const MccLibraryExpr &right);
+  virtual MccLibraryExpr& operator= (const MccLibraryExpr &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3326,6 +3515,12 @@ struct MccLibraryExpr : public MccFGExp
    */
   virtual MccLibraryExpr* Copy () const { return new MccLibraryExpr (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   /**
    * Generates a new strip sub-structure and puts it in the vector.
    * @param rv the residue name vector.
@@ -3389,7 +3584,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccNewTagStat () : MccPStruct () { }
+  MccNewTagStat () { }
 public:
 
   /**
@@ -3419,7 +3614,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccNewTagStat& operator= (const MccNewTagStat &right);
+  virtual MccNewTagStat& operator= (const MccNewTagStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3431,6 +3626,12 @@ public:
    */
   virtual MccNewTagStat* Copy () const { return new MccNewTagStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -3470,14 +3671,14 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccNoteStat () : MccPStruct () { }
+  MccNoteStat () { }
 public:
 
   /**
    * Initializes the object.
    * @param s the note to add in the database.
    */
-  MccNoteStat (char *s) : MccPStruct (), str (s) { }
+  MccNoteStat (char *s) : str (s) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3497,7 +3698,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccNoteStat& operator= (const MccNoteStat &right);
+  virtual MccNoteStat& operator= (const MccNoteStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3509,6 +3710,12 @@ public:
    */
   virtual MccNoteStat* Copy () const { return new MccNoteStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -3542,13 +3749,13 @@ struct MccNotesStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccNotesStat () : MccPStruct () { }
+  MccNotesStat () { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccNotesStat (const MccNotesStat &right) : MccPStruct (right) { }
+  MccNotesStat (const MccNotesStat &right) { }
 
   /**
    * Destructs the object.
@@ -3562,7 +3769,8 @@ struct MccNotesStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccNotesStat& operator= (const MccNotesStat &right);
+  virtual MccNotesStat& operator= (const MccNotesStat &right)
+  { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3574,6 +3782,12 @@ struct MccNotesStat : public MccPStruct
    */
   virtual MccNotesStat* Copy () const { return new MccNotesStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -3681,7 +3895,7 @@ struct MccPairStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    const _PairStruc& operator= (const _PairStruc &right);
+    _PairStruc& operator= (const _PairStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -3693,6 +3907,12 @@ struct MccPairStat : public MccPStruct
      */
     _PairStruc* Copy () const { return new _PairStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
     // I/O  -----------------------------------------------------------------
     
     /**
@@ -3720,13 +3940,13 @@ struct MccPairStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccPairStat () : MccPStruct (), strucs (new vector< _PairStruc* > ()) { }
+  MccPairStat () : strucs (new vector< _PairStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param psv the vector containing the pairing sub-structures.
    */
-  MccPairStat (vector< _PairStruc* > *psv) : MccPStruct (), strucs (psv) { }
+  MccPairStat (vector< _PairStruc* > *psv) : strucs (psv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3746,7 +3966,7 @@ struct MccPairStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccPairStat& operator= (const MccPairStat &right);
+  virtual MccPairStat& operator= (const MccPairStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3758,6 +3978,12 @@ struct MccPairStat : public MccPStruct
    */
    virtual MccPairStat* Copy () const { return new MccPairStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   /**
    * Generates a new pairing sub-structures and puts it in the vector.
    * @param r1 the name of the first residue.
@@ -3803,13 +4029,13 @@ struct MccQuitStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccQuitStat () : MccPStruct () { }
+  MccQuitStat () { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccQuitStat (const MccQuitStat &right) : MccPStruct (right) { }
+  MccQuitStat (const MccQuitStat &right) { }
 
   /**
    * Destructs the object.
@@ -3823,7 +4049,7 @@ struct MccQuitStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccQuitStat& operator= (const MccQuitStat &right);
+  virtual MccQuitStat& operator= (const MccQuitStat &right) { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3835,6 +4061,12 @@ struct MccQuitStat : public MccPStruct
    */
    virtual MccQuitStat* Copy () const { return new MccQuitStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -3874,14 +4106,14 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccRemarkStat () : MccPStruct () { }
+  MccRemarkStat () { }
 public:
 
   /**
    * Initializes the object.
    * @param s the remark to insert.
    */
-  MccRemarkStat (char *s) : MccPStruct (), str (s) { }
+  MccRemarkStat (char *s) : str (s) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3901,7 +4133,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccRemarkStat& operator= (const MccRemarkStat &right);
+  virtual MccRemarkStat& operator= (const MccRemarkStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3913,6 +4145,12 @@ public:
    */
    virtual MccRemarkStat* Copy () const { return new MccRemarkStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -3946,13 +4184,13 @@ struct MccResetDBStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccResetDBStat () : MccPStruct () { }
+  MccResetDBStat () { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccResetDBStat (const MccResetDBStat &right) : MccPStruct (right) { }
+  MccResetDBStat (const MccResetDBStat &right) { }
 
   /**
    * Destructs the object.
@@ -3966,7 +4204,8 @@ struct MccResetDBStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccResetDBStat& operator= (const MccResetDBStat &right);
+  virtual MccResetDBStat& operator= (const MccResetDBStat &right)
+  { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -3978,6 +4217,12 @@ struct MccResetDBStat : public MccPStruct
    */
   virtual MccResetDBStat* Copy () const { return new MccResetDBStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -4010,13 +4255,13 @@ struct MccResetStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccResetStat () : MccPStruct () { }
+  MccResetStat () { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccResetStat (const MccResetStat &right) : MccPStruct (right) { }
+  MccResetStat (const MccResetStat &right) { }
 
   /**
    * Destructs the object.
@@ -4030,7 +4275,8 @@ struct MccResetStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccResetStat& operator= (const MccResetStat &right);
+  virtual MccResetStat& operator= (const MccResetStat &right)
+  { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -4042,6 +4288,12 @@ struct MccResetStat : public MccPStruct
    */
   virtual MccResetStat* Copy () const { return new MccResetStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -4136,7 +4388,7 @@ struct MccResidueStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    const _ResidueStruc& operator= (const _ResidueStruc &right);
+    _ResidueStruc& operator= (const _ResidueStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -4148,6 +4400,12 @@ struct MccResidueStat : public MccPStruct
      */
     _ResidueStruc* Copy () const { return new _ResidueStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
     // I/O  -----------------------------------------------------------------
     
     /**
@@ -4175,15 +4433,13 @@ struct MccResidueStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccResidueStat ()
-    : MccPStruct (), strucs (new vector< _ResidueStruc* > ()) { }
+  MccResidueStat () : strucs (new vector< _ResidueStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param rsv the vector of residue sub-structures.
    */
-  MccResidueStat (vector< _ResidueStruc* > *rsv)
-    : MccPStruct (), strucs (rsv) { }
+  MccResidueStat (vector< _ResidueStruc* > *rsv) : strucs (rsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4203,7 +4459,7 @@ struct MccResidueStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccResidueStat& operator= (const MccResidueStat &right);
+  virtual MccResidueStat& operator= (const MccResidueStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -4215,6 +4471,12 @@ struct MccResidueStat : public MccPStruct
    */
   virtual MccResidueStat* Copy () const { return new MccResidueStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   /**
    * Generates a new residue sub-structure and puts it in the vector.
    * @param r1 the first residue of the list.
@@ -4271,7 +4533,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccRestoreStat () : MccPStruct () { }
+  MccRestoreStat () { }
 public:
 
   /**
@@ -4279,8 +4541,7 @@ public:
    * @param fi the file name of the status file.
    * @param ef the explore output file structure.
    */
-  MccRestoreStat (char *fi, MccExpfile *ef)
-    : MccPStruct (), filename (fi), efile (ef) { }
+  MccRestoreStat (char *fi, MccExpfile *ef) : filename (fi), efile (ef) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4300,7 +4561,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccRestoreStat& operator= (const MccRestoreStat &right);
+  virtual MccRestoreStat& operator= (const MccRestoreStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -4312,6 +4573,12 @@ public:
    */
   virtual MccRestoreStat* Copy () const { return new MccRestoreStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -4359,7 +4626,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccSequenceStat () : MccPStruct () { }
+  MccSequenceStat () { }
 public:
 
   /**
@@ -4369,7 +4636,7 @@ public:
    * @param str the sequence.
    */
   MccSequenceStat (char typ, MccResidueName *r, char *str)
-    : MccPStruct (), type (typ), res (r), seq (str)
+    : type (typ), res (r), seq (str)
   { }
 
   /**
@@ -4390,7 +4657,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccSequenceStat& operator= (const MccSequenceStat &right);
+  virtual MccSequenceStat& operator= (const MccSequenceStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -4402,6 +4669,12 @@ public:
    */
   virtual MccSequenceStat* Copy () const { return new MccSequenceStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -4439,14 +4712,14 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccSourceStat () : MccPStruct () { }
+  MccSourceStat () { }
 public:
 
   /**
    * Initializes the object.
    * @param s the path and file name of the mcsym script.
    */
-  MccSourceStat (char *s) : MccPStruct (), str (s) { }
+  MccSourceStat (char *s) : str (s) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4466,7 +4739,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccSourceStat& operator= (const MccSourceStat &right);
+  virtual MccSourceStat& operator= (const MccSourceStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -4478,6 +4751,12 @@ public:
    */
   virtual MccSourceStat* Copy () const { return new MccSourceStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -4618,7 +4897,7 @@ struct MccTorsionCstStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    const _TorsionStruc& operator= (const _TorsionStruc &right);
+    _TorsionStruc& operator= (const _TorsionStruc &right);
 
     // ACCESS ---------------------------------------------------------------
 
@@ -4630,6 +4909,12 @@ struct MccTorsionCstStat : public MccPStruct
      */
     _TorsionStruc* Copy () const { return new _TorsionStruc (*this); }
     
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
     // I/O  -----------------------------------------------------------------
 
     /**
@@ -4657,15 +4942,13 @@ struct MccTorsionCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccTorsionCstStat ()
-    : MccPStruct (), strucs (new vector< _TorsionStruc* > ()) { }
+  MccTorsionCstStat () : strucs (new vector< _TorsionStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param tsv the torsion sub-structure vector.
    */
-  MccTorsionCstStat (vector< _TorsionStruc* > *tsv)
-    : MccPStruct (), strucs (tsv) { }
+  MccTorsionCstStat (vector< _TorsionStruc* > *tsv) : strucs (tsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4685,7 +4968,7 @@ struct MccTorsionCstStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-   virtual const MccTorsionCstStat& operator= (const MccTorsionCstStat &right);
+   virtual MccTorsionCstStat& operator= (const MccTorsionCstStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -4698,6 +4981,12 @@ struct MccTorsionCstStat : public MccPStruct
   virtual MccTorsionCstStat* Copy () const
   { return new MccTorsionCstStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   /**
    * Generates a new sub-structure and puts it in the vector.
    * @param r1 the first residue name.
@@ -4753,13 +5042,13 @@ struct MccVersion : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccVersion () : MccPStruct () { }
+  MccVersion () { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccVersion (const MccVersion &right) : MccPStruct (right) { }
+  MccVersion (const MccVersion &right) { }
 
   /**
    * Destructs the object.
@@ -4773,7 +5062,7 @@ struct MccVersion : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-   virtual const MccVersion& operator= (const MccVersion &right);
+  virtual MccVersion& operator= (const MccVersion &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
   
@@ -4785,6 +5074,12 @@ struct MccVersion : public MccPStruct
    */
   virtual MccVersion* Copy () const { return new MccVersion (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O ------------------------------------------------------------------
 
   /**
@@ -4799,6 +5094,346 @@ struct MccVersion : public MccPStruct
    * @param ident the identation level.
    */
   virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+
+/**
+ * @short Basic visitor class for the parser structures.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+class MccVisitor
+{
+public:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccVisitor () { }
+
+  /**
+   * Initializes the object with the right's content.
+   * @param right the object to copy.
+   */
+  MccVisitor (const MccVisitor &right) { }
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccVisitor () { }
+
+  // OPERATORS ----------------------------------------------------------
+
+  /**
+   * Assigns the rights content in the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccVisitor& operator= (const MccVisitor &right) { return *this; }
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Visits the MccFragGenStruc structure.
+   * @param struc the MccFragGenStruc structure.
+   */
+  virtual void Visit (MccFragGenStruc *struc) = 0;
+
+  /**
+   * Visits the MccResidueName structure.
+   * @param struc the MccResidueName structure.
+   */
+  virtual void Visit (MccResidueName *struc) = 0;
+
+  /**
+   * Visits the MccQTrueFunc structure.
+   * @param struc the MccQTrueFunc structure.
+   */
+  virtual void Visit (MccQTrueFunc *struc) = 0;
+
+  /**
+   * Visits the MccQIdentFunc structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccQIdentFunc *struc) = 0;
+
+  /**
+   * Visits the MccQNotFunc structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccQNotFunc *struc) = 0;
+
+  /**
+   * Visits the MccQAndFunc structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccQAndFunc *struc) = 0;
+
+  /**
+   * Visits the MccQOrFunc structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccQOrFunc *struc) = 0;
+
+  /**
+   * Visits the MccQueryExpr structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccQueryExpr *struc) = 0;
+
+  /**
+   * Visits the MccAddPdbStat::_AddPdbStruc structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccAddPdbStat::_AddPdbStruc *struc) = 0;
+
+  /**
+   * Visits the MccAddPdbStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccAddPdbStat *struc) = 0;
+  
+  /**
+   * Visits the MccAdjacencyCstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccAdjacencyCstStat *struc) = 0;
+  
+  /**
+   * Visits the MccAngleCstStat::_AngleStruc structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccAngleCstStat::_AngleStruc *struc) = 0;
+  
+  /**
+   * Visits the MccAngleCstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccAngleCstStat *struc) = 0;
+  
+  /**
+   * Visits the MccAssignStat assignment statement node.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccAssignStat *struc) = 0;
+
+  /**
+   * Visits the MccBacktrackExpr::_FGStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccBacktrackExpr::_FGStruc *struc) = 0;
+  
+  /**
+   * Visits the MccBacktrackExpr::_BTStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccBacktrackExpr::_BTStruc *struc) = 0;
+
+  /**
+   * Visits the MccBacktrackExpr::_PlaceStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccBacktrackExpr::_PlaceStruc *struc) = 0;
+  
+  /**
+   * Visits the MccBacktrackExpr structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccBacktrackExpr *struc) = 0;
+  
+  /**
+   * Visits the MccCacheExpr structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccCacheExpr *struc) = 0;
+  
+  /**
+   * Visits the MccClashCstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccClashCstStat *struc) = 0;
+  
+  /**
+   * Visits the MccConnectStat::_ConnectStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccConnectStat::_ConnectStruc *struc) = 0;
+  
+  /**
+   * Visits the MccConnectStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccConnectStat *struc) = 0;
+  
+  /**
+   * Visits the MccCycleCstStat::_CycleStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccCycleCstStat::_CycleStruc *struc) = 0;
+  
+  /**
+   * Visits the MccCycleCstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccCycleCstStat *struc) = 0;
+  
+  /**
+   * Visits the MccDisplayFGStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccDisplayFGStat *struc) = 0;
+
+  /**
+   * Visits the MccDistCstStat::_DistStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccDistCstStat::_DistStruc *struc) = 0;
+
+  /**
+   * Visits the MccDistCstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccDistCstStat *struc) = 0;
+  
+  /**
+   * Visits the MccExpfile structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccExpfile *struc) = 0;
+  
+  /**
+   * Visits the MccExploreStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccExploreStat *struc) = 0;
+  
+  /**
+   * Visits the local MccLibraryExpr sub-structure _StripStruc.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccLibraryExpr::_StripStruc *struc) = 0;
+  
+  /**
+   * Visits the local MccLibraryExpr sub-structure _ChangeIdStruc.
+   * @param struc the evaluated structure.
+   */
+    virtual void Visit (MccLibraryExpr::_ChangeIdStruc *struc) = 0;
+  
+  /**
+   * Visits the MccCycleCstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccLibraryExpr *struc) = 0;
+  
+  /**
+   * Visits the MccNewTagStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccNewTagStat *struc) = 0;
+
+  /**
+   * Visits the MccNoteStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccNoteStat *struc) = 0;
+  
+  /**
+   * Visits the MccNotesStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccNotesStat *struc) = 0;
+  
+  /**
+   * Visits the local MccPairStat sub-structure _PairStruc.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPairStat::_PairStruc *struc) = 0;
+  
+  /**
+   * Visits the MccPairStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPairStat *struc) = 0;
+  
+  /**
+   * Visits the MccQuitStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccQuitStat *struc) = 0;
+
+  /**
+   * Visits the MccRemarkStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccRemarkStat *struc) = 0;
+
+  /**
+   * Visits the MccResetDBStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccResetDBStat *struc) = 0;
+  
+  /**
+   * Visits the MccResetStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccResetStat *struc) = 0;
+
+  /**
+   * Visits the MccResidueStat local sub-structure _ResidueStruc.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccResidueStat::_ResidueStruc *struc) = 0;
+  
+  /**
+   * Visits the MccResidueStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccResidueStat *struc) = 0;
+  
+  /**
+   * Visits the MccRestoreStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccRestoreStat *struc) = 0;
+  
+  /**
+   * Visits the MccSequenceStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccSequenceStat *struc) = 0;
+
+  /**
+   * Visits the MccSourceStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccSourceStat *struc) = 0;
+  
+  /**
+   * Visits the MccTorsionCstStat local sub-structure _TorsionStruc.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccTorsionCstStat::_TorsionStruc *struc) = 0;
+  
+  /**
+   * Visits the MccTorsionCstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccTorsionCstStat *struc) = 0;
+
+  /**
+   * Visits the MccVersion structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccVersion *struc) = 0;
+ 
+  // I/O  -----------------------------------------------------------------
+
 };
 
 
@@ -4848,7 +5483,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  const CLexerException& operator= (const CLexerException &right);
+  CLexerException& operator= (const CLexerException &right);
 
   /**
    * Concatenates a character in the message.
@@ -4946,7 +5581,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  const CParserException& operator= (const CParserException &right);
+  CParserException& operator= (const CParserException &right);
 
   /**
    * Concatenates a character in the message.
