@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Tue May 20 08:54:18 2003
-// Update Count     : 24
+// Last Modified On : Fri May 23 10:24:02 2003
+// Update Count     : 25
 // Status           : Ok.
 // 
 
@@ -4855,8 +4855,92 @@ MccPlacerBuildStat::_BTStruc::ppdisplay (ostream &os, int indent) const
 }
 
 
+MccPlacerBuildStat::_ClosureStruc&
+MccPlacerBuildStat::_ClosureStruc::operator= (const MccPlacerBuildStat::_ClosureStruc& right)
+{
+  if (this != &right)
+    {
+      intensity = right.intensity;
+    }
+  return *this;
+}
+
+
+void
+MccPlacerBuildStat::_ClosureStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+void
+MccPlacerBuildStat::_ClosureStruc::display (ostream &os) const
+{
+  os << "closure (";
+
+  switch (intensity)
+    {
+    case 'l': os << "low";  break;
+    case 'm': os << "mid";  break;
+    case 'h': os << "high"; break;
+    case 's': os << "strength"; break;
+    case 'f': os << "free"; break;
+    default:  os << "???";  break;
+    }
+
+  os << ')';
+}
+
+
+
+void
+MccPlacerBuildStat::_ClosureStruc::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  display (os);
+  os << endl;
+}
+
+
+MccPlacerBuildStat::_RibStruc&
+MccPlacerBuildStat::_RibStruc::operator= (const MccPlacerBuildStat::_RibStruc& right)
+{
+  if (this != &right)
+    {
+      min_shift = right.min_shift;
+      min_drop = right.min_drop;
+      shift_rate = right.shift_rate;
+    }
+  return *this;
+}
+
+
+void
+MccPlacerBuildStat::_RibStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+void
+MccPlacerBuildStat::_RibStruc::display (ostream &os) const
+{
+  os << "ribose (" << min_shift << ' ' << min_drop << ' ' << shift_rate << ')';
+}
+
+
+
+void
+MccPlacerBuildStat::_RibStruc::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  display (os);
+  os << endl;
+}
+
+
 MccPlacerBuildStat::MccPlacerBuildStat (const MccPlacerBuildStat &right)
-  : strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ()),
+  : closure (right.closure->clone ()),
+    ribopt (right.ribopt->clone ()),
+    strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ()),
     headmap (right.headmap),
     tailmap (right.tailmap)
 {
@@ -4875,6 +4959,8 @@ MccPlacerBuildStat::~MccPlacerBuildStat ()
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
   delete strucs;
+  delete closure;
+  delete ribopt;
 }
 
 
@@ -4889,6 +4975,11 @@ MccPlacerBuildStat::operator= (const MccPlacerBuildStat &right)
 
       headmap = right.headmap;
       tailmap = right.tailmap;
+
+      delete closure;
+      closure = right.closure->clone ();
+      delete ribopt;
+      ribopt = right.ribopt->clone ();
       
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -4975,6 +5066,8 @@ MccPlacerBuildStat::display (ostream &os) const
   vector< _GenBTStruc* >::iterator it;
 
   os << "placer_build (";
+  closure->display (os);
+  ribopt->display (os);
   for (it = strucs->begin (); it != strucs->end (); it++)
     {
       if (it != strucs->begin ())
@@ -4993,7 +5086,9 @@ MccPlacerBuildStat::ppdisplay (ostream &os, int indent) const
 
   os << "placer_build" << endl;
   whitespaces (os, indent + 2);
-  os << '(';
+  os << '(' << endl;
+  closure->ppdisplay (os, indent + 4);
+  ribopt->ppdisplay (os, indent + 4);
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
   os << endl;

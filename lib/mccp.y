@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Tue May 20 08:54:15 2003
- * Update Count     : 25
+ * Last Modified On : Fri May 23 10:23:58 2003
+ * Update Count     : 26
  * Status           : Ok.
  */
 
@@ -85,6 +85,8 @@
   vector< MccPlacerResidueName* > *prrv;
   vector< MccPlacerBuildStat::_GenBTStruc* > *pbtsv;
   MccPlacerBuildStat::_GenBTStruc *pbts;
+  MccPlacerBuildStat::_ClosureStruc *pbc;
+  MccPlacerBuildStat::_RibStruc *pbr;
   MccPlacerSearchStat::_Params *pssp;
   map< int, float >* mif;
   pair< int, float>* pif;
@@ -198,6 +200,7 @@
 %token TOK_PLACER_BUILD
 %token TOK_PLACER_SEARCH
 %token TOK_CLOSURE
+%token TOK_RIBOSE
 //!
 
 %type <mccval> statement
@@ -328,7 +331,8 @@
 %type <prrv> placer_residueRef_plus
 %type <prr> placer_residueRef_opt
 %type <mccval> placer_build
-%type <charval> closure_opt
+%type <pbc> closure_opt
+%type <pbr> ribose_opt
 %type <pbtsv> placer_res_place_plus
 %type <pbts> placer_res_place
 %type <mccval> placer_search
@@ -1369,14 +1373,14 @@ placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
 
 
 
-placer_build: TOK_PLACER_BUILD TOK_LPAREN closure_opt /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
+placer_build: TOK_PLACER_BUILD TOK_LPAREN closure_opt ribose_opt /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
                {
-		 MccPlacerBuildStat *tmp = new MccPlacerBuildStat ($3);
+		 MccPlacerBuildStat *tmp = new MccPlacerBuildStat ($3, $4);
 
 // 		 if ($3)
 // 		   tmp->GenFGStruc ($3);
 // 		 tmp->AddBTStrucs ($4);
-		 tmp->AddBTStrucs ($4);
+		 tmp->AddBTStrucs ($5);
 		 $$ = tmp;
 	       }
 ;
@@ -1384,11 +1388,21 @@ placer_build: TOK_PLACER_BUILD TOK_LPAREN closure_opt /*fgRef_opt*/ placer_res_p
 
 closure_opt: /* empty */
 {
-  $$ = 'f'; 
+  $$ = new MccPlacerBuildStat::_ClosureStruc (); 
 }
 | TOK_CLOSURE TOK_LPAREN TOK_IDENT TOK_RPAREN
 {
-  $$ = $3[0];
+  $$ = new MccPlacerBuildStat::_ClosureStruc ($3[0]);
+};
+
+
+ribose_opt: /* empty */
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ();
+}
+| TOK_RIBOSE TOK_LPAREN flt flt flt TOK_RPAREN  // min_shift, min_drop, shift_rate
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, $4, $5);
 };
 
 

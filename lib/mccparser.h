@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Tue May 20 08:54:19 2003
-// Update Count     : 28
+// Last Modified On : Fri May 23 10:24:03 2003
+// Update Count     : 29
 // Status           : Ok.
 // 
 
@@ -7561,14 +7561,14 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
    */
   struct _BTStruc : public _GenBTStruc
   {
+    
+    
     // LIFECYCLE ------------------------------------------------------------
 
-  private:
     /**
      * Initializes the object. It should never be used.
      */
     _BTStruc () : _GenBTStruc () { }
-  public:
 
     /**
      * Initializes the object.
@@ -7708,10 +7708,206 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
 //     virtual void ppdisplay (ostream &os, int indent = 0) const;
 //   };
 
-/**
- * Tag for the closure constraint type.
- */
-  char closure_tag;
+  /**
+   * @short Struct containing closure engine parameter
+   *
+   * Negative value keeps default.
+   *
+   * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+   */
+  struct _ClosureStruc
+  {
+    
+    /**
+     * Tag for distance closure constraint intensity.
+     *
+     * 'l': low
+     *
+     * 'm': mid
+     *
+     * 'h': high
+     *
+     * 'f': free (unconstrained)
+     *
+     */
+    char intensity;
+    
+    // LIFECYCLE ------------------------------------------------------------
+    
+    /**
+     * Initializes the object.
+     */
+    _ClosureStruc () : intensity ('f') { }
+
+    /**
+     * Initializes the object.
+     * @param i the constraint intensity
+     */
+    _ClosureStruc (char i) : intensity (i) { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _ClosureStruc (const _ClosureStruc &right) : intensity (right.intensity) { }
+    
+    /**
+     * Destroys the object.
+     */
+    ~_ClosureStruc () { }
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    _ClosureStruc& operator= (const _ClosureStruc &right);
+    
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    _ClosureStruc* clone () const { return new _ClosureStruc (*this); }
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
+    // I/O ------------------------------------------------------------------
+    
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
+  };
+  
+  /**
+   * @short Struct containing ribose optimizer parameters
+   *
+   * Negative value keeps default.
+   *
+   * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+   */
+  struct _RibStruc
+  {
+
+    /**
+     * Torsion shift threshold in optimization (rad). 
+     */
+    float min_shift;
+    
+    /**
+     * Optimized function value threshold for a good shift.
+     */
+    float min_drop;
+
+    /**
+     * Torsion shift reduction rate in optimization (assumed < 1).
+     */
+    float shift_rate; 
+    
+    // LIFECYCLE ------------------------------------------------------------
+    
+    /**
+     * Initializes the object.
+     */
+    _RibStruc () : min_shift (-1), min_drop (-1), shift_rate (-1) { }
+
+    /**
+     * Initializes the object.
+     * @param ms the shift threshold.
+     * @param md the drop threshold.
+     * @param sr the shift rate.
+     */
+    _RibStruc (float ms, float md, float sr)
+      : min_shift (ms),
+	min_drop (md),
+	shift_rate (sr)
+    { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _RibStruc (const _RibStruc &right)
+      : min_shift (right.min_shift),
+	min_drop (right.min_drop),
+	shift_rate (right.shift_rate)
+    { }
+    
+    /**
+     * Destroys the object.
+     */
+    ~_RibStruc () { }
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    _RibStruc& operator= (const _RibStruc &right);
+    
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    _RibStruc* clone () const { return new _RibStruc (*this); }
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
+    // I/O ------------------------------------------------------------------
+    
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
+  };
+  
+
+  
+  /**
+   * Structure for the closure constraint type.
+   */
+  _ClosureStruc* closure;
+
+  /**
+   * Structure containing ribose optimizer parameters.
+   */
+  _RibStruc* ribopt;
   
   /**
    * The vector containing the different backtrack sub-structures.
@@ -7729,20 +7925,24 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
 
   /**
    * Initializes the object.
-   * @param ctag Closure constraint type tag.
+   * @param cl the closure constraint type.
+   * @param ro the ribose optimizer parameters.
    */
-  MccPlacerBuildStat (char ctag = 'f')
-    : closure_tag (ctag),
+  MccPlacerBuildStat (_ClosureStruc* cl, _RibStruc* ro)
+    : closure (cl),
+      ribopt (ro),
       strucs (new vector< _GenBTStruc* > ())
   { }
 
   /**
    * Initializes the object.
+   * @param cl the closure constraint type.
+   * @param ro the ribose optimizer parameters.
    * @param s the vector containing the different backtrack sub-structures.
-   * @param ctag Closure constraint type tag.
    */
-  MccPlacerBuildStat (vector< _GenBTStruc* > *s, char ctag = 'f')
-    : closure_tag (ctag),
+  MccPlacerBuildStat (_ClosureStruc* cl, _RibStruc* ro, vector< _GenBTStruc* > *s)
+    : closure (cl),
+      ribopt (ro),
       strucs (s)
   { }
 
@@ -8473,6 +8673,18 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccPlacerBuildStat::_BTStruc *struc) = 0;
+
+  /**
+   * Visits the MccPlacerBuildStat::_ClosureStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerBuildStat::_ClosureStruc *struc) = 0;
+
+  /**
+   * Visits the MccPlacerBuildStat::_RibStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerBuildStat::_RibStruc *struc) = 0;
   
   /**
    * Visits the MccPlacerBuildStat structure.
