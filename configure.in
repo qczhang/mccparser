@@ -4,8 +4,8 @@
 # Author           : Martin Larose
 # Created On       : Thu Aug 31 13:07:53 2000
 # Last Modified By : Martin Larose
-# Last Modified On : Tue Sep 25 15:57:56 2001
-# Update Count     : 6
+# Last Modified On : Wed Sep 26 15:54:06 2001
+# Update Count     : 7
 # Status           : Ok.
 # 
 
@@ -33,20 +33,19 @@ if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
         CXXSHFLAGS="$CXXFLAGS -O2 -woff 1681 -ptused"
 	CXXFLAGS="$CXXFLAGS -O2 -woff 1681 -ptused"
   	DEPFLAGS="-M"
-  	LDFLAGS=
   	LINKOPTIONS= ;;
     *-sun-*)
         CXXSHFLAGS="$CXXFLAGS -O2 -fPIC"
 	CXXFLAGS="$CXXFLAGS -O2"
 	DEPFLAGS="-MM"
-        LDFLAGS="-static"
+        LDFLAGS="-static $LDFLAGS"
         LINKOPTIONS= ;;
     esac;
 elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
 	CXXSHFLAGS="$CXXFLAGS -Wall";
 	CXXFLAGS="$CXXFLAGS -Wall";
 	DEPFLAGS="-MM"
-	LDFLAGS="-static"
+	LDFLAGS="-static $LDFLAGS"
 	LINKOPTIONS=;
 fi
 
