@@ -3,9 +3,9 @@
  * Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Philippe Thibault
- * Last Modified On : Wed Oct 23 09:20:56 2002
- * Update Count     : 15
+ * Last Modified By : Martin Larose
+ * Last Modified On : Wed Nov 19 14:35:40 2003
+ * Update Count     : 16
  * Status           : Ok.
  */
 
@@ -15,8 +15,8 @@
 %option noyy_top_state
 %option stack
 %{
-#include <iostream.h>
-#include <vector.h>
+#include <iostream>
+#include <vector>
 #include <string.h>
   
 #include "mccparser.h"

@@ -1,13 +1,10 @@
-############################ -*- Mode: Makefile -*- ###########################
-## Makefile.in
-## Copyright © 2000-02 Laboratoire de Biologie Informatique et Théorique.
-## Author           : Martin Larose
-## Created On       : Mon Aug 21 16:06:06 2000
-## Last Modified By : Patrick Gendron
-## Last Modified On : Fri Feb 22 14:49:27 2002
-## Update Count     : 7
-## Status           : Ok.
-###############################################################################
+#                            -*- Mode: Makefile -*-
+# Makefile.in
+# Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
+# Author           : Martin Larose
+# Created On       : Mon Aug 21 16:06:06 2000
+# $Revision$$
+# $Id$
 
 
 PACKAGE = @PACKAGE@
@@ -24,10 +21,11 @@ libdir = @libdir@
 
 CXX = @CXX@
 CXXFLAGS = @CXXFLAGS@
-CXXSHFLAGS = @CXXSHFLAGS@
 DEPFLAGS = @DEPFLAGS@
 DEFS = @DEFS@
 LD = @CXX@
+LDFLAGS = @LDFLAGS@
+LDNAMEPARAM = @LDNAMEPARAM@
 LIBS = @LIBS@
 
 AR = @AR@
@@ -40,7 +38,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
 
 .SUFFIXES:
-.SUFFIXES: .cc .o .lo .d
+.SUFFIXES: .cc .o .d
 
 .cc.d:
 	@ $(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(DEFS) \
@@ -51,8 +49,9 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 .cc.o:
 	$(CXX) $(CXXFLAGS) -I$(srcdir) $(DEFS) -c $<
 
-.cc.lo:
-	$(CXX) $(CXXSHFLAGS) -I$(srcdir) $(DEFS) -c $< -o $@
+% : %.o
+% : %.cc
+
 
 LEXERPREFIX = mcc
 
@@ -62,9 +61,7 @@ CSOURCES = lex.$(LEXERPREFIX).c y.tab.c
 
 HEADERS = $(SOURCES:.cc=.h)
 
-OBJECTS = $(CSOURCES:.c=.o) $(SOURCES:.cc=.o)
-
-SHOBJECTS = $(CSOURCES:.c=.lo) $(SOURCES:.cc=.lo)
+OBJECTS = $(SOURCES:.cc=.o) $(CSOURCES:.c=.o)
 
 LIBRARY = lib$(PACKAGE)
 
@@ -75,8 +72,9 @@ all: $(LIBRARY).so.$(VERSION) TAGS
 
 all-static static: $(LIBRARY).a TAGS
 
-$(LIBRARY).so.$(VERSION): $(SHOBJECTS)
-	$(CXX) -shared $(LDFLAGS) -o $@ -Wl,-soname,$@ $^
+$(LIBRARY).so.$(VERSION): $(OBJECTS)
+	$(CXX) $(LDFLAGS) -o $@ $(LDNAMEPARAM)$@ $^
+	@ ln -sf $@ $(LIBRARY).so
 
 $(LIBRARY).a: $(OBJECTS)
 	$(AR) crs $@ $^
@@ -94,13 +92,10 @@ lex.$(LEXERPREFIX).o: lex.$(LEXERPREFIX).c y.tab.h
 	$(CXX) $(CXXFLAGS) -I. -I$(srcdir) $(DEFS) -c $<
 
 lex.$(LEXERPREFIX).lo: lex.$(LEXERPREFIX).c y.tab.h
-	$(CXX) $(CXXSHFLAGS) -I. -I$(srcdir) $(DEFS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -I. -I$(srcdir) $(DEFS) -c $< -o $@
 
 y.tab.o: y.tab.c y.tab.h
 	$(CXX) $(CXXFLAGS) -I. -I$(srcdir) $(DEFS) -c $<
-
-y.tab.lo: y.tab.c y.tab.h
-	$(CXX) $(CXXSHFLAGS) -I. -I$(srcdir) $(DEFS) -c $< -o $@
 
 
 doc:
@@ -111,13 +106,13 @@ install: $(LIBRARY).so.$(VERSION)
 	@ $(srcdir)/../mkinstalldirs $(libdir)
 	@ $(srcdir)/../mkinstalldirs $(includedir)/$(PACKAGE)-$(VERSION)
 	@ $(INSTALL_DATA) $^ $(libdir)/$^
-	@ rm -f $(libdir)/$(LIBRARY).so
+	@ $(RM) $(libdir)/$(LIBRARY).so
 	@ ln -s $^ $(libdir)/$(LIBRARY).so
 	@ for file in $(HEADERS); do \
 	   echo Installing $$file in $(includedir)/$(PACKAGE)-$(VERSION); \
            $(INSTALL_DATA) $(srcdir)/$$file $(includedir)/$(PACKAGE)-$(VERSION)/$$file; \
           done;
-	@ rm -f $(includedir)/$(PACKAGE)
+	@ $(RM) $(includedir)/$(PACKAGE)
 	@ ln -s $(PACKAGE)-$(VERSION) $(includedir)/$(PACKAGE)
 
 install-static: static
@@ -125,43 +120,43 @@ install-static: static
 	@ $(srcdir)/../mkinstalldirs $(libdir)
 	@ $(srcdir)/../mkinstalldirs $(includedir)/$(PACKAGE)-$(VERSION)
 	@ $(INSTALL_DATA) $(LIBRARY).a $(libdir)/$(LIBRARY)-$(VERSION).a
-	@ rm -f $(libdir)/$(LIBRARY).a
+	@ $(RM) $(libdir)/$(LIBRARY).a
 	@ ln -s $(LIBRARY)-$(VERSION).a $(libdir)/$(LIBRARY).a
 	@ echo Installing headers in $(includedir)/$(PACKAGE)-$(VERSION)
 	@ for file in $(HEADERS); do \
            $(INSTALL_DATA) $(srcdir)/$$file $(includedir)/$(PACKAGE)-$(VERSION)/$$file; \
           done;
-	@ rm -f $(includedir)/$(PACKAGE)
+	@ $(RM) $(includedir)/$(PACKAGE)
 	@ ln -s $(PACKAGE)-$(VERSION) $(includedir)/$(PACKAGE)
 
 install-doc:
 	@ echo "Nothing to do"
 
 uninstall:
-	@ rm -f $(libdir)/$(LIBRARY).a
-	@ rm -f $(libdir)/$(LIBRARY)-$(VERSION).a
-	@ rm -f $(libdir)/$(LIBRARY).so
-	@ rm -f $(libdir)/$(LIBRARY).so.$(VERSION)
+	@ $(RM) $(libdir)/$(LIBRARY).a
+	@ $(RM) $(libdir)/$(LIBRARY)-$(VERSION).a
+	@ $(RM) $(libdir)/$(LIBRARY).so
+	@ $(RM) $(libdir)/$(LIBRARY).so.$(VERSION)
 	@ for file in $(HEADERS); do \
-           rm -f $(includedir)/$(PACKAGE)-$(VERSION)/$$file; \
+           $(RM) $(includedir)/$(PACKAGE)-$(VERSION)/$$file; \
           done;
 	@- rmdir $(includedir)/$(PACKAGE)-$(VERSION)
-	@ rm -f $(includedir)/$(PACKAGE)
+	@ $(RM) $(includedir)/$(PACKAGE)
 
 
 mostlyclean:
-	@ rm -f *~
-	@ rm -f core
+	@ $(RM) *~
+	@ $(RM) core
 
 clean: mostlyclean
 	@ echo "Cleaning project"
-	@ rm -f $(LIBRARY).so $(LIBRARY).so.$(VERSION) $(LIBRARY).a
-	@ rm -f $(OBJECTS) $(SHOBJECTS) TAGS
-	@ rm -f lex.$(LEXERPREFIX).c y.tab.c y.tab.h
-	@ rm -f *.d
+	@ $(RM) $(LIBRARY).so $(LIBRARY).so.$(VERSION) $(LIBRARY).a
+	@ $(RM) $(OBJECTS) TAGS
+	@ $(RM) lex.$(LEXERPREFIX).c y.tab.c y.tab.h
+	@ $(RM) *.d
 
 distclean: clean
-	@ rm -f Makefile
+	@ $(RM) Makefile
 
 topclean: distclean
 	@ echo "The project is getting _top_ clean\!"

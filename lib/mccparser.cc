@@ -10,21 +10,21 @@
 // 
 
 
+#include <math.h>
 #include <string.h>
 
 #include "mccparser.h"
-#include <math.h>
 
 
 
-vector< MccPStruct* > *astv;
+std::vector< MccPStruct* > *astv;
 
 bool interactive_parser;
 
 CMccInput *input_class;
 
 
-ostream& operator<< (ostream& os, MccPStruct& obj)
+std::ostream& operator<< (std::ostream& os, MccPStruct& obj)
 {
   obj.ppdisplay (os, 0);
   return os;
@@ -32,7 +32,7 @@ ostream& operator<< (ostream& os, MccPStruct& obj)
 
 
 void
-whitespaces (ostream &os, unsigned int indent)
+whitespaces (std::ostream &os, unsigned int indent)
 {
   for (; indent > 0; --indent)
     os << ' ';
@@ -72,7 +72,7 @@ MccFragGenStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccFragGenStruc::display (ostream &os) const
+MccFragGenStruc::display (std::ostream &os) const
 {
   if (special_char)
     os << '\'' << ident << '\'';
@@ -163,7 +163,7 @@ MccQNotFunc::Accept (MccVisitor *visitor)
 
 
 void
-MccQNotFunc::ppdisplay (ostream &os, int indent) const
+MccQNotFunc::ppdisplay (std::ostream &os, int indent) const
 {
   os << "! ";
   if (dynamic_cast< const MccQIdentFunc* >(fn)
@@ -203,7 +203,7 @@ MccQFaceFunc::Accept (MccVisitor *visitor)
 
 
 void
-MccQFaceFunc::ppdisplay (ostream &os, int indent) const
+MccQFaceFunc::ppdisplay (std::ostream &os, int indent) const
 {
   left->ppdisplay (os, indent);
   os << " / ";
@@ -236,7 +236,7 @@ MccQAndFunc::Accept (MccVisitor *visitor)
 
 
 void
-MccQAndFunc::ppdisplay (ostream &os, int indent) const
+MccQAndFunc::ppdisplay (std::ostream &os, int indent) const
 {
   if (dynamic_cast< const MccQOrFunc* >(left))
     {
@@ -283,7 +283,7 @@ MccQOrFunc::Accept (MccVisitor *visitor)
 
 
 void
-MccQOrFunc::ppdisplay (ostream &os, int indent) const
+MccQOrFunc::ppdisplay (std::ostream &os, int indent) const
 {
   left->ppdisplay (os, indent);
   os << " || ";
@@ -293,10 +293,10 @@ MccQOrFunc::ppdisplay (ostream &os, int indent) const
 
 
 MccQueryExpr::MccQueryExpr (const MccQueryExpr &right)
-  : strs (new vector< char* > ()),
+  : strs (new std::vector< char* > ()),
     fn (right.fn->clone ())
 {
-  vector< char* >::const_iterator cit;
+  std::vector< char* >::const_iterator cit;
 
   for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
     {
@@ -311,7 +311,7 @@ MccQueryExpr::MccQueryExpr (const MccQueryExpr &right)
       
 MccQueryExpr::~MccQueryExpr ()
 {
-  vector< char* >::iterator it;
+  std::vector< char* >::iterator it;
 
   for (it = strs->begin (); it != strs->end (); ++it)
     delete[] *it;
@@ -326,8 +326,8 @@ MccQueryExpr::operator= (const MccQueryExpr &right)
 {
   if (this != &right)
     {
-      vector< char* >::const_iterator cit;
-      vector< char* >::iterator it;
+      std::vector< char* >::const_iterator cit;
+      std::vector< char* >::iterator it;
 
       for (it = strs->begin (); it != strs->end (); ++it)
 	delete[] *it;
@@ -356,9 +356,9 @@ MccQueryExpr::Accept (MccVisitor *visitor)
 
 
 void
-MccQueryExpr::display (ostream &os) const
+MccQueryExpr::display (std::ostream &os) const
 {
-  vector< char* >::iterator it;
+  std::vector< char* >::iterator it;
   
   os << '{';
   for (it = strs->begin (); it != strs->end (); ++it)
@@ -371,9 +371,9 @@ MccQueryExpr::display (ostream &os) const
 
 
 void
-MccQueryExpr::ppdisplay (ostream &os, int indent) const
+MccQueryExpr::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< char* >::iterator it;
+  std::vector< char* >::iterator it;
 
   os << '{';
   for (it = strs->begin (); it != strs->end (); ++it)
@@ -390,9 +390,9 @@ MccQueryExpr::ppdisplay (ostream &os, int indent) const
 MccAddPdbStat::_AddPdbStruc::_AddPdbStruc (const MccAddPdbStat::_AddPdbStruc &right)
   : current_tfo_cutoff (right.current_tfo_cutoff),
     current_confo_cutoff (right.current_confo_cutoff),
-    strs (new vector< char* > ())
+    strs (new std::vector< char* > ())
 {
-  vector< char* >::const_iterator cit;
+  std::vector< char* >::const_iterator cit;
 
   for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
     {
@@ -407,7 +407,7 @@ MccAddPdbStat::_AddPdbStruc::_AddPdbStruc (const MccAddPdbStat::_AddPdbStruc &ri
 
 MccAddPdbStat::_AddPdbStruc::~_AddPdbStruc ()
 {
-  vector < char* >::iterator it;
+  std::vector< char* >::iterator it;
 
   for (it = strs->begin (); it != strs->end (); ++it)
     delete [] *it;
@@ -421,8 +421,8 @@ MccAddPdbStat::_AddPdbStruc::operator= (const MccAddPdbStat::_AddPdbStruc &right
 {
   if (this != &right)
     {
-      vector< char* >::const_iterator cit;
-      vector< char* >::iterator it;      
+      std::vector< char* >::const_iterator cit;
+      std::vector< char* >::iterator it;      
       
       current_tfo_cutoff = right.current_tfo_cutoff;
       current_confo_cutoff = right.current_confo_cutoff;
@@ -451,9 +451,9 @@ MccAddPdbStat::_AddPdbStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccAddPdbStat::_AddPdbStruc::display (ostream &os) const
+MccAddPdbStat::_AddPdbStruc::display (std::ostream &os) const
 {
-  vector< char* >::iterator it;
+  std::vector< char* >::iterator it;
 
   os << "tfo_cutoff " << current_tfo_cutoff
      << " confo_cutoff " << current_confo_cutoff;
@@ -464,18 +464,18 @@ MccAddPdbStat::_AddPdbStruc::display (ostream &os) const
 
 
 void
-MccAddPdbStat::_AddPdbStruc::ppdisplay (ostream &os, int indent) const
+MccAddPdbStat::_AddPdbStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< char* >::iterator it;
+  std::vector< char* >::iterator it;
 
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
-  os << "tfo_cutoff   " << current_tfo_cutoff << endl;
+  os << "tfo_cutoff   " << current_tfo_cutoff << std::endl;
   whitespaces (os, indent);
   os << "confo_cutoff " << current_confo_cutoff;
   for (it = strs->begin (); it != strs->end (); ++it)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent);
       os << "\"" << *it << "\"";
     }
@@ -484,9 +484,9 @@ MccAddPdbStat::_AddPdbStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccAddPdbStat::MccAddPdbStat (const MccAddPdbStat &right)
-  : strucs (new vector< _AddPdbStruc* > ())
+  : strucs (new std::vector< _AddPdbStruc* > ())
 {
-  vector< _AddPdbStruc* >::const_iterator cit;
+  std::vector< _AddPdbStruc* >::const_iterator cit;
   
   for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
     strucs->push_back ((*cit)->clone ());
@@ -496,7 +496,7 @@ MccAddPdbStat::MccAddPdbStat (const MccAddPdbStat &right)
 
 MccAddPdbStat::~MccAddPdbStat ()
 {
-  vector< _AddPdbStruc* >::iterator it;
+  std::vector< _AddPdbStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); ++it)
     delete *it;
@@ -510,8 +510,8 @@ MccAddPdbStat::operator= (const MccAddPdbStat &right)
 {
   if (this != &right)
     {
-      vector< _AddPdbStruc* >::const_iterator cit;
-      vector< _AddPdbStruc* >::iterator it;
+      std::vector< _AddPdbStruc* >::const_iterator cit;
+      std::vector< _AddPdbStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); ++it)
 	delete *it;
@@ -533,9 +533,9 @@ MccAddPdbStat::Accept (MccVisitor *visitor)
 
 
 void
-MccAddPdbStat::display (ostream &os) const
+MccAddPdbStat::display (std::ostream &os) const
 {
-  vector< _AddPdbStruc* >::iterator it;
+  std::vector< _AddPdbStruc* >::iterator it;
 
   os << "add_pdb (";
   for (it = strucs->begin (); it != strucs->end (); ++it)
@@ -550,20 +550,20 @@ MccAddPdbStat::display (ostream &os) const
 
 
 void
-MccAddPdbStat::ppdisplay (ostream &os, int indent) const
+MccAddPdbStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _AddPdbStruc* >::iterator it;
+  std::vector< _AddPdbStruc* >::iterator it;
 
-  os << "add_pdb" << endl;
+  os << "add_pdb" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); ++it)
     {
       (*it)->ppdisplay (os, indent + 4);
     }
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -599,7 +599,7 @@ MccAdjacencyCstStat::Accept (MccVisitor *visitor)
 
 
 void
-MccAdjacencyCstStat::display (ostream &os) const
+MccAdjacencyCstStat::display (std::ostream &os) const
 {
   os << "adjacency (";
   fg_struc->display (os);
@@ -609,11 +609,11 @@ MccAdjacencyCstStat::display (ostream &os) const
 
 
 void
-MccAdjacencyCstStat::ppdisplay (ostream &os, int indent) const
+MccAdjacencyCstStat::ppdisplay (std::ostream &os, int indent) const
 {
   os << "adjacency (";
   fg_struc->ppdisplay (os, indent);
-  os << ' ' << the_min << ' ' << the_max << ')' << endl;
+  os << ' ' << the_min << ' ' << the_max << ')' << std::endl;
 }
 
 
@@ -684,7 +684,7 @@ MccAngleCstStat::_AngleStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccAngleCstStat::_AngleStruc::display (ostream &os) const
+MccAngleCstStat::_AngleStruc::display (std::ostream &os) const
 {
   res1->display (os);
   os << ":" << at1 << ' ';
@@ -697,9 +697,9 @@ MccAngleCstStat::_AngleStruc::display (ostream &os) const
 
 
 void
-MccAngleCstStat::_AngleStruc::ppdisplay (ostream &os, int indent) const
+MccAngleCstStat::_AngleStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ":" << at1 << ' ';
@@ -712,9 +712,9 @@ MccAngleCstStat::_AngleStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccAngleCstStat::MccAngleCstStat (const MccAngleCstStat &right)
-  : strucs (new vector< MccAngleCstStat::_AngleStruc* > ())
+  : strucs (new std::vector< MccAngleCstStat::_AngleStruc* > ())
 {
-  vector< MccAngleCstStat::_AngleStruc* >::const_iterator cit;
+  std::vector< MccAngleCstStat::_AngleStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
     strucs->push_back (new MccAngleCstStat::_AngleStruc (**cit));
@@ -724,7 +724,7 @@ MccAngleCstStat::MccAngleCstStat (const MccAngleCstStat &right)
 
 MccAngleCstStat::~MccAngleCstStat ()
 {
-  vector< _AngleStruc* >::iterator it;
+  std::vector< _AngleStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -738,8 +738,8 @@ MccAngleCstStat::operator= (const MccAngleCstStat &right)
 {
   if (this != &right)
     {
-      vector< MccAngleCstStat::_AngleStruc* >::const_iterator cit;
-      vector< MccAngleCstStat::_AngleStruc* >::iterator it;
+      std::vector< MccAngleCstStat::_AngleStruc* >::const_iterator cit;
+      std::vector< MccAngleCstStat::_AngleStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -761,9 +761,9 @@ MccAngleCstStat::Accept (MccVisitor *visitor)
 
 
 void
-MccAngleCstStat::display (ostream &os) const
+MccAngleCstStat::display (std::ostream &os) const
 {
-  vector< _AngleStruc* >::iterator it;
+  std::vector< _AngleStruc* >::iterator it;
 
   os << "angle (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -778,18 +778,18 @@ MccAngleCstStat::display (ostream &os) const
 
 
 void
-MccAngleCstStat::ppdisplay (ostream &os, int indent) const
+MccAngleCstStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _AngleStruc* >::iterator it;
+  std::vector< _AngleStruc* >::iterator it;
 
-  os << "angle" << endl;
+  os << "angle" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -828,7 +828,7 @@ MccAssignStat::Accept (MccVisitor *visitor)
 
 
 void
-MccAssignStat::display (ostream &os) const
+MccAssignStat::display (std::ostream &os) const
 {
   os << ident << " = ";
   expr->display (os);
@@ -837,7 +837,7 @@ MccAssignStat::display (ostream &os) const
 
 
 void
-MccAssignStat::ppdisplay (ostream &os, int indent) const
+MccAssignStat::ppdisplay (std::ostream &os, int indent) const
 {
   os << ident << " = ";
   expr->ppdisplay (os, indent + strlen (ident) + 3);
@@ -856,9 +856,9 @@ MccBacktrackExpr::_GenBTStruc::_GenBTStruc (const MccBacktrackExpr::_GenBTStruc 
     fg_struc = new MccFragGenStruc (*right.fg_struc);
   if (right.res_v)
     {
-      vector< MccResidueName* >::const_iterator cit;
+      std::vector< MccResidueName* >::const_iterator cit;
       
-      res_v = new vector< MccResidueName* > ();
+      res_v = new std::vector< MccResidueName* > ();
       for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
 	res_v->push_back (new MccResidueName (**cit));
     }
@@ -894,7 +894,7 @@ MccBacktrackExpr::_GenBTStruc::operator= (const MccBacktrackExpr::_GenBTStruc &r
 	fg_struc = new MccFragGenStruc (*right.fg_struc);
       if (res_v)
 	{
-	  vector< MccResidueName* >::iterator it;
+	  std::vector< MccResidueName* >::iterator it;
 
 	  for (it = res_v->begin (); it != res_v->end (); it++)
 	    delete *it;
@@ -903,9 +903,9 @@ MccBacktrackExpr::_GenBTStruc::operator= (const MccBacktrackExpr::_GenBTStruc &r
 	}
       if (right.res_v)
 	{
-	  vector< MccResidueName* >::const_iterator cit;
+	  std::vector< MccResidueName* >::const_iterator cit;
 	  
-	  res_v = new vector< MccResidueName* > ();
+	  res_v = new std::vector< MccResidueName* > ();
 	  for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
 	    res_v->push_back (new MccResidueName (**cit));
 	  
@@ -935,9 +935,9 @@ MccBacktrackExpr::_FGStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccBacktrackExpr::_FGStruc::ppdisplay (ostream &os, int indent) const
+MccBacktrackExpr::_FGStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   display (os);
 }
@@ -946,7 +946,7 @@ MccBacktrackExpr::_FGStruc::ppdisplay (ostream &os, int indent) const
 
 MccBacktrackExpr::_BTStruc::~_BTStruc ()
 {
-  vector< MccResidueName* >::iterator it;
+  std::vector< MccResidueName* >::iterator it;
 
   delete ref;
   for (it = res_v->begin (); it != res_v->end (); it++)
@@ -975,9 +975,9 @@ MccBacktrackExpr::_BTStruc::operator= (const MccBacktrackExpr::_BTStruc &right)
 
 
 void
-MccBacktrackExpr::_BTStruc::display (ostream &os) const
+MccBacktrackExpr::_BTStruc::display (std::ostream &os) const
 {
-  vector< MccResidueName* >::iterator it;
+  std::vector< MccResidueName* >::iterator it;
 
   os << '(';
   ref->display (os);
@@ -992,11 +992,11 @@ MccBacktrackExpr::_BTStruc::display (ostream &os) const
 
 
 void
-MccBacktrackExpr::_BTStruc::ppdisplay (ostream &os, int indent) const
+MccBacktrackExpr::_BTStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< MccResidueName* >::iterator it;
+  std::vector< MccResidueName* >::iterator it;
 
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   os << '(';
   ref->ppdisplay (os, indent);
@@ -1029,7 +1029,7 @@ MccBacktrackExpr::_PlaceStruc::operator= (const MccBacktrackExpr::_PlaceStruc &r
 
 
 void
-MccBacktrackExpr::_PlaceStruc::display (ostream &os) const
+MccBacktrackExpr::_PlaceStruc::display (std::ostream &os) const
 {
   os << "place (";
   ref->display (os);
@@ -1043,9 +1043,9 @@ MccBacktrackExpr::_PlaceStruc::display (ostream &os) const
 
 
 void
-MccBacktrackExpr::_PlaceStruc::ppdisplay (ostream &os, int indent) const
+MccBacktrackExpr::_PlaceStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   os << "place (";
   ref->ppdisplay (os, indent);
@@ -1059,9 +1059,9 @@ MccBacktrackExpr::_PlaceStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccBacktrackExpr::MccBacktrackExpr (const MccBacktrackExpr &right)
-  : strucs (new vector< MccBacktrackExpr::_GenBTStruc* > ())
+  : strucs (new std::vector< MccBacktrackExpr::_GenBTStruc* > ())
 {
-  vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
+  std::vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back ((*cit)->clone ());
@@ -1071,7 +1071,7 @@ MccBacktrackExpr::MccBacktrackExpr (const MccBacktrackExpr &right)
 
 MccBacktrackExpr::~MccBacktrackExpr ()
 {
-  vector< _GenBTStruc* >::iterator it;
+  std::vector< _GenBTStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -1085,8 +1085,8 @@ MccBacktrackExpr::operator= (const MccBacktrackExpr &right)
 {
   if (this != &right)
     {
-      vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
-      vector< MccBacktrackExpr::_GenBTStruc* >::iterator it;
+      std::vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
+      std::vector< MccBacktrackExpr::_GenBTStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -1108,9 +1108,9 @@ MccBacktrackExpr::Accept (MccVisitor *visitor)
 
 
 void
-MccBacktrackExpr::display (ostream &os) const
+MccBacktrackExpr::display (std::ostream &os) const
 {
-  vector< _GenBTStruc* >::iterator it;
+  std::vector< _GenBTStruc* >::iterator it;
 
   os << "backtrack (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -1125,18 +1125,18 @@ MccBacktrackExpr::display (ostream &os) const
 
 
 void
-MccBacktrackExpr::ppdisplay (ostream &os, int indent) const
+MccBacktrackExpr::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _GenBTStruc* >::iterator it;
+  std::vector< _GenBTStruc* >::iterator it;
 
-  os << "backtrack" << endl;
+  os << "backtrack" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -1172,7 +1172,7 @@ MccCacheExpr::Accept (MccVisitor *visitor)
 
 
 void
-MccCacheExpr::display (ostream &os) const
+MccCacheExpr::display (std::ostream &os) const
 {
   os << "cache (";
   fgref->display (os);
@@ -1184,14 +1184,14 @@ MccCacheExpr::display (ostream &os) const
 
 
 void
-MccCacheExpr::ppdisplay (ostream &os, int indent) const
+MccCacheExpr::ppdisplay (std::ostream &os, int indent) const
 {
   os << "cache (";
   fgref->ppdisplay (os, indent);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 4);
   filter->ppdisplay (os, indent);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -1232,7 +1232,7 @@ MccClashCstStat::Accept (MccVisitor *visitor)
 
 
 void
-MccClashCstStat::display (ostream &os) const
+MccClashCstStat::display (std::ostream &os) const
 {
   os << "res_clash (";
   fg_struc->display (os);
@@ -1266,7 +1266,7 @@ MccClashCstStat::display (ostream &os) const
 
 
 void
-MccClashCstStat::ppdisplay (ostream &os, int indent) const
+MccClashCstStat::ppdisplay (std::ostream &os, int indent) const
 {
   os << "res_clash (";
   fg_struc->ppdisplay (os, indent);
@@ -1294,7 +1294,7 @@ MccClashCstStat::ppdisplay (ostream &os, int indent) const
     }
   if (aso == MCC_NO_HYDROGEN)
     os << " no_hydrogen";
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -1335,7 +1335,7 @@ MccConnectStat::_ConnectStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccConnectStat::_ConnectStruc::display (ostream &os) const
+MccConnectStat::_ConnectStruc::display (std::ostream &os) const
 {
   res1->display (os);
   os << ' ';
@@ -1349,9 +1349,9 @@ MccConnectStat::_ConnectStruc::display (ostream &os) const
 
 
 void
-MccConnectStat::_ConnectStruc::ppdisplay (ostream &os, int indent) const
+MccConnectStat::_ConnectStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ' ';
@@ -1365,9 +1365,9 @@ MccConnectStat::_ConnectStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccConnectStat::MccConnectStat (const MccConnectStat &right)
-  : strucs (new vector< MccConnectStat::_ConnectStruc* > ())
+  : strucs (new std::vector< MccConnectStat::_ConnectStruc* > ())
 {
-  vector< MccConnectStat::_ConnectStruc* >::const_iterator cit;
+  std::vector< MccConnectStat::_ConnectStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back (new _ConnectStruc (**cit));
@@ -1377,7 +1377,7 @@ MccConnectStat::MccConnectStat (const MccConnectStat &right)
 
 MccConnectStat::~MccConnectStat ()
 {
-  vector< _ConnectStruc* >::iterator it;
+  std::vector< _ConnectStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -1392,8 +1392,8 @@ MccConnectStat::operator= (const MccConnectStat &right)
 {
   if (this != &right)
     {
-      vector< MccConnectStat::_ConnectStruc* >::const_iterator cit;
-      vector< MccConnectStat::_ConnectStruc* >::iterator it;
+      std::vector< MccConnectStat::_ConnectStruc* >::const_iterator cit;
+      std::vector< MccConnectStat::_ConnectStruc* >::iterator it;
       
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -1415,9 +1415,9 @@ MccConnectStat::Accept (MccVisitor *visitor)
 
 
 void
-MccConnectStat::display (ostream &os) const
+MccConnectStat::display (std::ostream &os) const
 {
-  vector< _ConnectStruc* >::iterator it;
+  std::vector< _ConnectStruc* >::iterator it;
 
   os << "connect (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -1432,18 +1432,18 @@ MccConnectStat::display (ostream &os) const
 
 
 void
-MccConnectStat::ppdisplay (ostream &os, int indent) const
+MccConnectStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _ConnectStruc* >::iterator it;
+  std::vector< _ConnectStruc* >::iterator it;
 
-  os << "connect" << endl;
+  os << "connect" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -1483,7 +1483,7 @@ MccCycleCstStat::_CycleStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccCycleCstStat::_CycleStruc::display (ostream &os) const
+MccCycleCstStat::_CycleStruc::display (std::ostream &os) const
 {
   res1->display (os);
   os << ' ';
@@ -1494,9 +1494,9 @@ MccCycleCstStat::_CycleStruc::display (ostream &os) const
 
 
 void
-MccCycleCstStat::_CycleStruc::ppdisplay (ostream &os, int indent) const
+MccCycleCstStat::_CycleStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ' ';
@@ -1507,9 +1507,9 @@ MccCycleCstStat::_CycleStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccCycleCstStat::MccCycleCstStat (const MccCycleCstStat &right)
-  : strucs (new vector< MccCycleCstStat::_CycleStruc* > ())
+  : strucs (new std::vector< MccCycleCstStat::_CycleStruc* > ())
 {
-  vector< MccCycleCstStat::_CycleStruc* >::const_iterator cit;
+  std::vector< MccCycleCstStat::_CycleStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back (new _CycleStruc (**cit));
@@ -1519,7 +1519,7 @@ MccCycleCstStat::MccCycleCstStat (const MccCycleCstStat &right)
 
 MccCycleCstStat::~MccCycleCstStat ()
 {
-  vector< _CycleStruc* >::iterator it;
+  std::vector< _CycleStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); ++it)
     delete *it;
@@ -1533,8 +1533,8 @@ MccCycleCstStat::operator= (const MccCycleCstStat &right)
 {
   if (this != &right)
     {
-      vector< MccCycleCstStat::_CycleStruc* >::const_iterator cit;
-      vector< MccCycleCstStat::_CycleStruc* >::iterator it;
+      std::vector< MccCycleCstStat::_CycleStruc* >::const_iterator cit;
+      std::vector< MccCycleCstStat::_CycleStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -1556,9 +1556,9 @@ MccCycleCstStat::Accept (MccVisitor *visitor)
 
 
 void
-MccCycleCstStat::display (ostream &os) const
+MccCycleCstStat::display (std::ostream &os) const
 {
-  vector< _CycleStruc* >::iterator it;
+  std::vector< _CycleStruc* >::iterator it;
 
   os << "cycle (";
   for (it = strucs->begin (); it != strucs->end (); ++it)
@@ -1573,18 +1573,18 @@ MccCycleCstStat::display (ostream &os) const
 
 
 void
-MccCycleCstStat::ppdisplay (ostream &os, int indent) const
+MccCycleCstStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _CycleStruc* >::iterator it;
+  std::vector< _CycleStruc* >::iterator it;
 
-  os << "cycle" << endl;
+  os << "cycle" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); ++it)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -1617,7 +1617,7 @@ MccDisplayFGStat::Accept (MccVisitor *visitor)
 
 
 void
-MccDisplayFGStat::display (ostream &os) const
+MccDisplayFGStat::display (std::ostream &os) const
 {
   os << "display_fg (";
   fg_struc->display (os);
@@ -1627,11 +1627,11 @@ MccDisplayFGStat::display (ostream &os) const
 
 
 void
-MccDisplayFGStat::ppdisplay (ostream &os, int indent) const
+MccDisplayFGStat::ppdisplay (std::ostream &os, int indent) const
 {
   os << "display_fg (";
   fg_struc->ppdisplay (os, indent);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -1682,7 +1682,7 @@ MccDistCstStat::_DistStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccDistCstStat::_DistStruc::display (ostream &os) const
+MccDistCstStat::_DistStruc::display (std::ostream &os) const
 {
   res1->display (os);
   os << ':' << at1 << ' ';
@@ -1693,9 +1693,9 @@ MccDistCstStat::_DistStruc::display (ostream &os) const
 
 
 void
-MccDistCstStat::_DistStruc::ppdisplay (ostream &os, int indent) const
+MccDistCstStat::_DistStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ':' << at1 << ' ';
@@ -1706,9 +1706,9 @@ MccDistCstStat::_DistStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccDistCstStat::MccDistCstStat (const MccDistCstStat &right)
-  : strucs (new vector< MccDistCstStat::_DistStruc* > ())
+  : strucs (new std::vector< MccDistCstStat::_DistStruc* > ())
 {
-  vector< MccDistCstStat::_DistStruc* >::const_iterator cit;
+  std::vector< MccDistCstStat::_DistStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back (new _DistStruc (**cit));
@@ -1718,7 +1718,7 @@ MccDistCstStat::MccDistCstStat (const MccDistCstStat &right)
 
 MccDistCstStat::~MccDistCstStat ()
 {
-  vector< _DistStruc* >::iterator it;
+  std::vector< _DistStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -1732,8 +1732,8 @@ MccDistCstStat::operator= (const MccDistCstStat &right)
 {
   if (this != &right)
     {
-      vector< MccDistCstStat::_DistStruc* >::const_iterator cit;
-      vector< MccDistCstStat::_DistStruc* >::iterator it;
+      std::vector< MccDistCstStat::_DistStruc* >::const_iterator cit;
+      std::vector< MccDistCstStat::_DistStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -1755,9 +1755,9 @@ MccDistCstStat::Accept (MccVisitor *visitor)
 
 
 void
-MccDistCstStat::display (ostream &os) const
+MccDistCstStat::display (std::ostream &os) const
 {
-  vector< _DistStruc* >::iterator it;
+  std::vector< _DistStruc* >::iterator it;
 
   os << "distance (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -1772,18 +1772,18 @@ MccDistCstStat::display (ostream &os) const
 
 
 void
-MccDistCstStat::ppdisplay (ostream &os, int indent) const
+MccDistCstStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _DistStruc* >::iterator it;
+  std::vector< _DistStruc* >::iterator it;
 
-  os << "distance" << endl;
+  os << "distance" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -1802,7 +1802,7 @@ MccBacktrackSize::operator= (const MccBacktrackSize &right)
 
 
 void
-MccBacktrackSize::display (ostream &os) const
+MccBacktrackSize::display (std::ostream &os) const
 {
   os << "backtrack_size (" << maxBT << " " << maxLR << ")";
 }
@@ -1839,7 +1839,7 @@ MccFilePdbOutput::Accept (MccVisitor *visitor)
 
 
 void
-MccFilePdbOutput::display (ostream &os) const
+MccFilePdbOutput::display (std::ostream &os) const
 {
   os << "file_pdb (\"" << form << "\"";
   if (zipped)
@@ -1879,7 +1879,7 @@ MccFileBinaryOutput::Accept (MccVisitor *visitor)
 
 
 void
-MccFileBinaryOutput::display (ostream &os) const
+MccFileBinaryOutput::display (std::ostream &os) const
 {
   os << "file_bin (\"" << form << "\"";
   if (zipped)
@@ -1922,7 +1922,7 @@ MccSocketBinaryOutput::Accept (MccVisitor *visitor)
 
 
 void
-MccSocketBinaryOutput::display (ostream &os) const
+MccSocketBinaryOutput::display (std::ostream &os) const
 {
   os << "socket_bin (\"" << serverName << "\" " << port
      << " \"" << modelName << "\")";
@@ -1960,7 +1960,7 @@ MccFileRnamlOutput::Accept (MccVisitor *visitor)
 
 
 void
-MccFileRnamlOutput::display (ostream &os) const
+MccFileRnamlOutput::display (std::ostream &os) const
 {
   os << "file_rnaml (\"" << name << "\"";
   if (zipped)
@@ -1998,7 +1998,7 @@ MccFilePdbInput::Accept (MccVisitor *visitor)
 
 
 void
-MccFilePdbInput::display (ostream &os) const
+MccFilePdbInput::display (std::ostream &os) const
 {
   os << "file_pdb (\"" << name << "\")";
 }
@@ -2033,7 +2033,7 @@ MccFileBinaryInput::Accept (MccVisitor *visitor)
 
 
 void
-MccFileBinaryInput::display (ostream &os) const
+MccFileBinaryInput::display (std::ostream &os) const
 {
   os << "file_bin (\"" << name << "\")";
 }
@@ -2073,7 +2073,7 @@ MccSocketBinaryInput::Accept (MccVisitor *visitor)
 
 
 void
-MccSocketBinaryInput::display (ostream &os) const
+MccSocketBinaryInput::display (std::ostream &os) const
 {
   os << "socket_bin (\"" << serverName << " " << port
      << " \"" << modelName << "\")";
@@ -2109,7 +2109,7 @@ MccFileRnamlInput::Accept (MccVisitor *visitor)
 
 
 void
-MccFileRnamlInput::display (ostream &os) const
+MccFileRnamlInput::display (std::ostream &os) const
 {
   os << "file_rnaml (\"" << name << "\")";
 }
@@ -2165,7 +2165,7 @@ MccExploreStat::Accept (MccVisitor *visitor)
 
 
 void
-MccExploreStat::display (ostream &os) const
+MccExploreStat::display (std::ostream &os) const
 {
   os << "explore (";
   fg_struc->display (os);
@@ -2185,28 +2185,28 @@ MccExploreStat::display (ostream &os) const
 
 
 void
-MccExploreStat::ppdisplay (ostream &os, int indent) const
+MccExploreStat::ppdisplay (std::ostream &os, int indent) const
 {
-  os << "explore" << endl;
+  os << "explore" << std::endl;
   whitespaces (os, indent);
-  os << '(' << endl;
+  os << '(' << std::endl;
   whitespaces (os, indent + 2);
   fg_struc->ppdisplay (os, indent + 2);
   if (filter)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent + 2);
       filter->ppdisplay (os, indent + 2);
     }
   if (expOutput)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent + 2);
       expOutput->ppdisplay (os, indent + 2);
     }
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -2214,7 +2214,7 @@ MccExploreStat::ppdisplay (ostream &os, int indent) const
 MccExploreLVStat::MccExploreLVStat (MccFragGenStruc *fg,
 				    MccModelFilterStrategy *f,
 				    MccOutputMode *ef,
-				    vector< int > *tl,
+				    std::vector< int > *tl,
 				    MccBacktrackSize *bs)
   : MccPStruct (),
     fg_struc (fg),
@@ -2226,7 +2226,7 @@ MccExploreLVStat::MccExploreLVStat (MccFragGenStruc *fg,
 {
   if (vtlimits)
     {
-      vector< int >::const_iterator it;
+      std::vector< int >::const_iterator it;
       
       tlimit = 0;
       for (it = vtlimits->begin (); it != vtlimits->end (); it++)
@@ -2253,7 +2253,7 @@ MccExploreLVStat::MccExploreLVStat (const MccExploreLVStat &right)
     btsize = right.btsize->clone ();
   if (right.vtlimits)
     {
-      vtlimits = new vector< int > (*right.vtlimits);
+      vtlimits = new std::vector< int > (*right.vtlimits);
       tlimit = right.tlimit;
     }
 }
@@ -2290,7 +2290,7 @@ MccExploreLVStat::operator= (const MccExploreLVStat &right)
 	}
       if (right.vtlimits)
         {
-	  vtlimits = new vector< int  > (*right.vtlimits);
+	  vtlimits = new std::vector< int  > (*right.vtlimits);
 	  tlimit = right.tlimit;
 	}
       if (btsize)
@@ -2315,7 +2315,7 @@ MccExploreLVStat::Accept (MccVisitor *visitor)
 
 
 void
-MccExploreLVStat::display (ostream &os) const
+MccExploreLVStat::display (std::ostream &os) const
 {
   os << "exploreLV (";
   fg_struc->display (os);
@@ -2343,40 +2343,40 @@ MccExploreLVStat::display (ostream &os) const
 
 
 void
-MccExploreLVStat::ppdisplay (ostream &os, int indent) const
+MccExploreLVStat::ppdisplay (std::ostream &os, int indent) const
 {
-  os << "exploreLV" << endl;
+  os << "exploreLV" << std::endl;
   whitespaces (os, indent);
-  os << '(' << endl;
+  os << '(' << std::endl;
   whitespaces (os, indent + 2);
   fg_struc->ppdisplay (os, indent + 2);
   if (filter)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent + 2);
       filter->ppdisplay (os, indent + 2);
     }
   if (expOutput)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent + 2);
       expOutput->ppdisplay (os, indent + 2);
     }
   if (vtlimits)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent + 2);
       os << "time_limit (" << tlimit << " sec)";
     }
   if (btsize)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent + 2);
       btsize->ppdisplay (os, indent + 2);
     }
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -2388,9 +2388,9 @@ MccLibraryExpr::_LibStruc::_LibStruc (const MccLibraryExpr::_LibStruc &right)
 {
   if (right.res_vec)
     {
-      vector< MccResidueName* >::const_iterator cit;
+      std::vector< MccResidueName* >::const_iterator cit;
       
-      res_vec = new vector< MccResidueName* > ();
+      res_vec = new std::vector< MccResidueName* > ();
       for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
 	res_vec->push_back ((*cit)->clone ());
     }
@@ -2402,7 +2402,7 @@ MccLibraryExpr::_LibStruc::~_LibStruc ()
 {
   if (res_vec)
     {
-      vector< MccResidueName* >::iterator it;
+      std::vector< MccResidueName* >::iterator it;
       
       for (it = res_vec->begin (); it != res_vec->end (); ++it)
 	delete *it;
@@ -2419,7 +2419,7 @@ MccLibraryExpr::_LibStruc::operator= (const MccLibraryExpr::_LibStruc &right)
     {
       if (res_vec)
 	{
-	  vector< MccResidueName* >::iterator it;
+	  std::vector< MccResidueName* >::iterator it;
 
 	  for (it = res_vec->begin (); it != res_vec->end (); it++)
 	    delete *it;
@@ -2428,9 +2428,9 @@ MccLibraryExpr::_LibStruc::operator= (const MccLibraryExpr::_LibStruc &right)
 	}
       if (right.res_vec)
 	{
-	  vector< MccResidueName* >::const_iterator cit;
+	  std::vector< MccResidueName* >::const_iterator cit;
 	  
-	  res_vec = new vector< MccResidueName* > ();
+	  res_vec = new std::vector< MccResidueName* > ();
 	  for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
 	    res_vec->push_back ((*cit)->clone ());
 	}
@@ -2461,9 +2461,9 @@ MccLibraryExpr::_StripStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccLibraryExpr::_StripStruc::display (ostream &os) const
+MccLibraryExpr::_StripStruc::display (std::ostream &os) const
 {
-  vector< MccResidueName* >::iterator it;
+  std::vector< MccResidueName* >::iterator it;
 
   os << "strip (";
   for (it = res_vec->begin (); it != res_vec->end (); it++)
@@ -2478,11 +2478,11 @@ MccLibraryExpr::_StripStruc::display (ostream &os) const
 
 
 void
-MccLibraryExpr::_StripStruc::ppdisplay (ostream &os, int indent) const
+MccLibraryExpr::_StripStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< MccResidueName* >::iterator it;
+  std::vector< MccResidueName* >::iterator it;
 
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   os << "strip (";
   for (it = res_vec->begin (); it != res_vec->end (); it++)
@@ -2515,9 +2515,9 @@ MccLibraryExpr::_ChangeIdStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccLibraryExpr::_ChangeIdStruc::ppdisplay (ostream &os, int indent) const
+MccLibraryExpr::_ChangeIdStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   os << "change_id (\"" << from << "\" , \"" << to << "\")";
 }
@@ -2527,9 +2527,9 @@ MccLibraryExpr::_ChangeIdStruc::ppdisplay (ostream &os, int indent) const
 MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
   : inputMode (right.inputMode->clone ()),
     sorter (right.sorter ? right.sorter->clone () : NULL),
-    strucs (new vector< MccLibraryExpr::_LibStruc* > ())
+    strucs (new std::vector< MccLibraryExpr::_LibStruc* > ())
 {
-  vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
+  std::vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
   
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back ((*cit)->clone ());
@@ -2539,7 +2539,7 @@ MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
 
 MccLibraryExpr::~MccLibraryExpr ()
 {
-  vector< _LibStruc* >::iterator it;
+  std::vector< _LibStruc* >::iterator it;
 
   delete inputMode;
   if (sorter)
@@ -2556,8 +2556,8 @@ MccLibraryExpr::operator= (const MccLibraryExpr &right)
 {
   if (this != &right)
     {
-      vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
-      vector< MccLibraryExpr::_LibStruc* >::iterator it;
+      std::vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
+      std::vector< MccLibraryExpr::_LibStruc* >::iterator it;
 
       delete inputMode;
       inputMode = right.inputMode->clone ();
@@ -2588,9 +2588,9 @@ MccLibraryExpr::Accept (MccVisitor *visitor)
 
 
 void
-MccLibraryExpr::display (ostream &os) const
+MccLibraryExpr::display (std::ostream &os) const
 {
-  vector< _LibStruc* >::iterator it;
+  std::vector< _LibStruc* >::iterator it;
 
   os << "library (";
   inputMode->display (os);
@@ -2607,22 +2607,22 @@ MccLibraryExpr::display (ostream &os) const
 
 
 void
-MccLibraryExpr::ppdisplay (ostream &os, int indent) const
+MccLibraryExpr::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _LibStruc* >::iterator it;
+  std::vector< _LibStruc* >::iterator it;
 
-  os << "library" << endl;
+  os << "library" << std::endl;
   whitespaces (os, indent + 2);
-  os << '(' << endl;
+  os << '(' << std::endl;
   whitespaces (os, indent + 4);
   inputMode->ppdisplay (os, indent);
   if (sorter)
     sorter->ppdisplay (os, indent);
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -2684,7 +2684,7 @@ MccMosesExpr::Accept (MccVisitor *visitor)
 
 
 void
-MccMosesExpr::display (ostream &os) const
+MccMosesExpr::display (std::ostream &os) const
 {
   os << "moses (";
   if (range)
@@ -2704,76 +2704,76 @@ MccMosesExpr::display (ostream &os) const
 
 
 void
-MccMosesExpr::ppdisplay (ostream &os, int indent) const
+MccMosesExpr::ppdisplay (std::ostream &os, int indent) const
 {
-  os << "moses" << endl;
+  os << "moses" << std::endl;
   whitespaces (os, indent);
-  os << '(' << endl;
+  os << '(' << std::endl;
   if (range)
     {
       whitespaces (os, indent + 2);
-      os << range << endl;
+      os << range << std::endl;
     }
   if (ctid >= 0)
     {
       whitespaces (os, indent + 2);
-      os << "sec_struct (" << ctid << ')' <<  endl;
+      os << "sec_struct (" << ctid << ')' <<  std::endl;
     }
   queries->ppdisplay (os, indent + 2);
   if (mfold_epc >= 0)
     {
       whitespaces (os, indent + 2);
-      os << "mfold_epc (" << mfold_epc << ')' << endl;
+      os << "mfold_epc (" << mfold_epc << ')' << std::endl;
     }
   if (mfold_win >= 0)
     {
       whitespaces (os, indent + 2);
-      os << "mfold_win (" << mfold_win << ')' << endl;
+      os << "mfold_win (" << mfold_win << ')' << std::endl;
     }
   if (mfold_dir)
     {
       whitespaces (os, indent + 2);
-      os << "mfold_ouput (\"" << mfold_dir << "\")" << endl;
+      os << "mfold_ouput (\"" << mfold_dir << "\")" << std::endl;
     }
   whitespaces (os, indent);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
 MccMosesQueries::MccMosesQueries (const MccMosesQueries &right)
 {
   stem_cg_au_res = right.stem_cg_au_res ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
+    new std::pair< MccQueryExpr*, MccSamplingSize* > 
     (right.stem_cg_au_res->first->clone (),
      right.stem_cg_au_res->second->clone ()) 
     : NULL;
   stem_gu_res = right.stem_gu_res ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
+    new std::pair< MccQueryExpr*, MccSamplingSize* > 
     (right.stem_gu_res->first->clone (),
      right.stem_gu_res->second->clone ()) 
     : NULL;
   loop_res = right.loop_res ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
+    new std::pair< MccQueryExpr*, MccSamplingSize* > 
     (right.loop_res->first->clone (),
      right.loop_res->second->clone ()) 
     : NULL;
   stem_connect = right.stem_connect ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
+    new std::pair< MccQueryExpr*, MccSamplingSize* > 
     (right.stem_connect->first->clone (),
      right.stem_connect->second->clone ()) 
     : NULL;
   loop_connect = right.loop_connect ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
+    new std::pair< MccQueryExpr*, MccSamplingSize* > 
     (right.loop_connect->first->clone (),
      right.loop_connect->second->clone ()) 
     : NULL;
   stem_cg_au_pair = right.stem_cg_au_pair ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
+    new std::pair< MccQueryExpr*, MccSamplingSize* > 
     (right.stem_cg_au_pair->first->clone (),
      right.stem_cg_au_pair->second->clone ()) 
     : NULL;
   stem_gu_pair = right.stem_gu_pair ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
+    new std::pair< MccQueryExpr*, MccSamplingSize* > 
     (right.stem_gu_pair->first->clone (),
      right.stem_gu_pair->second->clone ()) 
     : NULL;     
@@ -2805,37 +2805,37 @@ MccMosesQueries::operator= (const MccMosesQueries &right)
       if (stem_cg_au_pair) delete stem_cg_au_pair; 
       if (stem_gu_pair) delete stem_gu_pair; 
       stem_cg_au_res = right.stem_cg_au_res ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
+	new std::pair< MccQueryExpr*, MccSamplingSize* > 
 	(right.stem_cg_au_res->first->clone (),
 	 right.stem_cg_au_res->second->clone ()) 
 	: NULL;
       stem_gu_res = right.stem_gu_res ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
+	new std::pair< MccQueryExpr*, MccSamplingSize* > 
 	(right.stem_gu_res->first->clone (),
 	 right.stem_gu_res->second->clone ()) 
 	: NULL;
       loop_res = right.loop_res ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
+	new std::pair< MccQueryExpr*, MccSamplingSize* > 
 	(right.loop_res->first->clone (),
 	 right.loop_res->second->clone ()) 
 	: NULL;
       stem_connect = right.stem_connect ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
+	new std::pair< MccQueryExpr*, MccSamplingSize* > 
 	(right.stem_connect->first->clone (),
 	 right.stem_connect->second->clone ()) 
 	: NULL;
       loop_connect = right.loop_connect ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
+	new std::pair< MccQueryExpr*, MccSamplingSize* > 
 	(right.loop_connect->first->clone (),
 	 right.loop_connect->second->clone ()) 
 	: NULL;
       stem_cg_au_pair = right.stem_cg_au_pair ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
+	new std::pair< MccQueryExpr*, MccSamplingSize* > 
 	(right.stem_cg_au_pair->first->clone (),
 	 right.stem_cg_au_pair->second->clone ()) 
 	: NULL;
       stem_gu_pair = right.stem_gu_pair ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
+	new std::pair< MccQueryExpr*, MccSamplingSize* > 
 	(right.stem_gu_pair->first->clone (),
 	 right.stem_gu_pair->second->clone ()) 
 	: NULL;     
@@ -2852,7 +2852,7 @@ MccMosesQueries::Accept (MccVisitor *visitor)
 
 
 void
-MccMosesQueries::display (ostream &os) const
+MccMosesQueries::display (std::ostream &os) const
 {
   if (stem_cg_au_res)
     {
@@ -2900,7 +2900,7 @@ MccMosesQueries::display (ostream &os) const
 
 
 void
-MccMosesQueries::ppdisplay (ostream &os, int indent) const
+MccMosesQueries::ppdisplay (std::ostream &os, int indent) const
 {
   if (stem_cg_au_res)
     {
@@ -2909,7 +2909,7 @@ MccMosesQueries::ppdisplay (ostream &os, int indent) const
       stem_cg_au_res->first->ppdisplay (os, indent);
       os << ' ';
       stem_cg_au_res->second->ppdisplay (os, indent);
-      os << endl;
+      os << std::endl;
     }
   if (stem_gu_res)
     {
@@ -2918,7 +2918,7 @@ MccMosesQueries::ppdisplay (ostream &os, int indent) const
       stem_gu_res->first->ppdisplay (os, indent);
       os << ' ';
       stem_gu_res->second->ppdisplay (os, indent);
-      os << endl;
+      os << std::endl;
     }
   if (loop_res)
     {
@@ -2927,7 +2927,7 @@ MccMosesQueries::ppdisplay (ostream &os, int indent) const
       loop_res->first->ppdisplay (os, indent);
       os << ' ';
       loop_res->second->ppdisplay (os, indent);
-      os << endl;
+      os << std::endl;
     }
   if (stem_connect)
     {
@@ -2936,7 +2936,7 @@ MccMosesQueries::ppdisplay (ostream &os, int indent) const
       stem_connect->first->ppdisplay (os, indent);
       os << ' ';
       stem_connect->second->ppdisplay (os, indent);
-      os << endl;
+      os << std::endl;
     }
   if (loop_connect)
     {
@@ -2945,7 +2945,7 @@ MccMosesQueries::ppdisplay (ostream &os, int indent) const
       loop_connect->first->ppdisplay (os, indent);
       os << ' ';
       loop_connect->second->ppdisplay (os, indent);
-      os << endl;
+      os << std::endl;
     }
   if (stem_cg_au_pair)
     {
@@ -2954,7 +2954,7 @@ MccMosesQueries::ppdisplay (ostream &os, int indent) const
       stem_cg_au_pair->first->ppdisplay (os, indent);
       os << ' ';
       stem_cg_au_pair->second->ppdisplay (os, indent);
-      os << endl;
+      os << std::endl;
     }
   if (stem_cg_au_pair)
     {
@@ -2963,16 +2963,16 @@ MccMosesQueries::ppdisplay (ostream &os, int indent) const
       stem_gu_pair->first->ppdisplay (os, indent);
       os << ' ';
       stem_gu_pair->second->ppdisplay (os, indent);
-      os << endl;
+      os << std::endl;
     }
 }
 
 
 MccNewTagStat::MccNewTagStat (const MccNewTagStat &right)
   : resq_opt (right.resq_opt),
-    exprs (new vector< MccQueryExpr* > ())
+    exprs (new std::vector< MccQueryExpr* > ())
 {
-  vector< MccQueryExpr* >::const_iterator cit;
+  std::vector< MccQueryExpr* >::const_iterator cit;
   
   id = new char[strlen (right.id) + 1];
   strcpy (id, right.id);
@@ -2983,7 +2983,7 @@ MccNewTagStat::MccNewTagStat (const MccNewTagStat &right)
 
 MccNewTagStat::~MccNewTagStat ()
 {
-  vector< MccQueryExpr* >::iterator it;
+  std::vector< MccQueryExpr* >::iterator it;
 
   delete[] id;
   for (it = exprs->begin (); it != exprs->end (); it++)
@@ -2998,8 +2998,8 @@ MccNewTagStat::operator= (const MccNewTagStat &right)
 {
   if (this != &right)
     {
-      vector< MccQueryExpr* >::const_iterator cit;
-      vector< MccQueryExpr* >::iterator it;
+      std::vector< MccQueryExpr* >::const_iterator cit;
+      std::vector< MccQueryExpr* >::iterator it;
   
       resq_opt = right.resq_opt;
       delete[] id;
@@ -3025,9 +3025,9 @@ MccNewTagStat::Accept (MccVisitor *visitor)
 
 
 void
-MccNewTagStat::display (ostream &os) const
+MccNewTagStat::display (std::ostream &os) const
 {
-  vector< MccQueryExpr* >::iterator it;
+  std::vector< MccQueryExpr* >::iterator it;
 
   os << "new_tag (";
   if (resq_opt)
@@ -3046,13 +3046,13 @@ MccNewTagStat::display (ostream &os) const
 
 
 void
-MccNewTagStat::ppdisplay (ostream &os, int indent) const
+MccNewTagStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< MccQueryExpr* >::iterator it;
+  std::vector< MccQueryExpr* >::iterator it;
 
-  os << "new_tag" << endl;
+  os << "new_tag" << std::endl;
   whitespaces (os, indent + 2);
-  os << '(' << endl;
+  os << '(' << std::endl;
   whitespaces (os, indent + 4);
   if (resq_opt)
     os << "res";
@@ -3061,13 +3061,13 @@ MccNewTagStat::ppdisplay (ostream &os, int indent) const
   os << " \"" << id << "\"";
   for (it = exprs->begin (); it != exprs->end (); it++)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent + 4);
       (*it)->ppdisplay (os, indent + 4);
     }
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -3103,10 +3103,10 @@ MccNoteStat::Accept (MccVisitor *visitor)
 
 
 void
-MccNoteStat::ppdisplay (ostream &os, int indent) const
+MccNoteStat::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -3120,10 +3120,10 @@ MccNotesStat::Accept (MccVisitor *visitor)
 
 
 void
-MccNotesStat::ppdisplay (ostream &os, int indent) const
+MccNotesStat::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -3164,7 +3164,7 @@ MccPairStat::_PairStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccPairStat::_PairStruc::display (ostream &os) const
+MccPairStat::_PairStruc::display (std::ostream &os) const
 {
   res1->display (os);
   os << ' ';
@@ -3178,9 +3178,9 @@ MccPairStat::_PairStruc::display (ostream &os) const
 
 
 void
-MccPairStat::_PairStruc::ppdisplay (ostream &os, int indent) const
+MccPairStat::_PairStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ' ';
@@ -3194,9 +3194,9 @@ MccPairStat::_PairStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccPairStat::MccPairStat (const MccPairStat &right)
-  : strucs (new vector< MccPairStat::_PairStruc* > ())
+  : strucs (new std::vector< MccPairStat::_PairStruc* > ())
 {
-  vector< MccPairStat::_PairStruc* >::const_iterator cit;
+  std::vector< MccPairStat::_PairStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back (new MccPairStat::_PairStruc (**cit));
@@ -3206,7 +3206,7 @@ MccPairStat::MccPairStat (const MccPairStat &right)
 
 MccPairStat::~MccPairStat ()
 {
-  vector< _PairStruc* >::iterator it;
+  std::vector< _PairStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -3220,8 +3220,8 @@ MccPairStat::operator= (const MccPairStat &right)
 {
   if (this != &right)
     {
-      vector< MccPairStat::_PairStruc* >::const_iterator cit;
-      vector< MccPairStat::_PairStruc* >::iterator it;
+      std::vector< MccPairStat::_PairStruc* >::const_iterator cit;
+      std::vector< MccPairStat::_PairStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -3243,9 +3243,9 @@ MccPairStat::Accept (MccVisitor *visitor)
 
 
 void
-MccPairStat::display (ostream &os) const
+MccPairStat::display (std::ostream &os) const
 {
-  vector< _PairStruc* >::iterator it;
+  std::vector< _PairStruc* >::iterator it;
   
   os << "pair (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -3260,18 +3260,18 @@ MccPairStat::display (ostream &os) const
 
 
 void
-MccPairStat::ppdisplay (ostream &os, int indent) const
+MccPairStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _PairStruc* >::iterator it;
+  std::vector< _PairStruc* >::iterator it;
   
-  os << "pair" << endl;
+  os << "pair" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -3285,10 +3285,10 @@ MccQuitStat::Accept (MccVisitor *visitor)
 
 
 void
-MccQuitStat::ppdisplay (ostream &os, int indent) const
+MccQuitStat::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -3337,7 +3337,7 @@ MccRelationCstStat::_RelationStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccRelationCstStat::_RelationStruc::display (ostream &os) const
+MccRelationCstStat::_RelationStruc::display (std::ostream &os) const
 {
   ref->display (os);
   os << ' ';
@@ -3349,9 +3349,9 @@ MccRelationCstStat::_RelationStruc::display (ostream &os) const
 
 
 void
-MccRelationCstStat::_RelationStruc::ppdisplay (ostream &os, int indent) const
+MccRelationCstStat::_RelationStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   ref->ppdisplay (os, indent);
   os << ' ';
@@ -3363,9 +3363,9 @@ MccRelationCstStat::_RelationStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccRelationCstStat::MccRelationCstStat (const MccRelationCstStat &right)
-  : strucs (new vector< MccRelationCstStat::_RelationStruc* > ())
+  : strucs (new std::vector< MccRelationCstStat::_RelationStruc* > ())
 {
-  vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
+  std::vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
     strucs->push_back ((*cit)->clone ());
@@ -3375,7 +3375,7 @@ MccRelationCstStat::MccRelationCstStat (const MccRelationCstStat &right)
 
 MccRelationCstStat::~MccRelationCstStat ()
 {
-  vector< _RelationStruc* >::iterator it;
+  std::vector< _RelationStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -3389,8 +3389,8 @@ MccRelationCstStat::operator= (const MccRelationCstStat &right)
 {
   if (this != &right)
     {
-      vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
-      vector< MccRelationCstStat::_RelationStruc* >::iterator it;
+      std::vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
+      std::vector< MccRelationCstStat::_RelationStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -3412,9 +3412,9 @@ MccRelationCstStat::Accept (MccVisitor *visitor)
 
 
 void
-MccRelationCstStat::display (ostream &os) const
+MccRelationCstStat::display (std::ostream &os) const
 {
-  vector< _RelationStruc* >::iterator it;
+  std::vector< _RelationStruc* >::iterator it;
 
   os << "relation (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -3429,18 +3429,18 @@ MccRelationCstStat::display (ostream &os) const
 
 
 void
-MccRelationCstStat::ppdisplay (ostream &os, int indent) const
+MccRelationCstStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _RelationStruc* >::iterator it;
+  std::vector< _RelationStruc* >::iterator it;
 
-  os << "relation" << endl;
+  os << "relation" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -3476,10 +3476,10 @@ MccRemarkStat::Accept (MccVisitor *visitor)
 
 
 void
-MccRemarkStat::ppdisplay (ostream &os, int indent) const
+MccRemarkStat::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -3493,10 +3493,10 @@ MccResetDBStat::Accept (MccVisitor *visitor)
 
 
 void
-MccResetDBStat::ppdisplay (ostream &os, int indent) const
+MccResetDBStat::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -3510,10 +3510,10 @@ MccResetStat::Accept (MccVisitor *visitor)
 
 
 void
-MccResetStat::ppdisplay (ostream &os, int indent) const
+MccResetStat::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -3564,7 +3564,7 @@ MccResidueStat::_ResidueStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccResidueStat::_ResidueStruc::display (ostream &os) const
+MccResidueStat::_ResidueStruc::display (std::ostream &os) const
 {
   res1->display (os);
   os << ' ';
@@ -3581,9 +3581,9 @@ MccResidueStat::_ResidueStruc::display (ostream &os) const
 
 
 void
-MccResidueStat::_ResidueStruc::ppdisplay (ostream &os, int indent) const
+MccResidueStat::_ResidueStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ' ';
@@ -3600,9 +3600,9 @@ MccResidueStat::_ResidueStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccResidueStat::MccResidueStat (const MccResidueStat &right)
-  : strucs (new vector< MccResidueStat::_ResidueStruc* > ())
+  : strucs (new std::vector< MccResidueStat::_ResidueStruc* > ())
 {
-  vector< MccResidueStat::_ResidueStruc* >::const_iterator cit;
+  std::vector< MccResidueStat::_ResidueStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back (new MccResidueStat::_ResidueStruc (**cit));
@@ -3612,7 +3612,7 @@ MccResidueStat::MccResidueStat (const MccResidueStat &right)
 
 MccResidueStat::~MccResidueStat ()
 {
-  vector< MccResidueStat::_ResidueStruc* >::iterator it;
+  std::vector< MccResidueStat::_ResidueStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -3627,8 +3627,8 @@ MccResidueStat::operator= (const MccResidueStat &right)
 {
   if (this != &right)
     {
-      vector< MccResidueStat::_ResidueStruc* >::const_iterator cit;
-      vector< MccResidueStat::_ResidueStruc* >::iterator it;
+      std::vector< MccResidueStat::_ResidueStruc* >::const_iterator cit;
+      std::vector< MccResidueStat::_ResidueStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -3650,9 +3650,9 @@ MccResidueStat::Accept (MccVisitor *visitor)
 
 
 void
-MccResidueStat::display (ostream &os) const
+MccResidueStat::display (std::ostream &os) const
 {
-  vector< _ResidueStruc* >::iterator it;
+  std::vector< _ResidueStruc* >::iterator it;
   
   os << "residue (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -3667,18 +3667,18 @@ MccResidueStat::display (ostream &os) const
 
 
 void
-MccResidueStat::ppdisplay (ostream &os, int indent) const
+MccResidueStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _ResidueStruc* >::iterator it;
+  std::vector< _ResidueStruc* >::iterator it;
   
-  os << "residue" << endl;
+  os << "residue" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -3722,7 +3722,7 @@ MccRestoreStat::Accept (MccVisitor *visitor)
 
 
 void
-MccRestoreStat::display (ostream &os) const
+MccRestoreStat::display (std::ostream &os) const
 {
   os << "restore (" << filename;
   if (expOutput)
@@ -3733,22 +3733,22 @@ MccRestoreStat::display (ostream &os) const
 
 
 void
-MccRestoreStat::ppdisplay (ostream &os, int indent) const
+MccRestoreStat::ppdisplay (std::ostream &os, int indent) const
 {
-  os << "restore" << endl;
+  os << "restore" << std::endl;
   whitespaces (os, indent + 2);
-  os << '(' << endl;
+  os << '(' << std::endl;
   whitespaces (os, indent + 4);
   os << "\"" << filename << "\"";
   if (expOutput)
     {
-      os << endl;
+      os << std::endl;
       whitespaces (os, indent + 4);
       expOutput->ppdisplay (os, indent + 4);
     }
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -3777,7 +3777,7 @@ MccRmsdModelFilterStrategy::Accept (MccVisitor *visitor)
 
 
 void
-MccRmsdModelFilterStrategy::display (ostream &os) const
+MccRmsdModelFilterStrategy::display (std::ostream &os) const
 {
   os << "rmsd (" << rmsBound;
   if (alignFlag)
@@ -3807,7 +3807,7 @@ MccRmsdModelFilterStrategy::display (ostream &os) const
 
 
 void
-MccRmsdModelFilterStrategy::ppdisplay (ostream &os, int indent) const
+MccRmsdModelFilterStrategy::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
 }
@@ -3837,7 +3837,7 @@ MccClusteredModelSorterStrategy::Accept (MccVisitor *visitor)
 
 
 void
-MccClusteredModelSorterStrategy::display (ostream &os) const
+MccClusteredModelSorterStrategy::display (std::ostream &os) const
 {
   os << " clustered (";
   if (rmsBound < 0)
@@ -3868,7 +3868,7 @@ MccClusteredModelSorterStrategy::display (ostream &os) const
 
 
 void
-MccClusteredModelSorterStrategy::ppdisplay (ostream &os, int indent) const
+MccClusteredModelSorterStrategy::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
 }
@@ -3921,7 +3921,7 @@ MccSamplingSize::Accept (MccVisitor *visitor)
 
 
 void
-MccSamplingSize::display (ostream &os) const
+MccSamplingSize::display (std::ostream &os) const
 {
   if (discrete)
     os << absVal;
@@ -3967,7 +3967,7 @@ MccSequenceStat::Accept (MccVisitor *visitor)
 
 
 void
-MccSequenceStat::display (ostream &os) const
+MccSequenceStat::display (std::ostream &os) const
 {
   os << "sequence (" << type << ' ';
   res->display (os);
@@ -3977,11 +3977,11 @@ MccSequenceStat::display (ostream &os) const
 
 
 void
-MccSequenceStat::ppdisplay (ostream &os, int indent) const
+MccSequenceStat::ppdisplay (std::ostream &os, int indent) const
 {
   os << "sequence (" << type << ' ';
   res->ppdisplay (os, indent);
-  os << ' ' << seq << ')' << endl;
+  os << ' ' << seq << ')' << std::endl;
 }
 
 
@@ -4017,10 +4017,10 @@ MccSourceStat::Accept (MccVisitor *visitor)
 
 
 void
-MccSourceStat::ppdisplay (ostream &os, int indent) const
+MccSourceStat::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -4101,7 +4101,7 @@ MccTorsionCstStat::_TorsionStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccTorsionCstStat::_TorsionStruc::display (ostream &os) const
+MccTorsionCstStat::_TorsionStruc::display (std::ostream &os) const
 {
   res1->display (os);
   os << ':' << at1 << ' ';
@@ -4116,9 +4116,9 @@ MccTorsionCstStat::_TorsionStruc::display (ostream &os) const
 
 
 void
-MccTorsionCstStat::_TorsionStruc::ppdisplay (ostream &os, int indent) const
+MccTorsionCstStat::_TorsionStruc::ppdisplay (std::ostream &os, int indent) const
 {
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent);
   res1->ppdisplay (os, indent);
   os << ':' << at1 << ' ';
@@ -4133,9 +4133,9 @@ MccTorsionCstStat::_TorsionStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccTorsionCstStat::MccTorsionCstStat (const MccTorsionCstStat &right)
-  : strucs (new vector< MccTorsionCstStat::_TorsionStruc* > ())
+  : strucs (new std::vector< MccTorsionCstStat::_TorsionStruc* > ())
 {
-  vector< MccTorsionCstStat::_TorsionStruc* >::const_iterator cit;
+  std::vector< MccTorsionCstStat::_TorsionStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back (new MccTorsionCstStat::_TorsionStruc (**cit));
@@ -4145,7 +4145,7 @@ MccTorsionCstStat::MccTorsionCstStat (const MccTorsionCstStat &right)
 
 MccTorsionCstStat::~MccTorsionCstStat ()
 {
-  vector< _TorsionStruc* >::iterator it;
+  std::vector< _TorsionStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -4159,8 +4159,8 @@ MccTorsionCstStat::operator= (const MccTorsionCstStat &right)
 {
   if (this != &right)
     {
-      vector< MccTorsionCstStat::_TorsionStruc* >::const_iterator cit;
-      vector< MccTorsionCstStat::_TorsionStruc* >::iterator it;
+      std::vector< MccTorsionCstStat::_TorsionStruc* >::const_iterator cit;
+      std::vector< MccTorsionCstStat::_TorsionStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -4182,9 +4182,9 @@ MccTorsionCstStat::Accept (MccVisitor *visitor)
 
 
 void
-MccTorsionCstStat::display (ostream &os) const
+MccTorsionCstStat::display (std::ostream &os) const
 {
-  vector< _TorsionStruc* >::iterator it;
+  std::vector< _TorsionStruc* >::iterator it;
 
   os << "torsion (";
   for (it = strucs->begin (); it != strucs->end (); ++it)
@@ -4199,18 +4199,18 @@ MccTorsionCstStat::display (ostream &os) const
 
 
 void
-MccTorsionCstStat::ppdisplay (ostream &os, int indent) const
+MccTorsionCstStat::ppdisplay (std::ostream &os, int indent) const
 {
-  vector< _TorsionStruc* >::iterator it;
+  std::vector< _TorsionStruc* >::iterator it;
 
-  os << "torsion" << endl;
+  os << "torsion" << std::endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); ++it)
     (*it)->ppdisplay (os, indent + 4);
-  os << endl;
+  os << std::endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')' << std::endl;
 }
 
 
@@ -4224,10 +4224,10 @@ MccVersion::Accept (MccVisitor *visitor)
 
 
 void
-MccVersion::ppdisplay (ostream &os, int indent) const
+MccVersion::ppdisplay (std::ostream &os, int indent) const
 {
   display (os);
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -4326,8 +4326,8 @@ CLexerException::operator<< (const char *s)
 
 
 
-ostream&
-operator<< (ostream &os, const CLexerException &ex)
+std::ostream&
+operator<< (std::ostream &os, const CLexerException &ex)
 {
   return os << ex.GetMessage ();
 }
@@ -4428,8 +4428,8 @@ CParserException::operator<< (const char *s)
 
 
 
-ostream&
-operator<< (ostream &os, const CParserException &ex)
+std::ostream&
+operator<< (std::ostream &os, const CParserException &ex)
 {
   return os << ex.GetMessage ();
 }

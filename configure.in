@@ -1,13 +1,10 @@
 #                               -*- Mode: Sh -*- 
 # configure.in
-# Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+# Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
 # Author           : Martin Larose
 # Created On       : Thu Aug 31 13:07:53 2000
-# Last Modified By : Martin Larose
-# Last Modified On : Thu Dec 20 09:48:01 2001
-# Update Count     : 8
-# Status           : Ok.
-# 
+# $Revision$
+# $Id$
 
 dnl Process this file with autoconf to produce a configure script.
 
@@ -30,22 +27,27 @@ AC_PROG_YACC
 if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
     case "$host" in
     *-sgi-*)
-        CXXSHFLAGS="$CXXFLAGS -O2 -woff 1681 -ptused"
-	CXXFLAGS="$CXXFLAGS -O2 -woff 1681 -ptused"
+	CXXFLAGS="$CXXFLAGS -O2 -woff 1681 -ptused -LANG:std"
   	DEPFLAGS="-M"
+  	LDFLAGS="-shared"
+	LDNAMEPARAM="-Wl,-soname,"
   	LINKOPTIONS= ;;
     *-sun-*)
-        CXXSHFLAGS="$CXXFLAGS -O2 -fPIC"
 	CXXFLAGS="$CXXFLAGS -O2"
-	DEPFLAGS="-MM"
-        LDFLAGS="-static $LDFLAGS"
+	DEPFLAGS="-xM1"
+        LDFLAGS="-G"
+	LDNAMEPARAM="-h"
         LINKOPTIONS= ;;
     esac;
 elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
-	CXXSHFLAGS="$CXXFLAGS -Wall";
 	CXXFLAGS="$CXXFLAGS -Wall";
 	DEPFLAGS="-MM"
-	LDFLAGS="-static $LDFLAGS"
+	case "$host" in
+	*-sun-*) LDNAMEPARAM="-Wl,-h,"
+	         LDFLAGS="-G";;
+	*)       LDNAMEPARAM="-Wl,-soname,"
+	         LDFLAGS="-shared";;
+	esac;
 	LINKOPTIONS=;
 fi
 
@@ -61,9 +63,9 @@ AC_DEFINE(__USE_MALLOC),
 
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
-AC_SUBST(CXXSHFLAGS)
 AC_SUBST(DEPFLAGS)
 AC_SUBST(LDFLAGS)
+AC_SUBST(LDNAMEPARAM)
 AC_SUBST(LINKOPTIONS)
 
 AC_OUTPUT( Makefile docs/Makefile lib/Makefile )
