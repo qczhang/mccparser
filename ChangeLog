@@ -1,8 +1,40 @@
+2001-01-04  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* src/mccp.yy, NEWS: Parser corrected to accept ^M lines
+	terminators.
+
+2000-11-24  Patrick Gendron  <gendrop@sonic04.IRO.UMontreal.CA>
+
+	* docs/Manual.tex, src/mccp.y, src/mccparser.cc, src/mccparser.h:
+	Added new pair/connect rules for Westhof base-pairs
+
+2000-11-10  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* src/mccparser.h, src/mccparser.cc, src/mccp.y: Enumeration MccAS
+	added to replace the need of UMcsymLib.h.
+
+2000-10-25  Patrick Gendron  <gendrop@sonic04.IRO.UMontreal.CA>
+
+	* src/mccp.y: Debugged the line counter in the shell
+
+2000-10-24  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* src/mccparser.h, src/mccparser.cc: ppdisplay method added for
+	human readable script output.
+
 2000-09-14  Martin Larose  <larosem@iro.umontreal.ca>
 
+	* docs/Manual.tex: Error in grammar corrected.
+
+	* docs/Manual.tex: Documentation for scanning strings is added.
+
+	* src/mccparser.h: Declarations for scanning strings are added.
+
+	* ChangeLog: Version 1.1.
+
 	* configure, src/mccparser.h, src/mccparser.cc, src/mccp.yy, docs/Manual.tex, configure.in, NEWS:
-	The parser now includes a interactive interface that can be coupled with
-	different kind of input buffers.
+	The parser now includes a interactive interface that can be
+	coupled with different kind of input buffers.
 
 2000-09-06  Martin Larose  <larosem@iro.umontreal.ca>
 
