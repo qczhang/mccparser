@@ -4,8 +4,8 @@
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:02:59 2000
 ## Last Modified By : Martin Larose
-## Last Modified On : Thu Aug 31 13:07:11 2000
-## Update Count     : 1
+## Last Modified On : Fri Sep  1 13:08:50 2000
+## Update Count     : 2
 ## Status           : Ok.
 ###############################################################################
 
@@ -65,18 +65,26 @@ Manual.html: Manual.dvi
 
 
 install install-static: doc
+	@ $(srcdir)/../mkinstalldirs $(datadir)/$(PACKAGE)/$(VERSION)/doc
+	@ for file in Manual.ps Manual.pdf; do \
+	   $(INSTALL_DATA) $$file $(datadir)/$(PACKAGE)/$(VERSION)/doc; \
+	  done;
 
 uninstall:
+	@ for file in Manual.ps Manual.pdf; do \
+	   rm -f $(datadir)/$(PACKAGE)/$(VERSION)/doc/$$file; \
+	  done;
 
 
 mostlyclean:
+	@ rm -f *.aux *.dvi *.log *.toc *.ilg *.ind *.out body.tmp head.tmp
 
 clean: mostlyclean
-	@ rm -f *.aux *.dvi *.log *.toc
+	@ rm Manual.pdf Manual.ps
+	@ rm -fr Manual docbook html texi
 
 distclean: clean
 	@ rm -f Makefile
-	@ rm -fr docbook html texi
 
 topclean: distclean
 	@ echo "The project is getting _top_ clean\!"

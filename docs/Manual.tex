@@ -4,41 +4,255 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Thu Aug 31 13:12:11 2000
-%% Update Count     : 3
+%% Last Modified On : Fri Sep  1 13:08:52 2000
+%% Update Count     : 4
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\documentclass[11pt]{report}
+\documentclass[11pt]{article}
 \usepackage{makeidx}
 \usepackage{times}
+\usepackage{isolatin1}
 \usepackage[ps2pdf,backref,hyperindex,colorlinks,bookmarks]{hyperref}
+\title{{\sc mccparser} manual}
+\author{Laboratoire de Biologie Informatique et Théorique}
+\date{\today}
 
+\pagestyle{myheadings}
+\markboth{MCCPARSER Manual}{MCCPARSER Manual}
 
+\newcommand{\keyword}[1]{{\rm {\tt <}{\em #1}{\tt >}}}
+\newcommand{\nonterminal}[1]{{\rm {\tt <}{\em #1}{\tt >}}}
+\newcommand{\terminal}[1]{{\em '}{\bf #1}{\em '}}
+\newcommand{\token}[1]{{\bf #1}}
+\newenvironment{grammarrule}[2]{\begin{tabbing}
+    \keyword{#1} :: \= | \= #2 \kill
+    \keyword{#1} :: \> \> {\em #2} \\}
+  {\end{tabbing}}
+\newenvironment{biggrammarrule}[3]{\begin{tabbing}
+    \keyword{#1} :: \= | \= #2 \kill
+    \keyword{#1} :: \> \> {\em #2} \\
+    \> \> #3 \\}
+  {\end{tabbing}}
+\newcommand{\altrule}[1]{\> {\tt |} \> {\em #1} \\}
+    
 \begin{document}
+\maketitle
+
+{\parindent 0pt \rule{\textwidth}{.5mm}}
+
+\vspace{20pt}
+
 
 This manual is intended for internal use.  It describes the general
-operation of the {\sc Mc-Sym} script parser ({\sc mccparser}).
+operation of the {\sc mcsym} script parser ({\sc mccparser}).  The grammar
+follows {\sc mcsym} version 3.1 with few changes.  These changes were made
+to simplify the grammar implementation.  The mcc grammar is defined in
+Appendix~\ref{app:grammar} and the recognized tokens in
+Appendix~\ref{app:tokens}.  The parser is distributed as a library and is
+able to work on interactive input as well as file input.
 
-grammar comes from mcsym 3.1 using pccts
+\section{How to use the parser}
 
-produced files (libmccparser, mccparser.h)
-general preparation of the application for parser inclusion
-include mccparser.h in the application
-variable vector< MccPStruc* > *astv
-variable bool interactive\_parser
-calling yyparse
-link to application with -lmccparser -fl
+The installation procedure of the package places {\tt libmccparser.so},
+{\tt libmccparser.a} and {\tt mccparser.h} in the chosen {\tt libdir} and
+{\tt includedir} respectively.  To get instruction on how to install the
+package see the {\tt INSTALL} file in the root directory of the package.
 
-lexer description
- o lexer in file mccp.yy
- o 4 states INITIAL, STRING, QUOTES and QUERIES
- o throws CLexerExeption on unrecognized token
+\noindent To include the parser in an application, you must follow these
+instructions:
+\begin{itemize}
+\item first include the file {\tt mccparser.h} in your application;
+\item assign to the boolean variable {\tt interactive\_parser} the true
+  value for an interactive parser or a false value when a file is to be
+  parsed;
+\item assign to {\tt yyin} the {\tt FILE*} of the input; assign stdin for
+  interactive input or the result of the {\tt fopen} call on the input file;
+\item use {\tt yyparse ()} to parse the input.  The result can be found
+  in the {\tt astv} variable defined in the library.  Its type is
+  \verb+vector< MccPStruc* >*+.  We can display the parsed stream by using
+  the method {\tt display (ostream\&)} defined for each {\tt MccPStruc};
+\item define a function on each {\tt MccPStruc} to evaluate the abstract
+  syntax tree;
+\item link your application with the mccparser and the flex librares: {\tt
+    -lmccparser} and {\tt -lfl}.
+\end{itemize}
 
-parser description
- o parser in file mccp.y 
- o throws CParserException
- o grammar definition
- 
+\section{Changes}
+
+Changes from {\sc mcsym} version 3.2.4:
+\begin{itemize}
+\item residue, connect, pair statements must contain at least one
+  definition;
+\item angle, cycle, distance and torsion statements must contain at least
+  one definition;
+\item fixed\_\,distance, vdw\_\,distance atomset and atomsetopt options must
+  be in order in the res\_\,clash statement;
+\item align, rmsd\_\,bound, atomset and atomsetopt options must be in order
+  in the cache statement;
+\end{itemize}
+
+\appendix
+\newpage
+\section{Grammar definition}
+\label{app:grammar}
+
+\begin{grammarrule}{statement\_star}{\nonterminal{statement}*}
+\end{grammarrule}
+\begin{grammarrule}{statement}{\terminal{sequence} \terminal{(} \token{IDENT}
+    \nonterminal{residueRef} \token{IDENT}+ \terminal{)}}
+  \altrule{\token{IDENT} \terminal{=} \nonterminal{fgexp}}
+  \altrule{\terminal{residue} \terminal{(} \nonterminal{resdef}+ \terminal{)}}
+  \altrule{\terminal{connect} \terminal{(} \nonterminal{condef}+ \terminal{)}}
+  \altrule{\terminal{pair} \terminal{(} \nonterminal{pairdef}+ \terminal{)}}
+  \altrule{\terminal{explore} \terminal{(} \nonterminal{fgRef}
+    \nonterminal{expfile}? \terminal{)}}
+  \altrule{\terminal{restore} \terminal{(} \token{STRING}
+  \nonterminal{expfile}? \terminal{)}}
+  \altrule{\terminal{source} \terminal{(} \token{STRING} \terminal{)}}
+  \altrule{\terminal{adjacency} \terminal{(} \nonterminal{fgRef}
+  \token{FLOAT} \token{FLOAT} \terminal{)}}
+  \altrule{\terminal{angle} \terminal{(} \nonterminal{angledef}+ \terminal{)}}
+  \altrule{\terminal{res\_\,clash} \terminal{(} \nonterminal{fgRef}
+    \nonterminal{fixorvdw}? \token{FLOAT} \nonterminal{atomset}?
+    \terminal{no\_\,hydrogen}? \terminal{)}}
+  \altrule{\terminal{cycle} \terminal{(} \nonterminal{cycledef}+ \terminal{)}}
+  \altrule{\terminal{distance} \terminal{(} \nonterminal{distdef}+ \terminal{)}}
+  \altrule{\terminal{torsion} \terminal{(} \nonterminal{torsiondef}+
+    \terminal{)}}
+  \altrule{\terminal{new\_\,tag} \terminal{(} \nonterminal{resortfo}
+    \token{STRING} \nonterminal{queryexp}+ \terminal{)}}
+  \altrule{\terminal{add\_\,pdb} \terminal{(} \nonterminal{addpdbdefs}+
+    \terminal{)}}
+  \altrule{\terminal{display\_\,fg} \terminal{(} \nonterminal{fgRef}
+    \terminal{)}}
+  \altrule{\terminal{note} \terminal{(} \token{STRING} \terminal{)}}
+  \altrule{\terminal{notes}}
+  \altrule{\terminal{remark} \terminal{(} \token{STRING} \terminal{)}}
+  \altrule{\terminal{reset}}
+  \altrule{\terminal{reset\_\,db}}
+  \altrule{\terminal{version}}
+  \altrule{\terminal{quit}}
+\end{grammarrule}
+\begin{grammarrule}{resdef}{\nonterminal{residueRef} \nonterminal{residueRef}?
+    \nonterminal{queryexp} \token{INTEGER}}
+\end{grammarrule}
+\begin{grammarrule}{condef}{\nonterminal{residueRef} \nonterminal{residueRef}
+    \nonterminal{queryexp} \token{INTEGER}}
+\end{grammarrule}
+\begin{grammarrule}{pairdef}{\nonterminal{residueRef} \nonterminal{residueRef}
+    \nonterminal{queryexp} \token{INTEGER}}
+\end{grammarrule}
+\begin{grammarrule}{expfile}{\terminal{fileName\_\,pdb} \terminal{(}
+    \token{STRING} \terminal{)} \terminal{zipped}?}
+\end{grammarrule}
+\begin{biggrammarrule}{angledef}
+  {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
+    \nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}}
+  {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef} \token{FLOAT}
+    \token{FLOAT}}
+\end{biggrammarrule}
+\begin{grammarrule}{fixorvdw}{\terminal{fixed\_\,distance}}
+  \altrule{\terminal{vdw\_\,distance}}
+\end{grammarrule}
+\begin{grammarrule}{cycledef}{\nonterminal{residueRef} \nonterminal{residueRef}
+    \token{INTEGER} \token{FLOAT}}
+\end{grammarrule}
+\begin{biggrammarrule}{distdef}
+  {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
+    \nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}}
+  {\token{FLOAT} \token{FLOAT}}
+\end{biggrammarrule}
+\begin{biggrammarrule}{torsiondef}
+  {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
+    \nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}}
+  {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
+    \nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
+    \token{FLOAT} \token{FLOAT}}
+\end{biggrammarrule}
+\begin{grammarrule}{resortfo}{\terminal{res}}
+  \altrule{\terminal{tfo}}
+\end{grammarrule}
+\begin{grammarrule}{addpdbdefs}{\nonterminal{cutoff}? \token{STRING}+}
+\end{grammarrule}
+\begin{grammarrule}{cutoff}{\nonterminal{tfo} \nonterminal{cfo}?}
+  \altrule{\nonterminal{cfo} \nonterminal{tfo}?}
+\end{grammarrule}
+\begin{grammarrule}{tfo}{\terminal{tfo\_\,cutoff} \token{FLOAT}}
+\end{grammarrule}
+\begin{grammarrule}{cfo}{\terminal{confo\_\,cutoff} \token{FLOAT}}
+\end{grammarrule}
+\begin{grammarrule}{queryexp}{\terminal{\{} \nonterminal{filename}*
+    \nonterminal{qprop}? \terminal{\}}}
+\end{grammarrule}
+\begin{grammarrule}{filename}{\terminal{file} \terminal{(} \token{STRING}
+    \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{qprop}{\terminal{\&\&}? \nonterminal{queryorexp}}
+\end{grammarrule}
+\begin{grammarrule}{queryorexp}{\nonterminal{queryandexp}}
+  \altrule{\nonterminal{queryorexp} \terminal{\boldmath{$||$}}
+    \nonterminal{queryandexp}}
+\end{grammarrule}
+\begin{grammarrule}{queryandexp}{\nonterminal{querynotexp}}
+  \altrule{\nonterminal{queryandexp} \terminal{\&\&}
+    \nonterminal{querynotexp}}
+\end{grammarrule}
+\begin{grammarrule}{querynotexp}{\nonterminal{queryidentexp}}
+  \altrule{\terminal{!} \nonterminal{querynotexp}}
+\end{grammarrule}
+\begin{grammarrule}{queryidentexp}{\token{IDENT}}
+  \altrule{\terminal{(} \nonterminal{queryorexp} \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{fgexp}{\terminal{backtrack} \terminal{(} \nonterminal{fgRef}?
+    \nonterminal{res\_\,place} \terminal{)}}
+  \altrule{\terminal{cache} \terminal{(} \nonterminal{fgRef}
+    \terminal{align}? \nonterminal{rmsd}? \nonterminal{atomset}?
+    \terminal{no\_\,hydrogen}? \terminal{)}}
+  \altrule{\terminal{library} \terminal{(} \terminal{pdb} \token{STRING}
+    \nonterminal{libopt}* \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{res\_\,place}{\terminal{(} \nonterminal{residueRef}
+    \nonterminal{residueRef}* \terminal{)}}
+  \altrule{\terminal{place} \terminal{(} \nonterminal{residueRef}
+    \nonterminal{residueRef} \nonterminal{fgRef} \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{rmsd}{\terminal{rmsd\_\,bound} \token{FLOAT}}
+\end{grammarrule}
+\begin{grammarrule}{libopt}{\terminal{strip} \terminal{(}
+    \nonterminal{residueRef}+ \terminal{)}}
+  \altrule{\terminal{change\_\,id} \terminal{(} \token{STRING} \terminal{,}
+    \token{STRING} \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{atomset}{\terminal{all}}
+  \altrule{\terminal{base\_\,only}}
+  \altrule{\terminal{backbone\_\,only}}
+  \altrule{\terminal{pse\_\,only}}
+\end{grammarrule}
+\begin{grammarrule}{residueRef}{\token{INTEGER}}
+  \altrule{\token{RESNAME}}
+\end{grammarrule}
+\begin{grammarrule}{atomRef}{\token{IDENT}}
+  \altrule{\token{RESNAME}}
+\end{grammarrule}
+\begin{grammarrule}{fgRef}{\token{IDENT}}
+  \altrule{\token{QUOTED\_\,IDENT}}
+\end{grammarrule}
+
+
+\newpage
+\section{Token definition}
+\label{app:tokens}
+
+\begin{tabbing}
+  QUOTED\_\,IDENT \= = \/ \= \kill
+  INTEGER \> = \> \verb|-?[0-9]+| \\
+  FLOAT \> = \> \verb|(-?[0-9]+)(.[0-9]*)?| \\
+  RESNAME \> = \> \verb|[a-zA-Z][0-9]+| \\
+  IDENT \> = \> \verb|[-_<>a-zA-Z][-_<>\'%$\.a-zA-Z0-9]*| \\
+  STRING \> = \> \verb|\"[^\\\"]*\"| \\
+  QUOTED\_\,IDENT \> = \> \verb|\'[^\']*\'| \\
+\end{tabbing}
+
 \end{document}

@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Thu Aug 31 13:07:22 2000
- * Update Count     : 2
+ * Last Modified On : Fri Sep  1 13:08:54 2000
+ * Update Count     : 3
  * Status           : Ok.
  */
 
@@ -118,7 +118,6 @@
 %token TOK_RESIDUE
 %token TOK_RESIDUEALIGN
 %token TOK_RESTORE
-%token TOK_RMSDCST
 %token TOK_RMSDBOUND
 %token TOK_SEQUENCE
 %token TOK_SOURCE
@@ -197,7 +196,7 @@
 %type <qfunc> queryorexp
 %type <qfunc> queryandexp
 %type <qfunc> querynotexp
-%type <qfunc> queryindentexp
+%type <qfunc> queryidentexp
 
 %type <mccval> fgexp
 %type <mccval> backtrackexp
@@ -280,10 +279,7 @@ sequence:  TOK_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
 ;
 
 
-assign:    TOK_IDENT TOK_ASSIGN fgexp
-            {
-	      $$ = new MccAssignStat ($1, $3);
-	    }
+assign:    TOK_IDENT TOK_ASSIGN fgexp { $$ = new MccAssignStat ($1, $3); }
 ;
 
 
@@ -692,7 +688,7 @@ qprop:   TOK_AND queryorexp { $$ = $2; }
 
 
 queryorexp:   queryandexp { $$ = $1; }
-            | queryandexp TOK_OR queryorexp
+            | queryorexp TOK_OR queryandexp
                {
 		 $$ = new MccQOrFunc ($1, $3);
 	       }
@@ -700,27 +696,27 @@ queryorexp:   queryandexp { $$ = $1; }
 
 
 queryandexp:   querynotexp { $$ = $1; }
-             | querynotexp queryandexp
+             | queryandexp querynotexp
                 {
 		  $$ = new MccQAndFunc ($1, $2);
 		}
-             | querynotexp TOK_AND queryandexp
+             | queryandexp TOK_AND querynotexp
                 {
 		  $$ = new MccQAndFunc ($1, $3);
 		}
 ;
 
 
-querynotexp:   TOK_NOT querynotexp
+querynotexp:   queryidentexp { $$ = $1; }
+             | TOK_NOT querynotexp
                 {
 		  $$ = new MccQNotFunc ($2);
 		}
-             | queryindentexp { $$ = $1; }
 ;
 
 
-queryindentexp:   TOK_IDENT { $$ = new MccQIdentFunc ($1); }
-                | TOK_LPAREN queryorexp TOK_RPAREN { $$ = $2; }
+queryidentexp:   TOK_IDENT { $$ = new MccQIdentFunc ($1); }
+               | TOK_LPAREN queryorexp TOK_RPAREN { $$ = $2; }
 ;
 
 

@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Thu Aug 31 13:07:24 2000
- * Update Count     : 1
+ * Last Modified On : Fri Sep  1 13:08:56 2000
+ * Update Count     : 2
  * Status           : Ok.
  */
 
@@ -88,7 +88,6 @@ reset_db     return TOK_RESETDB;
 residue      return TOK_RESIDUE;
 residue_align return TOK_RESIDUEALIGN;
 restore      return TOK_RESTORE;
-rmsd         return TOK_RMSDCST;
 rmsd_bound   return TOK_RMSDBOUND;
 sequence     return TOK_SEQUENCE;
 source       return TOK_SOURCE;
@@ -106,10 +105,10 @@ zipped       return TOK_ZIPPED;
 
 {LETTER}{DIGIT}+  yylval.textval = copy (yytext); return TOK_RESNAME;
 
-[-_<>a-zA-Z][-_<>'%\.a-zA-Z0-9]*  {
-                                   yylval.textval = copy (yytext);
-				   return TOK_IDENT;
-                                 }
+[-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]*  {
+                                     yylval.textval = copy (yytext);
+				     return TOK_IDENT;
+                                   }
 
 
            /** Definition of QUOTES indentifiers.  */
@@ -122,7 +121,7 @@ zipped       return TOK_ZIPPED;
 		   return TOK_QUOTED_IDENT;
                  }
 
-<QUOTES>[^\']+   {
+<QUOTES>[^\']+    {
                    char *yptr = yytext;
 
 		   while (*yptr)
@@ -130,7 +129,7 @@ zipped       return TOK_ZIPPED;
                  }
 
 
-                /** Definition of STRINGS. */
+           /** Definition of STRINGS. */
 
 <INITIAL,QUERIES>\"   string_buf_ptr = string_buf; yy_push_state (STRINGS);
 
@@ -145,15 +144,15 @@ zipped       return TOK_ZIPPED;
                    
 <STRINGS>\\.     *string_buf_ptr++ = '\\'; *string_buf_ptr++ = yytext[1];
 
-<STRINGS>[^\\\"]+ {
+<STRINGS>[^\\\"]+     {
                         char *yptr = yytext;
 
 		        while (*yptr)
 			  *string_buf_ptr++ = *yptr++;
-                    }
+                      }
 
 
-         /* Definitions for the QUERIES state.  */
+           /* Definitions for the QUERIES state.  */
 
 \{                         { yy_push_state (QUERIES); return TOK_LBRACE; }
 <QUERIES>{INTEGER_LIT}     {
@@ -161,7 +160,7 @@ zipped       return TOK_ZIPPED;
                              return TOK_IDENT;
                            }
 <QUERIES>file              return TOK_FILENAME;
-<QUERIES>[-_<>a-zA-Z][-_<>'%\.a-zA-Z0-9]*  {
+<QUERIES>[-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]* {
                                              yylval.textval = copy (yytext);
 					     return TOK_IDENT;
                                            }
