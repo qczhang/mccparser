@@ -4,8 +4,8 @@
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:06:06 2000
 ## Last Modified By : Martin Larose
-## Last Modified On : Tue Sep 25 15:57:58 2001
-## Update Count     : 5
+## Last Modified On : Wed Sep 26 10:14:16 2001
+## Update Count     : 6
 ## Status           : Ok.
 ###############################################################################
 
@@ -35,7 +35,7 @@ LEX = @LEX@
 YACC = @YACC@
 
 INSTALL = @INSTALL@
-INSTALL_DATA = @INSTALL_DATA@ -p
+INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
 
