@@ -1,11 +1,11 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.y
- * Copyright © 2000-01 , 2002, 2002Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-01 , 2002, 2002, 2003Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Labo Lbit
- * Last Modified On : Thu Oct 31 10:38:52 2002
- * Update Count     : 19
+ * Last Modified By : Patrick Gendron
+ * Last Modified On : Tue Sep 30 11:31:40 2003
+ * Update Count     : 36
  * Status           : Ok.
  */
 
@@ -27,6 +27,7 @@
 
 
 %union {
+  char charval;
   int intval;
   bool boolval;
   float floatval;
@@ -41,8 +42,8 @@
   MccPairStat::_PairStruc *ps;
   vector< MccAngleCstStat::_AngleStruc* > *asv;
   MccAngleCstStat::_AngleStruc *as;
-  vector< MccCycleCstStat::_CycleStruc* > *cysv;
-  MccCycleCstStat::_CycleStruc *cys;
+  vector< MccMultimerCstStat::_MultimerStruc* > *cysv;
+  MccMultimerCstStat::_MultimerStruc *cys;
   vector< MccDistCstStat::_DistStruc* > *dsv;
   MccDistCstStat::_DistStruc *ds;
   vector< MccTorsionCstStat::_TorsionStruc* > *tsv;
@@ -126,6 +127,7 @@
 %token TOK_LOOPCONDEF
 %token TOK_LOOPRESDEF
 %token TOK_MOSES
+%token TOK_MULTIMER
 %token TOK_NEWTAG
 %token TOK_NOHYDRO
 %token TOK_NOTE
@@ -214,9 +216,9 @@
 %type <mccval> clashCst
 %type <boolval> fixorvdw_opt
 %type <boolval> fixorvdw
-%type <mccval> cycleCst
-%type <cysv> cycledef_plus
-%type <cys> cycledef
+%type <mccval> multimerCst
+%type <cysv> multimerdef_plus
+%type <cys> multimerdef
 %type <mccval> distCst
 %type <dsv> distdef_plus
 %type <ds> distdef
@@ -257,6 +259,7 @@
 
 %type <fgs> fgexp
 %type <fgs> backtrackexp
+%type <fgs> cycleexp
 %type <btsv> res_place_plus
 %type <bts> res_place
 %type <fgs> cacheexp
@@ -327,7 +330,7 @@ statement:   sequence { $$ = $1; }
            | adjacencyCst { $$ = $1; }
            | angleCst { $$ = $1; }
            | clashCst { $$ = $1; }
-           | cycleCst { $$ = $1; }
+           | multimerCst { $$ = $1; }
            | distCst { $$ = $1; }
            | relationCst { $$ = $1; }
            | torsionCst { $$ = $1; }
@@ -346,9 +349,14 @@ statement:   sequence { $$ = $1; }
 
 sequence:  TOK_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
             {
-	      if (strlen ($3) != 1)
-		throw CParserException ("Invalid sequence type.");
+	      if (strlen ($3) != 1) {
+		delete[] $3;
+		delete[] $4;
+		delete[] $5;
+		throw CParserException ("Invalid sequence type.");	      
+	      }
 	      $$ = new MccSequenceStat ($3[0], $4, $5);
+	      delete[] $3;
 	    }
 ;
 
@@ -602,18 +610,18 @@ fixorvdw:   TOK_FIXEDDIST { $$ = false; }
 ;
 
 
-cycleCst:   TOK_CYCLE TOK_LPAREN cycledef_plus TOK_RPAREN
+multimerCst:   TOK_MULTIMER TOK_LPAREN multimerdef_plus TOK_RPAREN
              {
-	       $$ = new MccCycleCstStat ($3);
+	       $$ = new MccMultimerCstStat ($3);
 	     }
 ;
 
 
-cycledef_plus:   cycledef
+multimerdef_plus:   multimerdef
                   {
-		    $$ = new vector< MccCycleCstStat::_CycleStruc* > (1, $1);
+		    $$ = new vector< MccMultimerCstStat::_MultimerStruc* > (1, $1);
 		  }
-               | cycledef_plus cycledef
+               | multimerdef_plus multimerdef
                   {
 		    $$ = $1;
 		    $$->push_back ($2);
@@ -621,9 +629,9 @@ cycledef_plus:   cycledef
 ;
 
 
-cycledef:   residueRef residueRef TOK_INTEGER flt
+multimerdef:   residueRef residueRef TOK_INTEGER flt
              {
-	       $$ = new MccCycleCstStat::_CycleStruc ($1, $2, $3, $4);
+	       $$ = new MccMultimerCstStat::_MultimerStruc ($1, $2, $3, (int)$4);
 	     }
 ;
 
@@ -911,6 +919,7 @@ queryidentexp: TOK_IDENT { $$ = new MccQIdentFunc ($1); }
  
 
 fgexp:   backtrackexp { $$ = $1; }
+       | cycleexp { $$ = $1; }
        | cacheexp { $$ = $1; }
        | libraryexp { $$ = $1; }
        | mosesexp { $$ = $1; }
@@ -948,6 +957,13 @@ res_place:  TOK_LPAREN residueRef residueRef_star TOK_RPAREN
           | TOK_PLACE TOK_LPAREN residueRef residueRef fgRef TOK_RPAREN
              {
 	       $$ = new MccBacktrackExpr::_PlaceStruc ($3, $4, $5);
+	     }
+;
+
+
+cycleexp:   TOK_CYCLE TOK_LPAREN residueRef_star TOK_RPAREN
+             {
+	       $$ = new MccCycleExpr ($3);
 	     }
 ;
 

@@ -83,7 +83,7 @@ mostlyclean:
 	@ rm -f *.aux *.dvi *.log *.toc *.ilg *.ind *.out body.tmp head.tmp
 
 clean: mostlyclean
-	@ rm Manual.pdf Manual.ps
+	@ rm -f Manual.pdf Manual.ps
 	@ rm -fr Manual docbook html texi
 
 distclean: clean

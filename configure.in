@@ -1,6 +1,6 @@
 #                               -*- Mode: Sh -*- 
 # configure.in
-# Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+# Copyright © 2000-02 Laboratoire de Biologie Informatique et Théorique.
 # Author           : Martin Larose
 # Created On       : Thu Aug 31 13:07:53 2000
 # Last Modified By : Martin Larose
@@ -42,8 +42,8 @@ if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
         LINKOPTIONS= ;;
     esac;
 elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
-	CXXSHFLAGS="$CXXFLAGS -Wall";
-	CXXFLAGS="$CXXFLAGS -Wall";
+	CXXSHFLAGS="$CXXFLAGS -Wall -Wno-deprecated";
+	CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated";
 	DEPFLAGS="-MM"
 	LDFLAGS="-static $LDFLAGS"
 	LINKOPTIONS=;

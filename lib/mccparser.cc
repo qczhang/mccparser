@@ -1,20 +1,19 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.cc
-// Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-01, 03 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
-// Last Modified By : Philippe Thibault
-// Last Modified On : Wed Oct 23 09:20:58 2002
-// Update Count     : 15
+// Last Modified By : Patrick Gendron
+// Last Modified On : Tue Sep 30 11:31:44 2003
+// Update Count     : 22
 // Status           : Ok.
 // 
 
 
-#include <string.h>
+#include <cstring>
 
 #include "mccparser.h"
 #include <math.h>
-
 
 
 vector< MccPStruct* > *astv;
@@ -1141,6 +1140,109 @@ MccBacktrackExpr::ppdisplay (ostream &os, int indent) const
 
 
 
+MccCycleExpr::MccCycleExpr (const MccCycleExpr &right)
+{
+  if (right.resv)
+    {
+      vector< MccResidueName* >::const_iterator cit;
+      
+      resv = new vector< MccResidueName* > ();
+      for (cit = right.resv->begin (); cit != right.resv->end (); cit++)
+	resv->push_back ((*cit)->clone ());
+    }
+}
+
+
+
+MccCycleExpr::~MccCycleExpr ()
+{
+  if (resv)
+    {
+      vector< MccResidueName* >::iterator it;
+      
+      for (it = resv->begin (); it != resv->end (); ++it)
+	delete *it;
+      delete resv;
+    }
+}
+
+
+
+MccCycleExpr&
+MccCycleExpr::operator= (const MccCycleExpr &right)
+{
+  if (this != &right)
+    {
+      if (resv)
+	{
+	  vector< MccResidueName* >::iterator it;
+	  
+	  for (it = resv->begin (); it != resv->end (); it++)
+	    delete *it;
+	  delete resv;
+	  resv = 0;
+	}
+      if (right.resv)
+	{
+	  vector< MccResidueName* >::const_iterator cit;
+	  
+	  resv = new vector< MccResidueName* > ();
+	  for (cit = right.resv->begin (); cit != right.resv->end (); cit++)
+	    resv->push_back ((*cit)->clone ());
+	}
+    }
+  return *this;
+}
+
+
+
+void
+MccCycleExpr::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccCycleExpr::display (ostream &os) const
+{
+  vector< MccResidueName* >::iterator it;
+
+  os << "cycle (";
+  for (it = resv->begin (); it != resv->end (); it++)
+    {
+      if (it != resv->begin ())
+	os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccCycleExpr::ppdisplay (ostream &os, int indent) const
+{
+  vector< MccResidueName* >::iterator it;
+
+  os << "cycle" << endl;
+  whitespaces (os, indent + 2);
+  os << '(' << endl;
+  whitespaces (os, indent + 4);
+  for (it = resv->begin (); it != resv->end (); it++) 
+    {
+      if (it != resv->begin ())
+	os << ' ';
+      (*it)->ppdisplay (os, indent + 4);
+    }
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccCacheExpr::MccCacheExpr (const MccCacheExpr &right)
   : fgref (right.fgref->clone ()),
     filter (right.filter->clone ())
@@ -1448,7 +1550,7 @@ MccConnectStat::ppdisplay (ostream &os, int indent) const
 
 
 
-MccCycleCstStat::_CycleStruc::_CycleStruc (const MccCycleCstStat::_CycleStruc &right)
+MccMultimerCstStat::_MultimerStruc::_MultimerStruc (const MccMultimerCstStat::_MultimerStruc &right)
   : res1 (new MccResidueName (*right.res1)),
     res2 (new MccResidueName (*right.res2)),
     dist (right.dist),
@@ -1457,8 +1559,8 @@ MccCycleCstStat::_CycleStruc::_CycleStruc (const MccCycleCstStat::_CycleStruc &r
 
 
 
-MccCycleCstStat::_CycleStruc&
-MccCycleCstStat::_CycleStruc::operator= (const MccCycleCstStat::_CycleStruc &right)
+MccMultimerCstStat::_MultimerStruc&
+MccMultimerCstStat::_MultimerStruc::operator= (const MccMultimerCstStat::_MultimerStruc &right)
 {
   if (this != &right)
     {
@@ -1475,7 +1577,7 @@ MccCycleCstStat::_CycleStruc::operator= (const MccCycleCstStat::_CycleStruc &rig
 
 
 void
-MccCycleCstStat::_CycleStruc::Accept (MccVisitor *visitor)
+MccMultimerCstStat::_MultimerStruc::Accept (MccVisitor *visitor)
 {
   visitor->Visit (this);
 }
@@ -1483,7 +1585,7 @@ MccCycleCstStat::_CycleStruc::Accept (MccVisitor *visitor)
 
 
 void
-MccCycleCstStat::_CycleStruc::display (ostream &os) const
+MccMultimerCstStat::_MultimerStruc::display (ostream &os) const
 {
   res1->display (os);
   os << ' ';
@@ -1494,7 +1596,7 @@ MccCycleCstStat::_CycleStruc::display (ostream &os) const
 
 
 void
-MccCycleCstStat::_CycleStruc::ppdisplay (ostream &os, int indent) const
+MccMultimerCstStat::_MultimerStruc::ppdisplay (ostream &os, int indent) const
 {
   os << endl;
   whitespaces (os, indent);
@@ -1506,20 +1608,20 @@ MccCycleCstStat::_CycleStruc::ppdisplay (ostream &os, int indent) const
 
 
 
-MccCycleCstStat::MccCycleCstStat (const MccCycleCstStat &right)
-  : strucs (new vector< MccCycleCstStat::_CycleStruc* > ())
+MccMultimerCstStat::MccMultimerCstStat (const MccMultimerCstStat &right)
+  : strucs (new vector< MccMultimerCstStat::_MultimerStruc* > ())
 {
-  vector< MccCycleCstStat::_CycleStruc* >::const_iterator cit;
+  vector< MccMultimerCstStat::_MultimerStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back (new _CycleStruc (**cit));
+    strucs->push_back (new _MultimerStruc (**cit));
 }
 
 
 
-MccCycleCstStat::~MccCycleCstStat ()
+MccMultimerCstStat::~MccMultimerCstStat ()
 {
-  vector< _CycleStruc* >::iterator it;
+  vector< _MultimerStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); ++it)
     delete *it;
@@ -1528,19 +1630,19 @@ MccCycleCstStat::~MccCycleCstStat ()
 
 
 
-MccCycleCstStat&
-MccCycleCstStat::operator= (const MccCycleCstStat &right)
+MccMultimerCstStat&
+MccMultimerCstStat::operator= (const MccMultimerCstStat &right)
 {
   if (this != &right)
     {
-      vector< MccCycleCstStat::_CycleStruc* >::const_iterator cit;
-      vector< MccCycleCstStat::_CycleStruc* >::iterator it;
+      vector< MccMultimerCstStat::_MultimerStruc* >::const_iterator cit;
+      vector< MccMultimerCstStat::_MultimerStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
       strucs->clear ();
       for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new _CycleStruc (**cit));
+	strucs->push_back (new _MultimerStruc (**cit));
     }
   return *this;
 }
@@ -1548,7 +1650,7 @@ MccCycleCstStat::operator= (const MccCycleCstStat &right)
 
 
 void
-MccCycleCstStat::Accept (MccVisitor *visitor)
+MccMultimerCstStat::Accept (MccVisitor *visitor)
 {
   visitor->Visit (this);
 }
@@ -1556,11 +1658,11 @@ MccCycleCstStat::Accept (MccVisitor *visitor)
 
 
 void
-MccCycleCstStat::display (ostream &os) const
+MccMultimerCstStat::display (ostream &os) const
 {
-  vector< _CycleStruc* >::iterator it;
+  vector< _MultimerStruc* >::iterator it;
 
-  os << "cycle (";
+  os << "multimer (";
   for (it = strucs->begin (); it != strucs->end (); ++it)
     {
       if (it != strucs->begin ())
@@ -1573,11 +1675,11 @@ MccCycleCstStat::display (ostream &os) const
 
 
 void
-MccCycleCstStat::ppdisplay (ostream &os, int indent) const
+MccMultimerCstStat::ppdisplay (ostream &os, int indent) const
 {
-  vector< _CycleStruc* >::iterator it;
+  vector< _MultimerStruc* >::iterator it;
 
-  os << "cycle" << endl;
+  os << "multimer" << endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); ++it)

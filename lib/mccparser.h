@@ -1,11 +1,11 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.h
-// Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-01, 03 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
-// Last Modified By : Philippe Thibault
-// Last Modified On : Wed Oct 23 09:21:00 2002
-// Update Count     : 21
+// Last Modified By : Patrick Gendron
+// Last Modified On : Tue Sep 30 11:31:46 2003
+// Update Count     : 33
 // Status           : Ok.
 // 
 
@@ -14,11 +14,13 @@
 #define _mccparser_h_
 
 
-#include <iostream.h>
-#include <vector.h>
-#include <pair.h>
-#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <cstdio>
 
+
+using namespace std;
 
 
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
@@ -2548,6 +2550,86 @@ struct MccBacktrackExpr : public MccFGExp
 };
 
 
+/**
+ * @short Struct representing the AST node of the "cycle" expression.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccCycleExpr : public MccFGExp
+{
+  /**
+   * The vector of residu names.
+   */
+  vector< MccResidueName * > *resv;
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccCycleExpr () : resv (new vector< MccResidueName * > ()) { }
+
+  /**
+   * Initializes the object.
+   * @param rv the residues used in the cycle fg.
+   */
+  MccCycleExpr (vector< MccResidueName * > *rv) : resv (rv) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccCycleExpr (const MccCycleExpr &right);
+  
+  /**
+   * Destroys the object.  It clears the sub-structures contained in the
+   * vector.
+   */
+  virtual ~MccCycleExpr ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccCycleExpr& operator= (const MccCycleExpr &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccCycleExpr* clone () const
+  { return new MccCycleExpr (*this); }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O ------------------------------------------------------------------
+    
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
 
 /**
  * @short Struct representing the AST node for the "cache" expression.
@@ -2943,14 +3025,14 @@ struct MccConnectStat : public MccPStruct
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccCycleCstStat : public MccPStruct
+struct MccMultimerCstStat : public MccPStruct
 {
   /**
    * @short Sub-struct containing an cycle constraint description.
    *
    * @author Martin Larose <larosem@iro.umontreal.ca>
    */
-  struct _CycleStruc
+  struct _MultimerStruc
   {
     /**
      * The name of the first residue.
@@ -2979,7 +3061,7 @@ struct MccCycleCstStat : public MccPStruct
     /**
      * Initializes the object.  It should never be used.
      */
-    _CycleStruc () { }
+    _MultimerStruc () { }
   public:
 
     /**
@@ -2989,19 +3071,19 @@ struct MccCycleCstStat : public MccPStruct
      * @param d the distance value.
      * @param n the repeat value.
      */
-    _CycleStruc (MccResidueName *r1, MccResidueName *r2, float d, int n)
+    _MultimerStruc (MccResidueName *r1, MccResidueName *r2, float d, int n)
       : res1 (r1), res2 (r2), dist (d), nb (n) { }
 
     /**
      * Initializes the object with the rights content.
      * @param right the object to copy.
      */
-    _CycleStruc (const _CycleStruc &right);
+    _MultimerStruc (const _MultimerStruc &right);
     
     /**
      * Destroys the object.
      */
-    ~_CycleStruc () { delete res1; delete res2; }
+    ~_MultimerStruc () { delete res1; delete res2; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -3010,7 +3092,7 @@ struct MccCycleCstStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    _CycleStruc& operator= (const _CycleStruc &right);
+    _MultimerStruc& operator= (const _MultimerStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -3020,7 +3102,7 @@ struct MccCycleCstStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _CycleStruc* clone () const { return new _CycleStruc (*this); }
+    _MultimerStruc* clone () const { return new _MultimerStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -3047,7 +3129,7 @@ struct MccCycleCstStat : public MccPStruct
   /**
    * The vector containing the cycle sub-structures.
    */
-  vector< _CycleStruc* > *strucs;
+  vector< _MultimerStruc* > *strucs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -3055,24 +3137,24 @@ struct MccCycleCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccCycleCstStat () : strucs (new vector< _CycleStruc* > ()) { }
+  MccMultimerCstStat () : strucs (new vector< _MultimerStruc* > ()) { }
   
   /**
    * Initializes the object.
    * @param csv the cycle sub-structure vector.
    */
-  MccCycleCstStat (vector< _CycleStruc* > *csv) : strucs (csv) { }
+  MccMultimerCstStat (vector< _MultimerStruc* > *csv) : strucs (csv) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-   MccCycleCstStat (const MccCycleCstStat &right);
+   MccMultimerCstStat (const MccMultimerCstStat &right);
   
   /**
    * Destroys the object.
    */
-  virtual ~MccCycleCstStat ();
+  virtual ~MccMultimerCstStat ();
 
   // OPERATORS ------------------------------------------------------------
 
@@ -3081,7 +3163,7 @@ struct MccCycleCstStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  MccCycleCstStat& operator= (const MccCycleCstStat &right);
+  MccMultimerCstStat& operator= (const MccMultimerCstStat &right);
     
   // ACCESS ---------------------------------------------------------------
   
@@ -3091,7 +3173,7 @@ struct MccCycleCstStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  MccCycleCstStat* clone () const { return new MccCycleCstStat (*this); }
+  MccMultimerCstStat* clone () const { return new MccMultimerCstStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -3106,8 +3188,8 @@ struct MccCycleCstStat : public MccPStruct
    * @param d the cutoff value.
    * @param n the repeat value.
    */
-  void GenCycleStruc (MccResidueName *r1, MccResidueName *r2, float d, int n)
-  { strucs->push_back (new _CycleStruc (r1, r2, d, n)); }
+  void GenMultimerStruc (MccResidueName *r1, MccResidueName *r2, float d, int n)
+  { strucs->push_back (new _MultimerStruc (r1, r2, d, n)); }
 
   // I/O ------------------------------------------------------------------
   
@@ -6948,6 +7030,12 @@ public:
   virtual void Visit (MccBacktrackExpr *struc) = 0;
   
   /**
+   * Visits the MccCycleExpr structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccCycleExpr *struc) = 0;
+
+  /**
    * Visits the MccCacheExpr structure.
    * @param struc the evaluated structure.
    */
@@ -6978,16 +7066,16 @@ public:
   virtual void Visit (MccConnectStat *struc) = 0;
   
   /**
-   * Visits the MccCycleCstStat::_CycleStruc sub-structure.
+   * Visits the MccMultimerCstStat::_MultimerStruc sub-structure.
    * @param struc the evaluated structure.
    */
-  virtual void Visit (MccCycleCstStat::_CycleStruc *struc) = 0;
+  virtual void Visit (MccMultimerCstStat::_MultimerStruc *struc) = 0;
   
   /**
-   * Visits the MccCycleCstStat structure.
+   * Visits the MccMultimerCstStat structure.
    * @param struc the evaluated structure.
    */
-  virtual void Visit (MccCycleCstStat *struc) = 0;
+  virtual void Visit (MccMultimerCstStat *struc) = 0;
   
   /**
    * Visits the MccDisplayFGStat structure.
@@ -7068,7 +7156,7 @@ public:
     virtual void Visit (MccLibraryExpr::_ChangeIdStruc *struc) = 0;
   
   /**
-   * Visits the MccCycleCstStat structure.
+   * Visits the MccMultimerCstStat structure.
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccLibraryExpr *struc) = 0;

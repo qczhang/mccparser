@@ -1,11 +1,11 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.yy
- * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-01, 03 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Philippe Thibault
- * Last Modified On : Wed Oct 23 09:20:56 2002
- * Update Count     : 15
+ * Last Modified By : Patrick Gendron
+ * Last Modified On : Tue Sep 30 11:31:42 2003
+ * Update Count     : 19
  * Status           : Ok.
  */
 
@@ -108,6 +108,7 @@ mfold_epc    return TOK_MFOLD_EPC;
 mfold_output return TOK_MFOLD_OUTPUT;
 mfold_win    return TOK_MFOLD_WIN;
 moses        return TOK_MOSES;
+multimer     return TOK_MULTIMER;
 new_tag      return TOK_NEWTAG;
 no_hydrogen  return TOK_NOHYDRO;
 note         return TOK_NOTE;
