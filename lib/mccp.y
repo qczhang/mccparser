@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Mon Mar 17 11:42:22 2003
- * Update Count     : 21
+ * Last Modified On : Mon Mar 24 09:42:10 2003
+ * Update Count     : 22
  * Status           : Ok.
  */
 
@@ -82,8 +82,8 @@
   MccPlacerPairStat::_PlacerPairStruc *pps;
   MccPlacerResidueName *prr;
   vector< MccPlacerResidueName* > *prrv;
-  vector< MccPlacerBacktrackStat::_GenBTStruc* > *pbtsv;
-  MccPlacerBacktrackStat::_GenBTStruc *pbts;
+  vector< MccPlacerBuildStat::_GenBTStruc* > *pbtsv;
+  MccPlacerBuildStat::_GenBTStruc *pbts;
   //!
 }
 
@@ -194,7 +194,7 @@
 %token TOK_PLACER_SEQUENCE
 %token TOK_PLACER_CONNECT
 %token TOK_PLACER_PAIR
-%token TOK_PLACER_BACKTRACK
+%token TOK_PLACER_BUILD
 //!
 
 %type <mccval> statement
@@ -327,7 +327,7 @@
 %type <prrv> placer_residueRef_star
 %type <prrv> placer_residueRef_plus
 %type <prr> placer_residueRef_opt
-%type <mccval> placer_backtrack
+%type <mccval> placer_build
 %type <pbtsv> placer_res_place_plus
 %type <pbts> placer_res_place
 //!
@@ -386,7 +386,7 @@ statement:   sequence { $$ = $1; }
            | placer_sequence { $$ = $1; }
            | placer_connect { $$ = $1; }
            | placer_pair { $$ = $1; }
-           | placer_backtrack { $$ = $1; }
+           | placer_build { $$ = $1; }
 
 
 ;
@@ -1377,9 +1377,9 @@ placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
 
 
 
-placer_backtrack: TOK_PLACER_BACKTRACK TOK_LPAREN /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
+placer_build: TOK_PLACER_BUILD TOK_LPAREN /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
                {
-		 MccPlacerBacktrackStat *tmp = new MccPlacerBacktrackStat ();
+		 MccPlacerBuildStat *tmp = new MccPlacerBuildStat ();
 
 // 		 if ($3)
 // 		   tmp->GenFGStruc ($3);
@@ -1392,7 +1392,7 @@ placer_backtrack: TOK_PLACER_BACKTRACK TOK_LPAREN /*fgRef_opt*/ placer_res_place
 
 placer_res_place_plus:   placer_res_place
                    {
-		     $$ = new vector< MccPlacerBacktrackStat::_GenBTStruc* > (1, $1);
+		     $$ = new vector< MccPlacerBuildStat::_GenBTStruc* > (1, $1);
 		   }
                 | placer_res_place_plus placer_res_place
                    {
@@ -1404,7 +1404,7 @@ placer_res_place_plus:   placer_res_place
 
 placer_res_place:  TOK_LPAREN placer_residueRef placer_residueRef_star TOK_RPAREN
              {
-	       $$ = new MccPlacerBacktrackStat::_BTStruc ($2, $3);
+	       $$ = new MccPlacerBuildStat::_BTStruc ($2, $3);
 	     }
 //           | TOK_PLACE TOK_LPAREN residueRef residueRef fgRef TOK_RPAREN
 //              {

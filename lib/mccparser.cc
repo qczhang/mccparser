@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed Mar 19 15:31:38 2003
-// Update Count     : 19
+// Last Modified On : Mon Mar 24 09:42:16 2003
+// Update Count     : 20
 // Status           : Ok.
 // 
 
@@ -4726,7 +4726,7 @@ MccPlacerPairStat::ppdisplay (ostream &os, int indent) const
   os << ')' << endl;
 }
 
-MccPlacerBacktrackStat::_GenBTStruc::_GenBTStruc (const MccPlacerBacktrackStat::_GenBTStruc &right)
+MccPlacerBuildStat::_GenBTStruc::_GenBTStruc (const MccPlacerBuildStat::_GenBTStruc &right)
   : ref (0), res (0), fg_struc (0), res_v (0)
 {
   if (right.ref)
@@ -4747,8 +4747,8 @@ MccPlacerBacktrackStat::_GenBTStruc::_GenBTStruc (const MccPlacerBacktrackStat::
 
 
 
-MccPlacerBacktrackStat::_GenBTStruc&
-MccPlacerBacktrackStat::_GenBTStruc::operator= (const MccPlacerBacktrackStat::_GenBTStruc &right)
+MccPlacerBuildStat::_GenBTStruc&
+MccPlacerBuildStat::_GenBTStruc::operator= (const MccPlacerBuildStat::_GenBTStruc &right)
 {
   if (this != &right)
     {
@@ -4796,7 +4796,7 @@ MccPlacerBacktrackStat::_GenBTStruc::operator= (const MccPlacerBacktrackStat::_G
 }
 
 
-MccPlacerBacktrackStat::_BTStruc::~_BTStruc ()
+MccPlacerBuildStat::_BTStruc::~_BTStruc ()
 {
   vector< MccPlacerResidueName* >::iterator it;
 
@@ -4809,25 +4809,25 @@ MccPlacerBacktrackStat::_BTStruc::~_BTStruc ()
 
 
 void
-MccPlacerBacktrackStat::_BTStruc::Accept (MccVisitor *visitor)
+MccPlacerBuildStat::_BTStruc::Accept (MccVisitor *visitor)
 {
   visitor->Visit (this);
 }
 
 
 
-MccPlacerBacktrackStat::_BTStruc&
-MccPlacerBacktrackStat::_BTStruc::operator= (const MccPlacerBacktrackStat::_BTStruc &right)
+MccPlacerBuildStat::_BTStruc&
+MccPlacerBuildStat::_BTStruc::operator= (const MccPlacerBuildStat::_BTStruc &right)
 {
   if (this != &right)
-    MccPlacerBacktrackStat::_BTStruc::operator= (right);
+    MccPlacerBuildStat::_BTStruc::operator= (right);
   return *this;
 }
 
 
 
 void
-MccPlacerBacktrackStat::_BTStruc::display (ostream &os) const
+MccPlacerBuildStat::_BTStruc::display (ostream &os) const
 {
   vector< MccPlacerResidueName* >::iterator it;
 
@@ -4844,7 +4844,7 @@ MccPlacerBacktrackStat::_BTStruc::display (ostream &os) const
 
 
 void
-MccPlacerBacktrackStat::_BTStruc::ppdisplay (ostream &os, int indent) const
+MccPlacerBuildStat::_BTStruc::ppdisplay (ostream &os, int indent) const
 {
   vector< MccPlacerResidueName* >::iterator it;
 
@@ -4861,10 +4861,10 @@ MccPlacerBacktrackStat::_BTStruc::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccPlacerBacktrackStat::MccPlacerBacktrackStat (const MccPlacerBacktrackStat &right)
-  : strucs (new vector< MccPlacerBacktrackStat::_GenBTStruc* > ())
+MccPlacerBuildStat::MccPlacerBuildStat (const MccPlacerBuildStat &right)
+  : strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ())
 {
-  vector< MccPlacerBacktrackStat::_GenBTStruc* >::const_iterator cit;
+  vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
     strucs->push_back ((*cit)->clone ());
@@ -4872,7 +4872,7 @@ MccPlacerBacktrackStat::MccPlacerBacktrackStat (const MccPlacerBacktrackStat &ri
 
 
 
-MccPlacerBacktrackStat::~MccPlacerBacktrackStat ()
+MccPlacerBuildStat::~MccPlacerBuildStat ()
 {
   vector< _GenBTStruc* >::iterator it;
 
@@ -4883,13 +4883,13 @@ MccPlacerBacktrackStat::~MccPlacerBacktrackStat ()
 
 
 
-MccPlacerBacktrackStat&
-MccPlacerBacktrackStat::operator= (const MccPlacerBacktrackStat &right)
+MccPlacerBuildStat&
+MccPlacerBuildStat::operator= (const MccPlacerBuildStat &right)
 {
   if (this != &right)
     {
-      vector< MccPlacerBacktrackStat::_GenBTStruc* >::const_iterator cit;
-      vector< MccPlacerBacktrackStat::_GenBTStruc* >::iterator it;
+      vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
+      vector< MccPlacerBuildStat::_GenBTStruc* >::iterator it;
 
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
@@ -4903,7 +4903,7 @@ MccPlacerBacktrackStat::operator= (const MccPlacerBacktrackStat &right)
 
 
 void
-MccPlacerBacktrackStat::Accept (MccVisitor *visitor)
+MccPlacerBuildStat::Accept (MccVisitor *visitor)
 {
   visitor->Visit (this);
 }
@@ -4911,11 +4911,11 @@ MccPlacerBacktrackStat::Accept (MccVisitor *visitor)
 
 
 void
-MccPlacerBacktrackStat::display (ostream &os) const
+MccPlacerBuildStat::display (ostream &os) const
 {
   vector< _GenBTStruc* >::iterator it;
 
-  os << "placer_backtrack (";
+  os << "placer_build (";
   for (it = strucs->begin (); it != strucs->end (); it++)
     {
       if (it != strucs->begin ())
@@ -4928,11 +4928,11 @@ MccPlacerBacktrackStat::display (ostream &os) const
 
 
 void
-MccPlacerBacktrackStat::ppdisplay (ostream &os, int indent) const
+MccPlacerBuildStat::ppdisplay (ostream &os, int indent) const
 {
   vector< _GenBTStruc* >::iterator it;
 
-  os << "placer_backtrack" << endl;
+  os << "placer_build" << endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)

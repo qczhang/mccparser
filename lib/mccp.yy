@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Mon Mar 17 11:42:25 2003
- * Update Count     : 17
+ * Last Modified On : Mon Mar 24 09:42:14 2003
+ * Update Count     : 18
  * Status           : Ok.
  */
 
@@ -156,7 +156,7 @@ d            return TOK_DAY;
 placer_sequence     return TOK_PLACER_SEQUENCE; 
 placer_connect      return TOK_PLACER_CONNECT; 
 placer_pair         return TOK_PLACER_PAIR; 
-placer_backtrack    return TOK_PLACER_BACKTRACK;
+placer_build        return TOK_PLACER_BUILD;
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
 

@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed Mar 19 14:07:32 2003
-// Update Count     : 24
+// Last Modified On : Mon Mar 24 09:42:18 2003
+// Update Count     : 25
 // Status           : Ok.
 // 
 
@@ -7372,19 +7372,19 @@ struct MccPlacerPairStat : public MccPStruct
 };
 
 /**
- * @short Struct representing the AST node of the "placer_backtrack" expression.
+ * @short Struct representing the AST node of the "placer_build" expression.
  *
  * The struct contains a local hierarchy of statements: _GenBTStruc (the
  * parent), _FGStruc (for the fraggen reference), _BTStruc (for the residue
  * enumeration) and _PlaceStruc (for the "place" statement).
  *
- * Usage: first generate a MccBacktrackExpr object and then you can fill its
+ * Usage: first generate a MccPlacerBuildStat object and then you can fill its
  * _GenBTStruc* vector using the GenFGStruc, GenBTStruc and GenPlaceStruc
  * methods.
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccPlacerBacktrackStat : public MccPStruct //public MccFGExp
+struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
 {
   /**
    * @short Parent struct for the MccBacktrackExpr sub-structures.
@@ -7729,25 +7729,25 @@ struct MccPlacerBacktrackStat : public MccPStruct //public MccFGExp
   /**
    * Initializes the object.
    */
-  MccPlacerBacktrackStat () : strucs (new vector< _GenBTStruc* > ()) { }
+  MccPlacerBuildStat () : strucs (new vector< _GenBTStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param s the vector containing the different backtrack sub-structures.
    */
-  MccPlacerBacktrackStat (vector< _GenBTStruc* > *s) : strucs (s) { }
+  MccPlacerBuildStat (vector< _GenBTStruc* > *s) : strucs (s) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccPlacerBacktrackStat (const MccPlacerBacktrackStat &right);
+  MccPlacerBuildStat (const MccPlacerBuildStat &right);
   
   /**
    * Destroys the object.  It clears the sub-structures contained in the
    * vector.
    */
-  virtual ~MccPlacerBacktrackStat ();
+  virtual ~MccPlacerBuildStat ();
 
   // OPERATORS ------------------------------------------------------------
 
@@ -7756,7 +7756,7 @@ struct MccPlacerBacktrackStat : public MccPStruct //public MccFGExp
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccPlacerBacktrackStat& operator= (const MccPlacerBacktrackStat &right);
+  virtual MccPlacerBuildStat& operator= (const MccPlacerBuildStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -7766,8 +7766,8 @@ struct MccPlacerBacktrackStat : public MccPStruct //public MccFGExp
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccPlacerBacktrackStat* clone () const
-  { return new MccPlacerBacktrackStat (*this); }
+  virtual MccPlacerBuildStat* clone () const
+  { return new MccPlacerBuildStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -8286,16 +8286,16 @@ public:
   virtual void Visit (MccPlacerResidueName *struc) = 0;
 
   /**
-   * Visits the MccPlacerBacktrackStat::_BTStruc sub-structure.
+   * Visits the MccPlacerBuildStat::_BTStruc sub-structure.
    * @param struc the evaluated structure.
    */
-  virtual void Visit (MccPlacerBacktrackStat::_BTStruc *struc) = 0;
+  virtual void Visit (MccPlacerBuildStat::_BTStruc *struc) = 0;
   
   /**
-   * Visits the MccPlacerBacktrackStat structure.
+   * Visits the MccPlacerBuildStat structure.
    * @param struc the evaluated structure.
    */
-  virtual void Visit (MccPlacerBacktrackStat *struc) = 0;
+  virtual void Visit (MccPlacerBuildStat *struc) = 0;
   
   
   //!
