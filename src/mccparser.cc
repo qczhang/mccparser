@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Sep  5 13:36:16 2000
-// Update Count     : 3
+// Last Modified On : Tue Sep  5 16:02:07 2000
+// Update Count     : 4
 // Status           : Ok.
 // 
 
@@ -24,19 +24,8 @@ bool interactive_parser;
 
 
 
-const MccFGExp&
-MccFGExp::operator= (const MccFGExp &right)
-{
-  if (this != &right)
-    MccPStruct::operator= (right);
-  return *this;
-}
-
-
-
 MccFragGenStruc::MccFragGenStruc (const MccFragGenStruc &right)
-  : MccPStruct (right),
-    special_char (right.special_char)
+  : special_char (right.special_char)
 {
   ident = new char[strlen (right.ident) + 1];
   strcpy (ident, right.ident);
@@ -49,7 +38,6 @@ MccFragGenStruc::operator= (const MccFragGenStruc &right)
 {
   if (this != &right)
     {
-      MccPStruct::operator= (right);
       delete ident;
       ident = new char[strlen (right.ident) + 1];
       strcpy (ident, right.ident);
@@ -76,20 +64,9 @@ MccResidueName::operator= (const MccResidueName &right)
 {
   if (this != &right)
     {
-      MccPStruct::operator= (right);
       id = right.id;
       no = right.no;
     }
-  return *this;
-}
-
-
-
-const MccQFunc&
-MccQFunc::operator= (const MccQFunc &right)
-{
-  if (this != &right)
-    MccPStruct::operator= (right);
   return *this;
 }
 
@@ -176,8 +153,7 @@ MccQOrFunc::operator= (const MccQOrFunc &right_val)
 
 
 MccQueryExpr::MccQueryExpr (const MccQueryExpr &right)
-  : MccPStruct (right),
-    strs (new vector< char* > ()),
+  : strs (new vector< char* > ()),
     fn (right.fn->Copy ())
 {
   vector< char* >::const_iterator cit;
@@ -213,7 +189,6 @@ MccQueryExpr::operator= (const MccQueryExpr &right)
       vector< char* >::const_iterator cit;
       vector< char* >::iterator it;
 
-      MccPStruct::operator= (right);
       for (it = strs->begin (); it != strs->end (); ++it)
 	delete[] *it;
       strs->clear ();
@@ -1238,7 +1213,7 @@ MccDistCstStat::display (ostream &os) const
 
 
 MccExpfile::MccExpfile (const MccExpfile &right)
-  : MccPStruct (right), zipped (right.zipped)
+  : zipped (right.zipped)
 {
   form = new char[strlen (right.form) + 1];
   strcpy (form, right.form);
@@ -1251,7 +1226,6 @@ MccExpfile::operator= (const MccExpfile &right)
 {
   if (this != &right)
     {
-      MccPStruct::operator= (right);
       delete[] form;
       form = new char[strlen (right.form) + 1];
       strcpy (form, right.form);

@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Sep  5 14:01:34 2000
-// Update Count     : 7
+// Last Modified On : Tue Sep  5 16:02:10 2000
+// Update Count     : 8
 // Status           : Ok.
 // 
 
@@ -148,20 +148,20 @@ struct MccPStruct
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccFGExp : public MccPStruct
+struct MccFGExp
 {
   // LIFECYCLE ------------------------------------------------------------
 
   /**
    * Initializes the structure.  Nothing to do.
    */
-  MccFGExp () : MccPStruct () { }
+  MccFGExp () { }
 
   /**
    * Initializes the struct with the rights contents.
    * @param right the object to copy.
    */
-  MccFGExp (const MccFGExp &right) : MccPStruct () { }
+  MccFGExp (const MccFGExp &right) { }
   
   /**
    * Destructs the structure.  Nothing to do.
@@ -175,7 +175,7 @@ struct MccFGExp : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccFGExp& operator= (const MccFGExp &right);
+  virtual const MccFGExp& operator= (const MccFGExp &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
   
@@ -203,7 +203,7 @@ struct MccFGExp : public MccPStruct
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccFragGenStruc : public MccPStruct
+struct MccFragGenStruc
 {
   /**
    * The name of the FG.
@@ -223,7 +223,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccFragGenStruc () : MccPStruct () , ident (0), special_char (false) { }
+  MccFragGenStruc () : ident (0), special_char (false) { }
 public:
 
   /**
@@ -231,8 +231,7 @@ public:
    * @param i the name of the FG.
    * @param sp the variable specifying if the ident contains any special char.
    */
-  MccFragGenStruc (char *i, bool sp = false)
-    : MccPStruct (), ident (i), special_char (sp) { }
+  MccFragGenStruc (char *i, bool sp = false) : ident (i), special_char (sp) { }
 
   /**
    * Initializes the object with the rights content.
@@ -243,7 +242,7 @@ public:
   /**
    * Destructs the object.
    */
-  virtual ~MccFragGenStruc () { delete[] ident; }
+  ~MccFragGenStruc () { delete[] ident; }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -252,7 +251,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccFragGenStruc& operator= (const MccFragGenStruc &right);
+  const MccFragGenStruc& operator= (const MccFragGenStruc &right);
 
   // ACCESS ---------------------------------------------------------------
 
@@ -262,8 +261,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccFragGenStruc* Copy () const
-  { return new MccFragGenStruc (*this); }
+  MccFragGenStruc* Copy () const { return new MccFragGenStruc (*this); }
 
   // I/O  -----------------------------------------------------------------
   
@@ -271,7 +269,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (ostream &os) const;
+  void display (ostream &os) const;
 };
 
 
@@ -281,7 +279,7 @@ public:
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccResidueName : public MccPStruct
+struct MccResidueName
 {
   /**
    * The chain id of the residue.
@@ -321,50 +319,26 @@ public:
    * @param right the object to copy.
    */
   MccResidueName (const MccResidueName &right)
-    : MccPStruct (right), id (right.id), no (right.no) { }
+    : id (right.id), no (right.no) { }
   
   /**
    * Destructs the object.
    */
-  virtual ~MccResidueName () { }
+  ~MccResidueName () { }
 
   // OPERATORS ------------------------------------------------------------
 
-  virtual const MccResidueName& operator= (const MccResidueName &right);
+  const MccResidueName& operator= (const MccResidueName &right);
   
   // ACCESS ---------------------------------------------------------------
 
-  /**
-   * Gets the chain id of the residue.
-   * @return the chain id.
-   */
-  char GetId () const { return id; }
-
-  /**
-   * Sets the chain id of the residue.
-   * @param i the new chain id.
-   */
-  void SetId (char i) { id = i; }
-
-  /**
-   * Gets the residue number of the residue.
-   * @return the residue number.
-   */
-  int GetNo () const { return no; }
-
-  /**
-   * Sets the residue number of the residue.
-   * @param n the residue number.
-   */
-  void SetNo (int n) { no = n; }
-  
   // METHODS --------------------------------------------------------------
 
   /**
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccResidueName* Copy () const { return new MccResidueName (*this); }
+  MccResidueName* Copy () const { return new MccResidueName (*this); }
 
   // I/O  -----------------------------------------------------------------
   
@@ -372,8 +346,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (ostream &os) const
-  { if (id != ' ') os << id; os << no; }
+  void display (ostream &os) const { if (id != ' ') os << id; os << no; }
 };
 
 
@@ -387,20 +360,20 @@ public:
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccQFunc : public MccPStruct
+struct MccQFunc
 {
   // LIFECYCLE ------------------------------------------------------------
   
   /**
    * Initializes the object.
    */
-  MccQFunc () : MccPStruct () { }
+  MccQFunc () { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccQFunc (const MccQFunc &right) : MccPStruct (right) { }
+  MccQFunc (const MccQFunc &right) { }
 
   /**
    * Destructs the object.
@@ -414,7 +387,7 @@ struct MccQFunc : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccQFunc& operator= (const MccQFunc &right);
+  virtual const MccQFunc& operator= (const MccQFunc &right) { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -816,7 +789,7 @@ public:
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccQueryExpr : public MccPStruct
+struct MccQueryExpr
 {
   /**
    * The file name vector.
@@ -835,15 +808,14 @@ struct MccQueryExpr : public MccPStruct
    * Initializes the object.
    */
   MccQueryExpr ()
-    : MccPStruct (), strs (new vector< char*> ()), fn (new MccQTrueFunc ()) { }
+    : strs (new vector< char*> ()), fn (new MccQTrueFunc ()) { }
 
   /**
    * Initializes the object.
    * @param fv the file name vector.
    * @param f the query function expression struct.
    */
-  MccQueryExpr (vector< char* > *fv, MccQFunc *f)
-    : MccPStruct (), strs (fv), fn (f) { }
+  MccQueryExpr (vector< char* > *fv, MccQFunc *f) : strs (fv), fn (f) { }
 
   /**
    * Initializes the object with the rights content.
@@ -854,7 +826,7 @@ struct MccQueryExpr : public MccPStruct
   /**
    * Destructs the object.
    */
-  virtual ~MccQueryExpr ();
+  ~MccQueryExpr ();
 
   // OPERATORS ------------------------------------------------------------
 
@@ -863,7 +835,7 @@ struct MccQueryExpr : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual const MccQueryExpr& operator= (const MccQueryExpr &right_val);
+  const MccQueryExpr& operator= (const MccQueryExpr &right_val);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -873,7 +845,7 @@ struct MccQueryExpr : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQueryExpr* Copy () const { return new MccQueryExpr (*this); }
+  MccQueryExpr* Copy () const { return new MccQueryExpr (*this); }
 
   /**
    * Puts the file name in the vector.
@@ -893,7 +865,7 @@ struct MccQueryExpr : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (ostream &os) const;
+  void display (ostream &os) const;
 };
 
 
@@ -2596,7 +2568,7 @@ struct MccDistCstStat : public MccPStruct
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccExpfile : public MccPStruct
+struct MccExpfile
 {
   /**
    * The C form that will be used for file output.
@@ -2615,7 +2587,7 @@ private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccExpfile () : MccPStruct () { }
+  MccExpfile () { }
 public:
 
   /**
@@ -2623,7 +2595,7 @@ public:
    * @param f the C form that will be used for file output.
    * @param z the boolean indicating if the files will be zipped.
    */
-  MccExpfile (char *f, bool z) : MccPStruct (), form (f), zipped (z) { }
+  MccExpfile (char *f, bool z) : form (f), zipped (z) { }
 
   /**
    * Initializes the object with the rights content.
@@ -2642,7 +2614,7 @@ public:
    * Assigns the right struct values to the object.
    * @param right the struct to copy.
    */
-  virtual const MccExpfile& operator= (const MccExpfile &right);
+  const MccExpfile& operator= (const MccExpfile &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -2652,7 +2624,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccExpfile* Copy () const { return new MccExpfile (*this); }
+  MccExpfile* Copy () const { return new MccExpfile (*this); }
     
   // I/O  -----------------------------------------------------------------
   
@@ -2660,7 +2632,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (ostream &os) const;
+  void display (ostream &os) const;
 };
 
 
