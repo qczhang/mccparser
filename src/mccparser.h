@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Aug 31 13:07:38 2000
-// Update Count     : 2
+// Last Modified On : Thu Aug 31 13:42:28 2000
+// Update Count     : 3
 // Status           : Ok.
 // 
 
@@ -33,6 +33,20 @@ extern vector< MccPStruct* > *astv;
  * The variable indicating if the parser must run interactively or not.
  */
 extern bool interactive_parser;
+
+
+
+/**
+ * The variable containing the input stream.  It is defined in lex.yy.c.
+ */
+extern FILE *yyin;
+
+
+
+/**
+ * The parser function.  It is defined in y.tab.c.
+ */
+extern int yyparse ();
 
 
 
