@@ -1,11 +1,11 @@
 #                               -*- Mode: Sh -*- 
 # configure.in
-# Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+# Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 # Author           : Martin Larose
 # Created On       : Thu Aug 31 13:07:53 2000
 # Last Modified By : Martin Larose
-# Last Modified On : Thu Sep 14 11:46:17 2000
-# Update Count     : 3
+# Last Modified On : Fri Feb  9 10:46:34 2001
+# Update Count     : 4
 # Status           : Ok.
 # 
 
@@ -15,7 +15,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/mccparser.h)
 
 PACKAGE=mccparser
-VERSION=1.1
+VERSION=1.2
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
 
