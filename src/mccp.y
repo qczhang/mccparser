@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Wed Sep  6 16:53:35 2000
- * Update Count     : 7
+ * Last Modified On : Fri Nov 10 18:20:34 2000
+ * Update Count     : 8
  * Status           : Ok.
  */
 
@@ -55,8 +55,7 @@
   MccBacktrackExpr::_GenBTStruc *bts;
   vector< MccLibraryExpr::_LibStruc* > *lsv;
   MccLibraryExpr::_LibStruc *ls;
-  AtomSet ats;
-  AtomSetOption atso;
+  MccAS ats;
   vector< MccResidueName* > *rrv;
   MccResidueName *rr;
   MccFragGenStruc *fgr;
@@ -211,7 +210,7 @@
 %type <ls> libopt
 
 %type <ats> atomset_opt
-%type <atso> atomsetopt_opt
+%type <ats> atomsetopt_opt
 %type <rrv> residueRef_star
 %type <rrv> residueRef_plus
 %type <rr> residueRef_opt
@@ -812,16 +811,16 @@ libopt:   TOK_STRIP TOK_LPAREN residueRef_plus TOK_RPAREN
 ;
 
 		  
-atomset_opt:   /* empty */ { $$ = PSE_ATOM_SET; }
-             | TOK_ALLATOMS { $$ = ALL_ATOMS_SET; }
-             | TOK_BASEATOMS { $$ = BASE_ATOMS_SET; }
-             | TOK_BBATOMS { $$ = BACKBONE_ATOMS_SET; }
-             | TOK_PSEATOMS { $$ = PSE_ATOM_SET; }
+atomset_opt:   /* empty */ { $$ = MCC_PSE_AS; }
+             | TOK_ALLATOMS { $$ = MCC_ALL_AS; }
+             | TOK_BASEATOMS { $$ = MCC_BASE_AS; }
+             | TOK_BBATOMS { $$ = MCC_BACKBONE_AS; }
+             | TOK_PSEATOMS { $$ = MCC_PSE_AS; }
 ;
 
 
-atomsetopt_opt:   /* empty */ { $$ = NO_OPTION; }
-                | TOK_NOHYDRO { $$ = NO_HYDROGEN_OPT; }
+atomsetopt_opt:   /* empty */ { $$ = MCC_NO_OPTION; }
+                | TOK_NOHYDRO { $$ = MCC_NO_HYDROGEN; }
 ;
 
 

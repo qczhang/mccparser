@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Oct 24 15:08:35 2000
-// Update Count     : 12
+// Last Modified On : Fri Nov 10 18:20:38 2000
+// Update Count     : 13
 // Status           : Ok.
 // 
 
@@ -18,7 +18,7 @@
 #include <vector.h>
 #include <stdio.h>
 
-#include "UMcsymLib.h"
+
 
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 YY_BUFFER_STATE mcc_scan_string (const char*);
@@ -53,6 +53,14 @@ extern FILE *mccin;
  * The parser function.  It is defined in y.tab.c.
  */
 extern int mccparse ();
+
+
+
+/**
+ * The atom set type.
+ */
+enum MccAS { MCC_ALL_AS, MCC_BASE_AS, MCC_BACKBONE_AS, MCC_PSE_AS,
+	     MCC_NO_OPTION, MCC_NO_HYDROGEN };
 
 
 
@@ -2022,12 +2030,12 @@ struct MccCacheExpr : public MccFGExp
   /**
    * The set of atoms used to calculate the rms.
    */
-  AtomSet atom_set;
+  MccAS atom_set;
 
   /**
    * The options on the atom set.
    */
-  AtomSetOption atom_set_opt;
+  MccAS atom_set_opt;
 
   /**
    * The variable specifying if Align is made.
@@ -2052,7 +2060,7 @@ public:
    * @param aso the options on the atom set.
    * @param al the variable specifying if Align is made.
    */
-  MccCacheExpr (MccFragGenStruc *f, float rms, AtomSet as, AtomSetOption aso,
+  MccCacheExpr (MccFragGenStruc *f, float rms, MccAS as, MccAS aso,
 	      bool al)
     : fgref (f), rms_bound (rms), atom_set (as), atom_set_opt (aso),
       align (al) { }
@@ -2130,12 +2138,12 @@ struct MccClashCstStat : public MccPStruct
   /**
    * The set of atoms used to calculate the distance.
    */
-  AtomSet as;
+  MccAS as;
 
   /**
    * The options on the atom set.
    */
-  AtomSetOption aso;
+  MccAS aso;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -2155,8 +2163,7 @@ public:
    * @param a the set of atoms used to calculate the distance.
    * @param ao the options on the atom set.
    */
-  MccClashCstStat (MccFragGenStruc *fg, bool V, float d, AtomSet a,
-		 AtomSetOption ao)
+  MccClashCstStat (MccFragGenStruc *fg, bool V, float d, MccAS a, MccAS ao)
     : fg_struc (fg), VDWDist (V), distFac (d), as (a), aso (ao) { }
 
   /**

@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Oct 24 15:08:32 2000
-// Update Count     : 6
+// Last Modified On : Fri Nov 10 18:20:36 2000
+// Update Count     : 7
 // Status           : Ok.
 // 
 
@@ -1022,15 +1022,24 @@ MccCacheExpr::display (ostream &os) const
     os << " align";
   if (rms_bound != 0.0)
     os << " rmsd_bound " << rms_bound;
-  if (atom_set == ALL_ATOMS_SET)
-    os << " all";
-  else if (atom_set == BASE_ATOMS_SET)
-    os << " base_only";
-  else if (atom_set == BACKBONE_ATOMS_SET)
-    os << " backbone_only";
-  else
-    os << " pse_only";
-  if (atom_set_opt == NO_HYDROGEN_OPT)
+  switch (atom_set)
+    {
+    case MCC_ALL_AS:
+      os << " all";
+      break;
+    case MCC_BASE_AS:
+      os << " base_only";
+      break;
+    case MCC_BACKBONE_AS:
+      os << " backbone_only";
+      break;
+    case MCC_PSE_AS:
+      os << " pse_only";
+      break;
+    default:
+      break;
+    }
+  if (atom_set_opt == MCC_NO_HYDROGEN)
     os << " no_hydrogen";
   os << ')';
 }
@@ -1046,15 +1055,24 @@ MccCacheExpr::ppdisplay (ostream &os, int indent) const
     os << " align";
   if (rms_bound != 0.0)
     os << " rmsd_bound " << rms_bound;
-  if (atom_set == ALL_ATOMS_SET)
-    os << " all";
-  else if (atom_set == BASE_ATOMS_SET)
-    os << " base_only";
-  else if (atom_set == BACKBONE_ATOMS_SET)
-    os << " backbone_only";
-  else
-    os << " pse_only";
-  if (atom_set_opt == NO_HYDROGEN_OPT)
+  switch (atom_set)
+    {
+    case MCC_ALL_AS:
+      os << " all";
+      break;
+    case MCC_BASE_AS:
+      os << " base_only";
+      break;
+    case MCC_BACKBONE_AS:
+      os << " backbone_only";
+      break;
+    case MCC_PSE_AS:
+      os << " pse_only";
+      break;
+    default:
+      break;
+    }
+  if (atom_set_opt == MCC_NO_HYDROGEN)
     os << " no_hydrogen";
   os << ')' << endl;
 }
@@ -1102,27 +1120,23 @@ MccClashCstStat::display (ostream &os) const
   os << distFac;
   switch (as)
     {
-    case ALL_ATOMS_SET:
+    case MCC_ALL_AS:
       os << " all";
       break;
-    case BASE_ATOMS_SET:
+    case MCC_BASE_AS:
       os << " base_only";
       break;
-    case BACKBONE_ATOMS_SET:
+    case MCC_BACKBONE_AS:
       os << " backbone_only";
       break;
-    case PSE_ATOM_SET:
+    case MCC_PSE_AS:
       os << " pse_only";
       break;
-    }
-  switch (aso)
-    {
-    case NO_HYDROGEN_OPT:
-      os << " no_hydrogen";
-      break;
-    case NO_OPTION:
+    default:
       break;
     }
+  if (aso == MCC_NO_HYDROGEN)
+    os << " no_hydrogen";
   os << ')';
 }
 
@@ -1140,27 +1154,23 @@ MccClashCstStat::ppdisplay (ostream &os, int indent) const
   os << distFac;
   switch (as)
     {
-    case ALL_ATOMS_SET:
+    case MCC_ALL_AS:
       os << " all";
       break;
-    case BASE_ATOMS_SET:
+    case MCC_BASE_AS:
       os << " base_only";
       break;
-    case BACKBONE_ATOMS_SET:
+    case MCC_BACKBONE_AS:
       os << " backbone_only";
       break;
-    case PSE_ATOM_SET:
+    case MCC_PSE_AS:
       os << " pse_only";
       break;
-    }
-  switch (aso)
-    {
-    case NO_HYDROGEN_OPT:
-      os << " no_hydrogen";
-      break;
-    case NO_OPTION:
+    default:
       break;
     }
+  if (aso == MCC_NO_HYDROGEN)
+    os << " no_hydrogen";
   os << ')' << endl;
 }
 
