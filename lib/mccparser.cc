@@ -4532,3 +4532,1252 @@ operator<< (ostream &os, const CParserException &ex)
 {
   return os << ex.GetMessage ();
 }
+
+
+
+//! placer
+
+MccPlacerResidueName&
+MccPlacerResidueName::operator= (const MccPlacerResidueName &right)
+{
+  if (this != &right)
+    {
+      id = right.id;
+      no = right.no;
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerResidueName::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+MccPlacerSequenceStat::MccPlacerSequenceStat (const MccPlacerSequenceStat &right)
+  : type (right.type),
+    res (new MccPlacerResidueName (*right.res))
+{
+  seq = new char[strlen (right.seq) + 1];
+  strcpy (seq, right.seq);
+}
+
+
+
+MccPlacerSequenceStat&
+MccPlacerSequenceStat::operator= (const MccPlacerSequenceStat &right)
+{
+  if (this != &right)
+    {
+      type = right.type;
+      delete res;
+      res = new MccPlacerResidueName (*right.res);
+      delete[] seq;
+      seq = new char[strlen (right.seq) + 1];
+      strcpy (seq, right.seq);
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerSequenceStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerSequenceStat::display (ostream &os) const
+{
+  os << "placer_sequence (" << type << ' ';
+  res->display (os);
+  os << ' ' << seq << ')';
+}
+
+
+
+void
+MccPlacerSequenceStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "placer_sequence (" << type << ' ';
+  res->ppdisplay (os, indent);
+  os << ' ' << seq << ')' << endl;
+}
+
+
+MccPlacerConnectStat::_PlacerConnectStruc::_PlacerConnectStruc (const MccPlacerConnectStat::_PlacerConnectStruc &right)
+  : res1 (new MccPlacerResidueName (*right.res1)),
+    res2 (new MccPlacerResidueName (*right.res2)),
+    expr (new MccQueryExpr (*right.expr)),
+    ssize (right.ssize)
+{ }
+
+
+
+MccPlacerConnectStat::_PlacerConnectStruc&
+MccPlacerConnectStat::_PlacerConnectStruc::operator= (const MccPlacerConnectStat::_PlacerConnectStruc &right)
+{
+  if (this != &right)
+    {
+      delete res1;
+      res1 = new MccPlacerResidueName (*right.res1);
+      delete res2;      
+      res2 = new MccPlacerResidueName (*right.res2);
+      delete expr;
+      expr = new MccQueryExpr (*right.expr);
+      ssize = right.ssize;
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerConnectStat::_PlacerConnectStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerConnectStat::_PlacerConnectStruc::display (ostream &os) const
+{
+  res1->display (os);
+  os << ' ';
+  res2->display (os);
+  os << ' ';
+  expr->display (os);
+  os << ' ';
+  ssize->display (os);
+}
+
+
+
+void
+MccPlacerConnectStat::_PlacerConnectStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ' ';
+  res2->ppdisplay (os, indent);
+  os << ' ';
+  expr->ppdisplay (os, indent);
+  os << ' ';
+  ssize->ppdisplay (os, indent);
+}
+
+
+
+MccPlacerConnectStat::MccPlacerConnectStat (const MccPlacerConnectStat &right)
+  : strucs (new vector< MccPlacerConnectStat::_PlacerConnectStruc* > ())
+{
+  vector< MccPlacerConnectStat::_PlacerConnectStruc* >::const_iterator cit;
+
+  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+    strucs->push_back (new _PlacerConnectStruc (**cit));
+}
+
+
+
+MccPlacerConnectStat::~MccPlacerConnectStat ()
+{
+  vector< _PlacerConnectStruc* >::iterator it;
+
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    delete *it;
+
+  delete strucs;
+}
+
+
+
+MccPlacerConnectStat&
+MccPlacerConnectStat::operator= (const MccPlacerConnectStat &right)
+{
+  if (this != &right)
+    {
+      vector< MccPlacerConnectStat::_PlacerConnectStruc* >::const_iterator cit;
+      vector< MccPlacerConnectStat::_PlacerConnectStruc* >::iterator it;
+      
+      for (it = strucs->begin (); it != strucs->end (); it++)
+	delete *it;
+      strucs->clear ();
+      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+	strucs->push_back (new _PlacerConnectStruc (**cit));
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerConnectStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerConnectStat::display (ostream &os) const
+{
+  vector< _PlacerConnectStruc* >::iterator it;
+
+  os << "placer_connect (";
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    {
+      if (it != strucs->begin ())
+	os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerConnectStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _PlacerConnectStruc* >::iterator it;
+
+  os << "placer_connect" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+MccPlacerPairStat::_PlacerPairStruc::_PlacerPairStruc (const MccPlacerPairStat::_PlacerPairStruc &right)
+  : res1 (new MccPlacerResidueName (*right.res1)),
+    res2 (new MccPlacerResidueName (*right.res2)),
+    expr (new MccQueryExpr (*right.expr)),
+    ssize (right.ssize)
+{ }
+
+
+
+MccPlacerPairStat::_PlacerPairStruc&
+MccPlacerPairStat::_PlacerPairStruc::operator= (const MccPlacerPairStat::_PlacerPairStruc &right)
+{
+  if (this != &right)
+    {
+      delete res1;
+      res1 = new MccPlacerResidueName (*right.res1);
+      delete res2;
+      res2 = new MccPlacerResidueName (*right.res2);
+      delete expr;
+      expr = new MccQueryExpr (*right.expr);
+      ssize = right.ssize;
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerPairStat::_PlacerPairStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerPairStat::_PlacerPairStruc::display (ostream &os) const
+{
+  res1->display (os);
+  os << ' ';
+  res2->display (os);
+  os << ' ';
+  expr->display (os);
+  os << ' ';
+  ssize->display (os);
+}
+
+
+
+void
+MccPlacerPairStat::_PlacerPairStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ' ';
+  res2->ppdisplay (os, indent);
+  os << ' ';
+  expr->ppdisplay (os, indent);
+  os << ' ';
+  ssize->ppdisplay (os, indent);
+}
+
+
+
+MccPlacerPairStat::MccPlacerPairStat (const MccPlacerPairStat &right)
+  : strucs (new vector< MccPlacerPairStat::_PlacerPairStruc* > ())
+{
+  vector< MccPlacerPairStat::_PlacerPairStruc* >::const_iterator cit;
+
+  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+    strucs->push_back (new MccPlacerPairStat::_PlacerPairStruc (**cit));
+}
+
+
+
+MccPlacerPairStat::~MccPlacerPairStat ()
+{
+  vector< _PlacerPairStruc* >::iterator it;
+
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    delete *it;
+  delete strucs;
+}
+
+
+
+MccPlacerPairStat&
+MccPlacerPairStat::operator= (const MccPlacerPairStat &right)
+{
+  if (this != &right)
+    {
+      vector< MccPlacerPairStat::_PlacerPairStruc* >::const_iterator cit;
+      vector< MccPlacerPairStat::_PlacerPairStruc* >::iterator it;
+
+      for (it = strucs->begin (); it != strucs->end (); it++)
+	delete *it;
+      strucs->clear ();
+      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+	strucs->push_back (new MccPlacerPairStat::_PlacerPairStruc (**cit));
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerPairStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerPairStat::display (ostream &os) const
+{
+  vector< _PlacerPairStruc* >::iterator it;
+  
+  os << "placer_pair (";
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    {
+      if (it != strucs->begin ())
+	os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerPairStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _PlacerPairStruc* >::iterator it;
+  
+  os << "placer_pair" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+MccPlacerFragmentStat::MccPlacerFragmentStat (const MccPlacerFragmentStat &right)
+{
+  frag_name = strdup (right.frag_name);
+  frag_res = right.frag_res->clone ();
+  inputMode = right.inputMode->clone ();
+}
+
+
+MccPlacerFragmentStat::~MccPlacerFragmentStat ()
+{
+  delete[] frag_name;
+  delete frag_res;
+  delete inputMode;
+}
+
+
+
+MccPlacerFragmentStat&
+MccPlacerFragmentStat::operator= (const MccPlacerFragmentStat &right)
+{
+  if (this != &right)
+    {
+      delete[] frag_name;
+      frag_name = strdup (right.frag_name);
+      delete frag_res;
+      frag_res = right.frag_res->clone ();
+      delete inputMode;
+      inputMode = right.inputMode->clone ();
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerFragmentStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerFragmentStat::display (ostream &os) const
+{
+  os << "fragment (" << frag_name << ' ';
+  frag_res->display (os);
+  os << ' ';
+  inputMode->display (os);
+  os << ')';
+}
+
+
+
+void
+MccPlacerFragmentStat::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  os << "fragment" << endl;
+  whitespaces (os, indent);
+  os << '(' << endl;
+  whitespaces (os, indent + 2);
+  os << frag_name << endl;
+  whitespaces (os, indent + 2);
+  frag_res->display (os);
+  os << endl;
+  whitespaces (os, indent + 2);
+  inputMode->display (os);
+  os << endl;
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
+MccPlacerBuildStat::_GenBTStruc::_GenBTStruc (const MccPlacerBuildStat::_GenBTStruc &right)
+  : ref (0), res (0), fg_struc (0), res_v (0)
+{
+  if (right.ref)
+    ref = new MccPlacerResidueName (*right.ref);
+  if (right.res)
+    res = new MccPlacerResidueName (*right.res);
+  if (right.fg_struc)
+    fg_struc = new MccFragGenStruc (*right.fg_struc);
+  if (right.res_v)
+    {
+      vector< MccPlacerResidueName* >::const_iterator cit;
+      
+      res_v = new vector< MccPlacerResidueName* > ();
+      for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
+	res_v->push_back (new MccPlacerResidueName (**cit));
+    }
+}
+
+
+
+MccPlacerBuildStat::_GenBTStruc&
+MccPlacerBuildStat::_GenBTStruc::operator= (const MccPlacerBuildStat::_GenBTStruc &right)
+{
+  if (this != &right)
+    {
+      if (ref)
+	{
+	  delete ref;
+	  ref = 0;
+	}
+      if (right.ref)
+	ref = new MccPlacerResidueName (*right.ref);
+      if (res)
+	{
+	  delete res;
+	  res = 0;
+	}
+      if (right.res)
+	res = new MccPlacerResidueName (*right.res);
+      if (fg_struc)
+	{
+	  delete fg_struc;
+	  fg_struc = 0;
+	  }
+      if (right.fg_struc)
+	fg_struc = new MccFragGenStruc (*right.fg_struc);
+      if (res_v)
+	{
+	  vector< MccPlacerResidueName* >::iterator it;
+
+	  for (it = res_v->begin (); it != res_v->end (); it++)
+	    delete *it;
+	  delete res_v;
+	  res_v = 0;
+	}
+      if (right.res_v)
+	{
+	  vector< MccPlacerResidueName* >::const_iterator cit;
+	  
+	  res_v = new vector< MccPlacerResidueName* > ();
+	  for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
+	    res_v->push_back (new MccPlacerResidueName (**cit));
+	  
+	}
+    }
+  return *this;
+}
+
+
+MccPlacerBuildStat::_BTStruc::~_BTStruc ()
+{
+  vector< MccPlacerResidueName* >::iterator it;
+
+  delete ref;
+  for (it = res_v->begin (); it != res_v->end (); it++)
+    delete *it;
+  delete res_v;
+}
+
+
+
+void
+MccPlacerBuildStat::_BTStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+MccPlacerBuildStat::_BTStruc&
+MccPlacerBuildStat::_BTStruc::operator= (const MccPlacerBuildStat::_BTStruc &right)
+{
+  if (this != &right)
+    {
+      MccPlacerBuildStat::_GenBTStruc::operator= (right);
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerBuildStat::_BTStruc::display (ostream &os) const
+{
+  vector< MccPlacerResidueName* >::iterator it;
+
+  os << '(';
+  ref->display (os);
+  for (it = res_v->begin (); it != res_v->end (); it++)
+    {
+      os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerBuildStat::_BTStruc::ppdisplay (ostream &os, int indent) const
+{
+  vector< MccPlacerResidueName* >::iterator it;
+
+  os << endl;
+  whitespaces (os, indent);
+  os << '(';
+  ref->ppdisplay (os, indent);
+  for (it = res_v->begin (); it != res_v->end (); it++)
+    {
+      os << ' ';
+      (*it)->ppdisplay (os, indent);
+    }
+  os << ')';
+}
+
+
+MccPlacerBuildStat::_PlaceStruc::_PlaceStruc (const MccPlacerBuildStat::_PlaceStruc &right)
+  : MccPlacerBuildStat::_GenBTStruc (right)
+{
+  frag_name = strdup (right.frag_name);
+}
+
+
+MccPlacerBuildStat::_PlaceStruc::~_PlaceStruc ()
+{
+  if (ref)
+    delete ref;
+  delete[] frag_name;
+}
+
+
+void
+MccPlacerBuildStat::_PlaceStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+MccPlacerBuildStat::_PlaceStruc&
+MccPlacerBuildStat::_PlaceStruc::operator= (const MccPlacerBuildStat::_PlaceStruc &right)
+{
+  if (this != &right)
+    {
+      MccPlacerBuildStat::_GenBTStruc::operator= (right);
+      delete[] frag_name;
+      frag_name = strdup (right.frag_name);
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerBuildStat::_PlaceStruc::display (ostream &os) const
+{
+  os << "place (" << frag_name << ' ';
+  if (ref)
+    ref->display (os);
+  os << ')';
+}
+
+
+
+void
+MccPlacerBuildStat::_PlaceStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  os << "place (" << frag_name << ' ';
+  if (ref)
+    {
+      ref->ppdisplay (os, indent);
+      os << ' ';
+    }
+  os << ')';
+}
+
+
+MccPlacerBuildStat::_ClashStruc&
+MccPlacerBuildStat::_ClashStruc::operator= (const MccPlacerBuildStat::_ClashStruc& right)
+{
+  if (this != &right)
+    {
+      mode = right.mode;
+      radius = right.radius;
+    }
+  return *this;
+}
+
+
+void
+MccPlacerBuildStat::_ClashStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+void
+MccPlacerBuildStat::_ClashStruc::display (ostream &os) const
+{
+  os << "clash (";
+
+  switch (mode)
+    {
+    case 'n': os << "naive";  break;
+    case 'b': os << "bbox";  break;
+    default:  os << "???";  break;
+    }
+
+  os << ' ' << radius << ')';
+}
+
+
+void
+MccPlacerBuildStat::_ClashStruc::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  display (os);
+  os << endl;
+}
+
+
+
+MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (char mmode,
+						  char pcmode,
+						  int pcmode_cover)
+  : method_mode (mmode),
+    precst_mode (pcmode),
+    pre_mode_coverage (pcmode_cover)
+{
+
+}
+
+
+MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (const MccPlacerBuildStat::_ClosureStruc& right)
+  : method_mode (right.method_mode),
+    precst_mode (right.precst_mode),
+    pre_mode_coverage (right.pre_mode_coverage)
+{
+
+}
+  
+
+MccPlacerBuildStat::_ClosureStruc&
+MccPlacerBuildStat::_ClosureStruc::operator= (const MccPlacerBuildStat::_ClosureStruc& right)
+{
+  if (this != &right)
+    {
+      method_mode = right.method_mode;
+      precst_mode = right.precst_mode;
+      pre_mode_coverage = right.pre_mode_coverage;
+    }
+  return *this;
+}
+
+
+void
+MccPlacerBuildStat::_ClosureStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+void
+MccPlacerBuildStat::_ClosureStruc::display (ostream &os) const
+{
+  os << "closure (";
+
+  switch (method_mode)
+    {
+    case 'r': case 'R': os << "rmsd"; break;
+    case 'd': case 'D': os << "distance"; break;
+    default: os << "???"; break;
+    }
+  switch (precst_mode)
+    {
+    case 'f': case 'F': break;
+    case 'c': case 'C':os << "pre_constraint c1p " << pre_mode_coverage << '%'; break;
+    default: os << "pre_constraint ???"; break;
+    }
+//   switch (postcst_mode)
+//     {
+//     case 'f': case 'F': os << "postcst_free"; break;
+//     case 'v': case 'V': os << "postcst_value " << post_mode_rmin << post_mode_rmax; break;
+//     default: os << "postcst_???"; break;
+//     }
+
+  os << ')';
+}
+
+
+
+void
+MccPlacerBuildStat::_ClosureStruc::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  os << "closure (" << endl;
+  whitespaces (os, indent+2);
+  switch (method_mode)
+    {
+    case 'r': case 'R': os << "rmsd"; break;
+    case 'd': case 'D': os << "distance"; break;
+    default: os << "???"; break;
+    }
+  os << endl;
+  whitespaces (os, indent+2);
+  switch (precst_mode)
+    {
+    case 'f': case 'F': break;
+    case 'c': case 'C': os << "pre_constraint c1p " << pre_mode_coverage << '%'; break;
+    default: os << "pre_constraint ???"; break;
+    }
+  os << endl;
+//   whitespaces (os, indent+2);
+//   switch (postcst_mode)
+//     {
+//     case 'f': case 'F': os << "postcst_free"; break;
+//     case 'v': case 'V': os << "postcst_value " << post_mode_rmin << post_mode_rmax; break;
+//     default: os << "postcst_???"; break;
+//     }
+  
+//   os << endl;
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
+MccPlacerBuildStat::_RibStruc::_RibStruc ()
+  : build_error (-1),
+    builder_tag ('o'),
+    min_shift (-1),
+    min_drop (-1),
+    shift_rate (-1)
+{
+  builder_qfct = strdup ("bond_length");
+}
+
+
+MccPlacerBuildStat::_RibStruc::_RibStruc (float be, char bt, char* bqf, float ms, float md, float sr)
+  : build_error (be),
+    builder_tag (bt),
+    min_shift (ms),
+    min_drop (md),
+    shift_rate (sr)
+{
+  builder_qfct = bqf ? strdup (bqf) : strdup ("bond_length");
+}
+
+
+MccPlacerBuildStat::_RibStruc::_RibStruc (const _RibStruc &right)
+  : build_error (right.build_error),
+    builder_tag (right.builder_tag),
+    min_shift (right.min_shift),
+    min_drop (right.min_drop),
+    shift_rate (right.shift_rate)
+{
+  builder_qfct = strdup (right.builder_qfct);
+}
+
+
+MccPlacerBuildStat::_RibStruc::~_RibStruc ()
+{
+  delete[] builder_qfct;
+}
+
+
+MccPlacerBuildStat::_RibStruc&
+MccPlacerBuildStat::_RibStruc::operator= (const MccPlacerBuildStat::_RibStruc& right)
+{
+  if (this != &right)
+    {
+      build_error = right.build_error;
+      builder_tag = right.builder_tag;
+      delete[] builder_qfct;
+      builder_qfct = strdup (right.builder_qfct);
+      min_shift = right.min_shift;
+      min_drop = right.min_drop;
+      shift_rate = right.shift_rate;
+    }
+  return *this;
+}
+
+
+void
+MccPlacerBuildStat::_RibStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+void
+MccPlacerBuildStat::_RibStruc::display (ostream &os) const
+{
+  os << "ribose ("
+     << build_error << ' ';
+  switch (builder_tag)
+    {
+    case '5':
+      os << "optimizer5d "
+	 << min_shift << ' '
+	 << min_drop << ' '
+	 << shift_rate << ' ';
+      break;
+    case '2':
+      os << "optimizer2d "
+	 << min_shift << ' '
+	 << min_drop << ' '
+	 << shift_rate << ' ';
+      break;
+    case 'o':
+      os << "estimator ";
+      break;
+    default:
+      os << "??? ";
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerBuildStat::_RibStruc::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  display (os);
+  os << endl;
+}
+
+
+MccPlacerBuildStat::MccPlacerBuildStat (const MccPlacerBuildStat &right)
+  : closure (right.closure->clone ()),
+    ribopt (right.ribopt->clone ()),
+    strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ()),
+    all_id (right.all_id),
+    frag_names (right.frag_names)
+{
+  vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
+
+  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+    strucs->push_back ((*cit)->clone ());
+}
+
+
+
+MccPlacerBuildStat::~MccPlacerBuildStat ()
+{
+  vector< _GenBTStruc* >::iterator it;
+
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    delete *it;
+  delete strucs;
+  delete clash;
+  delete closure;
+  delete ribopt;
+}
+
+
+
+MccPlacerBuildStat&
+MccPlacerBuildStat::operator= (const MccPlacerBuildStat &right)
+{
+  if (this != &right)
+    {
+      vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
+      vector< MccPlacerBuildStat::_GenBTStruc* >::iterator it;
+
+      all_id = right.all_id;
+      frag_names = right.frag_names;
+
+      delete clash;
+      clash = right.clash->clone ();
+      delete closure;
+      closure = right.closure->clone ();
+      delete ribopt;
+      ribopt = right.ribopt->clone ();
+      
+      for (it = strucs->begin (); it != strucs->end (); it++)
+	delete *it;
+      strucs->clear ();
+      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+	strucs->push_back ((*cit)->clone ());
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerBuildStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+// void
+// MccPlacerBuildStat::GenBTStruc (MccPlacerResidueName *rf,
+// 				vector< MccPlacerResidueName* > *rv)
+// {
+//   vector< MccPlacerResidueName* >::const_iterator rvit;
+  
+//   all_id.insert (make_pair (rf->id, rf->no));
+//   for (rvit = rv->begin (); rvit != rv->end (); ++rvit)
+//     all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
+
+//   strucs->push_back (new _BTStruc (rf, rv));
+// }
+
+
+void
+MccPlacerBuildStat::AddBTStrucs (vector< _GenBTStruc* > *bts)
+{
+  vector< MccPlacerResidueName* >::iterator rvit;
+  vector< _GenBTStruc* >::iterator btsit;
+  _PlaceStruc* ps = 0;
+
+  for (btsit = bts->begin (); btsit != bts->end (); ++btsit)
+    {
+      if ((*btsit)->ref)
+	all_id.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
+
+      if ((*btsit)->res)
+	all_id.insert (make_pair ((*btsit)->res->id, (*btsit)->res->no));
+      
+      if ((*btsit)->res_v)
+	for (rvit = (*btsit)->res_v->begin (); rvit != (*btsit)->res_v->end (); ++rvit)
+	  all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
+
+      if ((ps = dynamic_cast< _PlaceStruc* > (*btsit)) != 0)
+	{
+	  frag_names.push_back (ps->frag_name);
+	  cout << "will place fragment " << ps->frag_name << endl;
+	}
+    }
+
+  strucs->insert (strucs->end (), bts->begin (), bts->end ()); delete bts;
+}
+
+
+void
+MccPlacerBuildStat::display (ostream &os) const
+{
+  vector< _GenBTStruc* >::iterator it;
+
+  os << "placer_build (";
+  clash->display (os);
+  closure->display (os << ' ');
+  ribopt->display (os << ' ');
+  os << ' ';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    {
+      if (it != strucs->begin ())
+	os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerBuildStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _GenBTStruc* >::iterator it;
+
+  os << "placer_build" << endl;
+  whitespaces (os, indent + 2);
+  os << '(' << endl;
+  clash->ppdisplay (os, indent + 4);
+  closure->ppdisplay (os, indent + 4);
+  ribopt->ppdisplay (os, indent + 4);
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+const int MccPlacerSearchStat::paramid_MaxLevelRetry = 0;
+const int MccPlacerSearchStat::paramid_MaxLevelBacktrack = 1;
+const int MccPlacerSearchStat::paramid_invalid = -1;
+
+const char* MccPlacerSearchStat::paramstr_MaxLevelRetry = "max_level_retry";
+const char* MccPlacerSearchStat::paramstr_MaxLevelBacktrack = "max_level_backtrack";
+const char* MccPlacerSearchStat::paramstr_invalid = "(invalid id)";
+
+
+MccPlacerSearchStat::_Params::_Params (const _Params& right)
+  : algo_name (strdup (right.algo_name)),
+    params (0)
+{
+  if (right.params)
+    params = new map< int, float > (*right.params);
+}
+
+
+MccPlacerSearchStat::_Params::~_Params ()
+{
+  delete[] algo_name;
+  if (params)
+    delete params;
+}
+
+
+MccPlacerSearchStat::_Params&
+MccPlacerSearchStat::_Params::operator= (const _Params& right)
+{
+  if (this != &right)
+    {
+      algo_name = strdup (right.algo_name);
+      if (params)
+	{
+	  delete params;
+	  params = 0;
+	}
+      if (right.params)
+	params = new map< int, float > (*right.params);
+    }
+  return *this;
+}
+
+
+void
+MccPlacerSearchStat::_Params::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+void
+MccPlacerSearchStat::_Params::display (ostream &os) const
+{
+  map< int, float >::const_iterator mit;
+  
+  os << algo_name << " ( ";
+  if (params)
+    for (mit = params->begin (); mit != params->end (); ++mit)
+      os << MccPlacerSearchStat::getParamStr (mit->first) << ' '
+	 << mit->second << ' ';
+  os << ')';
+}
+
+
+
+void
+MccPlacerSearchStat::_Params::ppdisplay (ostream &os, int indent) const
+{
+  map< int, float >::const_iterator mit;
+  os << algo_name << endl;
+  whitespaces (os, indent);
+  os << '(' << endl;
+
+  if (params)
+    for (mit = params->begin (); mit != params->end (); ++mit)
+      {
+	whitespaces (os, indent + 2);
+	os << MccPlacerSearchStat::getParamStr (mit->first) << ' '
+	   << mit->second << endl;
+      }
+
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
+MccPlacerSearchStat::MccPlacerSearchStat (const MccPlacerSearchStat &right)
+  : mode (right.mode->clone ()),
+    filter (0),
+    expOutput (0)
+{
+  if (right.filter)
+    filter = right.filter->clone ();
+  if (right.expOutput)
+    expOutput = right.expOutput->clone ();
+}
+
+
+
+MccPlacerSearchStat&
+MccPlacerSearchStat::operator= (const MccPlacerSearchStat &right)
+{
+  if (this != &right)
+    {
+      delete mode;
+      mode = right.mode->clone ();
+      if (filter)
+	{
+	  delete filter;
+	  filter = 0;
+	}
+      if (right.filter)
+	filter = right.filter->clone ();
+      if (expOutput)
+	{
+	  delete expOutput;
+	  expOutput = 0;
+	}
+      if (right.expOutput)
+	expOutput = right.expOutput->clone ();
+    }
+  return *this;
+}
+
+
+const char*
+MccPlacerSearchStat::getParamStr (int id)
+{
+  switch (id)
+    {
+    case paramid_MaxLevelRetry:
+      return paramstr_MaxLevelRetry;
+    case paramid_MaxLevelBacktrack:
+      return paramstr_MaxLevelBacktrack;
+    }
+  return paramstr_invalid;
+}
+
+
+int
+MccPlacerSearchStat::getParamId (const char* str)
+{
+  if (strcmp (str, paramstr_MaxLevelRetry) == 0)
+    return paramid_MaxLevelRetry;
+  else if (strcmp (str, paramstr_MaxLevelBacktrack) == 0)
+    return paramid_MaxLevelBacktrack;
+  return paramid_invalid;
+}
+
+void
+MccPlacerSearchStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerSearchStat::display (ostream &os) const
+{
+  os << "placer_search ( ";
+  mode->display (os);
+  if (filter)
+    {
+      os << ' ';
+      filter->display (os);
+    }
+  if (expOutput)
+    {
+      os << ' ';
+      expOutput->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerSearchStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "placer_search" << endl;
+  whitespaces (os, indent);
+  os << '(' << endl;
+  mode->ppdisplay (os, indent + 2);
+  
+  if (filter)
+    {
+      os << endl;
+      whitespaces (os, indent + 2);
+      filter->ppdisplay (os, indent + 2);
+    }
+  if (expOutput)
+    {
+      os << endl;
+      whitespaces (os, indent + 2);
+      expOutput->ppdisplay (os, indent + 2);
+    }
+  os << endl;
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
+//!

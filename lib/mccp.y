@@ -74,6 +74,23 @@
   MccModelSorterStrategy *ms;
   MccMosesQueries *mqs;
   pair< MccQueryExpr*, MccSamplingSize* > *qsssp;
+
+  //! placer
+  vector< MccPlacerConnectStat::_PlacerConnectStruc* > *pcsv;
+  MccPlacerConnectStat::_PlacerConnectStruc *pcs;
+  vector< MccPlacerPairStat::_PlacerPairStruc* > *ppsv;
+  MccPlacerPairStat::_PlacerPairStruc *pps;
+  MccPlacerResidueName *prr;
+  vector< MccPlacerResidueName* > *prrv;
+  vector< MccPlacerBuildStat::_GenBTStruc* > *pbtsv;
+  MccPlacerBuildStat::_GenBTStruc *pbts;
+  MccPlacerBuildStat::_ClashStruc *pbx;
+  MccPlacerBuildStat::_ClosureStruc *pbc;
+  MccPlacerBuildStat::_RibStruc *pbr;
+  MccPlacerSearchStat::_Params *pssp;
+  map< int, float >* mif;
+  pair< int, float>* pif;
+  //!
 }
 
 
@@ -177,6 +194,24 @@
 %token <textval> TOK_IDENT
 %token <textval> TOK_QUOTED_IDENT
 %token <textval> TOK_STRING
+
+//! placer
+%token TOK_PLACER_SEQUENCE
+%token TOK_PLACER_CONNECT
+%token TOK_PLACER_PAIR
+%token TOK_PLACER_FRAGMENT
+%token TOK_PLACER_BUILD
+%token TOK_PLACER_SEARCH
+%token TOK_CLASH
+%token TOK_CLOSURE
+%token TOK_CLPREC
+%token TOK_CLPREC_C1P
+%token TOK_RIBOSE
+%token TOK_ROPT5D
+%token TOK_ROPT2D
+%token TOK_REST
+%token TOK_ROP
+//!
 
 %type <mccval> statement
 %type <mccval> sequence
@@ -293,6 +328,33 @@
 %type <fgr> fgRef_opt
 %type <fgr> fgRef
 
+//! placer
+%type <mccval> placer_sequence
+%type <mccval> placer_connect
+%type <pcsv> placer_condef_plus
+%type <pcs> placer_condef
+%type <mccval> placer_pair
+%type <ppsv> placer_pairdef_plus
+%type <pps> placer_pairdef
+%type <prr> placer_residueRef
+%type <prrv> placer_residueRef_star
+%type <prrv> placer_residueRef_plus
+%type <prr> placer_residueRef_opt
+%type <mccval> placer_fragment
+%type <mccval> placer_build
+%type <pbx> clash_opt
+%type <pbc> closure_opt
+%type <charval> closure_mode_opt
+%type <pbr> ribose_opt
+%type <floatval> ribose_value_opt
+%type <textval> ribose_qfct_opt
+%type <pbtsv> placer_res_place_plus
+%type <pbts> placer_res_place
+%type <mccval> placer_search
+%type <pssp> search_mode
+%type <mif> search_params_star
+%type <pif> search_params
+//!
 
 %type <textval> ident_plus
 %type <floatval> flt
@@ -344,6 +406,16 @@ statement:   sequence { $$ = $1; }
            | resetdb { $$ = $1; }
            | version { $$ = $1; }
            | quit { $$ = $1; }
+
+//! placer
+           | placer_sequence { $$ = $1; }
+           | placer_connect { $$ = $1; }
+           | placer_pair { $$ = $1; }
+           | placer_fragment { $$ = $1; }
+           | placer_build { $$ = $1; }
+           | placer_search { $$ = $1; }
+//!
+
 ;
 
 
@@ -1244,6 +1316,275 @@ flt:   TOK_INTEGER { $$ = $1; }
      | TOK_FLOAT { $$ = $1; }
 ;
 
+
+//! placer
+
+placer_sequence:  TOK_PLACER_SEQUENCE TOK_LPAREN TOK_IDENT placer_residueRef ident_plus TOK_RPAREN
+{
+  if (strlen ($3) != 1)
+    throw CParserException ("Invalid sequence type.");
+  $$ = new MccPlacerSequenceStat ($3[0], $4, $5);
+}
+;
+
+placer_connect:   TOK_PLACER_CONNECT TOK_LPAREN placer_condef_plus TOK_RPAREN
+            {
+	      $$ = new MccPlacerConnectStat ($3);
+	    }
+;
+
+
+placer_condef_plus:   placer_condef
+                {
+		  $$ = new vector< MccPlacerConnectStat::_PlacerConnectStruc* > (1, $1);
+		}
+             | placer_condef_plus placer_condef
+                {
+		  $$ = $1;
+		  $$->push_back ($2);
+		}
+;
+
+
+placer_condef:   placer_residueRef placer_residueRef queryexp sampling
+           {
+	     $$ = new MccPlacerConnectStat::_PlacerConnectStruc ($1, $2, $3, $4);
+	   }
+;
+
+
+placer_pair:   TOK_PLACER_PAIR TOK_LPAREN placer_pairdef_plus TOK_RPAREN
+         {
+	   $$ = new MccPlacerPairStat ($3);
+	 }
+;
+
+
+placer_pairdef_plus:   placer_pairdef
+                 {
+		   $$ = new vector< MccPlacerPairStat::_PlacerPairStruc* > (1, $1);
+		 }
+             | placer_pairdef_plus placer_pairdef
+                {
+		  $$ = $1;
+		  $$->push_back ($2);
+		}
+;
+
+
+placer_pairdef:   placer_residueRef placer_residueRef queryexp sampling
+            {
+	      $$ = new MccPlacerPairStat::_PlacerPairStruc ($1, $2, $3, $4);
+	    }
+;
+
+
+placer_residueRef_star:   /* empty */ { $$ = new vector< MccPlacerResidueName* > (); }
+                 | placer_residueRef_star placer_residueRef
+                    {
+		      $$ = $1;
+		      $$->push_back ($2);
+		    }
+;
+
+
+placer_residueRef_plus:   placer_residueRef { $$ = new vector< MccPlacerResidueName* > (1, $1); }
+                 | placer_residueRef_plus placer_residueRef
+                    {
+		      $$ = $1;
+		      $$->push_back ($2);
+		    }
+;
+		 
+
+placer_residueRef_opt:   /* empty */ { $$ = 0; }
+                | placer_residueRef { $$ = $1; }
+;
+
+
+placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
+            | TOK_RESNAME
+               {
+		 char tmp_char;
+		 int tmp_int;
+		 
+		 sscanf ($1, "%c%d", &tmp_char, &tmp_int); 
+		 $$ = new MccPlacerResidueName (tmp_char, tmp_int);
+		 delete $1;
+	       }
+;
+
+
+placer_fragment: TOK_PLACER_FRAGMENT TOK_LPAREN TOK_IDENT placer_residueRef input_mode TOK_RPAREN
+{
+  $$ = new MccPlacerFragmentStat ($3, $4, $5);
+}
+;
+
+
+placer_build: TOK_PLACER_BUILD TOK_LPAREN clash_opt closure_opt ribose_opt /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
+               {
+		 MccPlacerBuildStat *tmp = new MccPlacerBuildStat ($3, $4, $5);
+
+// 		 if ($3)
+// 		   tmp->GenFGStruc ($3);
+// 		 tmp->AddBTStrucs ($4);
+		 tmp->AddBTStrucs ($6);
+		 $$ = tmp;
+	       }
+;
+
+
+clash_opt:  /* empty */
+{
+  $$ = new MccPlacerBuildStat::_ClashStruc (); 
+}
+| TOK_CLASH TOK_LPAREN TOK_IDENT flt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_ClashStruc ($3[0], $4);
+};
+
+
+closure_opt: /* empty */
+{
+  $$ = new MccPlacerBuildStat::_ClosureStruc (); 
+}
+| TOK_CLOSURE TOK_LPAREN closure_mode_opt TOK_CLPREC TOK_CLPREC_C1P TOK_INTEGER TOK_PERCENT TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_ClosureStruc ($3, 'c', $6); 
+}
+;
+
+
+closure_mode_opt:
+{
+  $$ = 'd';
+}
+| TOK_RMSD
+{
+  $$ = 'r';
+}
+| TOK_DISTANCE
+{
+  $$ = 'd';
+}
+;
+
+
+ribose_opt: /* empty */
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ();
+}
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_ROPT5D ribose_qfct_opt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, '5', $5, -1, -1, -1);
+}
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_ROPT5D flt flt flt ribose_qfct_opt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, '5', $8, $5, $6, $7);
+}
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_ROPT2D ribose_qfct_opt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, '2', $5, -1, -1, -1);
+}
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_ROPT2D flt flt flt ribose_qfct_opt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, '2', $8, $5, $6, $7);
+}
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_REST ribose_qfct_opt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, 'o', $5, -1, -1, -1);
+}
+;
+
+
+ribose_value_opt:
+/* empty */
+{
+  $$ = -1;
+}
+| flt
+{
+  $$ = $1;
+}
+;
+
+
+ribose_qfct_opt:
+/* empty */
+{
+  $$ = 0;
+}
+| TOK_IDENT
+{
+  $$ = $1;
+}
+;
+
+
+placer_res_place_plus:   placer_res_place
+                   {
+		     $$ = new vector< MccPlacerBuildStat::_GenBTStruc* > (1, $1);
+		   }
+                | placer_res_place_plus placer_res_place
+                   {
+		     $$ = $1;
+		     $$->push_back ($2);
+		   }
+;
+
+
+placer_res_place:  TOK_LPAREN placer_residueRef placer_residueRef_star TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_BTStruc ($2, $3);
+}
+| TOK_PLACE TOK_LPAREN TOK_IDENT placer_residueRef TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_PlaceStruc ($3, $4);
+}
+| TOK_PLACE TOK_LPAREN TOK_IDENT TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_PlaceStruc ($3);
+}
+;
+
+
+placer_search:   TOK_PLACER_SEARCH TOK_LPAREN search_mode model_filter_opt output_mode_opt TOK_RPAREN
+            {
+	      $$ = new MccPlacerSearchStat ($3, $4, $5);
+	    }
+;
+
+
+search_mode: TOK_IDENT TOK_LPAREN search_params_star TOK_RPAREN
+{
+  $$ = new MccPlacerSearchStat::_Params ($1, $3);
+}
+| TOK_BACKTRACK TOK_LPAREN search_params_star TOK_RPAREN
+{
+  $$ = new MccPlacerSearchStat::_Params ("backtrack", $3);
+};
+
+
+search_params_star: /* empty */
+{
+  $$ = new map< int, float > ();
+}
+| search_params_star search_params
+{
+  $$ = $1;
+  $$->insert (*$2);
+  delete $2;
+};
+
+
+search_params: TOK_IDENT flt
+{
+  $$ = new pair< int, float > (MccPlacerSearchStat::getParamId ($1), (float)$2);
+};
+
+
+//!
 
 %%
 

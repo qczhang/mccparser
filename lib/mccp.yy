@@ -157,6 +157,21 @@ t            return TOK_THEOCONFO;
 T            return TOK_THEOCONFO;
 theo         return TOK_THEOCONFO;
 
+placer_sequence     return TOK_PLACER_SEQUENCE; 
+placer_connect      return TOK_PLACER_CONNECT; 
+placer_pair         return TOK_PLACER_PAIR;
+fragment            return TOK_PLACER_FRAGMENT;
+placer_build        return TOK_PLACER_BUILD;
+clash               return TOK_CLASH;
+closure             return TOK_CLOSURE;
+pre_constraint      return TOK_CLPREC;
+c1p                 return TOK_CLPREC_C1P;
+ribose              return TOK_RIBOSE;
+optimizer5d         return TOK_ROPT5D;
+optimizer2d         return TOK_ROPT2D;
+estimator           return TOK_REST;
+placer_search       return TOK_PLACER_SEARCH;
+
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
 
