@@ -17,7 +17,7 @@ vector< MccPStruct* > *astv;
 
 bool interactive_parser;
 
-CMccInput *input_class;
+MccInput *input_class;
 
 
 ostream& operator<< (ostream& os, MccPStruct& obj)
@@ -48,21 +48,21 @@ MccFragGenStruc&
 MccFragGenStruc::operator= (const MccFragGenStruc &right)
 {
   if (this != &right)
-    {
-      delete ident;
-      ident = new char[strlen (right.ident) + 1];
-      strcpy (ident, right.ident);
-      special_char = right.special_char;
-    }
+  {
+    delete ident;
+    ident = new char[strlen (right.ident) + 1];
+    strcpy (ident, right.ident);
+    special_char = right.special_char;
+  }
   return *this;
 }
 
 
 
 void
-MccFragGenStruc::Accept (MccVisitor *visitor)
+MccFragGenStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -82,27 +82,27 @@ MccResidueName&
 MccResidueName::operator= (const MccResidueName &right)
 {
   if (this != &right)
-    {
-      id = right.id;
-      no = right.no;
-    }
+  {
+    id = right.id;
+    no = right.no;
+  }
   return *this;
 }
 
 
 
 void
-MccResidueName::Accept (MccVisitor *visitor)
+MccResidueName::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
 
 void
-MccQTrueFunc::Accept (MccVisitor *visitor)
+MccQTrueFunc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -119,20 +119,20 @@ MccQIdentFunc&
 MccQIdentFunc::operator= (const MccQIdentFunc &right)
 {
   if (this != &right)
-    {
-      delete[] str;
-      str = new char[strlen (right.str) + 1];
-      strcpy (str, right.str);
-    }
+  {
+    delete[] str;
+    str = new char[strlen (right.str) + 1];
+    strcpy (str, right.str);
+  }
   return *this;
 }
 
 
 
 void
-MccQIdentFunc::Accept (MccVisitor *visitor)
+MccQIdentFunc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -141,19 +141,19 @@ MccQNotFunc&
 MccQNotFunc::operator= (const MccQNotFunc &right)
 {
   if (this != &right)
-    {
-      delete fn;
-      fn = right.fn->clone ();
-    }
+  {
+    delete fn;
+    fn = right.fn->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccQNotFunc::Accept (MccVisitor *visitor)
+MccQNotFunc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -166,11 +166,11 @@ MccQNotFunc::ppdisplay (ostream &os, int indent) const
       || dynamic_cast< const MccQNotFunc* >(fn))
     fn->ppdisplay (os, indent);
   else
-    {
-      os << '(';
-      fn->ppdisplay (os, indent);
-      os << ')';
-    }
+  {
+    os << '(';
+    fn->ppdisplay (os, indent);
+    os << ')';
+  }
 }
 
 
@@ -179,21 +179,21 @@ MccQFaceFunc&
 MccQFaceFunc::operator= (const MccQFaceFunc &right_val)
 {
   if (this != &right_val)
-    {
-      delete left;
-      left = right_val.left->clone ();
-      delete right;
-      right = right_val.right->clone ();
-    }
+  {
+    delete left;
+    left = right_val.left->clone ();
+    delete right;
+    right = right_val.right->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccQFaceFunc::Accept (MccVisitor *visitor)
+MccQFaceFunc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -212,21 +212,21 @@ MccQAndFunc&
 MccQAndFunc::operator= (const MccQAndFunc &right_val)
 {
   if (this != &right_val)
-    {
-      delete left;
-      left = right_val.left->clone ();
-      delete right;
-      right = right_val.right->clone ();
-    }
+  {
+    delete left;
+    left = right_val.left->clone ();
+    delete right;
+    right = right_val.right->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccQAndFunc::Accept (MccVisitor *visitor)
+MccQAndFunc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -235,20 +235,20 @@ void
 MccQAndFunc::ppdisplay (ostream &os, int indent) const
 {
   if (dynamic_cast< const MccQOrFunc* >(left))
-    {
-      os << '(';
-      left->ppdisplay (os, indent);
-      os << ')';
-    }
+  {
+    os << '(';
+    left->ppdisplay (os, indent);
+    os << ')';
+  }
   else
     left->ppdisplay (os, indent);
   os << " && ";
   if (dynamic_cast< const MccQOrFunc* >(right))
-    {
-      os << '(';
-      right->ppdisplay (os, indent);
-      os << ')';
-    }
+  {
+    os << '(';
+    right->ppdisplay (os, indent);
+    os << ')';
+  }
   else
     right->ppdisplay (os, indent);
 }
@@ -259,21 +259,21 @@ MccQOrFunc&
 MccQOrFunc::operator= (const MccQOrFunc &right_val)
 {
   if (this != &right_val)
-    {
-      delete left;
-      left = right_val.left->clone ();
-      delete right;
-      right = right_val.right->clone ();
-    }
+  {
+    delete left;
+    left = right_val.left->clone ();
+    delete right;
+    right = right_val.right->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccQOrFunc::Accept (MccVisitor *visitor)
+MccQOrFunc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -295,12 +295,12 @@ MccQueryExpr::MccQueryExpr (const MccQueryExpr &right)
   vector< char* >::const_iterator cit;
 
   for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
-    {
-      char *tmp = new char[strlen (*cit) + 1];
+  {
+    char *tmp = new char[strlen (*cit) + 1];
 
-      strcpy (tmp, *cit);
-      strs->push_back (tmp);
-    }
+    strcpy (tmp, *cit);
+    strs->push_back (tmp);
+  }
 }
 
 
@@ -321,32 +321,32 @@ MccQueryExpr&
 MccQueryExpr::operator= (const MccQueryExpr &right)
 {
   if (this != &right)
-    {
-      vector< char* >::const_iterator cit;
-      vector< char* >::iterator it;
+  {
+    vector< char* >::const_iterator cit;
+    vector< char* >::iterator it;
 
-      for (it = strs->begin (); it != strs->end (); ++it)
-	delete[] *it;
-      strs->clear ();
-      for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
-	{
-	  char *tmp = new char[strlen (*cit) + 1];
+    for (it = strs->begin (); it != strs->end (); ++it)
+      delete[] *it;
+    strs->clear ();
+    for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
+    {
+      char *tmp = new char[strlen (*cit) + 1];
 	  
-	  strcpy (tmp, *cit);
-	  strs->push_back (tmp);
-	}
-      delete fn;
-      fn = right.fn->clone ();
+      strcpy (tmp, *cit);
+      strs->push_back (tmp);
     }
+    delete fn;
+    fn = right.fn->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccQueryExpr::Accept (MccVisitor *visitor)
+MccQueryExpr::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -373,30 +373,163 @@ MccQueryExpr::ppdisplay (ostream &os, int indent) const
 
   os << '{';
   for (it = strs->begin (); it != strs->end (); ++it)
-    {
-      os << " file (\"" << *it << "\")";
-    }
+  {
+    os << " file (\"" << *it << "\")";
+  }
   os << ' ';
   fn->ppdisplay (os, indent);
   os << " }";
 }
 
 
+MccASIdentFunc::MccASIdentFunc (const MccASIdentFunc &right)
+{
+  str = new char[strlen (right.str) + 1];
+  strcpy (str, right.str);
+}
+
+  
+MccASIdentFunc&
+MccASIdentFunc::operator= (const MccASIdentFunc &right)
+{
+  if (this != &right)
+  {
+    delete[] str;
+    str = new char[strlen (right.str) + 1];
+    strcpy (str, right.str);
+  }
+  return *this;
+}
+
+
+void
+MccASIdentFunc::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+MccASNotFunc&
+MccASNotFunc::operator= (const MccASNotFunc &right)
+{
+  if (this != &right)
+  {
+    delete fn;
+    fn = right.fn->clone ();
+  }
+  return *this;
+}
+
+
+void
+MccASNotFunc::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccASNotFunc::ppdisplay (ostream &os, int indent) const
+{
+  os << "! ";
+  if (dynamic_cast< const MccASIdentFunc* >(fn)
+      || dynamic_cast< const MccASNotFunc* >(fn))
+    fn->ppdisplay (os, indent);
+  else
+  {
+    os << '(';
+    fn->ppdisplay (os, indent);
+    os << ')';
+  }
+}
+
+
+MccASAndFunc&
+MccASAndFunc::operator= (const MccASAndFunc &right_val)
+{
+  if (this != &right_val)
+  {
+    delete left;
+    left = right_val.left->clone ();
+    delete right;
+    right = right_val.right->clone ();
+  }
+  return *this;
+}
+
+
+void
+MccASAndFunc::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccASAndFunc::ppdisplay (ostream &os, int indent) const
+{
+  if (dynamic_cast< const MccASOrFunc* >(left))
+  {
+    os << '(';
+    left->ppdisplay (os, indent);
+    os << ')';
+  }
+  else
+    left->ppdisplay (os, indent);
+  os << " && ";
+  if (dynamic_cast< const MccASOrFunc* >(right))
+  {
+    os << '(';
+    right->ppdisplay (os, indent);
+    os << ')';
+  }
+  else
+    right->ppdisplay (os, indent);
+}
+
+
+MccASOrFunc&
+MccASOrFunc::operator= (const MccASOrFunc &right_val)
+{
+  if (this != &right_val)
+  {
+    delete left;
+    left = right_val.left->clone ();
+    delete right;
+    right = right_val.right->clone ();
+  }
+  return *this;
+}
+
+
+void
+MccASOrFunc::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccASOrFunc::ppdisplay (ostream &os, int indent) const
+{
+  left->ppdisplay (os, indent);
+  os << " || ";
+  right->ppdisplay (os, indent);
+}
+
 
 MccAddPdbStat::_AddPdbStruc::_AddPdbStruc (const MccAddPdbStat::_AddPdbStruc &right)
-  : current_tfo_cutoff (right.current_tfo_cutoff),
-    current_confo_cutoff (right.current_confo_cutoff),
-    strs (new vector< char* > ())
+  : strs (new vector< char* > ())
 {
   vector< char* >::const_iterator cit;
 
   for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
-    {
-      char *str = new char[strlen (*cit) + 1];
+  {
+    char *str = new char[strlen (*cit) + 1];
 
-      strcpy (str, *cit);
-      strs->push_back (str);
-    }
+    strcpy (str, *cit);
+    strs->push_back (str);
+  }
 }
 
 
@@ -416,32 +549,30 @@ MccAddPdbStat::_AddPdbStruc&
 MccAddPdbStat::_AddPdbStruc::operator= (const MccAddPdbStat::_AddPdbStruc &right)
 {
   if (this != &right)
-    {
-      vector< char* >::const_iterator cit;
-      vector< char* >::iterator it;      
+  {
+    vector< char* >::const_iterator cit;
+    vector< char* >::iterator it;      
       
-      current_tfo_cutoff = right.current_tfo_cutoff;
-      current_confo_cutoff = right.current_confo_cutoff;
-      for (it = strs->begin (); it != strs->end (); ++it)
-	delete[] *it;
-      strs->clear ();
-      for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
-	{
-	  char *str = new char[strlen (*cit) + 1];
+    for (it = strs->begin (); it != strs->end (); ++it)
+      delete[] *it;
+    strs->clear ();
+    for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
+    {
+      char *str = new char[strlen (*cit) + 1];
 	  
-	  strcpy (str, *cit);
-	  strs->push_back (str);
-	}
+      strcpy (str, *cit);
+      strs->push_back (str);
     }
+  }
   return *this;
 }
 
 
       
 void
-MccAddPdbStat::_AddPdbStruc::Accept (MccVisitor *visitor)
+MccAddPdbStat::_AddPdbStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -451,8 +582,6 @@ MccAddPdbStat::_AddPdbStruc::display (ostream &os) const
 {
   vector< char* >::iterator it;
 
-  os << "tfo_cutoff " << current_tfo_cutoff
-     << " confo_cutoff " << current_confo_cutoff;
   for (it = strs->begin (); it != strs->end (); ++it)
     os << "  \"" << *it << "\"";
 }
@@ -464,23 +593,19 @@ MccAddPdbStat::_AddPdbStruc::ppdisplay (ostream &os, int indent) const
 {
   vector< char* >::iterator it;
 
-  os << endl;
-  whitespaces (os, indent);
-  os << "tfo_cutoff   " << current_tfo_cutoff << endl;
-  whitespaces (os, indent);
-  os << "confo_cutoff " << current_confo_cutoff;
   for (it = strs->begin (); it != strs->end (); ++it)
-    {
-      os << endl;
-      whitespaces (os, indent);
-      os << "\"" << *it << "\"";
-    }
+  {
+    os << endl;
+    whitespaces (os, indent);
+    os << "\"" << *it << "\"";
+  }
 }
 
 
 
 MccAddPdbStat::MccAddPdbStat (const MccAddPdbStat &right)
-  : strucs (new vector< _AddPdbStruc* > ())
+  : strucs (new vector< _AddPdbStruc* > ()),
+    cutoff (right.cutoff)
 {
   vector< _AddPdbStruc* >::const_iterator cit;
   
@@ -505,25 +630,26 @@ MccAddPdbStat&
 MccAddPdbStat::operator= (const MccAddPdbStat &right)
 {
   if (this != &right)
-    {
-      vector< _AddPdbStruc* >::const_iterator cit;
-      vector< _AddPdbStruc* >::iterator it;
+  {
+    vector< _AddPdbStruc* >::const_iterator cit;
+    vector< _AddPdbStruc* >::iterator it;
 
-      for (it = strucs->begin (); it != strucs->end (); ++it)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-	strucs->push_back ((*cit)->clone ());
-    }
+    cutoff = right.cutoff;
+    for (it = strucs->begin (); it != strucs->end (); ++it)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
+      strucs->push_back ((*cit)->clone ());
+  }
   return *this;
 }
 
 
   
 void
-MccAddPdbStat::Accept (MccVisitor *visitor)
+MccAddPdbStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -534,12 +660,14 @@ MccAddPdbStat::display (ostream &os) const
   vector< _AddPdbStruc* >::iterator it;
 
   os << "add_pdb (";
+  if (cutoff >= 0.0)
+    os << " cutoff " << cutoff;
   for (it = strucs->begin (); it != strucs->end (); ++it)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
   
@@ -553,63 +681,113 @@ MccAddPdbStat::ppdisplay (ostream &os, int indent) const
   os << "add_pdb" << endl;
   whitespaces (os, indent + 2);
   os << '(';
+  if (cutoff >= 0.0)
+  {
+    os << endl;
+    whitespaces (os, indent + 2);
+    os << "cutoff " << cutoff;
+  }
   for (it = strucs->begin (); it != strucs->end (); ++it)
-    {
-      (*it)->ppdisplay (os, indent + 4);
-    }
+  {
+    (*it)->ppdisplay (os, indent + 4);
+  }
   os << endl;
   whitespaces (os, indent + 2);
   os << ')' << endl;
 }
 
 
-
-MccAdjacencyCstStat::MccAdjacencyCstStat (const MccAdjacencyCstStat &right)
+MccBaseAdjacencyCstStat::MccBaseAdjacencyCstStat (const MccBaseAdjacencyCstStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc)),
-    the_min (right.the_min),
-    the_max (right.the_max)
+    coverage (right.coverage)
 { }
 
 
 
-MccAdjacencyCstStat&
-MccAdjacencyCstStat::operator= (const MccAdjacencyCstStat &right)
+MccBaseAdjacencyCstStat&
+MccBaseAdjacencyCstStat::operator= (const MccBaseAdjacencyCstStat &right)
 {
   if (this != &right)
-    {
-      delete fg_struc;
-      fg_struc = right.fg_struc->clone ();
-      the_min = right.the_min;
-      the_max = right.the_max;
-    }
+  {
+    delete fg_struc;
+    fg_struc = right.fg_struc->clone ();
+    this->coverage = right.coverage;
+  }
   return *this;
 }
 
 
 
 void
-MccAdjacencyCstStat::Accept (MccVisitor *visitor)
+MccBaseAdjacencyCstStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
 void
-MccAdjacencyCstStat::display (ostream &os) const
+MccBaseAdjacencyCstStat::display (ostream &os) const
 {
-  os << "adjacency (";
+  os << "base_adjacency (";
   fg_struc->display (os);
-  os << ' ' << the_min << ' ' << the_max << ')';
+  os << ' ' << this->coverage << "%)";
 }
 
 
 
 void
-MccAdjacencyCstStat::ppdisplay (ostream &os, int indent) const
+MccBaseAdjacencyCstStat::ppdisplay (ostream &os, int indent) const
 {
-  os << "adjacency (";
+  os << "base_adjacency (";
   fg_struc->ppdisplay (os, indent);
-  os << ' ' << the_min << ' ' << the_max << ')' << endl;
+  os << ' ' << this->coverage << "%)" << endl;
+}
+
+
+MccRiboseAdjacencyCstStat::MccRiboseAdjacencyCstStat (const MccRiboseAdjacencyCstStat &right)
+  : fg_struc (new MccFragGenStruc (*right.fg_struc)),
+    the_max (right.the_max)
+{ }
+
+
+
+MccRiboseAdjacencyCstStat&
+MccRiboseAdjacencyCstStat::operator= (const MccRiboseAdjacencyCstStat &right)
+{
+  if (this != &right)
+  {
+    delete fg_struc;
+    fg_struc = right.fg_struc->clone ();
+    the_max = right.the_max;
+  }
+  return *this;
+}
+
+
+
+void
+MccRiboseAdjacencyCstStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccRiboseAdjacencyCstStat::display (ostream &os) const
+{
+  os << "ribose_adjacency (";
+  fg_struc->display (os);
+  os << ' ' << the_max << ')';
+}
+
+
+
+void
+MccRiboseAdjacencyCstStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "ribose_adjacency (";
+  fg_struc->ppdisplay (os, indent);
+  os << ' ' << the_max << ')' << endl;
 }
 
 
@@ -647,34 +825,34 @@ MccAngleCstStat::_AngleStruc&
 MccAngleCstStat::_AngleStruc::operator= (const MccAngleCstStat::_AngleStruc &right)
 {
   if (this != &right)
-    {
-      delete res1;
-      res1 = new MccResidueName (*right.res1);
-      delete[] at1;
-      at1 = new char[strlen (right.at1) + 1];
-      strcpy (at1, right.at1);
-      delete res2;
-      res2 = new MccResidueName (*right.res2);
-      delete[] at2;
-      at2 = new char[strlen (right.at2) + 1];
-      strcpy (at2, right.at2);
-      delete res3;
-      res3 = new MccResidueName (*right.res3);
-      delete[] at3;
-      at3 = new char[strlen (right.at3) + 1];
-      strcpy (at3, right.at3);
-      dist_min = right.dist_min;
-      dist_max = right.dist_max;
-    }
+  {
+    delete res1;
+    res1 = new MccResidueName (*right.res1);
+    delete[] at1;
+    at1 = new char[strlen (right.at1) + 1];
+    strcpy (at1, right.at1);
+    delete res2;
+    res2 = new MccResidueName (*right.res2);
+    delete[] at2;
+    at2 = new char[strlen (right.at2) + 1];
+    strcpy (at2, right.at2);
+    delete res3;
+    res3 = new MccResidueName (*right.res3);
+    delete[] at3;
+    at3 = new char[strlen (right.at3) + 1];
+    strcpy (at3, right.at3);
+    dist_min = right.dist_min;
+    dist_max = right.dist_max;
+  }
   return *this;
 }
 
   
 
 void
-MccAngleCstStat::_AngleStruc::Accept (MccVisitor *visitor)
+MccAngleCstStat::_AngleStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -733,25 +911,25 @@ MccAngleCstStat&
 MccAngleCstStat::operator= (const MccAngleCstStat &right)
 {
   if (this != &right)
-    {
-      vector< MccAngleCstStat::_AngleStruc* >::const_iterator cit;
-      vector< MccAngleCstStat::_AngleStruc* >::iterator it;
+  {
+    vector< MccAngleCstStat::_AngleStruc* >::const_iterator cit;
+    vector< MccAngleCstStat::_AngleStruc* >::iterator it;
 
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-	strucs->push_back (new MccAngleCstStat::_AngleStruc (**cit));
-    }
+    for (it = strucs->begin (); it != strucs->end (); it++)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
+      strucs->push_back (new MccAngleCstStat::_AngleStruc (**cit));
+  }
   return *this;
 }
 
 
 
 void
-MccAngleCstStat::Accept (MccVisitor *visitor)
+MccAngleCstStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -763,11 +941,11 @@ MccAngleCstStat::display (ostream &os) const
 
   os << "angle (";
   for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -803,22 +981,22 @@ MccAssignStat&
 MccAssignStat::operator= (const MccAssignStat &right)
 {
   if (this != &right)
-    {
-      delete[] ident;
-      ident = new char[strlen (right.ident)];
-      strcpy (ident, right.ident);
-      delete expr;
-      expr = right.expr->clone ();
-    }
+  {
+    delete[] ident;
+    ident = new char[strlen (right.ident)];
+    strcpy (ident, right.ident);
+    delete expr;
+    expr = right.expr->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccAssignStat::Accept (MccVisitor *visitor)
+MccAssignStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -851,13 +1029,13 @@ MccBacktrackExpr::_GenBTStruc::_GenBTStruc (const MccBacktrackExpr::_GenBTStruc 
   if (right.fg_struc)
     fg_struc = new MccFragGenStruc (*right.fg_struc);
   if (right.res_v)
-    {
-      vector< MccResidueName* >::const_iterator cit;
+  {
+    vector< MccResidueName* >::const_iterator cit;
       
-      res_v = new vector< MccResidueName* > ();
-      for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
-	res_v->push_back (new MccResidueName (**cit));
-    }
+    res_v = new vector< MccResidueName* > ();
+    for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
+      res_v->push_back (new MccResidueName (**cit));
+  }
 }
 
 
@@ -866,47 +1044,47 @@ MccBacktrackExpr::_GenBTStruc&
 MccBacktrackExpr::_GenBTStruc::operator= (const MccBacktrackExpr::_GenBTStruc &right)
 {
   if (this != &right)
+  {
+    if (ref)
     {
-      if (ref)
-	{
-	  delete ref;
-	  ref = 0;
-	}
-      if (right.ref)
-	ref = new MccResidueName (*right.ref);
-      if (res)
-	{
-	  delete res;
-	  res = 0;
-	}
-      if (right.res)
-	res = new MccResidueName (*right.res);
-      if (fg_struc)
-	{
-	  delete fg_struc;
-	  fg_struc = 0;
-	  }
-      if (right.fg_struc)
-	fg_struc = new MccFragGenStruc (*right.fg_struc);
-      if (res_v)
-	{
-	  vector< MccResidueName* >::iterator it;
-
-	  for (it = res_v->begin (); it != res_v->end (); it++)
-	    delete *it;
-	  delete res_v;
-	  res_v = 0;
-	}
-      if (right.res_v)
-	{
-	  vector< MccResidueName* >::const_iterator cit;
-	  
-	  res_v = new vector< MccResidueName* > ();
-	  for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
-	    res_v->push_back (new MccResidueName (**cit));
-	  
-	}
+      delete ref;
+      ref = 0;
     }
+    if (right.ref)
+      ref = new MccResidueName (*right.ref);
+    if (res)
+    {
+      delete res;
+      res = 0;
+    }
+    if (right.res)
+      res = new MccResidueName (*right.res);
+    if (fg_struc)
+    {
+      delete fg_struc;
+      fg_struc = 0;
+    }
+    if (right.fg_struc)
+      fg_struc = new MccFragGenStruc (*right.fg_struc);
+    if (res_v)
+    {
+      vector< MccResidueName* >::iterator it;
+
+      for (it = res_v->begin (); it != res_v->end (); it++)
+	delete *it;
+      delete res_v;
+      res_v = 0;
+    }
+    if (right.res_v)
+    {
+      vector< MccResidueName* >::const_iterator cit;
+	  
+      res_v = new vector< MccResidueName* > ();
+      for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
+	res_v->push_back (new MccResidueName (**cit));
+	  
+    }
+  }
   return *this;
 }
 
@@ -923,9 +1101,9 @@ MccBacktrackExpr::_FGStruc::operator= (const MccBacktrackExpr::_FGStruc &right)
 
 
 void
-MccBacktrackExpr::_FGStruc::Accept (MccVisitor *visitor)
+MccBacktrackExpr::_FGStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -953,9 +1131,9 @@ MccBacktrackExpr::_BTStruc::~_BTStruc ()
 
 
 void
-MccBacktrackExpr::_BTStruc::Accept (MccVisitor *visitor)
+MccBacktrackExpr::_BTStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -978,10 +1156,10 @@ MccBacktrackExpr::_BTStruc::display (ostream &os) const
   os << '(';
   ref->display (os);
   for (it = res_v->begin (); it != res_v->end (); it++)
-    {
-      os << ' ';
-      (*it)->display (os);
-    }
+  {
+    os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -997,19 +1175,19 @@ MccBacktrackExpr::_BTStruc::ppdisplay (ostream &os, int indent) const
   os << '(';
   ref->ppdisplay (os, indent);
   for (it = res_v->begin (); it != res_v->end (); it++)
-    {
-      os << ' ';
-      (*it)->ppdisplay (os, indent);
-    }
+  {
+    os << ' ';
+    (*it)->ppdisplay (os, indent);
+  }
   os << ')';
 }
 
 
 
 void
-MccBacktrackExpr::_PlaceStruc::Accept (MccVisitor *visitor)
+MccBacktrackExpr::_PlaceStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1080,25 +1258,25 @@ MccBacktrackExpr&
 MccBacktrackExpr::operator= (const MccBacktrackExpr &right)
 {
   if (this != &right)
-    {
-      vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
-      vector< MccBacktrackExpr::_GenBTStruc* >::iterator it;
+  {
+    vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
+    vector< MccBacktrackExpr::_GenBTStruc* >::iterator it;
 
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back ((*cit)->clone ());
-    }
+    for (it = strucs->begin (); it != strucs->end (); it++)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+      strucs->push_back ((*cit)->clone ());
+  }
   return *this;
 }
 
 
 
 void
-MccBacktrackExpr::Accept (MccVisitor *visitor)
+MccBacktrackExpr::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1110,11 +1288,11 @@ MccBacktrackExpr::display (ostream &os) const
 
   os << "backtrack (";
   for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -1140,13 +1318,13 @@ MccBacktrackExpr::ppdisplay (ostream &os, int indent) const
 MccCycleExpr::MccCycleExpr (const MccCycleExpr &right)
 {
   if (right.resv)
-    {
-      vector< MccResidueName* >::const_iterator cit;
+  {
+    vector< MccResidueName* >::const_iterator cit;
       
-      resv = new vector< MccResidueName* > ();
-      for (cit = right.resv->begin (); cit != right.resv->end (); cit++)
-	resv->push_back ((*cit)->clone ());
-    }
+    resv = new vector< MccResidueName* > ();
+    for (cit = right.resv->begin (); cit != right.resv->end (); cit++)
+      resv->push_back ((*cit)->clone ());
+  }
 }
 
 
@@ -1154,13 +1332,13 @@ MccCycleExpr::MccCycleExpr (const MccCycleExpr &right)
 MccCycleExpr::~MccCycleExpr ()
 {
   if (resv)
-    {
-      vector< MccResidueName* >::iterator it;
+  {
+    vector< MccResidueName* >::iterator it;
       
-      for (it = resv->begin (); it != resv->end (); ++it)
-	delete *it;
-      delete resv;
-    }
+    for (it = resv->begin (); it != resv->end (); ++it)
+      delete *it;
+    delete resv;
+  }
 }
 
 
@@ -1169,34 +1347,34 @@ MccCycleExpr&
 MccCycleExpr::operator= (const MccCycleExpr &right)
 {
   if (this != &right)
+  {
+    if (resv)
     {
-      if (resv)
-	{
-	  vector< MccResidueName* >::iterator it;
+      vector< MccResidueName* >::iterator it;
 	  
-	  for (it = resv->begin (); it != resv->end (); it++)
-	    delete *it;
-	  delete resv;
-	  resv = 0;
-	}
-      if (right.resv)
-	{
-	  vector< MccResidueName* >::const_iterator cit;
-	  
-	  resv = new vector< MccResidueName* > ();
-	  for (cit = right.resv->begin (); cit != right.resv->end (); cit++)
-	    resv->push_back ((*cit)->clone ());
-	}
+      for (it = resv->begin (); it != resv->end (); it++)
+	delete *it;
+      delete resv;
+      resv = 0;
     }
+    if (right.resv)
+    {
+      vector< MccResidueName* >::const_iterator cit;
+	  
+      resv = new vector< MccResidueName* > ();
+      for (cit = right.resv->begin (); cit != right.resv->end (); cit++)
+	resv->push_back ((*cit)->clone ());
+    }
+  }
   return *this;
 }
 
 
 
 void
-MccCycleExpr::Accept (MccVisitor *visitor)
+MccCycleExpr::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1208,11 +1386,11 @@ MccCycleExpr::display (ostream &os) const
 
   os << "cycle (";
   for (it = resv->begin (); it != resv->end (); it++)
-    {
-      if (it != resv->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != resv->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -1228,11 +1406,11 @@ MccCycleExpr::ppdisplay (ostream &os, int indent) const
   os << '(' << endl;
   whitespaces (os, indent + 4);
   for (it = resv->begin (); it != resv->end (); it++) 
-    {
-      if (it != resv->begin ())
-	os << ' ';
-      (*it)->ppdisplay (os, indent + 4);
-    }
+  {
+    if (it != resv->begin ())
+      os << ' ';
+    (*it)->ppdisplay (os, indent + 4);
+  }
   os << endl;
   whitespaces (os, indent + 2);
   os << ')' << endl;
@@ -1251,21 +1429,21 @@ MccCacheExpr&
 MccCacheExpr::operator= (const MccCacheExpr &right)
 {
   if (this != &right)
-    {
-      delete fgref;
-      fgref = right.fgref->clone ();
-      delete filter;
-      filter = right.filter->clone ();
-    }
+  {
+    delete fgref;
+    fgref = right.fgref->clone ();
+    delete filter;
+    filter = right.filter->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccCacheExpr::Accept (MccVisitor *visitor)
+MccCacheExpr::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1294,38 +1472,48 @@ MccCacheExpr::ppdisplay (ostream &os, int indent) const
 }
 
 
-
 MccClashCstStat::MccClashCstStat (const MccClashCstStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc)),
     VDWDist (right.VDWDist),
     distFac (right.distFac),
-    as (right.as),
-    aso (right.aso)
-{ }
+    atomset (right.atomset)
+{
+  if (this->atomset)
+    this->atomset = this->atomset->clone ();
+}
 
+
+MccClashCstStat::~MccClashCstStat ()
+{
+  delete this->fg_struc;
+  if (this->atomset)
+    delete this->atomset;
+}
 
 
 MccClashCstStat&
 MccClashCstStat::operator= (const MccClashCstStat &right)
 {
   if (this != &right)
-    {
-      delete fg_struc;
-      fg_struc = new MccFragGenStruc (*right.fg_struc);
-      VDWDist = right.VDWDist;
-      distFac = right.distFac;
-      as = right.as;
-      aso = right.aso;
-    }
+  {
+    delete fg_struc;
+    fg_struc = new MccFragGenStruc (*right.fg_struc);
+    VDWDist = right.VDWDist;
+    distFac = right.distFac;
+    if (this->atomset)
+      delete this->atomset;
+    if ((this->atomset = right.atomset))
+      this->atomset = this->atomset->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccClashCstStat::Accept (MccVisitor *visitor)
+MccClashCstStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1340,25 +1528,8 @@ MccClashCstStat::display (ostream &os) const
   else
     os << " fixed_distance ";
   os << distFac;
-  switch (as)
-    {
-    case MCC_ALL_AS:
-      os << " all";
-      break;
-    case MCC_BASE_AS:
-      os << " base_only";
-      break;
-    case MCC_BACKBONE_AS:
-      os << " backbone_only";
-      break;
-    case MCC_PSE_AS:
-      os << " pse_only";
-      break;
-    default:
-      break;
-    }
-  if (aso == MCC_NO_HYDROGEN)
-    os << " no_hydrogen";
+  if (this->atomset)
+    this->atomset->display (os);
   os << ')';
 }
 
@@ -1374,177 +1545,10 @@ MccClashCstStat::ppdisplay (ostream &os, int indent) const
   else
     os << " fixed_distance ";
   os << distFac;
-  switch (as)
-    {
-    case MCC_ALL_AS:
-      os << " all";
-      break;
-    case MCC_BASE_AS:
-      os << " base_only";
-      break;
-    case MCC_BACKBONE_AS:
-      os << " backbone_only";
-      break;
-    case MCC_PSE_AS:
-      os << " pse_only";
-      break;
-    default:
-      break;
-    }
-  if (aso == MCC_NO_HYDROGEN)
-    os << " no_hydrogen";
+  if (this->atomset)
+    this->atomset->ppdisplay (os, indent);
   os << ')' << endl;
 }
-
-
-
-MccConnectStat::_ConnectStruc::_ConnectStruc (const MccConnectStat::_ConnectStruc &right)
-  : res1 (new MccResidueName (*right.res1)),
-    res2 (new MccResidueName (*right.res2)),
-    expr (new MccQueryExpr (*right.expr)),
-    ssize (right.ssize)
-{ }
-
-
-
-MccConnectStat::_ConnectStruc&
-MccConnectStat::_ConnectStruc::operator= (const MccConnectStat::_ConnectStruc &right)
-{
-  if (this != &right)
-    {
-      delete res1;
-      res1 = new MccResidueName (*right.res1);
-      delete res2;      
-      res2 = new MccResidueName (*right.res2);
-      delete expr;
-      expr = new MccQueryExpr (*right.expr);
-      ssize = right.ssize;
-    }
-  return *this;
-}
-
-
-
-void
-MccConnectStat::_ConnectStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccConnectStat::_ConnectStruc::display (ostream &os) const
-{
-  res1->display (os);
-  os << ' ';
-  res2->display (os);
-  os << ' ';
-  expr->display (os);
-  os << ' ';
-  ssize->display (os);
-}
-
-
-
-void
-MccConnectStat::_ConnectStruc::ppdisplay (ostream &os, int indent) const
-{
-  os << endl;
-  whitespaces (os, indent);
-  res1->ppdisplay (os, indent);
-  os << ' ';
-  res2->ppdisplay (os, indent);
-  os << ' ';
-  expr->ppdisplay (os, indent);
-  os << ' ';
-  ssize->ppdisplay (os, indent);
-}
-
-
-
-MccConnectStat::MccConnectStat (const MccConnectStat &right)
-  : strucs (new vector< MccConnectStat::_ConnectStruc* > ())
-{
-  vector< MccConnectStat::_ConnectStruc* >::const_iterator cit;
-
-  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back (new _ConnectStruc (**cit));
-}
-
-
-
-MccConnectStat::~MccConnectStat ()
-{
-  vector< _ConnectStruc* >::iterator it;
-
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    delete *it;
-
-  delete strucs;
-}
-
-
-
-MccConnectStat&
-MccConnectStat::operator= (const MccConnectStat &right)
-{
-  if (this != &right)
-    {
-      vector< MccConnectStat::_ConnectStruc* >::const_iterator cit;
-      vector< MccConnectStat::_ConnectStruc* >::iterator it;
-      
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new _ConnectStruc (**cit));
-    }
-  return *this;
-}
-
-
-
-void
-MccConnectStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccConnectStat::display (ostream &os) const
-{
-  vector< _ConnectStruc* >::iterator it;
-
-  os << "connect (";
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
-  os << ')';
-}
-
-
-
-void
-MccConnectStat::ppdisplay (ostream &os, int indent) const
-{
-  vector< _ConnectStruc* >::iterator it;
-
-  os << "connect" << endl;
-  whitespaces (os, indent + 2);
-  os << '(';
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    (*it)->ppdisplay (os, indent + 4);
-  os << endl;
-  whitespaces (os, indent + 2);
-  os << ')' << endl;
-}
-
 
 
 MccMultimerCstStat::_MultimerStruc::_MultimerStruc (const MccMultimerCstStat::_MultimerStruc &right)
@@ -1560,23 +1564,23 @@ MccMultimerCstStat::_MultimerStruc&
 MccMultimerCstStat::_MultimerStruc::operator= (const MccMultimerCstStat::_MultimerStruc &right)
 {
   if (this != &right)
-    {
-      delete res1;
-      res1 = new MccResidueName (*right.res1);
-      delete res2;
-      res2 = new MccResidueName (*right.res2);
-      dist = right.dist;
-      nb = right.nb;
-    }
+  {
+    delete res1;
+    res1 = new MccResidueName (*right.res1);
+    delete res2;
+    res2 = new MccResidueName (*right.res2);
+    dist = right.dist;
+    nb = right.nb;
+  }
   return *this;
 }
 
 
 
 void
-MccMultimerCstStat::_MultimerStruc::Accept (MccVisitor *visitor)
+MccMultimerCstStat::_MultimerStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1631,25 +1635,25 @@ MccMultimerCstStat&
 MccMultimerCstStat::operator= (const MccMultimerCstStat &right)
 {
   if (this != &right)
-    {
-      vector< MccMultimerCstStat::_MultimerStruc* >::const_iterator cit;
-      vector< MccMultimerCstStat::_MultimerStruc* >::iterator it;
+  {
+    vector< MccMultimerCstStat::_MultimerStruc* >::const_iterator cit;
+    vector< MccMultimerCstStat::_MultimerStruc* >::iterator it;
 
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new _MultimerStruc (**cit));
-    }
+    for (it = strucs->begin (); it != strucs->end (); it++)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+      strucs->push_back (new _MultimerStruc (**cit));
+  }
   return *this;
 }
 
 
 
 void
-MccMultimerCstStat::Accept (MccVisitor *visitor)
+MccMultimerCstStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1661,11 +1665,11 @@ MccMultimerCstStat::display (ostream &os) const
 
   os << "multimer (";
   for (it = strucs->begin (); it != strucs->end (); ++it)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -1698,19 +1702,19 @@ MccDisplayFGStat&
 MccDisplayFGStat::operator= (const MccDisplayFGStat &right)
 {
   if (this != &right)
-    {
-      delete fg_struc;
-      fg_struc = new MccFragGenStruc (*right.fg_struc);
-    }
+  {
+    delete fg_struc;
+    fg_struc = new MccFragGenStruc (*right.fg_struc);
+  }
   return *this;
 }
 
 
 
 void
-MccDisplayFGStat::Accept (MccVisitor *visitor)
+MccDisplayFGStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1753,29 +1757,29 @@ MccDistCstStat::_DistStruc&
 MccDistCstStat::_DistStruc::operator= (const MccDistCstStat::_DistStruc &right)
 {
   if (this != &right)
-    {
-      delete res1;
-      res1 = new MccResidueName (*right.res1);
-      delete[] at1;
-      at1 = new char[strlen (right.at1) + 1];
-      strcpy (at1, right.at1);
-      delete res2;
-      res2 = new MccResidueName (*right.res2);
-      delete[] at2;
-      at2 = new char[strlen (right.at2) + 1];
-      strcpy (at2, right.at2);
-      dist_min = right.dist_min;
-      dist_max = right.dist_max;
-    }
+  {
+    delete res1;
+    res1 = new MccResidueName (*right.res1);
+    delete[] at1;
+    at1 = new char[strlen (right.at1) + 1];
+    strcpy (at1, right.at1);
+    delete res2;
+    res2 = new MccResidueName (*right.res2);
+    delete[] at2;
+    at2 = new char[strlen (right.at2) + 1];
+    strcpy (at2, right.at2);
+    dist_min = right.dist_min;
+    dist_max = right.dist_max;
+  }
   return *this;
 }
 
 
 
 void
-MccDistCstStat::_DistStruc::Accept (MccVisitor *visitor)
+MccDistCstStat::_DistStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1830,25 +1834,25 @@ MccDistCstStat&
 MccDistCstStat::operator= (const MccDistCstStat &right)
 {
   if (this != &right)
-    {
-      vector< MccDistCstStat::_DistStruc* >::const_iterator cit;
-      vector< MccDistCstStat::_DistStruc* >::iterator it;
+  {
+    vector< MccDistCstStat::_DistStruc* >::const_iterator cit;
+    vector< MccDistCstStat::_DistStruc* >::iterator it;
 
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new _DistStruc (**cit));
-    }
+    for (it = strucs->begin (); it != strucs->end (); it++)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+      strucs->push_back (new _DistStruc (**cit));
+  }
   return *this;
 }
 
 
 
 void
-MccDistCstStat::Accept (MccVisitor *visitor)
+MccDistCstStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1860,11 +1864,11 @@ MccDistCstStat::display (ostream &os) const
 
   os << "distance (";
   for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -1886,26 +1890,19 @@ MccDistCstStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-
-const MccBacktrackSize&
-MccBacktrackSize::operator= (const MccBacktrackSize &right)
+void
+MccEnvStat::accept (MccVisitor *visitor)
 {
-  if (this != &right) 
-    {
-      maxBT = right.maxBT;
-      maxLR = right.maxLR;
-    }
-  return *this;
+  visitor->visit (this);
 }
-
 
 
 void
-MccBacktrackSize::display (ostream &os) const
+MccEnvStat::ppdisplay (ostream &os, int indent) const
 {
-  os << "backtrack_size (" << maxBT << " " << maxLR << ")";
+  display (os);
+  os << endl;
 }
-
 
 
 MccFilePdbOutput::MccFilePdbOutput (const MccFilePdbOutput &right)
@@ -1919,20 +1916,20 @@ MccFilePdbOutput&
 MccFilePdbOutput::operator= (const MccFilePdbOutput &right)
 {
   if (this != &right)
-    {
-      delete[] form;
-      form = strdup (right.form);
-      zipped = right.zipped;
-    }
+  {
+    delete[] form;
+    form = strdup (right.form);
+    zipped = right.zipped;
+  }
   return *this;
 }
 
 
 
 void
-MccFilePdbOutput::Accept (MccVisitor *visitor)
+MccFilePdbOutput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -1959,20 +1956,20 @@ MccFileBinaryOutput&
 MccFileBinaryOutput::operator= (const MccFileBinaryOutput &right)
 {
   if (this != &right)
-    {
-      delete[] form;
-      form = strdup (right.form);
-      zipped = right.zipped;
-    }
+  {
+    delete[] form;
+    form = strdup (right.form);
+    zipped = right.zipped;
+  }
   return *this;
 }
 
 
 
 void
-MccFileBinaryOutput::Accept (MccVisitor *visitor)
+MccFileBinaryOutput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2000,22 +1997,22 @@ MccSocketBinaryOutput&
 MccSocketBinaryOutput::operator= (const MccSocketBinaryOutput &right)
 {
   if (this != &right)
-    {
-      delete[] serverName;
-      serverName = strdup (right.serverName);
-      port = right.port;
-      delete[] modelName;
-      modelName = strdup (right.modelName);
-    }
+  {
+    delete[] serverName;
+    serverName = strdup (right.serverName);
+    port = right.port;
+    delete[] modelName;
+    modelName = strdup (right.modelName);
+  }
   return *this;
 }
 
 
 
 void
-MccSocketBinaryOutput::Accept (MccVisitor *visitor)
+MccSocketBinaryOutput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2041,22 +2038,22 @@ MccSocketPdbOutput&
 MccSocketPdbOutput::operator= (const MccSocketPdbOutput &right)
 {
   if (this != &right)
-    {
-      delete[] serverName;
-      serverName = strdup (right.serverName);
-      port = right.port;
-      delete[] modelName;
-      modelName = strdup (right.modelName);
-    }
+  {
+    delete[] serverName;
+    serverName = strdup (right.serverName);
+    port = right.port;
+    delete[] modelName;
+    modelName = strdup (right.modelName);
+  }
   return *this;
 }
 
 
 
 void
-MccSocketPdbOutput::Accept (MccVisitor *visitor)
+MccSocketPdbOutput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2081,20 +2078,20 @@ MccFileRnamlOutput&
 MccFileRnamlOutput::operator= (const MccFileRnamlOutput &right)
 {
   if (this != &right)
-    {
-      delete[] name;
-      name = strdup (right.name);
-      zipped = right.zipped;
-    }
+  {
+    delete[] name;
+    name = strdup (right.name);
+    zipped = right.zipped;
+  }
   return *this;
 }
 
 
 
 void
-MccFileRnamlOutput::Accept (MccVisitor *visitor)
+MccFileRnamlOutput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2120,19 +2117,19 @@ MccFilePdbInput&
 MccFilePdbInput::operator= (const MccFilePdbInput &right)
 {
   if (this != &right)
-    {
-      delete[] name;
-      name = strdup (right.name);
-    }
+  {
+    delete[] name;
+    name = strdup (right.name);
+  }
   return *this;
 }
 
 
 
 void
-MccFilePdbInput::Accept (MccVisitor *visitor)
+MccFilePdbInput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2155,19 +2152,19 @@ MccFileBinaryInput&
 MccFileBinaryInput::operator= (const MccFileBinaryInput &right)
 {
   if (this != &right)
-    {
-      delete[] name;
-      name = strdup (right.name);
-    }
+  {
+    delete[] name;
+    name = strdup (right.name);
+  }
   return *this;
 }
 
 
 
 void
-MccFileBinaryInput::Accept (MccVisitor *visitor)
+MccFileBinaryInput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2192,22 +2189,22 @@ MccSocketBinaryInput&
 MccSocketBinaryInput::operator= (const MccSocketBinaryInput &right)
 {
   if (this != &right)
-    {
-      delete[] serverName;
-      serverName = strdup (right.serverName);
-      port = right.port;
-      delete[] modelName;
-      modelName = strdup (right.modelName);
-    }
+  {
+    delete[] serverName;
+    serverName = strdup (right.serverName);
+    port = right.port;
+    delete[] modelName;
+    modelName = strdup (right.modelName);
+  }
   return *this;
 }
 
 
 
 void
-MccSocketBinaryInput::Accept (MccVisitor *visitor)
+MccSocketBinaryInput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2231,19 +2228,19 @@ MccFileRnamlInput&
 MccFileRnamlInput::operator= (const MccFileRnamlInput &right)
 {
   if (this != &right)
-    {
-      delete[] name;
-      name = strdup (right.name);
-    }
+  {
+    delete[] name;
+    name = strdup (right.name);
+  }
   return *this;
 }
 
 
 
 void
-MccFileRnamlInput::Accept (MccVisitor *visitor)
+MccFileRnamlInput::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2255,51 +2252,116 @@ MccFileRnamlInput::display (ostream &os) const
 }
 
 
+MccExploreStat::_ParamStruc&
+MccExploreStat::_ParamStruc::operator= (const MccExploreStat::_ParamStruc& right)
+{
+  if (this != &right)
+  {
+    delete[] this->name;
+    this->name = strdup (right.name);
+    this->value = right.value;
+  }
+  return *this;
+}
+
+
+void
+MccExploreStat::_ParamStruc::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccExploreStat::_ParamStruc::display (ostream &os) const
+{
+  os << this->name << ' ' << this->value;
+}
+
+
+void
+MccExploreStat::_ParamStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << this->name << endl;
+  whitespaces (os, indent);
+  os << this->value << endl;
+}
+
+
 
 MccExploreStat::MccExploreStat (const MccExploreStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc)),
+    algo (strdup (right.algo)),
     filter (0),
+    timelimit (right.timelimit),
     expOutput (0)
 {
   if (right.filter)
-    filter = right.filter->clone ();
+    this->filter = right.filter->clone ();
   if (right.expOutput)
-    expOutput = right.expOutput->clone ();
+    this->expOutput = right.expOutput->clone ();
 }
 
+
+MccExploreStat::~MccExploreStat ()
+{
+  delete this->fg_struc;
+  delete[] this->algo;
+  vector< _ParamStruc* >::iterator pit;
+  for (pit = this->params->begin (); this->params->end () != pit; ++pit)
+    delete *pit;
+  delete this->params;
+  if (this->filter)
+    delete this->filter;
+  if (this->expOutput)
+    delete this->expOutput;
+}
 
 
 MccExploreStat&
 MccExploreStat::operator= (const MccExploreStat &right)
 {
   if (this != &right)
+  {
+    delete fg_struc;
+    fg_struc = right.fg_struc->clone ();
+    delete[] this->algo;
+    algo = strdup (right.algo);
+    
+    vector< _ParamStruc* >::iterator pit;
+    for (pit = this->params->begin (); this->params->end () != pit; ++pit)
+      delete *pit;
+    this->params->clear ();
+    for (pit = right.params->begin (); right.params->end () != pit; ++pit)
+      this->params->push_back ((*pit)->clone ());
+
+    delete *pit;
+    if (filter)
     {
-      delete fg_struc;
-      fg_struc = right.fg_struc->clone ();
-      if (filter)
-	{
-	  delete filter;
-	  filter = 0;
-	}
-      if (right.filter)
-	filter = right.filter->clone ();
-      if (expOutput)
-	{
-	  delete expOutput;
-	  expOutput = 0;
-	}
-      if (right.expOutput)
-	expOutput = right.expOutput->clone ();
+      delete filter;
+      filter = 0;
     }
+    if (right.filter)
+      filter = right.filter->clone ();
+    if (expOutput)
+    {
+      delete expOutput;
+      expOutput = 0;
+    }
+    if (right.expOutput)
+      expOutput = right.expOutput->clone ();
+
+    timelimit = right.timelimit;
+  }
   return *this;
 }
 
 
 
 void
-MccExploreStat::Accept (MccVisitor *visitor)
+MccExploreStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2308,17 +2370,26 @@ void
 MccExploreStat::display (ostream &os) const
 {
   os << "explore (";
-  fg_struc->display (os);
-  if (filter)
-    {
-      os << ' ';
-      filter->display (os);
-    }
-  if (expOutput)
-    {
-      os << ' ';
-      expOutput->display (os);
-    }
+  this->fg_struc->display (os);
+  os << ' ' << this->algo;
+  vector< _ParamStruc* >::iterator pit;
+  for (pit = this->params->begin (); this->params->end () != pit; ++pit)
+  {
+    os << ' ';
+    (*pit)->display (os);
+  }
+  if (this->filter)
+  {
+    os << ' ';
+    this->filter->display (os);
+  }
+  if (timelimit > 0)
+    os << " time_limit (" << timelimit << " seconds)";
+  if (this->expOutput)
+  {
+    os << ' ';
+    this->expOutput->display (os);
+  }
   os << ')';
 }
 
@@ -2331,273 +2402,96 @@ MccExploreStat::ppdisplay (ostream &os, int indent) const
   whitespaces (os, indent);
   os << '(' << endl;
   whitespaces (os, indent + 2);
-  fg_struc->ppdisplay (os, indent + 2);
-  if (filter)
-    {
-      os << endl;
-      whitespaces (os, indent + 2);
-      filter->ppdisplay (os, indent + 2);
-    }
-  if (expOutput)
-    {
-      os << endl;
-      whitespaces (os, indent + 2);
-      expOutput->ppdisplay (os, indent + 2);
-    }
+  this->fg_struc->ppdisplay (os, indent + 2);
   os << endl;
-  whitespaces (os, indent);
-  os << ')' << endl;
-}
-
-
-
-MccExploreLVStat::MccExploreLVStat (MccFragGenStruc *fg,
-				    MccModelFilterStrategy *f,
-				    MccOutputMode *ef,
-				    vector< int > *tl,
-				    MccBacktrackSize *bs)
-  : MccPStruct (),
-    fg_struc (fg),
-    filter (f),
-    expOutput (ef),
-    vtlimits (tl),
-    tlimit (0),
-    btsize (bs)
-{
-  if (vtlimits)
-    {
-      vector< int >::const_iterator it;
-      
-      tlimit = 0;
-      for (it = vtlimits->begin (); it != vtlimits->end (); it++)
-	tlimit += *it;
-    }
-}
-
-
-
-MccExploreLVStat::MccExploreLVStat (const MccExploreLVStat &right)
-  : MccPStruct (right),
-    fg_struc (right.fg_struc->clone ()),
-    filter (0),
-    expOutput (0),
-    vtlimits (0),
-    tlimit (0),
-    btsize (0)
-{
-  if (right.filter)
-    filter = right.filter->clone ();
-  if (right.expOutput)
-    expOutput = right.expOutput->clone ();
-  if (right.btsize)
-    btsize = right.btsize->clone ();
-  if (right.vtlimits)
-    {
-      vtlimits = new vector< int > (*right.vtlimits);
-      tlimit = right.tlimit;
-    }
-}
-
-
-
-MccExploreLVStat&
-MccExploreLVStat::operator= (const MccExploreLVStat &right)
-{
-  if (this != &right)
-    {
-      MccPStruct::operator= (right);
-      delete fg_struc;
-      fg_struc = right.fg_struc->clone ();
-      if (filter)
-	{
-	  delete filter;
-	  filter = 0;
-	}
-      if (right.filter)
-	filter = right.filter->clone ();
-      if (expOutput)
-	{
-	  delete expOutput;
-	  expOutput = 0;
-	}
-      if (right.expOutput)
-	expOutput = right.expOutput->clone ();
-      if (vtlimits)
-        {
-	  delete vtlimits;
-	  vtlimits = 0;
-	  tlimit = 0;
-	}
-      if (right.vtlimits)
-        {
-	  vtlimits = new vector< int  > (*right.vtlimits);
-	  tlimit = right.tlimit;
-	}
-      if (btsize)
-        {
-	  delete btsize;
-	  btsize = 0;
-	}
-      if (right.btsize)
-	btsize = right.btsize->clone ();
-    }
-  return *this;
-}
-
-
-
-void
-MccExploreLVStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccExploreLVStat::display (ostream &os) const
-{
-  os << "exploreLV (";
-  fg_struc->display (os);
-  if (filter)
-    {
-      os << ' ';
-      filter->display (os);
-    }
-  if (expOutput)
-    {
-      os << ' ';
-      expOutput->display (os);
-    }
-  if (vtlimits)
-    os << " time_limit (" << tlimit << " sec)";
-  if (btsize)
-    {
-      os << ' ';
-      btsize->display (os);
-    }
-  os << ')';
-}
-
-
-
-
-void
-MccExploreLVStat::ppdisplay (ostream &os, int indent) const
-{
-  os << "exploreLV" << endl;
-  whitespaces (os, indent);
-  os << '(' << endl;
   whitespaces (os, indent + 2);
-  fg_struc->ppdisplay (os, indent + 2);
-  if (filter)
-    {
-      os << endl;
-      whitespaces (os, indent + 2);
-      filter->ppdisplay (os, indent + 2);
-    }
-  if (expOutput)
-    {
-      os << endl;
-      whitespaces (os, indent + 2);
-      expOutput->ppdisplay (os, indent + 2);
-    }
-  if (vtlimits)
-    {
-      os << endl;
-      whitespaces (os, indent + 2);
-      os << "time_limit (" << tlimit << " sec)";
-    }
-  if (btsize)
-    {
-      os << endl;
-      whitespaces (os, indent + 2);
-      btsize->ppdisplay (os, indent + 2);
-    }
+  os << this->algo;
+  vector< _ParamStruc* >::iterator pit;
+  for (pit = this->params->begin (); this->params->end () != pit; ++pit)
+  {
+    os << endl;
+    whitespaces (os, indent + 2);
+    (*pit)->ppdisplay (os, indent + 2);
+  }
+  if (this->filter)
+  {
+    os << endl;
+    whitespaces (os, indent + 2);
+    this->filter->ppdisplay (os, indent + 2);
+  }
+  if (timelimit > 0)
+  {
+    os << endl;
+    whitespaces (os, indent + 2);
+    os << " time_limit (" << timelimit << " seconds)";
+  }
+  if (this->expOutput)
+  {
+    os << endl;
+    whitespaces (os, indent + 2);
+    this->expOutput->ppdisplay (os, indent + 2);
+  }
   os << endl;
   whitespaces (os, indent);
   os << ')' << endl;
 }
 
 
-
-MccLibraryExpr::_LibStruc::_LibStruc (const MccLibraryExpr::_LibStruc &right)
-  : res_vec (0),
-    from (right.from),
-    to (right.to)
+MccLibraryExpr::_StripStruc::_StripStruc (const MccLibraryExpr::_StripStruc &right)
+  : res_vec (0)
 {
   if (right.res_vec)
-    {
-      vector< MccResidueName* >::const_iterator cit;
-      
-      res_vec = new vector< MccResidueName* > ();
-      for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
-	res_vec->push_back ((*cit)->clone ());
-    }
+  {
+    vector< MccResidueName* >::const_iterator cit;
+    res_vec = new vector< MccResidueName* > ();
+    for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
+      res_vec->push_back ((*cit)->clone ());
+  }
 }
       
 
-
-MccLibraryExpr::_LibStruc::~_LibStruc ()
+MccLibraryExpr::_StripStruc::~_StripStruc ()
 {
-  if (res_vec)
-    {
-      vector< MccResidueName* >::iterator it;
-      
-      for (it = res_vec->begin (); it != res_vec->end (); ++it)
-	delete *it;
-      delete res_vec;
-    }
+  if (this->res_vec)
+  {
+    vector< MccResidueName* >::iterator it;
+    for (it = this->res_vec->begin (); it != this->res_vec->end (); ++it)
+      delete *it;
+    delete this->res_vec;
+  }
 }
-
-
-
-MccLibraryExpr::_LibStruc&
-MccLibraryExpr::_LibStruc::operator= (const MccLibraryExpr::_LibStruc &right)
-{
-  if (this != &right)
-    {
-      if (res_vec)
-	{
-	  vector< MccResidueName* >::iterator it;
-
-	  for (it = res_vec->begin (); it != res_vec->end (); it++)
-	    delete *it;
-	  delete res_vec;
-	  res_vec = 0;
-	}
-      if (right.res_vec)
-	{
-	  vector< MccResidueName* >::const_iterator cit;
-	  
-	  res_vec = new vector< MccResidueName* > ();
-	  for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
-	    res_vec->push_back ((*cit)->clone ());
-	}
-      from = right.from;
-      to = right.to;
-    }
-  return *this;
-}
-      
 
 
 MccLibraryExpr::_StripStruc&
 MccLibraryExpr::_StripStruc::operator= (const MccLibraryExpr::_StripStruc &right)
 {
   if (this != &right)
-    MccLibraryExpr::_LibStruc::operator= (right);
+  {
+    if (this->res_vec)
+    {
+      vector< MccResidueName* >::iterator it;
+      for (it = this->res_vec->begin (); it != this->res_vec->end (); it++)
+	delete *it;
+      delete this->res_vec;
+      this->res_vec = 0;
+    }
+    if (right.res_vec)
+    {
+      vector< MccResidueName* >::const_iterator cit;
+      this->res_vec = new vector< MccResidueName* > ();
+      for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
+	this->res_vec->push_back ((*cit)->clone ());
+    }
+  }
   return *this;
 }
 
 
-
 void
-MccLibraryExpr::_StripStruc::Accept (MccVisitor *visitor)
+MccLibraryExpr::_StripStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
-
 
 
 void
@@ -2607,14 +2501,13 @@ MccLibraryExpr::_StripStruc::display (ostream &os) const
 
   os << "strip (";
   for (it = res_vec->begin (); it != res_vec->end (); it++)
-    {
-      if (it != res_vec->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != res_vec->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
-
 
 
 void
@@ -2626,32 +2519,53 @@ MccLibraryExpr::_StripStruc::ppdisplay (ostream &os, int indent) const
   whitespaces (os, indent);
   os << "strip (";
   for (it = res_vec->begin (); it != res_vec->end (); it++)
-    {
-      if (it != res_vec->begin ())
-	os << ' ';
-      (*it)->ppdisplay (os, indent);
-    }
+  {
+    if (it != res_vec->begin ())
+      os << ' ';
+    (*it)->ppdisplay (os, indent);
+  }
   os << ')';
 }
 
+
+MccLibraryExpr::_ChangeIdStruc::~_ChangeIdStruc ()
+{
+  delete old_id;
+  delete new_id;
+}
 
 
 MccLibraryExpr::_ChangeIdStruc&
 MccLibraryExpr::_ChangeIdStruc::operator= (const MccLibraryExpr::_ChangeIdStruc &right)
 {
   if (this != &right)
+  {
     MccLibraryExpr::_LibStruc::operator= (right);
+    delete this->old_id;
+    this->old_id = right.old_id->clone ();
+    delete this->new_id;
+    this->new_id = right.new_id->clone ();
+  }
   return *this;
 }
 
 
-
 void
-MccLibraryExpr::_ChangeIdStruc::Accept (MccVisitor *visitor)
+MccLibraryExpr::_ChangeIdStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
+
+void
+MccLibraryExpr::_ChangeIdStruc::display (ostream &os) const
+{
+  os << "change_id (";
+  this->old_id->display (os);
+  os << " , ";
+  this->new_id->display (os);
+  os << ")";
+}
 
 
 void
@@ -2659,15 +2573,54 @@ MccLibraryExpr::_ChangeIdStruc::ppdisplay (ostream &os, int indent) const
 {
   os << endl;
   whitespaces (os, indent);
-  os << "change_id (\"" << from << "\" , \"" << to << "\")";
+  os << "change_id (";
+  this->old_id->display (os);
+  os << " , ";
+  this->new_id->display (os);
+  os << ")";
 }
 
+
+MccLibraryExpr::_ChangeChainStruc&
+MccLibraryExpr::_ChangeChainStruc::operator= (const MccLibraryExpr::_ChangeChainStruc &right)
+{
+  if (this != &right)
+  {
+    MccLibraryExpr::_LibStruc::operator= (right);
+    this->old_chain = right.old_chain;
+    this->new_chain = right.new_chain;
+  }
+  return *this;
+}
+
+
+void
+MccLibraryExpr::_ChangeChainStruc::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccLibraryExpr::_ChangeChainStruc::display (ostream &os) const
+{
+  os << "change_id (" << this->old_chain << " , " << this->new_chain << ')';
+}
+
+
+void
+MccLibraryExpr::_ChangeChainStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  os << "change_id (" << this->old_chain << " , " << this->new_chain << ')';
+}
 
 
 MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
   : inputMode (right.inputMode->clone ()),
-    sorter (right.sorter ? right.sorter->clone () : NULL),
-    strucs (new vector< MccLibraryExpr::_LibStruc* > ())
+    strucs (new vector< MccLibraryExpr::_LibStruc* > ()),
+    asis (right.asis)
 {
   vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
   
@@ -2682,8 +2635,6 @@ MccLibraryExpr::~MccLibraryExpr ()
   vector< _LibStruc* >::iterator it;
 
   delete inputMode;
-  if (sorter)
-    delete sorter;
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
   delete strucs;
@@ -2695,34 +2646,28 @@ MccLibraryExpr&
 MccLibraryExpr::operator= (const MccLibraryExpr &right)
 {
   if (this != &right)
-    {
-      vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
-      vector< MccLibraryExpr::_LibStruc* >::iterator it;
+  {
+    vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
+    vector< MccLibraryExpr::_LibStruc* >::iterator it;
 
-      delete inputMode;
-      inputMode = right.inputMode->clone ();
-      if (sorter)
-	{
-	  delete sorter;
-	  sorter = NULL;
-	}
-      if (right.sorter)
-	sorter = right.sorter->clone ();
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back ((*cit)->clone ());
-    }
+    delete inputMode;
+    inputMode = right.inputMode->clone ();
+    for (it = strucs->begin (); it != strucs->end (); it++)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+      strucs->push_back ((*cit)->clone ());
+    asis = right.asis;
+  }
   return *this;
 }
 
 
 
 void
-MccLibraryExpr::Accept (MccVisitor *visitor)
+MccLibraryExpr::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -2734,13 +2679,13 @@ MccLibraryExpr::display (ostream &os) const
 
   os << "library (";
   inputMode->display (os);
-  if (sorter)
-    sorter->display (os);
   for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      os << ' ';
-      (*it)->display (os);
-    }
+  {
+    os << ' ';
+    (*it)->display (os);
+  }
+  if (this->asis)
+    os << " as_is";
   os << ')';
 }
 
@@ -2756,361 +2701,22 @@ MccLibraryExpr::ppdisplay (ostream &os, int indent) const
   os << '(' << endl;
   whitespaces (os, indent + 4);
   inputMode->ppdisplay (os, indent);
-  if (sorter)
-    sorter->ppdisplay (os, indent);
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
+  if (this->asis)
+  {
+    os << endl;
+    whitespaces (os, indent + 4);
+    os << "as_is";
+  }
   os << endl;
   whitespaces (os, indent + 2);
   os << ')' << endl;
 }
 
 
-MccMosesExpr::MccMosesExpr (char *r, int cid, MccMosesQueries* q, 
-			    int epc, int win, char* dir)
-  : range (r),
-    ctid (cid),
-    queries (q),
-    mfold_epc (epc),
-    mfold_win (win),
-    mfold_dir (dir)
-{
-}
-
-
-MccMosesExpr::MccMosesExpr (const MccMosesExpr &right)
-  : ctid (right.ctid),
-    queries (right.queries->clone ()),
-    mfold_epc (right.mfold_epc),
-    mfold_win (right.mfold_win)
-{
-  range = right.range ? strdup (right.range) : NULL;
-  mfold_dir = right.mfold_dir ? strdup (right.mfold_dir) : NULL;
-}
-
-
-MccMosesExpr::~MccMosesExpr ()
-{
-  if (range) delete range; 
-  delete queries; 
-  if (mfold_dir) delete mfold_dir;
-}
-
-
-MccMosesExpr&
-MccMosesExpr::operator= (const MccMosesExpr &right)
-{
-  if (this != &right)
-    {
-      delete range;
-      range = right.range ? strdup (right.range) : NULL;
-      ctid = right.ctid;
-      delete queries;
-      queries = right.queries->clone ();
-      mfold_epc = right.mfold_epc;
-      mfold_win = right.mfold_win;
-      delete mfold_dir;
-      mfold_dir = right.mfold_dir ? strdup (right.mfold_dir) : NULL;
-    }
-  return *this;
-}
-
-
-void
-MccMosesExpr::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-void
-MccMosesExpr::display (ostream &os) const
-{
-  os << "moses (";
-  if (range)
-    os << ' ' << range;
-  if (ctid >= 0)
-    os << " sec_struct (" << ctid << ')';
-  os << ' ';
-  queries->display (os);
-  if (mfold_epc >= 0)
-    os << " mfold_epc (" << mfold_epc << ')';
-  if (mfold_win >= 0)
-    os << " mfold_win (" << mfold_win << ')';
-  if (mfold_dir)
-    os << " mfold_ouput (\"" << mfold_dir << "\")";
-  os << ')';
-}
-
-
-void
-MccMosesExpr::ppdisplay (ostream &os, int indent) const
-{
-  os << "moses" << endl;
-  whitespaces (os, indent);
-  os << '(' << endl;
-  if (range)
-    {
-      whitespaces (os, indent + 2);
-      os << range << endl;
-    }
-  if (ctid >= 0)
-    {
-      whitespaces (os, indent + 2);
-      os << "sec_struct (" << ctid << ')' <<  endl;
-    }
-  queries->ppdisplay (os, indent + 2);
-  if (mfold_epc >= 0)
-    {
-      whitespaces (os, indent + 2);
-      os << "mfold_epc (" << mfold_epc << ')' << endl;
-    }
-  if (mfold_win >= 0)
-    {
-      whitespaces (os, indent + 2);
-      os << "mfold_win (" << mfold_win << ')' << endl;
-    }
-  if (mfold_dir)
-    {
-      whitespaces (os, indent + 2);
-      os << "mfold_ouput (\"" << mfold_dir << "\")" << endl;
-    }
-  whitespaces (os, indent);
-  os << ')' << endl;
-}
-
-
-MccMosesQueries::MccMosesQueries (const MccMosesQueries &right)
-{
-  stem_cg_au_res = right.stem_cg_au_res ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
-    (right.stem_cg_au_res->first->clone (),
-     right.stem_cg_au_res->second->clone ()) 
-    : NULL;
-  stem_gu_res = right.stem_gu_res ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
-    (right.stem_gu_res->first->clone (),
-     right.stem_gu_res->second->clone ()) 
-    : NULL;
-  loop_res = right.loop_res ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
-    (right.loop_res->first->clone (),
-     right.loop_res->second->clone ()) 
-    : NULL;
-  stem_connect = right.stem_connect ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
-    (right.stem_connect->first->clone (),
-     right.stem_connect->second->clone ()) 
-    : NULL;
-  loop_connect = right.loop_connect ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
-    (right.loop_connect->first->clone (),
-     right.loop_connect->second->clone ()) 
-    : NULL;
-  stem_cg_au_pair = right.stem_cg_au_pair ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
-    (right.stem_cg_au_pair->first->clone (),
-     right.stem_cg_au_pair->second->clone ()) 
-    : NULL;
-  stem_gu_pair = right.stem_gu_pair ? 
-    new pair< MccQueryExpr*, MccSamplingSize* > 
-    (right.stem_gu_pair->first->clone (),
-     right.stem_gu_pair->second->clone ()) 
-    : NULL;     
-}
-
-
-MccMosesQueries::~MccMosesQueries ()
-{
-  if (stem_cg_au_res) delete stem_cg_au_res; 
-  if (stem_gu_res) delete stem_gu_res; 
-  if (loop_res) delete loop_res; 
-  if (stem_connect) delete stem_connect; 
-  if (loop_connect) delete loop_connect; 
-  if (stem_cg_au_pair) delete stem_cg_au_pair; 
-  if (stem_gu_pair) delete stem_cg_au_pair; 
-}
-
-
-MccMosesQueries&
-MccMosesQueries::operator= (const MccMosesQueries &right)
-{
-  if (this != &right)
-    {
-      if (stem_cg_au_res) delete stem_cg_au_res; 
-      if (stem_gu_res) delete stem_gu_res; 
-      if (loop_res) delete loop_res; 
-      if (stem_connect) delete stem_connect; 
-      if (loop_connect) delete loop_connect; 
-      if (stem_cg_au_pair) delete stem_cg_au_pair; 
-      if (stem_gu_pair) delete stem_gu_pair; 
-      stem_cg_au_res = right.stem_cg_au_res ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
-	(right.stem_cg_au_res->first->clone (),
-	 right.stem_cg_au_res->second->clone ()) 
-	: NULL;
-      stem_gu_res = right.stem_gu_res ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
-	(right.stem_gu_res->first->clone (),
-	 right.stem_gu_res->second->clone ()) 
-	: NULL;
-      loop_res = right.loop_res ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
-	(right.loop_res->first->clone (),
-	 right.loop_res->second->clone ()) 
-	: NULL;
-      stem_connect = right.stem_connect ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
-	(right.stem_connect->first->clone (),
-	 right.stem_connect->second->clone ()) 
-	: NULL;
-      loop_connect = right.loop_connect ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
-	(right.loop_connect->first->clone (),
-	 right.loop_connect->second->clone ()) 
-	: NULL;
-      stem_cg_au_pair = right.stem_cg_au_pair ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
-	(right.stem_cg_au_pair->first->clone (),
-	 right.stem_cg_au_pair->second->clone ()) 
-	: NULL;
-      stem_gu_pair = right.stem_gu_pair ? 
-	new pair< MccQueryExpr*, MccSamplingSize* > 
-	(right.stem_gu_pair->first->clone (),
-	 right.stem_gu_pair->second->clone ()) 
-	: NULL;     
-    }
-  return *this;
-}
-
-
-void
-MccMosesQueries::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-void
-MccMosesQueries::display (ostream &os) const
-{
-  if (stem_cg_au_res)
-    {
-      os << " stem_cg_au_residue ";
-      stem_cg_au_res->first->display (os);
-      stem_cg_au_res->second->display (os);
-    }
-  if (stem_gu_res)
-    {
-      os << " stem_gu_residue ";
-      stem_gu_res->first->display (os);
-      stem_gu_res->second->display (os);
-    }
- if (loop_res)
-    {
-      os << " loop_residue ";
-      loop_res->first->display (os);
-      loop_res->second->display (os);
-    }
- if (stem_connect)
-    {
-      os << " stem_connect ";
-      stem_connect->first->display (os);
-      stem_connect->second->display (os);
-    }
- if (loop_connect)
-    {
-      os << " loop_connect ";
-      loop_connect->first->display (os);
-      loop_connect->second->display (os);
-    }
- if (stem_cg_au_pair)
-    {
-      os << " stem_cg_au_pair ";
-      stem_cg_au_pair->first->display (os);
-      stem_cg_au_pair->second->display (os);
-    }
- if (stem_cg_au_pair)
-    {
-      os << " stem_gu_pair ";
-      stem_gu_pair->first->display (os);
-      stem_gu_pair->second->display (os);
-    }
-}
-
-
-void
-MccMosesQueries::ppdisplay (ostream &os, int indent) const
-{
-  if (stem_cg_au_res)
-    {
-      whitespaces (os, indent);
-      os << "stem_cg_au_residue ";
-      stem_cg_au_res->first->ppdisplay (os, indent);
-      os << ' ';
-      stem_cg_au_res->second->ppdisplay (os, indent);
-      os << endl;
-    }
-  if (stem_gu_res)
-    {
-      whitespaces (os, indent);
-      os << "stem_gu_residue ";
-      stem_gu_res->first->ppdisplay (os, indent);
-      os << ' ';
-      stem_gu_res->second->ppdisplay (os, indent);
-      os << endl;
-    }
-  if (loop_res)
-    {
-      whitespaces (os, indent);
-      os << "loop_residue ";
-      loop_res->first->ppdisplay (os, indent);
-      os << ' ';
-      loop_res->second->ppdisplay (os, indent);
-      os << endl;
-    }
-  if (stem_connect)
-    {
-      whitespaces (os, indent);
-      os << "stem_connect ";
-      stem_connect->first->ppdisplay (os, indent);
-      os << ' ';
-      stem_connect->second->ppdisplay (os, indent);
-      os << endl;
-    }
-  if (loop_connect)
-    {
-      whitespaces (os, indent);
-      os << "loop_connect ";
-      loop_connect->first->ppdisplay (os, indent);
-      os << ' ';
-      loop_connect->second->ppdisplay (os, indent);
-      os << endl;
-    }
-  if (stem_cg_au_pair)
-    {
-      whitespaces (os, indent);
-      os << "stem_cg_au_pair ";
-      stem_cg_au_pair->first->ppdisplay (os, indent);
-      os << ' ';
-      stem_cg_au_pair->second->ppdisplay (os, indent);
-      os << endl;
-    }
-  if (stem_cg_au_pair)
-    {
-      whitespaces (os, indent);
-      os << "stem_gu_pair ";
-      stem_gu_pair->first->ppdisplay (os, indent);
-      os << ' ';
-      stem_gu_pair->second->ppdisplay (os, indent);
-      os << endl;
-    }
-}
-
-
 MccNewTagStat::MccNewTagStat (const MccNewTagStat &right)
-  : resq_opt (right.resq_opt),
-    exprs (new vector< MccQueryExpr* > ())
+  : exprs (new vector< MccQueryExpr* > ())
 {
   vector< MccQueryExpr* >::const_iterator cit;
   
@@ -3137,29 +2743,28 @@ MccNewTagStat&
 MccNewTagStat::operator= (const MccNewTagStat &right)
 {
   if (this != &right)
-    {
-      vector< MccQueryExpr* >::const_iterator cit;
-      vector< MccQueryExpr* >::iterator it;
+  {
+    vector< MccQueryExpr* >::const_iterator cit;
+    vector< MccQueryExpr* >::iterator it;
   
-      resq_opt = right.resq_opt;
-      delete[] id;
-      id = new char[strlen (right.id) + 1];
-      strcpy (id, right.id);
-      for (it = exprs->begin (); it != exprs->end (); it++)
-	delete *it;
-      exprs->clear ();
-      for (cit = right.exprs->begin (); cit != right.exprs->end (); cit++)
-	exprs->push_back (new MccQueryExpr (**cit));
-    }
+    delete[] id;
+    id = new char[strlen (right.id) + 1];
+    strcpy (id, right.id);
+    for (it = exprs->begin (); it != exprs->end (); it++)
+      delete *it;
+    exprs->clear ();
+    for (cit = right.exprs->begin (); cit != right.exprs->end (); cit++)
+      exprs->push_back (new MccQueryExpr (**cit));
+  }
   return *this;
 }
 
 
 
 void
-MccNewTagStat::Accept (MccVisitor *visitor)
+MccNewTagStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3169,17 +2774,12 @@ MccNewTagStat::display (ostream &os) const
 {
   vector< MccQueryExpr* >::iterator it;
 
-  os << "new_tag (";
-  if (resq_opt)
-    os << "res";
-  else
-    os << "tfo";
-  os << " \"" << id << "\"";
+  os << "new_tag (\"" << id << "\"";
   for (it = exprs->begin (); it != exprs->end (); it++)
-    {
-      os << ' ';
-      (*it)->display (os);
-    }
+  {
+    os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -3194,17 +2794,13 @@ MccNewTagStat::ppdisplay (ostream &os, int indent) const
   whitespaces (os, indent + 2);
   os << '(' << endl;
   whitespaces (os, indent + 4);
-  if (resq_opt)
-    os << "res";
-  else
-    os << "tfo";
-  os << " \"" << id << "\"";
+  os << "\"" << id << "\"";
   for (it = exprs->begin (); it != exprs->end (); it++)
-    {
-      os << endl;
-      whitespaces (os, indent + 4);
-      (*it)->ppdisplay (os, indent + 4);
-    }
+  {
+    os << endl;
+    whitespaces (os, indent + 4);
+    (*it)->ppdisplay (os, indent + 4);
+  }
   os << endl;
   whitespaces (os, indent + 2);
   os << ')' << endl;
@@ -3224,20 +2820,20 @@ MccNoteStat&
 MccNoteStat::operator= (const MccNoteStat &right)
 {
   if (this != &right)
-    {
-      delete[] str;
-      str = new char[strlen (right.str) + 1];
-      strcpy (str, right.str);
-    }
+  {
+    delete[] str;
+    str = new char[strlen (right.str) + 1];
+    strcpy (str, right.str);
+  }
   return *this;
 }
 
 
 
 void
-MccNoteStat::Accept (MccVisitor *visitor)
+MccNoteStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3252,9 +2848,9 @@ MccNoteStat::ppdisplay (ostream &os, int indent) const
 
 
 void
-MccNotesStat::Accept (MccVisitor *visitor)
+MccNotesStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3267,48 +2863,67 @@ MccNotesStat::ppdisplay (ostream &os, int indent) const
 }
 
 
+MccRelationsStat::_RelationsStruc::_RelationsStruc (const MccRelationsStat::_RelationsStruc &right)
+  : resrefs (new vector< char* > (right.resrefs->size ())),
+    expr (right.expr->clone ()),
+    ssize (right.ssize->clone ())
+{
+  vector< char* >::const_iterator it;
+  for (it = right.resrefs->begin (); right.resrefs->end () != it; ++it)
+    this->resrefs->push_back (strdup (*it));
+}
 
-MccPairStat::_PairStruc::_PairStruc (const MccPairStat::_PairStruc &right)
-  : res1 (new MccResidueName (*right.res1)),
-    res2 (new MccResidueName (*right.res2)),
-    expr (new MccQueryExpr (*right.expr)),
-    ssize (right.ssize)
-{ }
+
+MccRelationsStat::_RelationsStruc::~_RelationsStruc ()
+{
+  vector< char* >::iterator it;
+  for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
+    delete[] *it;
+  delete this->resrefs;
+  delete this->expr;
+  delete this->ssize;
+}
 
 
-
-MccPairStat::_PairStruc&
-MccPairStat::_PairStruc::operator= (const MccPairStat::_PairStruc &right)
+MccRelationsStat::_RelationsStruc&
+MccRelationsStat::_RelationsStruc::operator= (const MccRelationsStat::_RelationsStruc &right)
 {
   if (this != &right)
-    {
-      delete res1;
-      res1 = new MccResidueName (*right.res1);
-      delete res2;
-      res2 = new MccResidueName (*right.res2);
-      delete expr;
-      expr = new MccQueryExpr (*right.expr);
-      ssize = right.ssize;
-    }
+  {
+    vector< char* >::iterator it;
+    vector< char* >::const_iterator cit;
+    for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
+      delete[] *it;
+    delete this->resrefs;
+    this->resrefs = new vector< char* > (right.resrefs->size ());
+    for (cit = right.resrefs->begin (); right.resrefs->end () != cit; ++cit)
+      this->resrefs->push_back (strdup (*it));
+    delete expr;
+    expr = right.expr->clone ();
+    delete ssize;
+    ssize = right.ssize->clone ();
+  }
   return *this;
 }
 
 
-
 void
-MccPairStat::_PairStruc::Accept (MccVisitor *visitor)
+MccRelationsStat::_RelationsStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
-
 void
-MccPairStat::_PairStruc::display (ostream &os) const
+MccRelationsStat::_RelationsStruc::display (ostream &os) const
 {
-  res1->display (os);
-  os << ' ';
-  res2->display (os);
+  vector< char* >::const_iterator it;
+  for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
+  {
+    if (this->resrefs->begin () != it)
+      os << ',';
+    os << *it;
+  }
   os << ' ';
   expr->display (os);
   os << ' ';
@@ -3316,15 +2931,18 @@ MccPairStat::_PairStruc::display (ostream &os) const
 }
 
 
-
 void
-MccPairStat::_PairStruc::ppdisplay (ostream &os, int indent) const
+MccRelationsStat::_RelationsStruc::ppdisplay (ostream &os, int indent) const
 {
   os << endl;
   whitespaces (os, indent);
-  res1->ppdisplay (os, indent);
-  os << ' ';
-  res2->ppdisplay (os, indent);
+  vector< char* >::const_iterator it;
+  for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
+  {
+    if (this->resrefs->begin () != it)
+      os << ',';
+    os << *it;
+  }
   os << ' ';
   expr->ppdisplay (os, indent);
   os << ' ';
@@ -3332,77 +2950,72 @@ MccPairStat::_PairStruc::ppdisplay (ostream &os, int indent) const
 }
 
 
-
-MccPairStat::MccPairStat (const MccPairStat &right)
-  : strucs (new vector< MccPairStat::_PairStruc* > ())
+MccRelationsStat::MccRelationsStat (const MccRelationsStat &right)
+  : strucs (new vector< MccRelationsStat::_RelationsStruc* > (right.strucs->size ()))
 {
-  vector< MccPairStat::_PairStruc* >::const_iterator cit;
-
+  vector< MccRelationsStat::_RelationsStruc* >::const_iterator cit;
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back (new MccPairStat::_PairStruc (**cit));
+    this->strucs->push_back (new MccRelationsStat::_RelationsStruc (**cit));
 }
 
 
-
-MccPairStat::~MccPairStat ()
+MccRelationsStat::~MccRelationsStat ()
 {
-  vector< _PairStruc* >::iterator it;
-
-  for (it = strucs->begin (); it != strucs->end (); it++)
+  vector< _RelationsStruc* >::iterator it;
+  for (it = this->strucs->begin (); it != this->strucs->end (); ++it)
     delete *it;
-  delete strucs;
+  delete this->strucs;
 }
 
 
-
-MccPairStat&
-MccPairStat::operator= (const MccPairStat &right)
+MccRelationsStat&
+MccRelationsStat::operator= (const MccRelationsStat &right)
 {
   if (this != &right)
-    {
-      vector< MccPairStat::_PairStruc* >::const_iterator cit;
-      vector< MccPairStat::_PairStruc* >::iterator it;
-
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new MccPairStat::_PairStruc (**cit));
-    }
+  {
+    vector< MccRelationsStat::_RelationsStruc* >::const_iterator cit;
+    vector< MccRelationsStat::_RelationsStruc* >::iterator it;
+    for (it = this->strucs->begin (); it != this->strucs->end (); ++it)
+      delete *it;
+    delete this->strucs;
+    this->strucs = new vector< MccRelationsStat::_RelationsStruc* > (right.strucs->size ());
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+      this->strucs->push_back (new MccRelationsStat::_RelationsStruc (**cit));
+  }
   return *this;
 }
 
 
 
 void
-MccPairStat::Accept (MccVisitor *visitor)
+MccRelationsStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
 
 void
-MccPairStat::display (ostream &os) const
+MccRelationsStat::display (ostream &os) const
 {
-  vector< _PairStruc* >::iterator it;
+  vector< _RelationsStruc* >::iterator it;
   
   os << "pair (";
   for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
 
 
 void
-MccPairStat::ppdisplay (ostream &os, int indent) const
+MccRelationsStat::ppdisplay (ostream &os, int indent) const
 {
-  vector< _PairStruc* >::iterator it;
+  vector< _RelationsStruc* >::iterator it;
   
   os << "pair" << endl;
   whitespaces (os, indent + 2);
@@ -3417,9 +3030,9 @@ MccPairStat::ppdisplay (ostream &os, int indent) const
 
 
 void
-MccQuitStat::Accept (MccVisitor *visitor)
+MccQuitStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3455,23 +3068,23 @@ MccRelationCstStat::_RelationStruc&
 MccRelationCstStat::_RelationStruc::operator= (const MccRelationCstStat::_RelationStruc &right)
 {
   if (this != &right)
-    {
-      delete ref;
-      ref = right.ref->clone ();
-      delete res;
-      res = right.res->clone ();
-      delete expr;
-      expr = right.expr->clone ();
-    }
+  {
+    delete ref;
+    ref = right.ref->clone ();
+    delete res;
+    res = right.res->clone ();
+    delete expr;
+    expr = right.expr->clone ();
+  }
   return *this;
 }
 
   
 
 void
-MccRelationCstStat::_RelationStruc::Accept (MccVisitor *visitor)
+MccRelationCstStat::_RelationStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3528,25 +3141,25 @@ MccRelationCstStat&
 MccRelationCstStat::operator= (const MccRelationCstStat &right)
 {
   if (this != &right)
-    {
-      vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
-      vector< MccRelationCstStat::_RelationStruc* >::iterator it;
+  {
+    vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
+    vector< MccRelationCstStat::_RelationStruc* >::iterator it;
 
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-	strucs->push_back ((*cit)->clone ());
-    }
+    for (it = strucs->begin (); it != strucs->end (); it++)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
+      strucs->push_back ((*cit)->clone ());
+  }
   return *this;
 }
 
 
 
 void
-MccRelationCstStat::Accept (MccVisitor *visitor)
+MccRelationCstStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3558,11 +3171,11 @@ MccRelationCstStat::display (ostream &os) const
 
   os << "relation (";
   for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -3597,20 +3210,20 @@ MccRemarkStat&
 MccRemarkStat::operator= (const MccRemarkStat &right)
 {
   if (this != &right)
-    {
-      delete[] str;
-      str = new char[strlen (right.str) + 1];
-      strcpy (str, right.str);
-    }
+  {
+    delete[] str;
+    str = new char[strlen (right.str) + 1];
+    strcpy (str, right.str);
+  }
   return *this;
 }
 
 
 
 void
-MccRemarkStat::Accept (MccVisitor *visitor)
+MccRemarkStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3625,9 +3238,9 @@ MccRemarkStat::ppdisplay (ostream &os, int indent) const
 
 
 void
-MccResetDBStat::Accept (MccVisitor *visitor)
+MccResetDBStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3642,9 +3255,9 @@ MccResetDBStat::ppdisplay (ostream &os, int indent) const
 
 
 void
-MccResetStat::Accept (MccVisitor *visitor)
+MccResetStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3655,172 +3268,6 @@ MccResetStat::ppdisplay (ostream &os, int indent) const
   display (os);
   os << endl;
 }
-
-
-
-MccResidueStat::_ResidueStruc::_ResidueStruc (const MccResidueStat::_ResidueStruc &right)
-  : res1 (new MccResidueName (*right.res1)),
-    res2 (0),
-    expr (new MccQueryExpr (*right.expr)),
-    ssize (new MccSamplingSize (*right.ssize)),
-    theo_flag (right.theo_flag)
-{
-  if (right.res2)
-    res2 = new MccResidueName (*right.res2);
-}
-
-
-MccResidueStat::_ResidueStruc&
-MccResidueStat::_ResidueStruc::operator= (const MccResidueStat::_ResidueStruc &right)
-{
-  if (this != &right)
-    {
-      delete res1;
-      res1 = new MccResidueName (*right.res1);
-      if (res2)
-	{
-	  delete res2;
-	  res2 = 0;
-	}
-      if (right.res2)
-	res2 = new MccResidueName (*right.res2);
-      delete expr;
-      expr = new MccQueryExpr (*right.expr);
-      delete ssize;
-      ssize = new MccSamplingSize (*right.ssize);
-      theo_flag = right.theo_flag;
-    }
-  return *this;
-}
-
-
-
-void
-MccResidueStat::_ResidueStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccResidueStat::_ResidueStruc::display (ostream &os) const
-{
-  res1->display (os);
-  os << ' ';
-  if (res2)
-    {
-      res2->display (os);
-      os << ' ';
-    }
-  expr->display (os);
-  os << ' ';
-  ssize->display (os);
-}
-
-
-
-void
-MccResidueStat::_ResidueStruc::ppdisplay (ostream &os, int indent) const
-{
-  os << endl;
-  whitespaces (os, indent);
-  res1->ppdisplay (os, indent);
-  os << ' ';
-  if (res2)
-    {
-      res2->ppdisplay (os, indent);
-      os << ' ';
-    }
-  expr->ppdisplay (os, indent);
-  os << ' ';
-  ssize->ppdisplay (os, indent);
-}
-
-
-
-MccResidueStat::MccResidueStat (const MccResidueStat &right)
-  : strucs (new vector< MccResidueStat::_ResidueStruc* > ())
-{
-  vector< MccResidueStat::_ResidueStruc* >::const_iterator cit;
-
-  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back (new MccResidueStat::_ResidueStruc (**cit));
-}
-
-
-
-MccResidueStat::~MccResidueStat ()
-{
-  vector< MccResidueStat::_ResidueStruc* >::iterator it;
-
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    delete *it;
-
-  delete strucs;
-}
-
-
-
-MccResidueStat&
-MccResidueStat::operator= (const MccResidueStat &right)
-{
-  if (this != &right)
-    {
-      vector< MccResidueStat::_ResidueStruc* >::const_iterator cit;
-      vector< MccResidueStat::_ResidueStruc* >::iterator it;
-
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new MccResidueStat::_ResidueStruc (**cit));
-    }
-  return *this;
-}
-
-
-
-void
-MccResidueStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccResidueStat::display (ostream &os) const
-{
-  vector< _ResidueStruc* >::iterator it;
-  
-  os << "residue (";
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
-  os << ')';
-}
-
-
-
-void
-MccResidueStat::ppdisplay (ostream &os, int indent) const
-{
-  vector< _ResidueStruc* >::iterator it;
-  
-  os << "residue" << endl;
-  whitespaces (os, indent + 2);
-  os << '(';
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    (*it)->ppdisplay (os, indent + 4);
-  os << endl;
-  whitespaces (os, indent + 2);
-  os << ')' << endl;
-}
-
 
 
 MccRestoreStat::MccRestoreStat (const MccRestoreStat &right)
@@ -3837,26 +3284,26 @@ MccRestoreStat&
 MccRestoreStat::operator= (const MccRestoreStat &right)
 {
   if (this != &right)
+  {
+    delete[] filename;
+    filename = strdup (right.filename);
+    if (expOutput)
     {
-      delete[] filename;
-      filename = strdup (right.filename);
-      if (expOutput)
-	{
-	  delete expOutput;
-	  expOutput = 0;
-	}
-      if (right.expOutput)
-	expOutput = right.expOutput->clone ();
+      delete expOutput;
+      expOutput = 0;
     }
+    if (right.expOutput)
+      expOutput = right.expOutput->clone ();
+  }
   return *this;
 }
  
 
   
 void
-MccRestoreStat::Accept (MccVisitor *visitor)
+MccRestoreStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3881,11 +3328,11 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
   whitespaces (os, indent + 4);
   os << "\"" << filename << "\"";
   if (expOutput)
-    {
-      os << endl;
-      whitespaces (os, indent + 4);
-      expOutput->ppdisplay (os, indent + 4);
-    }
+  {
+    os << endl;
+    whitespaces (os, indent + 4);
+    expOutput->ppdisplay (os, indent + 4);
+  }
   os << endl;
   whitespaces (os, indent + 2);
   os << ')' << endl;
@@ -3897,21 +3344,23 @@ MccRmsdModelFilterStrategy&
 MccRmsdModelFilterStrategy::operator= (const MccRmsdModelFilterStrategy &right)
 {
   if (this != &right)
-    {
-      rmsBound = right.rmsBound;
-      alignFlag = right.alignFlag;
-      atom_set = right.atom_set;
-      atom_set_opt = right.atom_set_opt;
-    }
+  {
+    rmsBound = right.rmsBound;
+    alignFlag = right.alignFlag;
+    if (this->atomset)
+      delete this->atomset;
+    if ((this->atomset = right.atomset))
+      this->atomset = this->atomset->clone ();
+  }
   return *this;
 }
 
 
 
 void
-MccRmsdModelFilterStrategy::Accept (MccVisitor *visitor)
+MccRmsdModelFilterStrategy::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -3922,25 +3371,8 @@ MccRmsdModelFilterStrategy::display (ostream &os) const
   os << "rmsd (" << rmsBound;
   if (alignFlag)
     os << " align";
-  switch (atom_set)
-    {
-    case MCC_ALL_AS:
-      os << " all";
-      break;
-    case MCC_BASE_AS:
-      os << " base_only";
-      break;
-    case MCC_BACKBONE_AS:
-      os << " backbone_only";
-      break;
-    case MCC_PSE_AS:
-      os << " pse_only";
-      break;
-    default:
-      break;
-    }
-  if (atom_set_opt == MCC_NO_HYDROGEN)
-    os << " no_hydrogen";
+  if (this->atomset)
+    this->atomset->display (os);
   os << ")";
 }
 
@@ -3948,67 +3380,6 @@ MccRmsdModelFilterStrategy::display (ostream &os) const
 
 void
 MccRmsdModelFilterStrategy::ppdisplay (ostream &os, int indent) const
-{
-  display (os);
-}
-
-
-MccClusteredModelSorterStrategy&
-MccClusteredModelSorterStrategy::operator= (const MccClusteredModelSorterStrategy &right)
-{
-  if (this != &right)
-    {
-      partitions = right.partitions;
-      rmsBound = right.rmsBound;
-      atom_set = right.atom_set;
-      atom_set_opt = right.atom_set_opt;
-    }
-  return *this;
-}
-
-
-
-void
-MccClusteredModelSorterStrategy::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccClusteredModelSorterStrategy::display (ostream &os) const
-{
-  os << " clustered (";
-  if (rmsBound < 0)
-    os << partitions;
-  else
-    os << rmsBound << " Angstroms";
-  switch (atom_set)
-    {
-    case MCC_ALL_AS:
-      os << " all";
-      break;
-    case MCC_BASE_AS:
-      os << " base_only";
-      break;
-    case MCC_BACKBONE_AS:
-      os << " backbone_only";
-      break;
-    case MCC_PSE_AS:
-      os << " pse_only";
-      break;
-    default:
-      break;
-    }
-  if (atom_set_opt == MCC_NO_HYDROGEN)
-    os << " no_hydrogen";
-  os << ")";
-}
-
-
-void
-MccClusteredModelSorterStrategy::ppdisplay (ostream &os, int indent) const
 {
   display (os);
 }
@@ -4040,22 +3411,22 @@ MccSamplingSize&
 MccSamplingSize::operator= (const MccSamplingSize &right)
 {
   if (this != &right)
-    {
-      discrete = right.discrete;
-      if (discrete)
-	absVal = right.absVal;
-      else
-	propFact = right.propFact;
-    }
+  {
+    discrete = right.discrete;
+    if (discrete)
+      absVal = right.absVal;
+    else
+      propFact = right.propFact;
+  }
   return *this;
 }
 
 
 
 void
-MccSamplingSize::Accept (MccVisitor *visitor)
+MccSamplingSize::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -4085,23 +3456,23 @@ MccSequenceStat&
 MccSequenceStat::operator= (const MccSequenceStat &right)
 {
   if (this != &right)
-    {
-      type = right.type;
-      delete res;
-      res = new MccResidueName (*right.res);
-      delete[] seq;
-      seq = new char[strlen (right.seq) + 1];
-      strcpy (seq, right.seq);
-    }
+  {
+    type = right.type;
+    delete res;
+    res = new MccResidueName (*right.res);
+    delete[] seq;
+    seq = new char[strlen (right.seq) + 1];
+    strcpy (seq, right.seq);
+  }
   return *this;
 }
 
 
 
 void
-MccSequenceStat::Accept (MccVisitor *visitor)
+MccSequenceStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -4138,20 +3509,20 @@ MccSourceStat&
 MccSourceStat::operator= (const MccSourceStat &right)
 {
   if (this != &right)
-    {
-      delete[] str;
-      str = new char[strlen (right.str) + 1];
-      strcpy (str, right.str);
-    }
+  {
+    delete[] str;
+    str = new char[strlen (right.str) + 1];
+    strcpy (str, right.str);
+  }
   return *this;
 }
 
 
 
 void
-MccSourceStat::Accept (MccVisitor *visitor)
+MccSourceStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -4203,39 +3574,39 @@ MccTorsionCstStat::_TorsionStruc&
 MccTorsionCstStat::_TorsionStruc::operator= (const MccTorsionCstStat::_TorsionStruc &right)
 {
   if (this != &right)
-    {
-      delete res1;
-      res1 = new MccResidueName (*right.res1);
-      delete[] at1;
-      at1 = new char[strlen (right.at1) + 1];
-      strcpy (at1, right.at1);
-      delete res2;
-      res2 = new MccResidueName (*right.res2);
-      delete[] at2;
-      at2 = new char[strlen (right.at2) + 1];
-      strcpy (at2, right.at2);
-      delete res3;
-      res3 = new MccResidueName (*right.res3);
-      delete[] at3;
-      at3 = new char[strlen (right.at3) + 1];
-      strcpy (at3, right.at3);
-      delete res4;
-      res4 = new MccResidueName (*right.res4);
-      delete at4;
-      at4 = new char[strlen (right.at4) + 1];
-      strcpy (at4, right.at4);
-      min = right.min;
-      max = right.max;
-    }
+  {
+    delete res1;
+    res1 = new MccResidueName (*right.res1);
+    delete[] at1;
+    at1 = new char[strlen (right.at1) + 1];
+    strcpy (at1, right.at1);
+    delete res2;
+    res2 = new MccResidueName (*right.res2);
+    delete[] at2;
+    at2 = new char[strlen (right.at2) + 1];
+    strcpy (at2, right.at2);
+    delete res3;
+    res3 = new MccResidueName (*right.res3);
+    delete[] at3;
+    at3 = new char[strlen (right.at3) + 1];
+    strcpy (at3, right.at3);
+    delete res4;
+    res4 = new MccResidueName (*right.res4);
+    delete at4;
+    at4 = new char[strlen (right.at4) + 1];
+    strcpy (at4, right.at4);
+    min = right.min;
+    max = right.max;
+  }
   return *this;
 }
 
   
 
 void
-MccTorsionCstStat::_TorsionStruc::Accept (MccVisitor *visitor)
+MccTorsionCstStat::_TorsionStruc::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -4298,25 +3669,25 @@ MccTorsionCstStat&
 MccTorsionCstStat::operator= (const MccTorsionCstStat &right)
 {
   if (this != &right)
-    {
-      vector< MccTorsionCstStat::_TorsionStruc* >::const_iterator cit;
-      vector< MccTorsionCstStat::_TorsionStruc* >::iterator it;
+  {
+    vector< MccTorsionCstStat::_TorsionStruc* >::const_iterator cit;
+    vector< MccTorsionCstStat::_TorsionStruc* >::iterator it;
 
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new MccTorsionCstStat::_TorsionStruc (**cit));
-    }
+    for (it = strucs->begin (); it != strucs->end (); it++)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+      strucs->push_back (new MccTorsionCstStat::_TorsionStruc (**cit));
+  }
   return *this;
 }
 
 
 
 void
-MccTorsionCstStat::Accept (MccVisitor *visitor)
+MccTorsionCstStat::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -4328,11 +3699,11 @@ MccTorsionCstStat::display (ostream &os) const
 
   os << "torsion (";
   for (it = strucs->begin (); it != strucs->end (); ++it)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
   os << ')';
 }
 
@@ -4356,9 +3727,9 @@ MccTorsionCstStat::ppdisplay (ostream &os, int indent) const
 
 
 void
-MccVersion::Accept (MccVisitor *visitor)
+MccVersion::accept (MccVisitor *visitor)
 {
-  visitor->Visit (this);
+  visitor->visit (this);
 }
 
 
@@ -4372,7 +3743,7 @@ MccVersion::ppdisplay (ostream &os, int indent) const
 
 
 
-CLexerException::CLexerException (const char *s)
+LexerException::LexerException (const char *s)
 {
   str = new char[strlen (s) + 1];
   strcpy (str, s);
@@ -4380,7 +3751,7 @@ CLexerException::CLexerException (const char *s)
 
 
 
-CLexerException::CLexerException (const CLexerException &right)
+LexerException::LexerException (const LexerException &right)
 {
   str = new char[strlen (right.str) + 1];
   strcpy (str, right.str);
@@ -4388,22 +3759,22 @@ CLexerException::CLexerException (const CLexerException &right)
 
 
 
-CLexerException&
-CLexerException::operator= (const CLexerException &right)
+LexerException&
+LexerException::operator= (const LexerException &right)
 {
   if (this != &right)
-    {
-      delete[] str;
-      str = new char[strlen (right.str) + 1];
-      strcpy (str, right.str);
-    }
+  {
+    delete[] str;
+    str = new char[strlen (right.str) + 1];
+    strcpy (str, right.str);
+  }
   return *this;
 }
 
 
 
-CLexerException&
-CLexerException::operator<< (char c)
+LexerException&
+LexerException::operator<< (char c)
 {
   size_t sz = strlen (str) + 1 + 1;
   char *tmp = new char[sz];
@@ -4419,8 +3790,8 @@ CLexerException::operator<< (char c)
 
 
 
-CLexerException&
-CLexerException::operator<< (int n)
+LexerException&
+LexerException::operator<< (int n)
 {
   char tmp1[256];
   char *tmp2;
@@ -4436,8 +3807,8 @@ CLexerException::operator<< (int n)
 
 
 
-CLexerException&
-CLexerException::operator<< (float x)
+LexerException&
+LexerException::operator<< (float x)
 {
   char tmp1[256];
   char *tmp2;
@@ -4453,8 +3824,8 @@ CLexerException::operator<< (float x)
 
 
 
-CLexerException&
-CLexerException::operator<< (const char *s)
+LexerException&
+LexerException::operator<< (const char *s)
 {
   char *tmp = new char[strlen (str) + strlen (s) + 1];
   strcpy (tmp, str);
@@ -4467,14 +3838,14 @@ CLexerException::operator<< (const char *s)
 
 
 ostream&
-operator<< (ostream &os, const CLexerException &ex)
+operator<< (ostream &os, const LexerException &ex)
 {
   return os << ex.GetMessage ();
 }
 
 
 
-CParserException::CParserException (const char *s)
+ParserException::ParserException (const char *s)
 {
   str = new char[strlen (s) + 1];
   strcpy (str, s);
@@ -4482,7 +3853,7 @@ CParserException::CParserException (const char *s)
 
 
 
-CParserException::CParserException (const CParserException &right)
+ParserException::ParserException (const ParserException &right)
 {
   str = new char[strlen (right.str) + 1];
   strcpy (str, right.str);
@@ -4490,22 +3861,22 @@ CParserException::CParserException (const CParserException &right)
 
 
 
-CParserException&
-CParserException::operator= (const CParserException &right)
+ParserException&
+ParserException::operator= (const ParserException &right)
 {
   if (this != &right)
-    {
-      delete[] str;
-      str = new char[strlen (right.str) + 1];
-      strcpy (str, right.str);
-    }
+  {
+    delete[] str;
+    str = new char[strlen (right.str) + 1];
+    strcpy (str, right.str);
+  }
   return *this;
 }
 
 
 
-CParserException&
-CParserException::operator<< (char c)
+ParserException&
+ParserException::operator<< (char c)
 {
   size_t sz = strlen (str) + 1 + 1;
   char *tmp = new char[sz];
@@ -4521,8 +3892,8 @@ CParserException::operator<< (char c)
 
 
 
-CParserException&
-CParserException::operator<< (int n)
+ParserException&
+ParserException::operator<< (int n)
 {
   char tmp1[256];
   char *tmp2;
@@ -4538,8 +3909,8 @@ CParserException::operator<< (int n)
 
 
 
-CParserException&
-CParserException::operator<< (float x)
+ParserException&
+ParserException::operator<< (float x)
 {
   char tmp1[256];
   char *tmp2;
@@ -4555,8 +3926,8 @@ CParserException::operator<< (float x)
 
 
 
-CParserException&
-CParserException::operator<< (const char *s)
+ParserException&
+ParserException::operator<< (const char *s)
 {
   char *tmp = new char[strlen (str) + strlen (s) + 1];
   strcpy (tmp, str);
@@ -4569,1256 +3940,8 @@ CParserException::operator<< (const char *s)
 
 
 ostream&
-operator<< (ostream &os, const CParserException &ex)
+operator<< (ostream &os, const ParserException &ex)
 {
   return os << ex.GetMessage ();
 }
 
-
-
-//! placer
-
-MccPlacerResidueName&
-MccPlacerResidueName::operator= (const MccPlacerResidueName &right)
-{
-  if (this != &right)
-    {
-      id = right.id;
-      no = right.no;
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerResidueName::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-MccPlacerSequenceStat::MccPlacerSequenceStat (const MccPlacerSequenceStat &right)
-  : type (right.type),
-    res (new MccPlacerResidueName (*right.res))
-{
-  seq = new char[strlen (right.seq) + 1];
-  strcpy (seq, right.seq);
-}
-
-
-
-MccPlacerSequenceStat&
-MccPlacerSequenceStat::operator= (const MccPlacerSequenceStat &right)
-{
-  if (this != &right)
-    {
-      type = right.type;
-      delete res;
-      res = new MccPlacerResidueName (*right.res);
-      delete[] seq;
-      seq = new char[strlen (right.seq) + 1];
-      strcpy (seq, right.seq);
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerSequenceStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccPlacerSequenceStat::display (ostream &os) const
-{
-  os << "placer_sequence (" << type << ' ';
-  res->display (os);
-  os << ' ' << seq << ')';
-}
-
-
-
-void
-MccPlacerSequenceStat::ppdisplay (ostream &os, int indent) const
-{
-  os << "placer_sequence (" << type << ' ';
-  res->ppdisplay (os, indent);
-  os << ' ' << seq << ')' << endl;
-}
-
-
-MccPlacerConnectStat::_PlacerConnectStruc::_PlacerConnectStruc (const MccPlacerConnectStat::_PlacerConnectStruc &right)
-  : res1 (new MccPlacerResidueName (*right.res1)),
-    res2 (new MccPlacerResidueName (*right.res2)),
-    expr (new MccQueryExpr (*right.expr)),
-    ssize (right.ssize)
-{ }
-
-
-
-MccPlacerConnectStat::_PlacerConnectStruc&
-MccPlacerConnectStat::_PlacerConnectStruc::operator= (const MccPlacerConnectStat::_PlacerConnectStruc &right)
-{
-  if (this != &right)
-    {
-      delete res1;
-      res1 = new MccPlacerResidueName (*right.res1);
-      delete res2;      
-      res2 = new MccPlacerResidueName (*right.res2);
-      delete expr;
-      expr = new MccQueryExpr (*right.expr);
-      ssize = right.ssize;
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerConnectStat::_PlacerConnectStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccPlacerConnectStat::_PlacerConnectStruc::display (ostream &os) const
-{
-  res1->display (os);
-  os << ' ';
-  res2->display (os);
-  os << ' ';
-  expr->display (os);
-  os << ' ';
-  ssize->display (os);
-}
-
-
-
-void
-MccPlacerConnectStat::_PlacerConnectStruc::ppdisplay (ostream &os, int indent) const
-{
-  os << endl;
-  whitespaces (os, indent);
-  res1->ppdisplay (os, indent);
-  os << ' ';
-  res2->ppdisplay (os, indent);
-  os << ' ';
-  expr->ppdisplay (os, indent);
-  os << ' ';
-  ssize->ppdisplay (os, indent);
-}
-
-
-
-MccPlacerConnectStat::MccPlacerConnectStat (const MccPlacerConnectStat &right)
-  : strucs (new vector< MccPlacerConnectStat::_PlacerConnectStruc* > ())
-{
-  vector< MccPlacerConnectStat::_PlacerConnectStruc* >::const_iterator cit;
-
-  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back (new _PlacerConnectStruc (**cit));
-}
-
-
-
-MccPlacerConnectStat::~MccPlacerConnectStat ()
-{
-  vector< _PlacerConnectStruc* >::iterator it;
-
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    delete *it;
-
-  delete strucs;
-}
-
-
-
-MccPlacerConnectStat&
-MccPlacerConnectStat::operator= (const MccPlacerConnectStat &right)
-{
-  if (this != &right)
-    {
-      vector< MccPlacerConnectStat::_PlacerConnectStruc* >::const_iterator cit;
-      vector< MccPlacerConnectStat::_PlacerConnectStruc* >::iterator it;
-      
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new _PlacerConnectStruc (**cit));
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerConnectStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccPlacerConnectStat::display (ostream &os) const
-{
-  vector< _PlacerConnectStruc* >::iterator it;
-
-  os << "placer_connect (";
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
-  os << ')';
-}
-
-
-
-void
-MccPlacerConnectStat::ppdisplay (ostream &os, int indent) const
-{
-  vector< _PlacerConnectStruc* >::iterator it;
-
-  os << "placer_connect" << endl;
-  whitespaces (os, indent + 2);
-  os << '(';
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    (*it)->ppdisplay (os, indent + 4);
-  os << endl;
-  whitespaces (os, indent + 2);
-  os << ')' << endl;
-}
-
-
-MccPlacerPairStat::_PlacerPairStruc::_PlacerPairStruc (const MccPlacerPairStat::_PlacerPairStruc &right)
-  : res1 (new MccPlacerResidueName (*right.res1)),
-    res2 (new MccPlacerResidueName (*right.res2)),
-    expr (new MccQueryExpr (*right.expr)),
-    ssize (right.ssize)
-{ }
-
-
-
-MccPlacerPairStat::_PlacerPairStruc&
-MccPlacerPairStat::_PlacerPairStruc::operator= (const MccPlacerPairStat::_PlacerPairStruc &right)
-{
-  if (this != &right)
-    {
-      delete res1;
-      res1 = new MccPlacerResidueName (*right.res1);
-      delete res2;
-      res2 = new MccPlacerResidueName (*right.res2);
-      delete expr;
-      expr = new MccQueryExpr (*right.expr);
-      ssize = right.ssize;
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerPairStat::_PlacerPairStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccPlacerPairStat::_PlacerPairStruc::display (ostream &os) const
-{
-  res1->display (os);
-  os << ' ';
-  res2->display (os);
-  os << ' ';
-  expr->display (os);
-  os << ' ';
-  ssize->display (os);
-}
-
-
-
-void
-MccPlacerPairStat::_PlacerPairStruc::ppdisplay (ostream &os, int indent) const
-{
-  os << endl;
-  whitespaces (os, indent);
-  res1->ppdisplay (os, indent);
-  os << ' ';
-  res2->ppdisplay (os, indent);
-  os << ' ';
-  expr->ppdisplay (os, indent);
-  os << ' ';
-  ssize->ppdisplay (os, indent);
-}
-
-
-
-MccPlacerPairStat::MccPlacerPairStat (const MccPlacerPairStat &right)
-  : strucs (new vector< MccPlacerPairStat::_PlacerPairStruc* > ())
-{
-  vector< MccPlacerPairStat::_PlacerPairStruc* >::const_iterator cit;
-
-  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back (new MccPlacerPairStat::_PlacerPairStruc (**cit));
-}
-
-
-
-MccPlacerPairStat::~MccPlacerPairStat ()
-{
-  vector< _PlacerPairStruc* >::iterator it;
-
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    delete *it;
-  delete strucs;
-}
-
-
-
-MccPlacerPairStat&
-MccPlacerPairStat::operator= (const MccPlacerPairStat &right)
-{
-  if (this != &right)
-    {
-      vector< MccPlacerPairStat::_PlacerPairStruc* >::const_iterator cit;
-      vector< MccPlacerPairStat::_PlacerPairStruc* >::iterator it;
-
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back (new MccPlacerPairStat::_PlacerPairStruc (**cit));
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerPairStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccPlacerPairStat::display (ostream &os) const
-{
-  vector< _PlacerPairStruc* >::iterator it;
-  
-  os << "placer_pair (";
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
-  os << ')';
-}
-
-
-
-void
-MccPlacerPairStat::ppdisplay (ostream &os, int indent) const
-{
-  vector< _PlacerPairStruc* >::iterator it;
-  
-  os << "placer_pair" << endl;
-  whitespaces (os, indent + 2);
-  os << '(';
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    (*it)->ppdisplay (os, indent + 4);
-  os << endl;
-  whitespaces (os, indent + 2);
-  os << ')' << endl;
-}
-
-
-MccPlacerFragmentStat::MccPlacerFragmentStat (const MccPlacerFragmentStat &right)
-{
-  frag_name = strdup (right.frag_name);
-  frag_res = right.frag_res->clone ();
-  inputMode = right.inputMode->clone ();
-}
-
-
-MccPlacerFragmentStat::~MccPlacerFragmentStat ()
-{
-  delete[] frag_name;
-  delete frag_res;
-  delete inputMode;
-}
-
-
-
-MccPlacerFragmentStat&
-MccPlacerFragmentStat::operator= (const MccPlacerFragmentStat &right)
-{
-  if (this != &right)
-    {
-      delete[] frag_name;
-      frag_name = strdup (right.frag_name);
-      delete frag_res;
-      frag_res = right.frag_res->clone ();
-      delete inputMode;
-      inputMode = right.inputMode->clone ();
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerFragmentStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccPlacerFragmentStat::display (ostream &os) const
-{
-  os << "fragment (" << frag_name << ' ';
-  frag_res->display (os);
-  os << ' ';
-  inputMode->display (os);
-  os << ')';
-}
-
-
-
-void
-MccPlacerFragmentStat::ppdisplay (ostream &os, int indent) const
-{
-  whitespaces (os, indent);
-  os << "fragment" << endl;
-  whitespaces (os, indent);
-  os << '(' << endl;
-  whitespaces (os, indent + 2);
-  os << frag_name << endl;
-  whitespaces (os, indent + 2);
-  frag_res->display (os);
-  os << endl;
-  whitespaces (os, indent + 2);
-  inputMode->display (os);
-  os << endl;
-  whitespaces (os, indent);
-  os << ')' << endl;
-}
-
-
-MccPlacerBuildStat::_GenBTStruc::_GenBTStruc (const MccPlacerBuildStat::_GenBTStruc &right)
-  : ref (0), res (0), fg_struc (0), res_v (0)
-{
-  if (right.ref)
-    ref = new MccPlacerResidueName (*right.ref);
-  if (right.res)
-    res = new MccPlacerResidueName (*right.res);
-  if (right.fg_struc)
-    fg_struc = new MccFragGenStruc (*right.fg_struc);
-  if (right.res_v)
-    {
-      vector< MccPlacerResidueName* >::const_iterator cit;
-      
-      res_v = new vector< MccPlacerResidueName* > ();
-      for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
-	res_v->push_back (new MccPlacerResidueName (**cit));
-    }
-}
-
-
-
-MccPlacerBuildStat::_GenBTStruc&
-MccPlacerBuildStat::_GenBTStruc::operator= (const MccPlacerBuildStat::_GenBTStruc &right)
-{
-  if (this != &right)
-    {
-      if (ref)
-	{
-	  delete ref;
-	  ref = 0;
-	}
-      if (right.ref)
-	ref = new MccPlacerResidueName (*right.ref);
-      if (res)
-	{
-	  delete res;
-	  res = 0;
-	}
-      if (right.res)
-	res = new MccPlacerResidueName (*right.res);
-      if (fg_struc)
-	{
-	  delete fg_struc;
-	  fg_struc = 0;
-	  }
-      if (right.fg_struc)
-	fg_struc = new MccFragGenStruc (*right.fg_struc);
-      if (res_v)
-	{
-	  vector< MccPlacerResidueName* >::iterator it;
-
-	  for (it = res_v->begin (); it != res_v->end (); it++)
-	    delete *it;
-	  delete res_v;
-	  res_v = 0;
-	}
-      if (right.res_v)
-	{
-	  vector< MccPlacerResidueName* >::const_iterator cit;
-	  
-	  res_v = new vector< MccPlacerResidueName* > ();
-	  for (cit = right.res_v->begin (); cit != right.res_v->end (); cit++)
-	    res_v->push_back (new MccPlacerResidueName (**cit));
-	  
-	}
-    }
-  return *this;
-}
-
-
-MccPlacerBuildStat::_BTStruc::~_BTStruc ()
-{
-  vector< MccPlacerResidueName* >::iterator it;
-
-  delete ref;
-  for (it = res_v->begin (); it != res_v->end (); it++)
-    delete *it;
-  delete res_v;
-}
-
-
-
-void
-MccPlacerBuildStat::_BTStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-MccPlacerBuildStat::_BTStruc&
-MccPlacerBuildStat::_BTStruc::operator= (const MccPlacerBuildStat::_BTStruc &right)
-{
-  if (this != &right)
-    {
-      MccPlacerBuildStat::_GenBTStruc::operator= (right);
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerBuildStat::_BTStruc::display (ostream &os) const
-{
-  vector< MccPlacerResidueName* >::iterator it;
-
-  os << '(';
-  ref->display (os);
-  for (it = res_v->begin (); it != res_v->end (); it++)
-    {
-      os << ' ';
-      (*it)->display (os);
-    }
-  os << ')';
-}
-
-
-
-void
-MccPlacerBuildStat::_BTStruc::ppdisplay (ostream &os, int indent) const
-{
-  vector< MccPlacerResidueName* >::iterator it;
-
-  os << endl;
-  whitespaces (os, indent);
-  os << '(';
-  ref->ppdisplay (os, indent);
-  for (it = res_v->begin (); it != res_v->end (); it++)
-    {
-      os << ' ';
-      (*it)->ppdisplay (os, indent);
-    }
-  os << ')';
-}
-
-
-MccPlacerBuildStat::_PlaceStruc::_PlaceStruc (const MccPlacerBuildStat::_PlaceStruc &right)
-  : MccPlacerBuildStat::_GenBTStruc (right)
-{
-  frag_name = strdup (right.frag_name);
-}
-
-
-MccPlacerBuildStat::_PlaceStruc::~_PlaceStruc ()
-{
-  if (ref)
-    delete ref;
-  delete[] frag_name;
-}
-
-
-void
-MccPlacerBuildStat::_PlaceStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-MccPlacerBuildStat::_PlaceStruc&
-MccPlacerBuildStat::_PlaceStruc::operator= (const MccPlacerBuildStat::_PlaceStruc &right)
-{
-  if (this != &right)
-    {
-      MccPlacerBuildStat::_GenBTStruc::operator= (right);
-      delete[] frag_name;
-      frag_name = strdup (right.frag_name);
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerBuildStat::_PlaceStruc::display (ostream &os) const
-{
-  os << "place (" << frag_name << ' ';
-  if (ref)
-    ref->display (os);
-  os << ')';
-}
-
-
-
-void
-MccPlacerBuildStat::_PlaceStruc::ppdisplay (ostream &os, int indent) const
-{
-  os << endl;
-  whitespaces (os, indent);
-  os << "place (" << frag_name << ' ';
-  if (ref)
-    {
-      ref->ppdisplay (os, indent);
-      os << ' ';
-    }
-  os << ')';
-}
-
-
-MccPlacerBuildStat::_ClashStruc&
-MccPlacerBuildStat::_ClashStruc::operator= (const MccPlacerBuildStat::_ClashStruc& right)
-{
-  if (this != &right)
-    {
-      mode = right.mode;
-      radius = right.radius;
-    }
-  return *this;
-}
-
-
-void
-MccPlacerBuildStat::_ClashStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-void
-MccPlacerBuildStat::_ClashStruc::display (ostream &os) const
-{
-  os << "clash (";
-
-  switch (mode)
-    {
-    case 'n': os << "naive";  break;
-    case 'b': os << "bbox";  break;
-    default:  os << "???";  break;
-    }
-
-  os << ' ' << radius << ')';
-}
-
-
-void
-MccPlacerBuildStat::_ClashStruc::ppdisplay (ostream &os, int indent) const
-{
-  whitespaces (os, indent);
-  display (os);
-  os << endl;
-}
-
-
-
-MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (char mmode,
-						  char pcmode,
-						  int pcmode_cover)
-  : method_mode (mmode),
-    precst_mode (pcmode),
-    pre_mode_coverage (pcmode_cover)
-{
-
-}
-
-
-MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (const MccPlacerBuildStat::_ClosureStruc& right)
-  : method_mode (right.method_mode),
-    precst_mode (right.precst_mode),
-    pre_mode_coverage (right.pre_mode_coverage)
-{
-
-}
-  
-
-MccPlacerBuildStat::_ClosureStruc&
-MccPlacerBuildStat::_ClosureStruc::operator= (const MccPlacerBuildStat::_ClosureStruc& right)
-{
-  if (this != &right)
-    {
-      method_mode = right.method_mode;
-      precst_mode = right.precst_mode;
-      pre_mode_coverage = right.pre_mode_coverage;
-    }
-  return *this;
-}
-
-
-void
-MccPlacerBuildStat::_ClosureStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-void
-MccPlacerBuildStat::_ClosureStruc::display (ostream &os) const
-{
-  os << "closure (";
-
-  switch (method_mode)
-    {
-    case 'r': case 'R': os << "rmsd"; break;
-    case 'd': case 'D': os << "distance"; break;
-    default: os << "???"; break;
-    }
-  switch (precst_mode)
-    {
-    case 'f': case 'F': break;
-    case 'c': case 'C':os << "pre_constraint c1p " << pre_mode_coverage << '%'; break;
-    default: os << "pre_constraint ???"; break;
-    }
-//   switch (postcst_mode)
-//     {
-//     case 'f': case 'F': os << "postcst_free"; break;
-//     case 'v': case 'V': os << "postcst_value " << post_mode_rmin << post_mode_rmax; break;
-//     default: os << "postcst_???"; break;
-//     }
-
-  os << ')';
-}
-
-
-
-void
-MccPlacerBuildStat::_ClosureStruc::ppdisplay (ostream &os, int indent) const
-{
-  whitespaces (os, indent);
-  os << "closure (" << endl;
-  whitespaces (os, indent+2);
-  switch (method_mode)
-    {
-    case 'r': case 'R': os << "rmsd"; break;
-    case 'd': case 'D': os << "distance"; break;
-    default: os << "???"; break;
-    }
-  os << endl;
-  whitespaces (os, indent+2);
-  switch (precst_mode)
-    {
-    case 'f': case 'F': break;
-    case 'c': case 'C': os << "pre_constraint c1p " << pre_mode_coverage << '%'; break;
-    default: os << "pre_constraint ???"; break;
-    }
-  os << endl;
-//   whitespaces (os, indent+2);
-//   switch (postcst_mode)
-//     {
-//     case 'f': case 'F': os << "postcst_free"; break;
-//     case 'v': case 'V': os << "postcst_value " << post_mode_rmin << post_mode_rmax; break;
-//     default: os << "postcst_???"; break;
-//     }
-  
-//   os << endl;
-  whitespaces (os, indent);
-  os << ')' << endl;
-}
-
-
-MccPlacerBuildStat::_RibStruc::_RibStruc ()
-  : build_error (-1),
-    builder_tag ('o'),
-    min_shift (-1),
-    min_drop (-1),
-    shift_rate (-1)
-{
-  builder_qfct = strdup ("bond_length");
-}
-
-
-MccPlacerBuildStat::_RibStruc::_RibStruc (float be, char bt, char* bqf, float ms, float md, float sr)
-  : build_error (be),
-    builder_tag (bt),
-    min_shift (ms),
-    min_drop (md),
-    shift_rate (sr)
-{
-  builder_qfct = bqf ? strdup (bqf) : strdup ("bond_length");
-}
-
-
-MccPlacerBuildStat::_RibStruc::_RibStruc (const _RibStruc &right)
-  : build_error (right.build_error),
-    builder_tag (right.builder_tag),
-    min_shift (right.min_shift),
-    min_drop (right.min_drop),
-    shift_rate (right.shift_rate)
-{
-  builder_qfct = strdup (right.builder_qfct);
-}
-
-
-MccPlacerBuildStat::_RibStruc::~_RibStruc ()
-{
-  delete[] builder_qfct;
-}
-
-
-MccPlacerBuildStat::_RibStruc&
-MccPlacerBuildStat::_RibStruc::operator= (const MccPlacerBuildStat::_RibStruc& right)
-{
-  if (this != &right)
-    {
-      build_error = right.build_error;
-      builder_tag = right.builder_tag;
-      delete[] builder_qfct;
-      builder_qfct = strdup (right.builder_qfct);
-      min_shift = right.min_shift;
-      min_drop = right.min_drop;
-      shift_rate = right.shift_rate;
-    }
-  return *this;
-}
-
-
-void
-MccPlacerBuildStat::_RibStruc::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-void
-MccPlacerBuildStat::_RibStruc::display (ostream &os) const
-{
-  os << "ribose ("
-     << build_error << ' ';
-  switch (builder_tag)
-    {
-    case '5':
-      os << "optimizer5d "
-	 << min_shift << ' '
-	 << min_drop << ' '
-	 << shift_rate << ' ';
-      break;
-    case '2':
-      os << "optimizer2d "
-	 << min_shift << ' '
-	 << min_drop << ' '
-	 << shift_rate << ' ';
-      break;
-    case 'o':
-      os << "estimator ";
-      break;
-    default:
-      os << "??? ";
-    }
-  os << ')';
-}
-
-
-
-void
-MccPlacerBuildStat::_RibStruc::ppdisplay (ostream &os, int indent) const
-{
-  whitespaces (os, indent);
-  display (os);
-  os << endl;
-}
-
-
-MccPlacerBuildStat::MccPlacerBuildStat (const MccPlacerBuildStat &right)
-  : closure (right.closure->clone ()),
-    ribopt (right.ribopt->clone ()),
-    strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ()),
-    all_id (right.all_id),
-    frag_names (right.frag_names)
-{
-  vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
-
-  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back ((*cit)->clone ());
-}
-
-
-
-MccPlacerBuildStat::~MccPlacerBuildStat ()
-{
-  vector< _GenBTStruc* >::iterator it;
-
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    delete *it;
-  delete strucs;
-  delete clash;
-  delete closure;
-  delete ribopt;
-}
-
-
-
-MccPlacerBuildStat&
-MccPlacerBuildStat::operator= (const MccPlacerBuildStat &right)
-{
-  if (this != &right)
-    {
-      vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
-      vector< MccPlacerBuildStat::_GenBTStruc* >::iterator it;
-
-      all_id = right.all_id;
-      frag_names = right.frag_names;
-
-      delete clash;
-      clash = right.clash->clone ();
-      delete closure;
-      closure = right.closure->clone ();
-      delete ribopt;
-      ribopt = right.ribopt->clone ();
-      
-      for (it = strucs->begin (); it != strucs->end (); it++)
-	delete *it;
-      strucs->clear ();
-      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back ((*cit)->clone ());
-    }
-  return *this;
-}
-
-
-
-void
-MccPlacerBuildStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-// void
-// MccPlacerBuildStat::GenBTStruc (MccPlacerResidueName *rf,
-// 				vector< MccPlacerResidueName* > *rv)
-// {
-//   vector< MccPlacerResidueName* >::const_iterator rvit;
-  
-//   all_id.insert (make_pair (rf->id, rf->no));
-//   for (rvit = rv->begin (); rvit != rv->end (); ++rvit)
-//     all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
-
-//   strucs->push_back (new _BTStruc (rf, rv));
-// }
-
-
-void
-MccPlacerBuildStat::AddBTStrucs (vector< _GenBTStruc* > *bts)
-{
-  vector< MccPlacerResidueName* >::iterator rvit;
-  vector< _GenBTStruc* >::iterator btsit;
-  _PlaceStruc* ps = 0;
-
-  for (btsit = bts->begin (); btsit != bts->end (); ++btsit)
-    {
-      if ((*btsit)->ref)
-	all_id.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
-
-      if ((*btsit)->res)
-	all_id.insert (make_pair ((*btsit)->res->id, (*btsit)->res->no));
-      
-      if ((*btsit)->res_v)
-	for (rvit = (*btsit)->res_v->begin (); rvit != (*btsit)->res_v->end (); ++rvit)
-	  all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
-
-      if ((ps = dynamic_cast< _PlaceStruc* > (*btsit)) != 0)
-	{
-	  frag_names.push_back (ps->frag_name);
-	  cout << "will place fragment " << ps->frag_name << endl;
-	}
-    }
-
-  strucs->insert (strucs->end (), bts->begin (), bts->end ()); delete bts;
-}
-
-
-void
-MccPlacerBuildStat::display (ostream &os) const
-{
-  vector< _GenBTStruc* >::iterator it;
-
-  os << "placer_build (";
-  clash->display (os);
-  closure->display (os << ' ');
-  ribopt->display (os << ' ');
-  os << ' ';
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    {
-      if (it != strucs->begin ())
-	os << ' ';
-      (*it)->display (os);
-    }
-  os << ')';
-}
-
-
-
-void
-MccPlacerBuildStat::ppdisplay (ostream &os, int indent) const
-{
-  vector< _GenBTStruc* >::iterator it;
-
-  os << "placer_build" << endl;
-  whitespaces (os, indent + 2);
-  os << '(' << endl;
-  clash->ppdisplay (os, indent + 4);
-  closure->ppdisplay (os, indent + 4);
-  ribopt->ppdisplay (os, indent + 4);
-  for (it = strucs->begin (); it != strucs->end (); it++)
-    (*it)->ppdisplay (os, indent + 4);
-  os << endl;
-  whitespaces (os, indent + 2);
-  os << ')' << endl;
-}
-
-
-const int MccPlacerSearchStat::paramid_MaxLevelRetry = 0;
-const int MccPlacerSearchStat::paramid_MaxLevelBacktrack = 1;
-const int MccPlacerSearchStat::paramid_invalid = -1;
-
-const char* MccPlacerSearchStat::paramstr_MaxLevelRetry = "max_level_retry";
-const char* MccPlacerSearchStat::paramstr_MaxLevelBacktrack = "max_level_backtrack";
-const char* MccPlacerSearchStat::paramstr_invalid = "(invalid id)";
-
-
-MccPlacerSearchStat::_Params::_Params (const _Params& right)
-  : algo_name (strdup (right.algo_name)),
-    params (0)
-{
-  if (right.params)
-    params = new map< int, float > (*right.params);
-}
-
-
-MccPlacerSearchStat::_Params::~_Params ()
-{
-  delete[] algo_name;
-  if (params)
-    delete params;
-}
-
-
-MccPlacerSearchStat::_Params&
-MccPlacerSearchStat::_Params::operator= (const _Params& right)
-{
-  if (this != &right)
-    {
-      algo_name = strdup (right.algo_name);
-      if (params)
-	{
-	  delete params;
-	  params = 0;
-	}
-      if (right.params)
-	params = new map< int, float > (*right.params);
-    }
-  return *this;
-}
-
-
-void
-MccPlacerSearchStat::_Params::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-void
-MccPlacerSearchStat::_Params::display (ostream &os) const
-{
-  map< int, float >::const_iterator mit;
-  
-  os << algo_name << " ( ";
-  if (params)
-    for (mit = params->begin (); mit != params->end (); ++mit)
-      os << MccPlacerSearchStat::getParamStr (mit->first) << ' '
-	 << mit->second << ' ';
-  os << ')';
-}
-
-
-
-void
-MccPlacerSearchStat::_Params::ppdisplay (ostream &os, int indent) const
-{
-  map< int, float >::const_iterator mit;
-  os << algo_name << endl;
-  whitespaces (os, indent);
-  os << '(' << endl;
-
-  if (params)
-    for (mit = params->begin (); mit != params->end (); ++mit)
-      {
-	whitespaces (os, indent + 2);
-	os << MccPlacerSearchStat::getParamStr (mit->first) << ' '
-	   << mit->second << endl;
-      }
-
-  whitespaces (os, indent);
-  os << ')' << endl;
-}
-
-
-MccPlacerSearchStat::MccPlacerSearchStat (const MccPlacerSearchStat &right)
-  : mode (right.mode->clone ()),
-    filter (0),
-    expOutput (0)
-{
-  if (right.filter)
-    filter = right.filter->clone ();
-  if (right.expOutput)
-    expOutput = right.expOutput->clone ();
-}
-
-
-
-MccPlacerSearchStat&
-MccPlacerSearchStat::operator= (const MccPlacerSearchStat &right)
-{
-  if (this != &right)
-    {
-      delete mode;
-      mode = right.mode->clone ();
-      if (filter)
-	{
-	  delete filter;
-	  filter = 0;
-	}
-      if (right.filter)
-	filter = right.filter->clone ();
-      if (expOutput)
-	{
-	  delete expOutput;
-	  expOutput = 0;
-	}
-      if (right.expOutput)
-	expOutput = right.expOutput->clone ();
-    }
-  return *this;
-}
-
-
-const char*
-MccPlacerSearchStat::getParamStr (int id)
-{
-  switch (id)
-    {
-    case paramid_MaxLevelRetry:
-      return paramstr_MaxLevelRetry;
-    case paramid_MaxLevelBacktrack:
-      return paramstr_MaxLevelBacktrack;
-    }
-  return paramstr_invalid;
-}
-
-
-int
-MccPlacerSearchStat::getParamId (const char* str)
-{
-  if (strcmp (str, paramstr_MaxLevelRetry) == 0)
-    return paramid_MaxLevelRetry;
-  else if (strcmp (str, paramstr_MaxLevelBacktrack) == 0)
-    return paramid_MaxLevelBacktrack;
-  return paramid_invalid;
-}
-
-void
-MccPlacerSearchStat::Accept (MccVisitor *visitor)
-{
-  visitor->Visit (this);
-}
-
-
-
-void
-MccPlacerSearchStat::display (ostream &os) const
-{
-  os << "placer_search ( ";
-  mode->display (os);
-  if (filter)
-    {
-      os << ' ';
-      filter->display (os);
-    }
-  if (expOutput)
-    {
-      os << ' ';
-      expOutput->display (os);
-    }
-  os << ')';
-}
-
-
-
-void
-MccPlacerSearchStat::ppdisplay (ostream &os, int indent) const
-{
-  os << "placer_search" << endl;
-  whitespaces (os, indent);
-  os << '(' << endl;
-  mode->ppdisplay (os, indent + 2);
-  
-  if (filter)
-    {
-      os << endl;
-      whitespaces (os, indent + 2);
-      filter->ppdisplay (os, indent + 2);
-    }
-  if (expOutput)
-    {
-      os << endl;
-      whitespaces (os, indent + 2);
-      expOutput->ppdisplay (os, indent + 2);
-    }
-  os << endl;
-  whitespaces (os, indent);
-  os << ')' << endl;
-}
-
-
-//!

@@ -74,104 +74,62 @@ INTEGER_LIT  (-?{DIGIT}+)
 <INITIAL,QUERIES>&&           return TOK_AND;
 <INITIAL,QUERIES>!            return TOK_NOT;
 
-add_pdb      return TOK_ADDPDB;
-adjacency    return TOK_ADJACENCY;
-align        return TOK_ALIGN;
-all          return TOK_ALLATOMS;
-angle        return TOK_ANGLE;
-angstroms    return TOK_ANGSTROMS;
-Angstroms    return TOK_ANGSTROMS;
-angstrom     return TOK_ANGSTROMS;
-Angstrom     return TOK_ANGSTROMS;
-backbone_only return TOK_BBATOMS;
-backtrack    return TOK_BACKTRACK;
-backtrack_size return TOK_BACKTRACKSIZE;
-base_only    return TOK_BASEATOMS;
-cache        return TOK_CACHE;
-change_id    return TOK_CHANGEID;
-clustered    return TOK_CLUSTERED;
-confo_cutoff return TOK_CONFOCUT;
-connect      return TOK_CONNECT;
-cycle        return TOK_CYCLE;
-display_fg   return TOK_DISPLAYFG;
-distance     return TOK_DISTANCE;
-explore      return TOK_EXPLORE;
-exploreLV    return TOK_EXPLORELV;
-fileName_pdb return TOK_PDB;
-file_bin     return TOK_FILE_BINARY;
-file_pdb     return TOK_FILE_PDB;
-file_rnaml   return TOK_FILE_RNAML;
-fixed_distance return TOK_FIXEDDIST;
-library      return TOK_LIBRARY;
-loop_connect return TOK_LOOPCONDEF;
-loop_residue return TOK_LOOPRESDEF;
-mfold_epc    return TOK_MFOLD_EPC;
-mfold_output return TOK_MFOLD_OUTPUT;
-mfold_win    return TOK_MFOLD_WIN;
-moses        return TOK_MOSES;
-multimer     return TOK_MULTIMER;
-new_tag      return TOK_NEWTAG;
-no_hydrogen  return TOK_NOHYDRO;
-note         return TOK_NOTE;
-notes        return TOK_NOTES;
-pair         return TOK_PAIR;
-pdb          return TOK_PDB;
-place        return TOK_PLACE;
-pse_only     return TOK_PSEATOMS;
-quit         return TOK_QUIT;
-relation     return TOK_RELATION;
-remark       return TOK_REMARK;
-res          return TOK_RES;
-res_clash    return TOK_RESCLASH;
-reset        return TOK_RESET;
-reset_db     return TOK_RESETDB;
-residue      return TOK_RESIDUE;
-restore      return TOK_RESTORE;
-rmsd         return TOK_RMSD;
-sec_struct   return TOK_CTFILEID;
-sequence     return TOK_SEQUENCE;
-socket_bin   return TOK_SOCKET_BINARY;
-socket_pdb   return TOK_SOCKET_PDB;
-source       return TOK_SOURCE;
-stem_cg_au_pair      return TOK_CGAUPAIRDEF;
-stem_cg_au_residue   return TOK_CGAURESDEF;
-stem_connect return TOK_STEMCONDEF;
-stem_gu_pair  return TOK_GUPAIRDEF;
-stem_gu_residue return TOK_GURESDEF;
-strip        return TOK_STRIP;
-time_limit   return TOK_TIMELIMIT;
-tfo          return TOK_TRANSFO;
-tfo_cutoff   return TOK_TFOCUT;
-torsion      return TOK_TORSION;
-vdw_distance return TOK_VDWDIST;
-version      return TOK_VERSION;
-zipped       return TOK_ZIPPED;
-sec          return TOK_SEC;
-seconds      return TOK_SEC;
-min          return TOK_MIN;
-minutes      return TOK_MIN;
-hr           return TOK_HR;
-hours        return TOK_HR;
-days         return TOK_DAY;
-d            return TOK_DAY;
-t            return TOK_THEOCONFO;
-T            return TOK_THEOCONFO;
-theo         return TOK_THEOCONFO;
-
-placer_sequence     return TOK_PLACER_SEQUENCE; 
-placer_connect      return TOK_PLACER_CONNECT; 
-placer_pair         return TOK_PLACER_PAIR;
-fragment            return TOK_PLACER_FRAGMENT;
-placer_build        return TOK_PLACER_BUILD;
-clash               return TOK_CLASH;
-closure             return TOK_CLOSURE;
-pre_constraint      return TOK_CLPREC;
-c1p                 return TOK_CLPREC_C1P;
-ribose              return TOK_RIBOSE;
-optimizer5d         return TOK_ROPT5D;
-optimizer2d         return TOK_ROPT2D;
-estimator           return TOK_REST;
-placer_search       return TOK_PLACER_SEARCH;
+add_pdb          return TOK_ADDPDB;
+base_adjacency   return TOK_BASEADJACENCY;
+ribose_adjacency return TOK_RIBOADJACENCY;
+align            return TOK_ALIGN;
+angle            return TOK_ANGLE;
+angstroms        return TOK_ANGSTROMS;
+Angstroms        return TOK_ANGSTROMS;
+angstrom         return TOK_ANGSTROMS;
+Angstrom         return TOK_ANGSTROMS;
+as_is            return TOK_ASIS;
+backtrack        return TOK_BACKTRACK;
+cache            return TOK_CACHE;
+change_id        return TOK_CHANGEID;
+cutoff           return TOK_CUTOFF;
+cycle            return TOK_CYCLE;
+display_fg       return TOK_DISPLAYFG;
+distance         return TOK_DISTANCE;
+env              return TOK_ENV;
+explore          return TOK_EXPLORE;
+file_bin         return TOK_FILE_BINARY;
+file_pdb         return TOK_FILE_PDB;
+file_rnaml       return TOK_FILE_RNAML;
+fixed_distance   return TOK_FIXEDDIST;
+library          return TOK_LIBRARY;
+multimer         return TOK_MULTIMER;
+new_tag          return TOK_NEWTAG;
+note             return TOK_NOTE;
+notes            return TOK_NOTES;
+place            return TOK_PLACE;
+quit             return TOK_QUIT;
+relation         return TOK_RELATION;
+relations        return TOK_RELATIONS;
+remark           return TOK_REMARK;
+clash            return TOK_CLASH;
+reset            return TOK_RESET;
+reset_db         return TOK_RESETDB;
+restore          return TOK_RESTORE;
+rmsd             return TOK_RMSD;
+sequence         return TOK_SEQUENCE;
+socket_bin       return TOK_SOCKET_BINARY;
+socket_pdb       return TOK_SOCKET_PDB;
+source           return TOK_SOURCE;
+strip            return TOK_STRIP;
+time_limit       return TOK_TIMELIMIT;
+torsion          return TOK_TORSION;
+vdw_distance     return TOK_VDWDIST;
+version          return TOK_VERSION;
+zipped           return TOK_ZIPPED;
+sec              return TOK_SEC;
+seconds          return TOK_SEC;
+min              return TOK_MIN;
+minutes          return TOK_MIN;
+hr               return TOK_HR;
+hours            return TOK_HR;
+days             return TOK_DAY;
+d                return TOK_DAY;
 
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
@@ -179,6 +137,8 @@ placer_search       return TOK_PLACER_SEARCH;
 {INTEGER_LIT}\.{DIGIT}*  mcclval.floatval = atof (mcctext); return TOK_FLOAT;
 
 {LETTER}{DIGIT}+  mcclval.textval = mcccopy (mcctext); return TOK_RESNAME;
+
+{LETTER}{DIGIT}+\-{LETTER}{DIGIT}+|{DIGIT}+\-{LETTER}{DIGIT}+|{LETTER}{DIGIT}+\-{DIGIT}+|{DIGIT}+\-{DIGIT}+ mcclval.textval = mcccopy (mcctext); return TOK_RESNAME_RANGE;
 
 {DIGIT}{LETTER}{LETTER}?{DIGIT}[\*M]? {
                                         mcclval.textval = mcccopy (mcctext);
@@ -212,7 +172,7 @@ placer_search       return TOK_PLACER_SEARCH;
 		     *mccstring_buf_ptr++ = *yptr++;
                  }
 
-<QUOTES><<EOF>>  throw CLexerException ("End Of File found in quote.");
+<QUOTES><<EOF>>  throw LexerException ("End Of File found in quote.");
 
 
            /** Definition of STRINGS. */
@@ -237,7 +197,7 @@ placer_search       return TOK_PLACER_SEARCH;
 			  *mccstring_buf_ptr++ = *yptr++;
                       }
 
-<STRINGS><<EOF>>  throw CLexerException ("End Of File found in string.");
+<STRINGS><<EOF>>  throw LexerException ("End Of File found in string.");
 
 
            /* Definitions for the QUERIES state.  */
@@ -256,12 +216,12 @@ placer_search       return TOK_PLACER_SEARCH;
 <QUERIES>\}                { yy_pop_state (); return TOK_RBRACE; }
 
 .                          {
-                             throw CLexerException ("Token error: invalid character ")
+                             throw LexerException ("Token error: invalid character ")
 			       << mcctext[0] << " at line " << mcclineno
 			       << '.' ;
                            } 
 
-<QUERIES><<EOF>>  throw CLexerException ("End Of File found in queries.");
+<QUERIES><<EOF>>  throw LexerException ("End Of File found in queries.");
 
 <<EOF>>           yyterminate ();
 
