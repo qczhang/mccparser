@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Wed Sep  6 16:53:46 2000
-// Update Count     : 9
+// Last Modified On : Thu Sep 14 11:46:41 2000
+// Update Count     : 10
 // Status           : Ok.
 // 
 
@@ -48,6 +48,66 @@ extern FILE *mccin;
  * The parser function.  It is defined in y.tab.c.
  */
 extern int mccparse ();
+
+
+
+/**
+ * @short This class is used for reading input from terminal.
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+class CMccInput
+{
+  /**
+   * Initializes the object with the rights contents.  It must not be used.
+   * @param right the object to copy.
+   */
+  CMccInput (const CMccInput &right) { }
+
+  /**
+   * Assigns the rights content in the object.  It must not be used.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual const CMccInput& operator= (const CMccInput &right) { return *this; }
+
+public:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  CMccInput () { }
+
+  /**
+   * Destructs the object.
+   */
+  virtual ~CMccInput () { }
+
+  // OPERATORS -------------------------------------------------------------
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Gets the next character in the buffer.  If the buffer gets to the end,
+   * it waits for user input.
+   * @return the character read.
+   */
+  virtual int nextchar () { return getc (mccin); }
+
+  // I/O ------------------------------------------------------------------
+
+};
+
+
+
+/**
+ * The variable containing the input class.
+ */
+extern CMccInput *input_class;
 
 
 

@@ -4,24 +4,45 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Wed Sep  6 16:53:38 2000
- * Update Count     : 3
+ * Last Modified On : Thu Sep 14 11:46:27 2000
+ * Update Count     : 4
  * Status           : Ok.
  */
 
 
 %option noyywrap
+%option nounput
+%option noyy_top_state
 %option stack
 %{
-  #include <iostream.h>
-  #include <vector.h>
-  #include <string.h>
+#include <iostream.h>
+#include <vector.h>
+#include <string.h>
+  
+#include "mccparser.h"
+#include "y.tab.h"
+  
+#define YY_INPUT(buf,result,max_size) \
+        if (interactive_parser) \
+          { \
+            int c = '*'; \
+            \
+            c = input_class->nextchar (); \
+            if (c == EOF) \
+              result = 0; \
+            else \
+              { \
+                buf[0] = (char) c; \
+                result = 1; \
+              } \
+          } \
+	else if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
+		  && ferror( yyin ) ) \
+		YY_FATAL_ERROR( "input in flex scanner failed" );
 
-  #include "mccparser.h"
-  #include "y.tab.h"
 
-  char* mcccopy (const char *str);
-  int mcclineno = 0;
+char* mcccopy (const char *str);
+int mcclineno = 0;
 %}
 
 
@@ -32,8 +53,8 @@ INTEGER_LIT  (-?{DIGIT}+)
 %x STRINGS QUOTES QUERIES
 
 %%
-             char string_buf[4096];
-             char *string_buf_ptr = string_buf;
+             char mccstring_buf[4096];
+             char *mccstring_buf_ptr = mccstring_buf;
 
 
 <INITIAL,QUERIES>\n        ++mcclineno;           
@@ -114,43 +135,49 @@ zipped       return TOK_ZIPPED;
 
            /** Definition of QUOTES indentifiers.  */
 
-\'               string_buf_ptr = string_buf; yy_push_state (QUOTES);
+\'               mccstring_buf_ptr = mccstring_buf; yy_push_state (QUOTES);
 <QUOTES>\'       {
                    yy_pop_state ();
-		   *string_buf_ptr = '\0';
-		   mcclval.textval = mcccopy (string_buf);
+		   *mccstring_buf_ptr = '\0';
+		   mcclval.textval = mcccopy (mccstring_buf);
 		   return TOK_QUOTED_IDENT;
                  }
 
-<QUOTES>[^\']+    {
+<QUOTES>\n       *mccstring_buf_ptr++ = '\n'; mcclineno++;
+
+<QUOTES>[^\']+   {
                    char *yptr = mcctext;
 
 		   while (*yptr)
-		     *string_buf_ptr++ = *yptr++;
+		     *mccstring_buf_ptr++ = *yptr++;
                  }
+
+<QUOTES><<EOF>>  throw CLexerException ("End Of File found in quote.");
 
 
            /** Definition of STRINGS. */
 
-<INITIAL,QUERIES>\"   string_buf_ptr = string_buf; yy_push_state (STRINGS);
+<INITIAL,QUERIES>\"   mccstring_buf_ptr = mccstring_buf; yy_push_state (STRINGS);
 
 <STRINGS>\"      {
                    yy_pop_state ();
-		   *string_buf_ptr = '\0';
-		   mcclval.textval = mcccopy (string_buf);
+		   *mccstring_buf_ptr = '\0';
+		   mcclval.textval = mcccopy (mccstring_buf);
 		   return TOK_STRING;
                  }
 
-<STRINGS>\n      *string_buf_ptr++ = '\n'; mcclineno++;
+<STRINGS>\n      *mccstring_buf_ptr++ = '\n'; mcclineno++;
                    
-<STRINGS>\\.     *string_buf_ptr++ = '\\'; *string_buf_ptr++ = mcctext[1];
+<STRINGS>\\.     *mccstring_buf_ptr++ = '\\'; *mccstring_buf_ptr++ = mcctext[1];
 
 <STRINGS>[^\\\"]+     {
                         char *yptr = mcctext;
 
 		        while (*yptr)
-			  *string_buf_ptr++ = *yptr++;
+			  *mccstring_buf_ptr++ = *yptr++;
                       }
+
+<STRINGS><<EOF>>  throw CLexerException ("End Of File found in string.");
 
 
            /* Definitions for the QUERIES state.  */
@@ -172,6 +199,11 @@ zipped       return TOK_ZIPPED;
 			       << mcctext[0] << " at line " << mcclineno
 			       << '.' ;
                            } 
+
+<QUERIES><<EOF>>  throw CLexerException ("End Of File found in queries.");
+
+<<EOF>>           yyterminate ();
+
 %%
 
 

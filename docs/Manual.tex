@@ -4,8 +4,8 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Wed Sep  6 16:54:40 2000
-%% Update Count     : 5
+%% Last Modified On : Thu Sep 14 11:46:22 2000
+%% Update Count     : 6
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -60,8 +60,8 @@ The installation procedure of the package places {\tt libmccparser.so},
 {\tt includedir} respectively.  To get instruction on how to install the
 package see the {\tt INSTALL} file in the root directory of the package.
 
-\noindent To include the parser in an application, you must follow these
-instructions:
+\noindent The following will explain how to use the mcsym script parser.
+To include the parser in an application, you must follow these instructions:
 \begin{itemize}
 \item first include the file {\tt mccparser.h} in your application;
 \item assign to the boolean variable {\tt interactive\_parser} the true
@@ -69,15 +69,129 @@ instructions:
   parsed;
 \item assign to {\tt mccin} the {\tt FILE*} of the input; assign stdin for
   interactive input or the result of the {\tt fopen} call on the input file;
+\item when you are using a interactive parser, create a new CMccInput or one
+  of it's derivative and assign it to the input\_class variable; in case of
+  a batch parser, you don't need to assign it any value;
 \item use {\tt mccparse ()} to parse the input.  The result can be found
   in the {\tt astv} variable defined in the library.  Its type is
   \verb+vector< MccPStruc* >*+.  We can display the parsed stream by using
   the method {\tt display (ostream\&)} defined for each {\tt MccPStruc};
 \item define a function on each {\tt MccPStruc} to evaluate the abstract
   syntax tree;
-\item link your application with the mccparser and the flex librares: {\tt
-    -lmccparser} and {\tt -lfl}.
+\item link your application with the mccparser: {\tt -lmccparser}.
 \end{itemize}
+
+\noindent {\bf Example for a simple batch parser}
+\begin{verbatim}
+eval (FILE *fd)
+{
+  vector< MccPStruct* >::iterator it;
+
+  mccin = fd;
+  interactive_parser = false;
+  astv = 0;
+
+  try
+    {
+      mccparse ();
+      for (it = astv->begin (); it != astv->end (); it++)
+        eval (*it);
+    }
+  catch (...)
+    {
+      ...
+    }
+  if (astv)
+    {
+      for (it = astv->begin (); it != astv->end (); it++)
+        delete *it;
+      delete astv;
+      astv = 0;
+    }
+
+  fclose (mccin);
+}
+\end{verbatim}
+
+
+\noindent {\bf Example for a simple interactive parser}
+\begin{verbatim}
+eval ()
+{
+  vector< MccPStruct* >::iterator it;
+
+  mccin = stdin;
+  input_class = new CMccInput ();
+  interactive_parser = true;
+  astv = 0;
+
+  while (true)
+    {
+      try
+        {
+          mccparse ();
+          for (it = astv->begin (); it != astv->end (); ++it)
+            eval (*it);
+        }
+      catch (...)
+        {
+          ...
+        }
+      if (astv)
+        {
+          for (it = astv->begin (); it != astv->end (); ++it)
+            delete *it;
+          delete astv;
+        }
+    }
+}
+\end{verbatim}
+
+
+\noindent {\bf Example for multifile non-interactive parser}
+\begin{verbatim}
+eval (FILE *fd)
+{
+  vector< MccPStruct* > *last_astv = astv;
+  bool last_interactive = interactive_parser;
+  FILE *last_mccin = mccin;
+  vector< MccPStruct* >::iterator it;
+
+  mccin = fd;
+  interactive_parser = false;
+  astv = 0;
+  try
+    {
+      mccparse ();
+      for (it = astv->begin (); it != astv->end (); it++)
+        eval (*it);
+    }
+  catch (...)
+    {
+      ...
+    }
+  if (astv)
+    {
+      for (it = astv->begin (); it != astv->end (); it++)
+        delete *it;
+      delete astv;
+      astv = 0;
+    }
+
+  fclose (mccin);
+  astv = last_astv;
+  interactive_parser = last_interactive;
+  // mccin is reassign and repositionned using this procedure.
+  mccrestart (last_mccin);
+}
+\end{verbatim}
+
+The class CMccInput is a wrapper around the interactive read function.  The
+parser calls {\tt input\_class->nextchar ()} to get the next typed
+character.  The implementation of CMccInput's nextchar is a simple {\tt getc
+  ()} call.  If you want to implement a different input procedure (buffered,
+string buffered, etc) you can build a child class of CMccInput and modify
+it's {\tt nextchar ()} method.
 
 \section{Changes}
 

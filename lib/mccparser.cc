@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Sep  5 16:02:07 2000
-// Update Count     : 4
+// Last Modified On : Thu Sep 14 11:46:32 2000
+// Update Count     : 5
 // Status           : Ok.
 // 
 
@@ -18,9 +18,9 @@
 
 vector< MccPStruct* > *astv;
 
-
-
 bool interactive_parser;
+
+CMccInput *input_class;
 
 
 
