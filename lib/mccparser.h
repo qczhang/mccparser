@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Sep 14 11:46:41 2000
-// Update Count     : 10
+// Last Modified On : Thu Sep 14 13:27:20 2000
+// Update Count     : 11
 // Status           : Ok.
 // 
 
@@ -19,6 +19,11 @@
 #include <stdio.h>
 
 #include "UMcsymLib.h"
+
+typedef struct yy_buffer_state *YY_BUFFER_STATE;
+YY_BUFFER_STATE mcc_scan_string (const char*);
+void mcc_delete_buffer (YY_BUFFER_STATE);
+void mcc_switch_to_buffer (YY_BUFFER_STATE);
 
 class MccPStruct;
 
