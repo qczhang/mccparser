@@ -1,3 +1,8 @@
+2001-12-04  Martin Larose  <larosem@iro.umontreal.ca>
+
+	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc, docs/Manual.tex, docs/Makefile.in, ChangeLog:
+	Merge between [prob-search] and main branch.
+
 2001-11-26  Martin Larose  <larosem@iro.umontreal.ca>
 
 	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc, docs/Manual.tex, NEWS:
