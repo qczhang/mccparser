@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Tue Sep  5 13:36:11 2000
- * Update Count     : 5
+ * Last Modified On : Tue Sep  5 13:37:46 2000
+ * Update Count     : 6
  * Status           : Ok.
  */
 
@@ -60,7 +60,7 @@
   vector< MccResidueName* > *rrv;
   MccResidueName *rr;
   MccFragGenStruc *fgr;
-  MccFGExp *fgs
+  MccFGExp *fgs;
   MccExpfile *expf;
   cutoffs *ctfs;
 }
