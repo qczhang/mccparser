@@ -1,11 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -*- Mode: Latex -*- %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Manual.tex
-%% Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+%% Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Thu Sep 14 14:49:44 2000
-%% Update Count     : 8
+%% Last Modified On : Fri Feb  9 10:47:07 2001
+%% Update Count     : 9
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -76,8 +76,10 @@ To include the parser in an application, you must follow these instructions:
   in the {\tt astv} variable defined in the library.  Its type is
   \verb+vector< MccPStruc* >*+.  We can display the parsed stream by using
   the method {\tt display (ostream\&)} defined for each {\tt MccPStruc};
-\item define a function on each {\tt MccPStruc} to evaluate the abstract
-  syntax tree;
+\item derive a class from MccVisitor and define the Visit methods that
+  evaluates the abstract syntax tree;
+\item call {\tt Accept} using your MccVisitor class as parameter each time
+  you need to evaluate a node;
 \item link your application with the mccparser: {\tt -lmccparser}.
 \end{itemize}
 
@@ -90,12 +92,13 @@ eval (FILE *fd)
   mccin = fd;
   interactive_parser = false;
   astv = 0;
+  MyVisitor visitor;
 
   try
     {
       mccparse ();
       for (it = astv->begin (); it != astv->end (); it++)
-        eval (*it);
+        (*it)->Accept (&visitor);
     }
   catch (...)
     {
@@ -124,6 +127,7 @@ eval ()
   input_class = new CMccInput ();
   interactive_parser = true;
   astv = 0;
+  MyVisitor visitor;
 
   while (true)
     {
@@ -131,7 +135,7 @@ eval ()
         {
           mccparse ();
           for (it = astv->begin (); it != astv->end (); ++it)
-            eval (*it);
+            (*it)->Accept (&visitor);
         }
       catch (...)
         {
@@ -156,6 +160,7 @@ eval (FILE *fd)
   bool last_interactive = interactive_parser;
   FILE *last_mccin = mccin;
   vector< MccPStruct* >::iterator it;
+  MyVisitor visitor;
 
   mccin = fd;
   interactive_parser = false;
@@ -164,7 +169,7 @@ eval (FILE *fd)
     {
       mccparse ();
       for (it = astv->begin (); it != astv->end (); it++)
-        eval (*it);
+        (*it)->Accept (&visitor);
     }
   catch (...)
     {
@@ -212,6 +217,7 @@ eval (const char *str)
   vector< MccPStruct* > *last_astv = astv;
   bool last_interactive = interactive_parser;
   FILE *last_mccin = mccin;
+  MyVisitor visitor;
 
   try
     {
@@ -225,7 +231,7 @@ eval (const char *str)
       mccparse ();
       
       for (it = astv->begin (); it != astv->end (); ++it)
-        eval (*it);
+        (*it)->Accept (&visitor);
 
       mcc_delete_buffer (handle);
       for (it = astv->begin (); it != astv->end (); ++it)
@@ -248,6 +254,7 @@ eval (const char *str)
 
 Changes from {\sc mcsym} version 3.2.4:
 \begin{itemize}
+\item the MccVisitor class was added;
 \item residue, connect, pair statements must contain at least one
   definition;
 \item angle, cycle, distance and torsion statements must contain at least
