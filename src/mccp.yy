@@ -1,11 +1,11 @@
 /*                               -*- Mode: C -*- 
  * mccp.yy
- * Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Thu Sep 14 11:46:27 2000
- * Update Count     : 4
+ * Last Modified On : Thu Jan  4 16:49:06 2001
+ * Update Count     : 5
  * Status           : Ok.
  */
 
@@ -57,7 +57,7 @@ INTEGER_LIT  (-?{DIGIT}+)
              char *mccstring_buf_ptr = mccstring_buf;
 
 
-<INITIAL,QUERIES>\n        ++mcclineno;           
+<INITIAL,QUERIES>[\n\r]    ++mcclineno;           
 <INITIAL,QUERIES>[ \t]+       
 <INITIAL,QUERIES>\/\/.*
 ,            return TOK_COMMA;
@@ -143,7 +143,7 @@ zipped       return TOK_ZIPPED;
 		   return TOK_QUOTED_IDENT;
                  }
 
-<QUOTES>\n       *mccstring_buf_ptr++ = '\n'; mcclineno++;
+<QUOTES>[\n\r]   *mccstring_buf_ptr++ = '\n'; mcclineno++;
 
 <QUOTES>[^\']+   {
                    char *yptr = mcctext;
@@ -166,7 +166,7 @@ zipped       return TOK_ZIPPED;
 		   return TOK_STRING;
                  }
 
-<STRINGS>\n      *mccstring_buf_ptr++ = '\n'; mcclineno++;
+<STRINGS>[\n\r]  *mccstring_buf_ptr++ = '\n'; mcclineno++;
                    
 <STRINGS>\\.     *mccstring_buf_ptr++ = '\\'; *mccstring_buf_ptr++ = mcctext[1];
 
