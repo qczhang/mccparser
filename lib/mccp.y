@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Mon Mar 24 09:42:10 2003
- * Update Count     : 22
+ * Last Modified On : Wed Mar 26 13:56:55 2003
+ * Update Count     : 23
  * Status           : Ok.
  */
 
@@ -195,6 +195,7 @@
 %token TOK_PLACER_CONNECT
 %token TOK_PLACER_PAIR
 %token TOK_PLACER_BUILD
+%token TOK_PLACER_EXPLORE
 //!
 
 %type <mccval> statement
@@ -330,6 +331,7 @@
 %type <mccval> placer_build
 %type <pbtsv> placer_res_place_plus
 %type <pbts> placer_res_place
+%type <mccval> placer_explore
 //!
 
 %type <textval> ident_plus
@@ -387,7 +389,7 @@ statement:   sequence { $$ = $1; }
            | placer_connect { $$ = $1; }
            | placer_pair { $$ = $1; }
            | placer_build { $$ = $1; }
-
+           | placer_explore { $$ = $1; }
 
 ;
 
@@ -1412,6 +1414,14 @@ placer_res_place:  TOK_LPAREN placer_residueRef placer_residueRef_star TOK_RPARE
 // 	     }
 ;
 
+
+placer_explore:   TOK_PLACER_EXPLORE TOK_LPAREN model_filter_opt output_mode_opt TOK_RPAREN
+            {
+	      $$ = new MccPlacerExploreStat ($3, $4);
+	    }
+;
+
+
 // TODO!
 // placer_clashCst: TOK_PLACER_CLASHCST TOK_LPAREN TOK_IDENT flt TOK_RPAREN
 // {
@@ -1427,6 +1437,7 @@ placer_res_place:  TOK_LPAREN placer_residueRef placer_residueRef_star TOK_RPARE
 
 // ;
 
+//!
 
 %%
 

@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed Mar 26 12:03:17 2003
-// Update Count     : 21
+// Last Modified On : Wed Mar 26 13:56:59 2003
+// Update Count     : 22
 // Status           : Ok.
 // 
 
@@ -5004,6 +5004,101 @@ MccPlacerBuildStat::ppdisplay (ostream &os, int indent) const
     (*it)->ppdisplay (os, indent + 4);
   os << endl;
   whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
+MccPlacerExploreStat::MccPlacerExploreStat (const MccPlacerExploreStat &right)
+  : //fg_struc (new MccFragGenStruc (*right.fg_struc)),
+    filter (0),
+    expOutput (0)
+{
+  if (right.filter)
+    filter = right.filter->clone ();
+  if (right.expOutput)
+    expOutput = right.expOutput->clone ();
+}
+
+
+
+MccPlacerExploreStat&
+MccPlacerExploreStat::operator= (const MccPlacerExploreStat &right)
+{
+  if (this != &right)
+    {
+//       delete fg_struc;
+//       fg_struc = right.fg_struc->clone ();
+      if (filter)
+	{
+	  delete filter;
+	  filter = 0;
+	}
+      if (right.filter)
+	filter = right.filter->clone ();
+      if (expOutput)
+	{
+	  delete expOutput;
+	  expOutput = 0;
+	}
+      if (right.expOutput)
+	expOutput = right.expOutput->clone ();
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerExploreStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerExploreStat::display (ostream &os) const
+{
+  os << "placer_explore (";
+  //  fg_struc->display (os);
+  if (filter)
+    {
+      os << ' ';
+      filter->display (os);
+    }
+  if (expOutput)
+    {
+      os << ' ';
+      expOutput->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerExploreStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "placer_explore" << endl;
+  whitespaces (os, indent);
+  os << '(' << endl;
+  whitespaces (os, indent + 2);
+  //  fg_struc->ppdisplay (os, indent + 2);
+  if (filter)
+    {
+      os << endl;
+      whitespaces (os, indent + 2);
+      filter->ppdisplay (os, indent + 2);
+    }
+  if (expOutput)
+    {
+      os << endl;
+      whitespaces (os, indent + 2);
+      expOutput->ppdisplay (os, indent + 2);
+    }
+  os << endl;
+  whitespaces (os, indent);
   os << ')' << endl;
 }
 

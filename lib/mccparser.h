@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed Mar 26 12:03:19 2003
-// Update Count     : 26
+// Last Modified On : Wed Mar 26 13:57:01 2003
+// Update Count     : 27
 // Status           : Ok.
 // 
 
@@ -7827,6 +7827,108 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
+/**
+ * @short Struct representing the AST node "placer_explore".
+ *
+ * @author Martin Larose <larosem@iro.umontreal.ca>
+ */
+struct MccPlacerExploreStat : public MccPStruct
+{
+//   /**
+//    * The FG struct to explore.
+//    */
+//   MccFragGenStruc *fg_struc;
+
+  /**
+   * The model cache.
+   */
+  MccModelFilterStrategy *filter;
+
+  /**
+   * The explore output file structure.
+   */
+  MccOutputMode *expOutput;
+  
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccPlacerExploreStat () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param fg the FG struct to explore.
+   * @param mc the model cache.
+   * @param ef the explore output file structure.
+   */
+  MccPlacerExploreStat (/*MccFragGenStruc* fg,*/ MccModelFilterStrategy *f,
+		  MccOutputMode *ef)
+    : /*fg_struc (fg),*/ filter (f), expOutput (ef) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccPlacerExploreStat (const MccPlacerExploreStat &right);
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccPlacerExploreStat* clone () const { return new MccPlacerExploreStat (*this); }
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccPlacerExploreStat ()
+  {
+//     delete fg_struc;
+    if (filter)
+      delete filter;
+    if (expOutput)
+      delete expOutput;
+  }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccPlacerExploreStat& operator= (const MccPlacerExploreStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
 
 //!
 
@@ -8301,6 +8403,11 @@ public:
    */
   virtual void Visit (MccPlacerBuildStat *struc) = 0;
   
+  /**
+   * Visits the MccPlacerExploreStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerExploreStat *struc) = 0;
   
   //!
 
