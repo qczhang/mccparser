@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Mon Mar 24 09:42:18 2003
-// Update Count     : 25
+// Last Modified On : Wed Mar 26 12:03:19 2003
+// Update Count     : 26
 // Status           : Ok.
 // 
 
@@ -16,7 +16,7 @@
 
 #include <iostream.h>
 #include <vector.h>
-#include <pair.h>
+#include <map.h>
 #include <stdio.h>
 
 
@@ -7723,6 +7723,12 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
    */
   vector< _GenBTStruc* > *strucs;
 
+  /**
+   * Container for strand extrema, addressed by chainid and resno.
+   * Maps minimal and maximal resno for a chainid.
+   */
+  map< char, int > headmap, tailmap;
+  
   
   // LIFECYCLE ------------------------------------------------------------
 
@@ -7787,8 +7793,7 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
    * @param rf the name of the reference residue.
    * @param rv the residue name vector.
    */
-  void GenBTStruc (MccPlacerResidueName *rf, vector< MccPlacerResidueName* > *rv)
-  { strucs->push_back (new _BTStruc (rf, rv)); }
+  void GenBTStruc (MccPlacerResidueName *rf, vector< MccPlacerResidueName* > *rv);
 
   /**
    * Generates a new Place sub-structure and puts it in the vector.
@@ -7804,8 +7809,7 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
    * Adds the vector of backtrack structures in the vector.
    * @param bts the vector of backtrack structures.
    */
-  void AddBTStrucs (vector< _GenBTStruc* > *bts)
-  { strucs->insert (strucs->end (), bts->begin (), bts->end ()); delete bts; }
+  void AddBTStrucs (vector< _GenBTStruc* > *bts);
 
   // I/O ------------------------------------------------------------------
     

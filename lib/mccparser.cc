@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Mon Mar 24 09:42:16 2003
-// Update Count     : 20
+// Last Modified On : Wed Mar 26 12:03:17 2003
+// Update Count     : 21
 // Status           : Ok.
 // 
 
@@ -4862,7 +4862,9 @@ MccPlacerBuildStat::_BTStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccPlacerBuildStat::MccPlacerBuildStat (const MccPlacerBuildStat &right)
-  : strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ())
+  : strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ()),
+    headmap (right.headmap),
+    tailmap (right.tailmap)
 {
   vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
 
@@ -4891,6 +4893,9 @@ MccPlacerBuildStat::operator= (const MccPlacerBuildStat &right)
       vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
       vector< MccPlacerBuildStat::_GenBTStruc* >::iterator it;
 
+      headmap = right.headmap;
+      tailmap = right.tailmap;
+      
       for (it = strucs->begin (); it != strucs->end (); it++)
 	delete *it;
       strucs->clear ();
@@ -4908,6 +4913,66 @@ MccPlacerBuildStat::Accept (MccVisitor *visitor)
   visitor->Visit (this);
 }
 
+
+void
+MccPlacerBuildStat::GenBTStruc (MccPlacerResidueName *rf,
+				vector< MccPlacerResidueName* > *rv)
+{
+  pair< map< char, int >::iterator, bool > insit;
+  vector< MccPlacerResidueName* >::const_iterator rvit;
+
+  insit = headmap.insert (make_pair (rf->id, rf->no));
+  if (!insit.second && rf->no < insit.first->second)
+    insit.first->second = rf->no;
+  insit = tailmap.insert (make_pair (rf->id, rf->no));
+  if (!insit.second && rf->no > insit.first->second)
+    insit.first->second = rf->no;
+
+  for (rvit = rv->begin (); rvit != rv->end (); ++rvit)
+    {
+      insit = headmap.insert (make_pair ((*rvit)->id, (*rvit)->no));
+      if (!insit.second && (*rvit)->no < insit.first->second)
+	insit.first->second = (*rvit)->no;
+      
+      insit = tailmap.insert (make_pair ((*rvit)->id, (*rvit)->no));
+      if (!insit.second && (*rvit)->no > insit.first->second)
+	insit.first->second = (*rvit)->no;
+    }
+
+  strucs->push_back (new _BTStruc (rf, rv));
+}
+
+
+void
+MccPlacerBuildStat::AddBTStrucs (vector< _GenBTStruc* > *bts)
+{
+  pair< map< char, int >::iterator, bool > insit;
+  vector< MccPlacerResidueName* >::const_iterator rvit;
+  vector< _GenBTStruc* >::const_iterator btsit;
+
+  for (btsit = bts->begin (); btsit != bts->end (); ++btsit)
+    {
+      insit = headmap.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
+      if (!insit.second && (*btsit)->ref->no < insit.first->second)
+	insit.first->second = (*btsit)->ref->no;
+      insit = tailmap.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
+      if (!insit.second && (*btsit)->ref->no > insit.first->second)
+	insit.first->second = (*btsit)->ref->no;
+
+      for (rvit = (*btsit)->res_v->begin (); rvit != (*btsit)->res_v->end (); ++rvit)
+	{
+	  insit = headmap.insert (make_pair ((*rvit)->id, (*rvit)->no));
+	  if (!insit.second && (*rvit)->no < insit.first->second)
+	    insit.first->second = (*rvit)->no;
+      
+	  insit = tailmap.insert (make_pair ((*rvit)->id, (*rvit)->no));
+	  if (!insit.second && (*rvit)->no > insit.first->second)
+	    insit.first->second = (*rvit)->no;
+	}
+    }
+
+  strucs->insert (strucs->end (), bts->begin (), bts->end ()); delete bts;
+}
 
 
 void
