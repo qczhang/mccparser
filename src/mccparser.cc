@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Sep 14 11:46:32 2000
-// Update Count     : 5
+// Last Modified On : Tue Oct 24 15:08:32 2000
+// Update Count     : 6
 // Status           : Ok.
 // 
 
@@ -21,6 +21,15 @@ vector< MccPStruct* > *astv;
 bool interactive_parser;
 
 CMccInput *input_class;
+
+
+
+void
+whitespaces (ostream &os, int indent)
+{
+  for (; indent > 0; --indent)
+    os << ' ';
+}
 
 
 
@@ -120,6 +129,23 @@ MccQNotFunc::operator= (const MccQNotFunc &right)
 
 
 
+void
+MccQNotFunc::ppdisplay (ostream &os, int indent) const
+{
+  os << "! ";
+  if (dynamic_cast< const MccQIdentFunc* >(fn)
+      || dynamic_cast< const MccQNotFunc* >(fn))
+    fn->ppdisplay (os, indent);
+  else
+    {
+      os << '(';
+      fn->ppdisplay (os, indent);
+      os << ')';
+    }
+}
+
+
+
 const MccQAndFunc&
 MccQAndFunc::operator= (const MccQAndFunc &right_val)
 {
@@ -133,7 +159,31 @@ MccQAndFunc::operator= (const MccQAndFunc &right_val)
     }
   return *this;
 }
-  
+
+
+
+void
+MccQAndFunc::ppdisplay (ostream &os, int indent) const
+{
+  if (dynamic_cast< const MccQOrFunc* >(left))
+    {
+      os << '(';
+      left->ppdisplay (os, indent);
+      os << ')';
+    }
+  else
+    left->ppdisplay (os, indent);
+  os << " && ";
+  if (dynamic_cast< const MccQOrFunc* >(right))
+    {
+      os << '(';
+      right->ppdisplay (os, indent);
+      os << ')';
+    }
+  else
+    right->ppdisplay (os, indent);
+}
+
 
 
 const MccQOrFunc&
@@ -148,6 +198,16 @@ MccQOrFunc::operator= (const MccQOrFunc &right_val)
       right = right_val.right->Copy ();
     }
   return *this;
+}
+
+
+
+void
+MccQOrFunc::ppdisplay (ostream &os, int indent) const
+{
+  left->ppdisplay (os, indent);
+  os << " || ";
+  right->ppdisplay (os, indent);
 }
 
 
@@ -222,6 +282,23 @@ MccQueryExpr::display (ostream &os) const
 
 
 
+void
+MccQueryExpr::ppdisplay (ostream &os, int indent) const
+{
+  vector< char* >::iterator it;
+
+  os << '{';
+  for (it = strs->begin (); it != strs->end (); ++it)
+    {
+      os << " file (\"" << *it << "\")";
+    }
+  os << ' ';
+  fn->ppdisplay (os, indent);
+  os << " }";
+}
+
+
+
 MccAddPdbStat::_AddPdbStruc::_AddPdbStruc (const MccAddPdbStat::_AddPdbStruc &right)
   : current_tfo_cutoff (right.current_tfo_cutoff),
     current_confo_cutoff (right.current_confo_cutoff),
@@ -290,6 +367,26 @@ MccAddPdbStat::_AddPdbStruc::display (ostream &os) const
 
 
 
+void
+MccAddPdbStat::_AddPdbStruc::ppdisplay (ostream &os, int indent) const
+{
+  vector< char* >::iterator it;
+
+  os << endl;
+  whitespaces (os, indent);
+  os << "tfo_cutoff   " << current_tfo_cutoff << endl;
+  whitespaces (os, indent);
+  os << "confo_cutoff " << current_confo_cutoff;
+  for (it = strs->begin (); it != strs->end (); ++it)
+    {
+      os << endl;
+      whitespaces (os, indent);
+      os << "\"" << *it << "\"";
+    }
+}
+
+
+
 MccAddPdbStat::MccAddPdbStat (const MccAddPdbStat &right)
   : MccPStruct (right), strucs (new vector< _AddPdbStruc* > ())
 {
@@ -349,6 +446,25 @@ MccAddPdbStat::display (ostream &os) const
   
 
 
+void
+MccAddPdbStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _AddPdbStruc* >::iterator it;
+
+  os << "add_pdb" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); ++it)
+    {
+      (*it)->ppdisplay (os, indent + 4);
+    }
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccAdjacencyCstStat::MccAdjacencyCstStat (const MccAdjacencyCstStat &right)
   : MccPStruct (right),
     fg_struc (new MccFragGenStruc (*right.fg_struc)),
@@ -380,6 +496,16 @@ MccAdjacencyCstStat::display (ostream &os) const
   os << "adjacency (";
   fg_struc->display (os);
   os << ' ' << the_min << ' ' << the_max << ')';
+}
+
+
+
+void
+MccAdjacencyCstStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "adjacency (";
+  fg_struc->ppdisplay (os, indent);
+  os << ' ' << the_min << ' ' << the_max << ')' << endl;
 }
 
 
@@ -454,6 +580,21 @@ MccAngleCstStat::_AngleStruc::display (ostream &os) const
 
 
 
+void
+MccAngleCstStat::_AngleStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ":" << at1 << ' ';
+  res2->ppdisplay (os, indent);
+  os << ":" << at2 << ' ';
+  res3->ppdisplay (os, indent);
+  os << ":" << at3 << ' ' << dist_min << ' ' << dist_max;
+}
+
+
+
 MccAngleCstStat::MccAngleCstStat (const MccAngleCstStat &right)
   : MccPStruct (right),
     strucs (new vector< MccAngleCstStat::_AngleStruc* > ())
@@ -514,6 +655,23 @@ MccAngleCstStat::display (ostream &os) const
 
 
 
+void
+MccAngleCstStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _AngleStruc* >::iterator it;
+
+  os << "angle" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccAssignStat::MccAssignStat (const MccAssignStat &right)
   : MccPStruct (right),
     expr (right.expr->Copy ())
@@ -546,6 +704,15 @@ MccAssignStat::display (ostream &os) const
 {
   os << ident << " = ";
   expr->display (os);
+}
+
+
+
+void
+MccAssignStat::ppdisplay (ostream &os, int indent) const
+{
+  os << ident << " = ";
+  expr->ppdisplay (os, indent + strlen (ident) + 3);
 }
 
 
@@ -631,6 +798,16 @@ MccBacktrackExpr::_FGStruc::operator= (const MccBacktrackExpr::_FGStruc &right)
 
 
 
+void
+MccBacktrackExpr::_FGStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  display (os);
+}
+
+
+
 MccBacktrackExpr::_BTStruc::~_BTStruc ()
 {
   vector< MccResidueName* >::iterator it;
@@ -670,6 +847,25 @@ MccBacktrackExpr::_BTStruc::display (ostream &os) const
 
 
 
+void
+MccBacktrackExpr::_BTStruc::ppdisplay (ostream &os, int indent) const
+{
+  vector< MccResidueName* >::iterator it;
+
+  os << endl;
+  whitespaces (os, indent);
+  os << '(';
+  ref->ppdisplay (os, indent);
+  for (it = res_v->begin (); it != res_v->end (); it++)
+    {
+      os << ' ';
+      (*it)->ppdisplay (os, indent);
+    }
+  os << ')';
+}
+
+
+
 const MccBacktrackExpr::_PlaceStruc&
 MccBacktrackExpr::_PlaceStruc::operator= (const MccBacktrackExpr::_PlaceStruc &right)
 {
@@ -689,6 +885,22 @@ MccBacktrackExpr::_PlaceStruc::display (ostream &os) const
   res->display (os);
   os << ' ';
   fg_struc->display (os);
+  os << ')';
+}
+
+
+
+void
+MccBacktrackExpr::_PlaceStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  os << "place (";
+  ref->ppdisplay (os, indent);
+  os << ' ';
+  res->ppdisplay (os, indent);
+  os << ' ';
+  fg_struc->ppdisplay (os, indent);
   os << ')';
 }
 
@@ -755,6 +967,23 @@ MccBacktrackExpr::display (ostream &os) const
 
 
 
+void
+MccBacktrackExpr::ppdisplay (ostream &os, int indent) const
+{
+  vector< _GenBTStruc* >::iterator it;
+
+  os << "backtrack" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccCacheExpr::MccCacheExpr (const MccCacheExpr &right)
   : MccFGExp (right),
     fgref (new MccFragGenStruc (*right.fgref)),
@@ -804,6 +1033,30 @@ MccCacheExpr::display (ostream &os) const
   if (atom_set_opt == NO_HYDROGEN_OPT)
     os << " no_hydrogen";
   os << ')';
+}
+
+
+
+void
+MccCacheExpr::ppdisplay (ostream &os, int indent) const
+{
+  os << "cache (";
+  fgref->ppdisplay (os, indent);
+  if (align)
+    os << " align";
+  if (rms_bound != 0.0)
+    os << " rmsd_bound " << rms_bound;
+  if (atom_set == ALL_ATOMS_SET)
+    os << " all";
+  else if (atom_set == BASE_ATOMS_SET)
+    os << " base_only";
+  else if (atom_set == BACKBONE_ATOMS_SET)
+    os << " backbone_only";
+  else
+    os << " pse_only";
+  if (atom_set_opt == NO_HYDROGEN_OPT)
+    os << " no_hydrogen";
+  os << ')' << endl;
 }
 
 
@@ -875,6 +1128,44 @@ MccClashCstStat::display (ostream &os) const
 
 
 
+void
+MccClashCstStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "res_clash (";
+  fg_struc->ppdisplay (os, indent);
+  if (VDWDist)
+    os << " vdw_distance ";
+  else
+    os << " fixed_distance ";
+  os << distFac;
+  switch (as)
+    {
+    case ALL_ATOMS_SET:
+      os << " all";
+      break;
+    case BASE_ATOMS_SET:
+      os << " base_only";
+      break;
+    case BACKBONE_ATOMS_SET:
+      os << " backbone_only";
+      break;
+    case PSE_ATOM_SET:
+      os << " pse_only";
+      break;
+    }
+  switch (aso)
+    {
+    case NO_HYDROGEN_OPT:
+      os << " no_hydrogen";
+      break;
+    case NO_OPTION:
+      break;
+    }
+  os << ')' << endl;
+}
+
+
+
 MccConnectStat::_ConnectStruc::_ConnectStruc (const MccConnectStat::_ConnectStruc &right)
   : res1 (new MccResidueName (*right.res1)),
     res2 (new MccResidueName (*right.res2)),
@@ -910,6 +1201,21 @@ MccConnectStat::_ConnectStruc::display (ostream &os) const
   res2->display (os);
   os << ' ';
   expr->display (os);
+  os << ' ' << ssize;
+}
+
+
+
+void
+MccConnectStat::_ConnectStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ' ';
+  res2->ppdisplay (os, indent);
+  os << ' ';
+  expr->ppdisplay (os, indent);
   os << ' ' << ssize;
 }
 
@@ -977,6 +1283,23 @@ MccConnectStat::display (ostream &os) const
 
 
 
+void
+MccConnectStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _ConnectStruc* >::iterator it;
+
+  os << "connect" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccCycleCstStat::_CycleStruc::_CycleStruc (const MccCycleCstStat::_CycleStruc &right)
   : res1 (new MccResidueName (*right.res1)),
     res2 (new MccResidueName (*right.res2)),
@@ -1009,6 +1332,19 @@ MccCycleCstStat::_CycleStruc::display (ostream &os) const
   res1->display (os);
   os << ' ';
   res2->display (os);
+  os << ' ' << dist << ' ' << nb;
+}
+
+
+
+void
+MccCycleCstStat::_CycleStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ' ';
+  res2->ppdisplay (os, indent);
   os << ' ' << dist << ' ' << nb;
 }
 
@@ -1074,6 +1410,23 @@ MccCycleCstStat::display (ostream &os) const
 
 
 
+void
+MccCycleCstStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _CycleStruc* >::iterator it;
+
+  os << "cycle" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); ++it)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccDisplayFGStat::MccDisplayFGStat (const MccDisplayFGStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc))
 { }
@@ -1100,6 +1453,16 @@ MccDisplayFGStat::display (ostream &os) const
   os << "display_fg (";
   fg_struc->display (os);
   os << ')';
+}
+
+
+
+void
+MccDisplayFGStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "display_fg (";
+  fg_struc->ppdisplay (os, indent);
+  os << ')' << endl;
 }
 
 
@@ -1147,6 +1510,19 @@ MccDistCstStat::_DistStruc::display (ostream &os) const
   res1->display (os);
   os << ':' << at1 << ' ';
   res2->display (os);
+  os << ':' << at2 << ' ' << dist_min << ' ' << dist_max;
+}
+
+
+
+void
+MccDistCstStat::_DistStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ':' << at1 << ' ';
+  res2->ppdisplay (os, indent);
   os << ':' << at2 << ' ' << dist_min << ' ' << dist_max;
 }
 
@@ -1208,6 +1584,23 @@ MccDistCstStat::display (ostream &os) const
       (*it)->display (os);
     }
   os << ')';
+}
+
+
+
+void
+MccDistCstStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _DistStruc* >::iterator it;
+
+  os << "distance" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
 }
 
 
@@ -1289,6 +1682,27 @@ MccExploreStat::display (ostream &os) const
       efile->display (os);
     }
   os << ')';
+}
+
+
+
+void
+MccExploreStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "explore" << endl;
+  whitespaces (os, indent + 2);
+  os << '(' << endl;
+  whitespaces (os, indent + 4);
+  fg_struc->ppdisplay (os, indent + 4);
+  if (efile)
+    {
+      os << endl;
+      whitespaces (os, indent + 4);
+      efile->ppdisplay (os, indent + 4);
+    }
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
 }
 
 
@@ -1378,12 +1792,41 @@ MccLibraryExpr::_StripStruc::display (ostream &os) const
 
 
 
+void
+MccLibraryExpr::_StripStruc::ppdisplay (ostream &os, int indent) const
+{
+  vector< MccResidueName* >::iterator it;
+
+  os << endl;
+  whitespaces (os, indent);
+  os << "strip (";
+  for (it = res_vec->begin (); it != res_vec->end (); it++)
+    {
+      if (it != res_vec->begin ())
+	os << ' ';
+      (*it)->ppdisplay (os, indent);
+    }
+  os << ')';
+}
+
+
+
 const MccLibraryExpr::_ChangeIdStruc&
 MccLibraryExpr::_ChangeIdStruc::operator= (const MccLibraryExpr::_ChangeIdStruc &right)
 {
   if (this != &right)
     MccLibraryExpr::_LibStruc::operator= (right);
   return *this;
+}
+
+
+
+void
+MccLibraryExpr::_ChangeIdStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  os << "change_id (\"" << from << "\" , \"" << to << "\")";
 }
 
 
@@ -1448,6 +1891,25 @@ MccLibraryExpr::display (ostream &os) const
       (*it)->display (os);
     }
   os << ')';
+}
+
+
+
+void
+MccLibraryExpr::ppdisplay (ostream &os, int indent) const
+{
+  vector< _LibStruc* >::iterator it;
+
+  os << "library" << endl;
+  whitespaces (os, indent + 2);
+  os << '(' << endl;
+  whitespaces (os, indent + 4);
+  os << "pdb \"" << str << "\"";
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
 }
 
 
@@ -1524,6 +1986,33 @@ MccNewTagStat::display (ostream &os) const
 
 
 
+void
+MccNewTagStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< MccQueryExpr* >::iterator it;
+
+  os << "new_tag" << endl;
+  whitespaces (os, indent + 2);
+  os << '(' << endl;
+  whitespaces (os, indent + 4);
+  if (resq_opt)
+    os << "res";
+  else
+    os << "tfo";
+  os << " \"" << id << "\"";
+  for (it = exprs->begin (); it != exprs->end (); it++)
+    {
+      os << endl;
+      whitespaces (os, indent + 4);
+      (*it)->ppdisplay (os, indent + 4);
+    }
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccNoteStat::MccNoteStat (const MccNoteStat &right)
   : MccPStruct (right)
 {
@@ -1548,12 +2037,30 @@ MccNoteStat::operator= (const MccNoteStat &right)
 
 
 
+void
+MccNoteStat::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+  os << endl;
+}
+
+
+
 const MccNotesStat&
 MccNotesStat::operator= (const MccNotesStat &right)
 {
   if (this != &right)
     MccPStruct::operator= (right);
   return *this;
+}
+
+
+
+void
+MccNotesStat::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+  os << endl;
 }
 
 
@@ -1593,6 +2100,21 @@ MccPairStat::_PairStruc::display (ostream &os) const
   ref->display (os);
   os << ' ';
   expr->display (os);
+  os << ' ' << ssize;
+}
+
+
+
+void
+MccPairStat::_PairStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res->ppdisplay (os, indent);
+  os << ' ';
+  ref->ppdisplay (os, indent);
+  os << ' ';
+  expr->ppdisplay (os, indent);
   os << ' ' << ssize;
 }
 
@@ -1658,12 +2180,38 @@ MccPairStat::display (ostream &os) const
 
 
 
+void
+MccPairStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _PairStruc* >::iterator it;
+  
+  os << "pair" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 const MccQuitStat&
 MccQuitStat::operator= (const MccQuitStat &right)
 {
   if (this != &right)
     MccPStruct::operator= (right);
   return *this;
+}
+
+
+
+void
+MccQuitStat::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+  os << endl;
 }
 
 
@@ -1692,6 +2240,15 @@ MccRemarkStat::operator= (const MccRemarkStat &right)
 
 
 
+void
+MccRemarkStat::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+  os << endl;
+}
+
+
+
 const MccResetDBStat&
 MccResetDBStat::operator= (const MccResetDBStat &right)
 {
@@ -1702,12 +2259,30 @@ MccResetDBStat::operator= (const MccResetDBStat &right)
 
 
 
+void
+MccResetDBStat::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+  os << endl;
+}
+
+
+
 const MccResetStat&
 MccResetStat::operator= (const MccResetStat &right)
 {
   if (this != &right)
     MccPStruct::operator= (right);
   return *this;
+}
+
+
+
+void
+MccResetStat::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+  os << endl;
 }
 
 
@@ -1758,6 +2333,24 @@ MccResidueStat::_ResidueStruc::display (ostream &os) const
       os << ' ';
     }
   expr->display (os);
+  os << ' ' << ssize;
+}
+
+
+
+void
+MccResidueStat::_ResidueStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ' ';
+  if (res2)
+    {
+      res2->ppdisplay (os, indent);
+      os << ' ';
+    }
+  expr->ppdisplay (os, indent);
   os << ' ' << ssize;
 }
 
@@ -1823,6 +2416,23 @@ MccResidueStat::display (ostream &os) const
 
 
 
+void
+MccResidueStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _ResidueStruc* >::iterator it;
+  
+  os << "residue" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccRestoreStat::MccRestoreStat (const MccRestoreStat &right)
   : MccPStruct (right),
     efile (0)
@@ -1868,6 +2478,27 @@ MccRestoreStat::display (ostream &os) const
 
 
 
+void
+MccRestoreStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "restore" << endl;
+  whitespaces (os, indent + 2);
+  os << '(' << endl;
+  whitespaces (os, indent + 4);
+  os << "\"" << filename << "\"";
+  if (efile)
+    {
+      os << endl;
+      whitespaces (os, indent + 4);
+      efile->ppdisplay (os, indent + 4);
+    }
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccSequenceStat::MccSequenceStat (const MccSequenceStat &right)
   : MccPStruct (right),
     type (right.type),
@@ -1907,6 +2538,16 @@ MccSequenceStat::display (ostream &os) const
 
 
 
+void
+MccSequenceStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "sequence (" << type << ' ';
+  res->ppdisplay (os, indent);
+  os << ' ' << seq << ')' << endl;
+}
+
+
+
 MccSourceStat::MccSourceStat (const MccSourceStat &right)
   : MccPStruct (right)
 {
@@ -1927,6 +2568,15 @@ MccSourceStat::operator= (const MccSourceStat &right)
       strcpy (str, right.str);
     }
   return *this;
+}
+
+
+
+void
+MccSourceStat::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+  os << endl;
 }
 
 
@@ -2013,6 +2663,23 @@ MccTorsionCstStat::_TorsionStruc::display (ostream &os) const
 
 
 
+void
+MccTorsionCstStat::_TorsionStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ':' << at1 << ' ';
+  res2->ppdisplay (os, indent);
+  os << ':' << at2 << ' ';
+  res3->ppdisplay (os, indent);
+  os << ':' << at3 << ' ';
+  res4->ppdisplay (os, indent);
+  os << ':' << at4 << ' ' << min << ' ' << max;
+}
+
+
+
 MccTorsionCstStat::MccTorsionCstStat (const MccTorsionCstStat &right)
   : MccPStruct (right),
     strucs (new vector< MccTorsionCstStat::_TorsionStruc* > ())
@@ -2073,12 +2740,38 @@ MccTorsionCstStat::display (ostream &os) const
 
 
 
+void
+MccTorsionCstStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _TorsionStruc* >::iterator it;
+
+  os << "torsion" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); ++it)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 const MccVersion&
 MccVersion::operator= (const MccVersion &right)
 {
   if (this != &right)
     MccPStruct::operator= (right);
   return *this;
+}
+
+
+
+void
+MccVersion::ppdisplay (ostream &os, int indent) const
+{
+  display (os);
+  os << endl;
 }
 
 

@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Sep 14 13:27:20 2000
-// Update Count     : 11
+// Last Modified On : Tue Oct 24 15:08:35 2000
+// Update Count     : 12
 // Status           : Ok.
 // 
 
@@ -201,6 +201,13 @@ struct MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0)  const { }
 };
 
 
@@ -259,6 +266,13 @@ struct MccFGExp
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { }
 };
 
 
@@ -335,6 +349,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -412,6 +433,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   void display (ostream &os) const { if (id != ' ') os << id; os << no; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -471,6 +499,13 @@ struct MccQFunc
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { }
 };
 
 
@@ -526,6 +561,13 @@ struct MccQTrueFunc : public MccQFunc
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { }
 };
 
 
@@ -601,6 +643,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { os << str; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -684,6 +733,13 @@ public:
    */
   virtual void display (ostream &os) const
   { os << "! (";  fn->display (os); os << ")"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -763,7 +819,14 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const
-  { left->display (os); os << ' '; right->display (os); }
+  { left->display (os); os << " && "; right->display (os); }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
   
   
@@ -845,6 +908,13 @@ public:
   virtual void display (ostream &os) const
   { os << "("; left->display (os); os << " || "; right->display (os);
     os << ")"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
   
 
@@ -931,6 +1001,13 @@ struct MccQueryExpr
    * @param os the output stream where the message is displayed.
    */
   void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1022,6 +1099,13 @@ struct MccAddPdbStat : public MccPStruct
      * @param os the output stream where the message is displayed.
      */
     void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -1090,6 +1174,13 @@ struct MccAddPdbStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1173,6 +1264,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1299,6 +1397,13 @@ struct MccAngleCstStat : public MccPStruct
      * @param os the output stream where the message is displayed.
      */
     void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -1377,6 +1482,13 @@ struct MccAngleCstStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1453,6 +1565,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1559,6 +1678,13 @@ struct MccBacktrackExpr : public MccFGExp
      * @param os the output stream where the message is displayed.
      */
     virtual void display (ostream &os) const { }
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const { }
   };
   
 
@@ -1621,6 +1747,13 @@ struct MccBacktrackExpr : public MccFGExp
      * @param os the output stream where the message is displayed.
      */
     virtual void display (ostream &os) const { fg_struc->display (os); }
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
   
 
@@ -1685,6 +1818,13 @@ struct MccBacktrackExpr : public MccFGExp
      * @param os the output stream where the message is displayed.
      */
     virtual void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
   
 
@@ -1750,6 +1890,13 @@ struct MccBacktrackExpr : public MccFGExp
      * @param os the output stream where the message is displayed.
      */
     virtual void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -1844,6 +1991,13 @@ struct MccBacktrackExpr : public MccFGExp
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1940,6 +2094,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2035,6 +2196,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2133,6 +2301,13 @@ struct MccConnectStat : public MccPStruct
      * @param os the output stream where the message is displayed.
      */
     void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
   
   /**
@@ -2204,6 +2379,13 @@ struct MccConnectStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2299,6 +2481,13 @@ struct MccCycleCstStat : public MccPStruct
      * @param os the output stream where the message is displayed.
      */
     void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -2369,6 +2558,13 @@ struct MccCycleCstStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2438,6 +2634,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2551,6 +2754,13 @@ struct MccDistCstStat : public MccPStruct
      * @param os the output stream where the message is displayed.
      */
     void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -2623,6 +2833,13 @@ struct MccDistCstStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2698,6 +2915,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -2774,6 +2998,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2868,6 +3099,13 @@ struct MccLibraryExpr : public MccFGExp
      * @param os the output stream where the message is displayed.
      */
     virtual void display (ostream &os) const { }
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const { }
   };
   
   /**
@@ -2929,6 +3167,13 @@ struct MccLibraryExpr : public MccFGExp
      * @param os the output stream where the message is displayed.
      */
     virtual void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -2992,6 +3237,13 @@ struct MccLibraryExpr : public MccFGExp
      */
     virtual void display (ostream &os) const
     { os << "change_id (\"" << from << "\" , \"" << to << "\")"; }
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -3074,6 +3326,13 @@ struct MccLibraryExpr : public MccFGExp
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3157,6 +3416,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3229,6 +3495,13 @@ public:
    */
   virtual void display (ostream &os) const
   { os << "note (\"" << str << "\")"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3286,6 +3559,13 @@ struct MccNotesStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { os << "notes"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3384,6 +3664,13 @@ struct MccPairStat : public MccPStruct
      * @param os the output stream where the message is displayed.
      */
     void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -3453,6 +3740,13 @@ struct MccPairStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3510,6 +3804,13 @@ struct MccQuitStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { os << "quit"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3582,6 +3883,13 @@ public:
    */
   virtual void display (ostream &os) const
   { os << "remark (\"" << str << "\")"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3639,6 +3947,13 @@ struct MccResetDBStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { os << "reset_db"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3696,6 +4011,13 @@ struct MccResetStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { os << "reset"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3795,6 +4117,13 @@ struct MccResidueStat : public MccPStruct
      * @param os the output stream where the message is displayed.
      */
     void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -3866,6 +4195,13 @@ struct MccResidueStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3945,6 +4281,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -4028,6 +4371,13 @@ public:
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -4098,6 +4448,13 @@ public:
    */
   virtual void display (ostream &os) const
   { os << "source (\"" << str << "\")"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -4242,6 +4599,13 @@ struct MccTorsionCstStat : public MccPStruct
      * @param os the output stream where the message is displayed.
      */
     void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -4325,6 +4689,13 @@ struct MccTorsionCstStat : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -4383,6 +4754,13 @@ struct MccVersion : public MccPStruct
    * @param os the output stream where the message is displayed.
    */
   virtual void display (ostream &os) const { os << "version"; }
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
