@@ -1,11 +1,11 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.y
- * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-01 , 2002Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Philippe Thibault
- * Last Modified On : Wed Oct 23 09:20:53 2002
- * Update Count     : 17
+ * Last Modified By : Labo Lbit
+ * Last Modified On : Thu Oct 31 10:23:55 2002
+ * Update Count     : 18
  * Status           : Ok.
  */
 
@@ -827,6 +827,7 @@ sampling: TOK_INTEGER             { $$ = new MccSamplingSize ($1, true); }
 
 theo_confo:  /* empty */     { $$ = false; }
              | TOK_THEOCONFO { $$ = true; }
+;
 
 
 queryexp_plus:   queryexp
@@ -986,6 +987,7 @@ input_mode:   TOK_PDB TOK_STRING  /* deprecated */
               {
 		$$ = new MccSocketBinaryInput ($3, $4, $5);
 	      }
+;
 
 
 model_sorter_opt: /* empty */ { $$ = 0; }
@@ -1001,6 +1003,8 @@ model_sorter:   TOK_CLUSTERED TOK_LPAREN TOK_INTEGER atomset_opt atomsetopt_opt 
                 {
 		  $$ = new MccClusteredModelSorterStrategy ((float)$3, $5, $6);
 		}
+;
+
 
 libopt_star:   /* empty */
                 {
