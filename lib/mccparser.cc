@@ -1,19 +1,16 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.cc
-// Copyright © 2000-01, 03 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
-// Last Modified By : Patrick Gendron
-// Last Modified On : Tue Sep 30 11:31:44 2003
-// Update Count     : 22
-// Status           : Ok.
-// 
+// $Revision$
+// $Id$
 
 
-#include <cstring>
+#include <math.h>
+#include <string.h>
 
 #include "mccparser.h"
-#include <math.h>
 
 
 vector< MccPStruct* > *astv;
@@ -406,7 +403,7 @@ MccAddPdbStat::_AddPdbStruc::_AddPdbStruc (const MccAddPdbStat::_AddPdbStruc &ri
 
 MccAddPdbStat::_AddPdbStruc::~_AddPdbStruc ()
 {
-  vector < char* >::iterator it;
+  vector< char* >::iterator it;
 
   for (it = strs->begin (); it != strs->end (); ++it)
     delete [] *it;
@@ -2032,6 +2029,46 @@ MccSocketBinaryOutput::display (ostream &os) const
 
 
 
+MccFileRnamlOutput::MccFileRnamlOutput (const MccFileRnamlOutput &right)
+  : name (strdup (right.name)),
+    zipped (right.zipped)
+{ }
+
+
+
+MccFileRnamlOutput&
+MccFileRnamlOutput::operator= (const MccFileRnamlOutput &right)
+{
+  if (this != &right)
+    {
+      delete[] name;
+      name = strdup (right.name);
+      zipped = right.zipped;
+    }
+  return *this;
+}
+
+
+
+void
+MccFileRnamlOutput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccFileRnamlOutput::display (ostream &os) const
+{
+  os << "file_rnaml (\"" << name << "\"";
+  if (zipped)
+    os << " zipped";
+  os << ")";
+}
+
+
+
 MccFilePdbInput::MccFilePdbInput (const MccFilePdbInput &right)
   : name (strdup (right.name))
 { }
@@ -2139,6 +2176,41 @@ MccSocketBinaryInput::display (ostream &os) const
 {
   os << "socket_bin (\"" << serverName << " " << port
      << " \"" << modelName << "\")";
+}
+
+
+
+MccFileRnamlInput::MccFileRnamlInput (const MccFileRnamlInput &right)
+  : name (strdup (right.name))
+{ }
+
+
+
+MccFileRnamlInput&
+MccFileRnamlInput::operator= (const MccFileRnamlInput &right)
+{
+  if (this != &right)
+    {
+      delete[] name;
+      name = strdup (right.name);
+    }
+  return *this;
+}
+
+
+
+void
+MccFileRnamlInput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccFileRnamlInput::display (ostream &os) const
+{
+  os << "file_rnaml (\"" << name << "\")";
 }
 
 

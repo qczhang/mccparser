@@ -1,14 +1,10 @@
-############################ -*- Mode: Makefile -*- ###########################
-## Makefile.in
-## Copyright © 2000-02 Laboratoire de Biologie Informatique et Théorique.
-## Author           : Martin Larose
-## Created On       : Mon Aug 21 15:57:45 2000
-## Last Modified By : Patrick Gendron
-## Last Modified On : Fri Feb 22 14:49:22 2002
-## Update Count     : 3
-## Status           : Unknown.
-###############################################################################
-
+#                            -*- Mode: Makefile -*-
+# Makefile.in
+# Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
+# Author           : Martin Larose
+# Created On       : Mon Aug 21 15:57:45 2000
+# $Revision$
+# $Id$
 
 
 PACKAGE = @PACKAGE@
@@ -59,7 +55,7 @@ install install-static install-doc:
 
 uninstall:
 	@ for file in ChangeLog NEWS README; do \
-           rm -f $(datadir)/$(PACKAGE)/$(VERSION)/doc/$$file; \
+           $(RM) $(datadir)/$(PACKAGE)/$(VERSION)/doc/$$file; \
 	  done
 	@ for subdir in $(SUBDIRS); do \
 	   echo Making $@ in $$subdir; \
@@ -84,7 +80,7 @@ clean-local: mostlyclean-local
 distclean: distclean-recursive distclean-local
 
 distclean-local: clean-local
-	@ rm -f Makefile config.cache config.h config.log config.status
+	@ $(RM) Makefile config.cache config.h config.log config.status
 
 topclean: topclean-recursive topclean-local
 
@@ -99,7 +95,7 @@ mostlyclean-recursive clean-recursive distclean-recursive topclean-recursive:
 
 release:
 	@ rm -fr $(PACKAGE)-$(VERSION)
-	@ rm -f $(PACKAGE)-$(VERSION).tar.gz
+	@ $(RM) $(PACKAGE)-$(VERSION).tar.gz
 	@ mkdir $(PACKAGE)-$(VERSION)
 	@ chmod 777 $(PACKAGE)-$(VERSION)
 	@ for file in INSTALL NEWS README; do \

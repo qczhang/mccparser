@@ -1,36 +1,26 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.h
-// Copyright © 2000-01, 03 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
-// Last Modified By : Patrick Gendron
-// Last Modified On : Tue Sep 30 11:31:46 2003
-// Update Count     : 33
-// Status           : Ok.
-// 
+// $Revision$
+// $Id$
 
 
 #ifndef _mccparser_h_
 #define _mccparser_h_
 
-
 #include <iostream>
-#include <vector>
 #include <utility>
-#include <cstdio>
-
-
-using namespace std;
-
-
-typedef struct yy_buffer_state *YY_BUFFER_STATE;
-YY_BUFFER_STATE mcc_scan_string (const char*);
-void mcc_delete_buffer (YY_BUFFER_STATE);
-void mcc_switch_to_buffer (YY_BUFFER_STATE);
+#include <stdio.h>
+#include <vector>
 
 class MccPStruct;
 class MccVisitor;
 class MccQueryExpr;
+
+using namespace std;
+
 
 
 /**
@@ -264,7 +254,7 @@ struct MccFGExp
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccFGExp& operator= (const MccFGExp &right) { return *this; }
+  MccFGExp& operator= (const MccFGExp &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
   
@@ -842,7 +832,7 @@ struct MccQFunc
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccQFunc& operator= (const MccQFunc &right) { return *this; }
+  MccQFunc& operator= (const MccQFunc &right) { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -910,7 +900,7 @@ struct MccQTrueFunc : public MccQFunc
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccQTrueFunc& operator= (const MccQTrueFunc &right) { return *this; }
+  MccQTrueFunc& operator= (const MccQTrueFunc &right) { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -992,7 +982,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccQIdentFunc& operator= (const MccQIdentFunc &right);
+  MccQIdentFunc& operator= (const MccQIdentFunc &right);
   
   // ACCESS ---------------------------------------------------------------
 
@@ -1080,7 +1070,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccQNotFunc& operator= (const MccQNotFunc &right);
+  MccQNotFunc& operator= (const MccQNotFunc &right);
   
   // ACCESS ---------------------------------------------------------------
 
@@ -1182,7 +1172,7 @@ public:
    * @param right_val the object to copy.
    * @return itself.
    */
-  virtual MccQFaceFunc& operator= (const MccQFaceFunc &right_val);
+  MccQFaceFunc& operator= (const MccQFaceFunc &right_val);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -1273,7 +1263,7 @@ public:
    * @param right_val the object to copy.
    * @return itself.
    */
-  virtual MccQAndFunc& operator= (const MccQAndFunc &right_val);
+  MccQAndFunc& operator= (const MccQAndFunc &right_val);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -1363,7 +1353,7 @@ public:
    * @param right_val the object to copy.
    * @return itself.
    */
-  virtual MccQOrFunc& operator= (const MccQOrFunc &right_val);
+  MccQOrFunc& operator= (const MccQOrFunc &right_val);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -1530,7 +1520,7 @@ struct MccAddPdbStat : public MccPStruct
     /**
      * Vector of pdb file names.
      */
-    vector < char* > *strs;
+    vector< char* > *strs;
 
 
     // LIFECYCLE ------------------------------------------------------------
@@ -1639,7 +1629,7 @@ struct MccAddPdbStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccAddPdbStat& operator= (const MccAddPdbStat &right);
+  MccAddPdbStat& operator= (const MccAddPdbStat &right);
   
   // ACCESS ---------------------------------------------------------------
 
@@ -1743,7 +1733,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccAdjacencyCstStat& operator= (const MccAdjacencyCstStat &right);
+  MccAdjacencyCstStat& operator= (const MccAdjacencyCstStat &right);
 
   // ACCESS ---------------------------------------------------------------
 
@@ -1954,7 +1944,7 @@ struct MccAngleCstStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-  virtual MccAngleCstStat& operator= (const MccAngleCstStat &right);
+  MccAngleCstStat& operator= (const MccAngleCstStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -2061,7 +2051,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccAssignStat& operator= (const MccAssignStat &right);
+  MccAssignStat& operator= (const MccAssignStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -2179,7 +2169,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual _GenBTStruc& operator= (const _GenBTStruc &right);
+    _GenBTStruc& operator= (const _GenBTStruc &right);
 
     // ACCESS ---------------------------------------------------------------
     
@@ -2255,7 +2245,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual _FGStruc& operator= (const _FGStruc &right);
+    _FGStruc& operator= (const _FGStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -2332,7 +2322,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual _BTStruc& operator= (const _BTStruc &right);
+    _BTStruc& operator= (const _BTStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -2410,7 +2400,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual _PlaceStruc& operator= (const _PlaceStruc &right);
+    _PlaceStruc& operator= (const _PlaceStruc &right);
     
     // ACCESS ---------------------------------------------------------------
     
@@ -2482,7 +2472,7 @@ struct MccBacktrackExpr : public MccFGExp
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccBacktrackExpr& operator= (const MccBacktrackExpr &right);
+  MccBacktrackExpr& operator= (const MccBacktrackExpr &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -2594,7 +2584,7 @@ struct MccCycleExpr : public MccFGExp
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccCycleExpr& operator= (const MccCycleExpr &right);
+  MccCycleExpr& operator= (const MccCycleExpr &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -2685,7 +2675,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccCacheExpr& operator= (const MccCacheExpr &right);
+  MccCacheExpr& operator= (const MccCacheExpr &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -2792,7 +2782,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccClashCstStat& operator= (const MccClashCstStat &right);
+  MccClashCstStat& operator= (const MccClashCstStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -2974,7 +2964,7 @@ struct MccConnectStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccConnectStat& operator= (const MccConnectStat &right);
+  MccConnectStat& operator= (const MccConnectStat &right);
     
   // ACCESS ---------------------------------------------------------------
   
@@ -3255,7 +3245,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccDisplayFGStat& operator= (const MccDisplayFGStat &right);
+  MccDisplayFGStat& operator= (const MccDisplayFGStat &right);
 
   // ACCESS ---------------------------------------------------------------
 
@@ -3452,7 +3442,7 @@ struct MccDistCstStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccDistCstStat& operator= (const MccDistCstStat &right);
+  MccDistCstStat& operator= (const MccDistCstStat &right);
     
   // ACCESS ---------------------------------------------------------------
   
@@ -3807,6 +3797,95 @@ public:
    * @param right the struct to copy.
    */
   MccSocketBinaryOutput& operator= (const MccSocketBinaryOutput &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Class representing the file option on AST nodes "explore" and
+ * "restore".
+ *
+ * @author Martin Larose (<a href="mailto:larosem@iro.umontreal.ca">larosem@iro.umontreal.ca</a>)
+ */
+struct MccFileRnamlOutput : public MccOutputMode
+{
+  /**
+   * The output file name.
+   */
+  char *name;
+
+  /**
+   * The boolean indicating if the files will be zipped.
+   */
+  bool zipped;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+  
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccFileRnamlOutput () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param name the ouput file name.
+   * @param z the boolean indicating if the files will be zipped.
+   */
+  MccFileRnamlOutput (char *name, bool z) : name (name), zipped (z) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccFileRnamlOutput (const MccFileRnamlOutput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of the current object.
+   */
+  virtual MccOutputMode* clone () const { return new MccFileRnamlOutput (*this); }
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccFileRnamlOutput () { delete[] name; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccFileRnamlOutput& operator= (const MccFileRnamlOutput &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -4241,6 +4320,89 @@ public:
 
 
 /**
+ * @short Input model class for rnaml files.
+ *
+ * @author Martin Larose (<a href="mailto:larosem@iro.umontreal.ca">larosem@iro.umontreal.ca</a>)
+ */
+struct MccFileRnamlInput : public MccInputMode
+{
+  /**
+   * The file name.
+   */
+  char *name;  
+  
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should not be used.
+   */
+  MccFileRnamlInput () { }
+
+public:
+
+  /**
+   * Initializes the object with a name.
+   * @param n the name of the input file(s).
+   */
+  MccFileRnamlInput (char *n) : name (n) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccFileRnamlInput (const MccFileRnamlInput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of itself.
+   */
+  virtual MccFileRnamlInput* clone () const
+  { return new MccFileRnamlInput (*this); }
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccFileRnamlInput () { delete[] name; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccFileRnamlInput& operator= (const MccFileRnamlInput &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
  * @short Struct representing the AST node "explore".
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
@@ -4314,7 +4476,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccExploreStat& operator= (const MccExploreStat &right);
+  MccExploreStat& operator= (const MccExploreStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -4442,7 +4604,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccExploreLVStat& operator= (const MccExploreLVStat &right);
+  MccExploreLVStat& operator= (const MccExploreLVStat &right);
   
   // ACCESS ---------------------------------------------------------------
  
@@ -4543,7 +4705,7 @@ struct MccLibraryExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual _LibStruc& operator= (const _LibStruc &right);
+    _LibStruc& operator= (const _LibStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -4612,7 +4774,7 @@ struct MccLibraryExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual _StripStruc& operator= (const _StripStruc &right);
+    _StripStruc& operator= (const _StripStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -4682,7 +4844,7 @@ struct MccLibraryExpr : public MccFGExp
      * @param right the object to copy.
      * @return itself.
      */
-    virtual _ChangeIdStruc& operator= (const _ChangeIdStruc &right);
+    _ChangeIdStruc& operator= (const _ChangeIdStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -4770,7 +4932,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccLibraryExpr& operator= (const MccLibraryExpr &right);
+  MccLibraryExpr& operator= (const MccLibraryExpr &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -4901,7 +5063,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccMosesExpr& operator= (const MccMosesExpr &right);
+  MccMosesExpr& operator= (const MccMosesExpr &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -4990,7 +5152,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccNewTagStat& operator= (const MccNewTagStat &right);
+  MccNewTagStat& operator= (const MccNewTagStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -5074,7 +5236,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccNoteStat& operator= (const MccNoteStat &right);
+  MccNoteStat& operator= (const MccNoteStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -5145,7 +5307,7 @@ struct MccNotesStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccNotesStat& operator= (const MccNotesStat &right)
+  MccNotesStat& operator= (const MccNotesStat &right)
   { return *this; }
   
   // ACCESS ---------------------------------------------------------------
@@ -5330,7 +5492,7 @@ struct MccPairStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccPairStat& operator= (const MccPairStat &right);
+  MccPairStat& operator= (const MccPairStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -5411,7 +5573,7 @@ struct MccQuitStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccQuitStat& operator= (const MccQuitStat &right) { return *this; }
+  MccQuitStat& operator= (const MccQuitStat &right) { return *this; }
   
   // ACCESS ---------------------------------------------------------------
   
@@ -5597,7 +5759,7 @@ struct MccRelationCstStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccRelationCstStat& operator= (const MccRelationCstStat &right);
+  MccRelationCstStat& operator= (const MccRelationCstStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -5675,7 +5837,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccRemarkStat& operator= (const MccRemarkStat &right);
+  MccRemarkStat& operator= (const MccRemarkStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -5746,7 +5908,7 @@ struct MccResetDBStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccResetDBStat& operator= (const MccResetDBStat &right)
+  MccResetDBStat& operator= (const MccResetDBStat &right)
   { return *this; }
   
   // ACCESS ---------------------------------------------------------------
@@ -5817,7 +5979,7 @@ struct MccResetStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccResetStat& operator= (const MccResetStat &right)
+  MccResetStat& operator= (const MccResetStat &right)
   { return *this; }
   
   // ACCESS ---------------------------------------------------------------
@@ -6011,7 +6173,7 @@ struct MccResidueStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccResidueStat& operator= (const MccResidueStat &right);
+  MccResidueStat& operator= (const MccResidueStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -6114,7 +6276,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccRestoreStat& operator= (const MccRestoreStat &right);
+  MccRestoreStat& operator= (const MccRestoreStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -6433,7 +6595,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccSequenceStat& operator= (const MccSequenceStat &right);
+  MccSequenceStat& operator= (const MccSequenceStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -6516,7 +6678,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccSourceStat& operator= (const MccSourceStat &right);
+  MccSourceStat& operator= (const MccSourceStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -6745,7 +6907,7 @@ struct MccTorsionCstStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-   virtual MccTorsionCstStat& operator= (const MccTorsionCstStat &right);
+   MccTorsionCstStat& operator= (const MccTorsionCstStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -6839,7 +7001,7 @@ struct MccVersion : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccVersion& operator= (const MccVersion &right) { return *this; }
+  MccVersion& operator= (const MccVersion &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
   
@@ -6909,7 +7071,7 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccVisitor& operator= (const MccVisitor &right) { return *this; }
+  MccVisitor& operator= (const MccVisitor &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
   
@@ -7114,6 +7276,12 @@ public:
   virtual void Visit (MccSocketBinaryOutput *struc) = 0;
   
   /**
+   * Visits the MccFileRnamlOutput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccFileRnamlOutput *struc) = 0;
+  
+  /**
    * Visits the MccFilePdbInput structure.
    * @param struc the evaluated structure.
    */
@@ -7130,6 +7298,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccSocketBinaryInput *struc) = 0;
+  
+  /**
+   * Visits the MccFileRnamlInput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccFileRnamlInput *struc) = 0;
   
   /**
    * Visits the MccExploreStat structure.

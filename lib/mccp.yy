@@ -1,12 +1,10 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.yy
- * Copyright © 2000-01, 03 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Patrick Gendron
- * Last Modified On : Tue Sep 30 11:31:42 2003
- * Update Count     : 19
- * Status           : Ok.
+ * $Revision$
+ * $Id$
  */
 
 
@@ -15,8 +13,8 @@
 %option noyy_top_state
 %option stack
 %{
-#include <iostream.h>
-#include <vector.h>
+#include <iostream>
+#include <vector>
 #include <string.h>
   
 #include "mccparser.h"
@@ -39,6 +37,8 @@
 	else if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
 		  && ferror( yyin ) ) \
 		YY_FATAL_ERROR( "input in flex scanner failed" );
+
+using namespace std;
 
 
 char* mcccopy (const char *str);
@@ -100,6 +100,7 @@ exploreLV    return TOK_EXPLORELV;
 fileName_pdb return TOK_PDB;
 file_bin     return TOK_FILE_BINARY;
 file_pdb     return TOK_FILE_PDB;
+file_rnaml   return TOK_FILE_RNAML;
 fixed_distance return TOK_FIXEDDIST;
 library      return TOK_LIBRARY;
 loop_connect return TOK_LOOPCONDEF;

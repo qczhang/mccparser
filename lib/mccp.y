@@ -1,28 +1,27 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.y
- * Copyright © 2000-01 , 2002, 2002, 2003Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Patrick Gendron
- * Last Modified On : Tue Sep 30 11:31:40 2003
- * Update Count     : 36
- * Status           : Ok.
+ * $Revision$
+ * $Id$
  */
 
 
 %{
-  #include <iostream.h>
-  #include <vector.h>
-  #include <pair.h>
+  #include <vector>
+  #include <utility>
   #include <stdlib.h>
   #include <string.h>
   #include <math.h>
 
   #include "mccparser.h"
 
+  using namespace std;
+
   extern int mcclex ();
   extern int mcclineno;
-  int mccerror (char *s);
+  int mccerror (const char *s);
 %}
 
 
@@ -136,6 +135,7 @@
 %token TOK_PDB
 %token TOK_FILE_BINARY
 %token TOK_FILE_PDB
+%token TOK_FILE_RNAML
 %token TOK_MFOLD_EPC
 %token TOK_MFOLD_OUTPUT
 %token TOK_MFOLD_WIN
@@ -501,6 +501,10 @@ output_mode:   /* deprecated */
              | TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
                {
 		 $$ = new MccSocketBinaryOutput ($3, $4, $5);
+	       }
+             | TOK_FILE_RNAML TOK_LPAREN TOK_STRING zfile_opt TOK_RPAREN
+               {
+		 $$ = new MccFileRnamlOutput ($3, $4);
 	       }
 ;
 
@@ -1003,6 +1007,10 @@ input_mode:   TOK_PDB TOK_STRING  /* deprecated */
               {
 		$$ = new MccSocketBinaryInput ($3, $4, $5);
 	      }
+            | TOK_FILE_RNAML TOK_LPAREN TOK_STRING TOK_RPAREN
+              {
+		$$ = new MccFileRnamlInput ($3);
+	      }
 ;
 
 
@@ -1240,7 +1248,7 @@ flt:   TOK_INTEGER { $$ = $1; }
 %%
 
 int
-mccerror (char *s)
+mccerror (const char *s)
 {
   throw CParserException ("Parse error at line ") << mcclineno << ".";
 }
