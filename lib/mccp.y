@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Wed Jul  4 11:41:46 2001
- * Update Count     : 9
+ * Last Modified On : Fri Jul  6 14:05:59 2001
+ * Update Count     : 10
  * Status           : Ok.
  */
 
@@ -702,7 +702,7 @@ queryandexp:   queryfaceexp { $$ = $1; }
 
 
 queryfaceexp:  querynotexp { $$ = $1 }
-             | queryidentexp TOK_FACE queryidentexp
+             | querynotexp TOK_FACE querynotexp
                 {
 		  $$ = new MccQFaceFunc ($1, $3);
 		}
