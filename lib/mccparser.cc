@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed Mar 19 14:07:28 2003
-// Update Count     : 18
+// Last Modified On : Wed Mar 19 15:31:38 2003
+// Update Count     : 19
 // Status           : Ok.
 // 
 
@@ -4357,6 +4357,26 @@ CParserException::operator<< (const char *s)
 
 
 //! placer
+
+MccPlacerResidueName&
+MccPlacerResidueName::operator= (const MccPlacerResidueName &right)
+{
+  if (this != &right)
+    {
+      id = right.id;
+      no = right.no;
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerResidueName::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
 
 MccPlacerSequenceStat::MccPlacerSequenceStat (const MccPlacerSequenceStat &right)
   : type (right.type),
