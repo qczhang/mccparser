@@ -26,7 +26,7 @@ using namespace std;
 /**
  * The variable containing the AST read by the parser.
  */
-extern std::vector< MccPStruct* > *astv;
+extern vector< MccPStruct* > *astv;
 
 
 
@@ -207,17 +207,17 @@ struct MccPStruct
    * Displays the script.  It normally never reaches this method.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const = 0;
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0)  const = 0;
+  virtual void ppdisplay (ostream &os, int indent = 0)  const = 0;
 };
 
-std::ostream& operator<< (std::ostream& os, MccPStruct& obj);
+ostream& operator<< (ostream& os, MccPStruct& obj);
 
 /**
  * @short Parent structure for the fragment generator expressions.
@@ -278,14 +278,14 @@ struct MccFGExp
    * Displays the script.  It normally never reaches this method.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const = 0;
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const = 0;
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };
 
 
@@ -367,14 +367,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  void display (std::ostream &os) const;
+  void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -480,14 +480,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  void display (std::ostream &os) const;
+  void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -498,13 +498,13 @@ public:
  */
 struct MccMosesQueries
 {
-  std::pair< MccQueryExpr*, MccSamplingSize* >* stem_cg_au_res;
-  std::pair< MccQueryExpr*, MccSamplingSize* >* stem_gu_res;
-  std::pair< MccQueryExpr*, MccSamplingSize* >* loop_res;
-  std::pair< MccQueryExpr*, MccSamplingSize* >* stem_connect;
-  std::pair< MccQueryExpr*, MccSamplingSize* >* loop_connect;
-  std::pair< MccQueryExpr*, MccSamplingSize* >* stem_cg_au_pair;
-  std::pair< MccQueryExpr*, MccSamplingSize* >* stem_gu_pair;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_cg_au_res;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_gu_res;
+  pair< MccQueryExpr*, MccSamplingSize* >* loop_res;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_connect;
+  pair< MccQueryExpr*, MccSamplingSize* >* loop_connect;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_cg_au_pair;
+  pair< MccQueryExpr*, MccSamplingSize* >* stem_gu_pair;
 
 protected:
 
@@ -521,13 +521,13 @@ public:
    * Initializes the object.
    *
    */
-  MccMosesQueries (std::pair< MccQueryExpr*, MccSamplingSize* >* qsp1,
-		   std::pair< MccQueryExpr*, MccSamplingSize* >* qsp2,
-		   std::pair< MccQueryExpr*, MccSamplingSize* >* qsp3,
-		   std::pair< MccQueryExpr*, MccSamplingSize* >* qsp4,
-		   std::pair< MccQueryExpr*, MccSamplingSize* >* qsp5,
-		   std::pair< MccQueryExpr*, MccSamplingSize* >* qsp6,
-		   std::pair< MccQueryExpr*, MccSamplingSize* >* qsp7)
+  MccMosesQueries (pair< MccQueryExpr*, MccSamplingSize* >* qsp1,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp2,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp3,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp4,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp5,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp6,
+		   pair< MccQueryExpr*, MccSamplingSize* >* qsp7)
     : stem_cg_au_res (qsp1),
       stem_gu_res (qsp2),
       loop_res (qsp3),
@@ -581,14 +581,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  void display (std::ostream &os) const;
+  void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  void ppdisplay (std::ostream &os, int indent = 0) const;
+  void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -638,14 +638,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const = 0;
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const = 0;
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };  
 
 
@@ -695,14 +695,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const = 0;
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const = 0;
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };  
 
 
@@ -784,14 +784,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  void display (std::ostream &os) const { if (id != ' ') os << id; os << no; }
+  void display (ostream &os) const { if (id != ' ') os << id; os << no; }
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -800,7 +800,7 @@ public:
  * @short Structures representing the query expressions.
  *
  * The struct contains a serie of structures describing the test fuctions
- * (NOT, AND, OR, ID) for the query.  We can display to a std::ostream the
+ * (NOT, AND, OR, ID) for the query.  We can display to a ostream the
  * original query by using the display method.
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
@@ -856,14 +856,14 @@ struct MccQFunc
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const = 0;
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const = 0;
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };
 
 
@@ -924,14 +924,14 @@ struct MccQTrueFunc : public MccQFunc
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const { }
+  virtual void display (ostream &os) const { }
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { }
 };
 
 
@@ -1012,14 +1012,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const { os << str; }
+  virtual void display (ostream &os) const { os << str; }
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -1106,7 +1106,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const
+  virtual void display (ostream &os) const
   { os << "! (";  fn->display (os); os << ")"; }
 
   /**
@@ -1114,7 +1114,7 @@ public:
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1196,7 +1196,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const
+  virtual void display (ostream &os) const
   { os << "("; left->display (os); os << " / "; right->display (os);
     os << ")"; }
 
@@ -1205,7 +1205,7 @@ public:
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
  
 
@@ -1287,7 +1287,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const
+  virtual void display (ostream &os) const
   { left->display (os); os << " && "; right->display (os); }
 
   /**
@@ -1295,7 +1295,7 @@ public:
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
   
   
@@ -1377,7 +1377,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const
+  virtual void display (ostream &os) const
   { os << "("; left->display (os); os << " || "; right->display (os);
     os << ")"; }
 
@@ -1386,7 +1386,7 @@ public:
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
   
 
@@ -1401,7 +1401,7 @@ struct MccQueryExpr
   /**
    * The file name vector.
    */
-  std::vector< char* > *strs;
+  vector< char* > *strs;
 
   /**
    * The query function expression struct.
@@ -1415,14 +1415,14 @@ struct MccQueryExpr
    * Initializes the object.
    */
   MccQueryExpr ()
-    : strs (new std::vector< char*> ()), fn (new MccQTrueFunc ()) { }
+    : strs (new vector< char*> ()), fn (new MccQTrueFunc ()) { }
 
   /**
    * Initializes the object.
    * @param fv the file name vector.
    * @param f the query function expression struct.
    */
-  MccQueryExpr (std::vector< char* > *fv, MccQFunc *f) : strs (fv), fn (f) { }
+  MccQueryExpr (vector< char* > *fv, MccQFunc *f) : strs (fv), fn (f) { }
 
   /**
    * Initializes the object with the rights content.
@@ -1478,14 +1478,14 @@ struct MccQueryExpr
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  void display (std::ostream &os) const;
+  void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  void ppdisplay (std::ostream &os, int indent = 0) const;
+  void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1520,7 +1520,7 @@ struct MccAddPdbStat : public MccPStruct
     /**
      * Vector of pdb file names.
      */
-    std::vector< char* > *strs;
+    vector< char* > *strs;
 
 
     // LIFECYCLE ------------------------------------------------------------
@@ -1537,7 +1537,7 @@ struct MccAddPdbStat : public MccPStruct
      * @param cos the cutoffs values.
      * @param s the vector of pdb file names.
      */
-    _AddPdbStruc (float ctc, float ccc, std::vector< char* > *s)
+    _AddPdbStruc (float ctc, float ccc, vector< char* > *s)
       : current_tfo_cutoff (ctc), current_confo_cutoff (ccc), strs (s) { }
 
     /**
@@ -1582,20 +1582,20 @@ struct MccAddPdbStat : public MccPStruct
      * Displays the substructure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector containing the sub-structures.
    */
-  std::vector< _AddPdbStruc* > *strucs;
+  vector< _AddPdbStruc* > *strucs;
 
 
   // LIFECYCLE ------------------------------------------------------------
@@ -1603,13 +1603,13 @@ struct MccAddPdbStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccAddPdbStat () : strucs (new std::vector< _AddPdbStruc* > ()) { }
+  MccAddPdbStat () : strucs (new vector< _AddPdbStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param apsv the add_pdb sub-structure vector.
    */
-  MccAddPdbStat (std::vector< _AddPdbStruc* > *apsv) : strucs (apsv) { }
+  MccAddPdbStat (vector< _AddPdbStruc* > *apsv) : strucs (apsv) { }
 
   /**
    * Initializes the struct with the rights content.
@@ -1653,7 +1653,7 @@ struct MccAddPdbStat : public MccPStruct
    * @param ccc the confo cutoff value.
    * @param s the vector of pdb file names.
    */
-  void GenPdbStruc (float ctc, float ccc, std::vector< char* > *s)
+  void GenPdbStruc (float ctc, float ccc, vector< char* > *s)
     { strucs->push_back (new _AddPdbStruc (ctc, ccc, s)); }
 
   // I/O ------------------------------------------------------------
@@ -1662,14 +1662,14 @@ struct MccAddPdbStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1758,14 +1758,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1897,20 +1897,20 @@ struct MccAngleCstStat : public MccPStruct
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector of _AngleStruc.
    */
-  std::vector< _AngleStruc* > *strucs;
+  vector< _AngleStruc* > *strucs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -1918,13 +1918,13 @@ struct MccAngleCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccAngleCstStat () : strucs (new std::vector< _AngleStruc* > ()) { }
+  MccAngleCstStat () : strucs (new vector< _AngleStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param asv the angle sub-structure vector.
    */
-  MccAngleCstStat (std::vector< _AngleStruc* > *asv) : strucs (asv) { }
+  MccAngleCstStat (vector< _AngleStruc* > *asv) : strucs (asv) { }
   
   /**
    * Initializes the object with the rights content.
@@ -1987,14 +1987,14 @@ struct MccAngleCstStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2075,14 +2075,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2127,7 +2127,7 @@ struct MccBacktrackExpr : public MccFGExp
     /**
      * The vector of residu names.
      */
-    std::vector< MccResidueName* > *res_v;
+    vector< MccResidueName* > *res_v;
 
     
     // LIFECYCLE ------------------------------------------------------------
@@ -2147,7 +2147,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param rv the vector of residue names.
      */
     _GenBTStruc (MccResidueName *rf, MccResidueName *rs,
-		 MccFragGenStruc *f, std::vector< MccResidueName* > *rv)
+		 MccFragGenStruc *f, vector< MccResidueName* > *rv)
       : ref (rf), res (rs), fg_struc (f), res_v (rv) { }
 
     /**
@@ -2194,14 +2194,14 @@ struct MccBacktrackExpr : public MccFGExp
      * controlled by the children structures.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (std::ostream &os) const = 0;
+    virtual void display (ostream &os) const = 0;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (std::ostream &os, int indent = 0) const = 0;
+    virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
   };
   
 
@@ -2269,14 +2269,14 @@ struct MccBacktrackExpr : public MccFGExp
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (std::ostream &os) const { fg_struc->display (os); }
+    virtual void display (ostream &os) const { fg_struc->display (os); }
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
   
 
@@ -2301,7 +2301,7 @@ struct MccBacktrackExpr : public MccFGExp
      * @param rf the name of the reference residue.
      * @param rv the residue name vector.
      */
-    _BTStruc (MccResidueName *rf, std::vector< MccResidueName* > *rv)
+    _BTStruc (MccResidueName *rf, vector< MccResidueName* > *rv)
       : _GenBTStruc (rf, 0, 0, rv) { }
 
     /**
@@ -2346,14 +2346,14 @@ struct MccBacktrackExpr : public MccFGExp
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (std::ostream &os) const;
+    virtual void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
   
 
@@ -2424,20 +2424,20 @@ struct MccBacktrackExpr : public MccFGExp
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (std::ostream &os) const;
+    virtual void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector containing the different backtrack sub-structures.
    */
-  std::vector< _GenBTStruc* > *strucs;
+  vector< _GenBTStruc* > *strucs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -2445,13 +2445,13 @@ struct MccBacktrackExpr : public MccFGExp
   /**
    * Initializes the object.
    */
-  MccBacktrackExpr () : strucs (new std::vector< _GenBTStruc* > ()) { }
+  MccBacktrackExpr () : strucs (new vector< _GenBTStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param s the vector containing the different backtrack sub-structures.
    */
-  MccBacktrackExpr (std::vector< _GenBTStruc* > *s) : strucs (s) { }
+  MccBacktrackExpr (vector< _GenBTStruc* > *s) : strucs (s) { }
 
   /**
    * Initializes the object with the rights content.
@@ -2503,7 +2503,7 @@ struct MccBacktrackExpr : public MccFGExp
    * @param rf the name of the reference residue.
    * @param rv the residue name vector.
    */
-  void GenBTStruc (MccResidueName *rf, std::vector< MccResidueName* > *rv)
+  void GenBTStruc (MccResidueName *rf, vector< MccResidueName* > *rv)
   { strucs->push_back (new _BTStruc (rf, rv)); }
 
   /**
@@ -2520,7 +2520,7 @@ struct MccBacktrackExpr : public MccFGExp
    * Adds the vector of backtrack structures in the vector.
    * @param bts the vector of backtrack structures.
    */
-  void AddBTStrucs (std::vector< _GenBTStruc* > *bts)
+  void AddBTStrucs (vector< _GenBTStruc* > *bts)
   { strucs->insert (strucs->end (), bts->begin (), bts->end ()); delete bts; }
 
   // I/O ------------------------------------------------------------------
@@ -2529,14 +2529,14 @@ struct MccBacktrackExpr : public MccFGExp
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2619,14 +2619,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2726,14 +2726,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -2837,20 +2837,20 @@ struct MccConnectStat : public MccPStruct
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
   
   /**
    * The vector containing the connect sub-structures.
    */
-  std::vector< _ConnectStruc* > *strucs;
+  vector< _ConnectStruc* > *strucs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -2858,13 +2858,13 @@ struct MccConnectStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccConnectStat () : strucs (new std::vector< _ConnectStruc* > ()) { }
+  MccConnectStat () : strucs (new vector< _ConnectStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param csv the vector containing the connect sub-structures.
    */
-  MccConnectStat (std::vector< _ConnectStruc* > *csv) : strucs (csv) { }
+  MccConnectStat (vector< _ConnectStruc* > *csv) : strucs (csv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -2919,14 +2919,14 @@ struct MccConnectStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3026,20 +3026,20 @@ struct MccCycleCstStat : public MccPStruct
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector containing the cycle sub-structures.
    */
-  std::vector< _CycleStruc* > *strucs;
+  vector< _CycleStruc* > *strucs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -3047,13 +3047,13 @@ struct MccCycleCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccCycleCstStat () : strucs (new std::vector< _CycleStruc* > ()) { }
+  MccCycleCstStat () : strucs (new vector< _CycleStruc* > ()) { }
   
   /**
    * Initializes the object.
    * @param csv the cycle sub-structure vector.
    */
-  MccCycleCstStat (std::vector< _CycleStruc* > *csv) : strucs (csv) { }
+  MccCycleCstStat (vector< _CycleStruc* > *csv) : strucs (csv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3107,14 +3107,14 @@ struct MccCycleCstStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3189,14 +3189,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3315,20 +3315,20 @@ struct MccDistCstStat : public MccPStruct
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector of distance sub-structures.
    */
-  std::vector< _DistStruc* > *strucs;
+  vector< _DistStruc* > *strucs;
 
 
   // LIFECYCLE ------------------------------------------------------------
@@ -3336,13 +3336,13 @@ struct MccDistCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccDistCstStat () : strucs (new std::vector< _DistStruc* > ()) { }
+  MccDistCstStat () : strucs (new vector< _DistStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param dsv the distance sub-structure vector.
    */
-  MccDistCstStat (std::vector< _DistStruc* > *dsv) : strucs (dsv) { }
+  MccDistCstStat (vector< _DistStruc* > *dsv) : strucs (dsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3399,14 +3399,14 @@ struct MccDistCstStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -3455,14 +3455,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const = 0;
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const = 0;
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };
 
 
@@ -3545,14 +3545,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -3636,14 +3636,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -3734,14 +3734,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -3823,14 +3823,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -3907,14 +3907,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  void display (std::ostream &os) const;
+  void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -3965,14 +3965,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const = 0;
+  virtual void display (ostream &os) const = 0;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const = 0;
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
 };
 
 
@@ -4048,14 +4048,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -4131,14 +4131,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -4227,14 +4227,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -4310,14 +4310,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const { display (os); }
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -4414,14 +4414,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -4451,7 +4451,7 @@ struct MccExploreLVStat : public MccPStruct
   /**
    * vector of time limits (sec)
    */
-  std::vector< int > *vtlimits;
+  vector< int > *vtlimits;
 
   /**
    * Exploration time limit (sec)
@@ -4485,7 +4485,7 @@ public:
   MccExploreLVStat (MccFragGenStruc *fg,
 		    MccModelFilterStrategy *f,
 		    MccOutputMode *ef, 
-		    std::vector< int > *tl,
+		    vector< int > *tl,
 		    MccBacktrackSize *bs);
 
   /**
@@ -4542,14 +4542,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -4575,7 +4575,7 @@ struct MccLibraryExpr : public MccFGExp
     /**
      * The residue name vector.
      */
-    std::vector< MccResidueName* > *res_vec;
+    vector< MccResidueName* > *res_vec;
 
     /**
      * The chain id to change.
@@ -4603,7 +4603,7 @@ struct MccLibraryExpr : public MccFGExp
      * @param f the chain id to change.
      * @param t the new chain id.
      */
-    _LibStruc (std::vector< MccResidueName* > *rv, char f, char t)
+    _LibStruc (vector< MccResidueName* > *rv, char f, char t)
       : res_vec (rv), from (f), to (t) { }
 
     /**
@@ -4649,14 +4649,14 @@ struct MccLibraryExpr : public MccFGExp
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (std::ostream &os) const = 0;
+    virtual void display (ostream &os) const = 0;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (std::ostream &os, int indent = 0) const = 0;
+    virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
   };
   
   /**
@@ -4679,7 +4679,7 @@ struct MccLibraryExpr : public MccFGExp
      * Initializes the object.
      * @param rv the residue name vector
      */
-    _StripStruc (std::vector< MccResidueName* > *rv) : _LibStruc (rv, 0, 0) { }
+    _StripStruc (vector< MccResidueName* > *rv) : _LibStruc (rv, 0, 0) { }
 
     /**
      * Initializes the object with the rights content.
@@ -4718,14 +4718,14 @@ struct MccLibraryExpr : public MccFGExp
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (std::ostream &os) const;
+    virtual void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -4788,7 +4788,7 @@ struct MccLibraryExpr : public MccFGExp
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    virtual void display (std::ostream &os) const
+    virtual void display (ostream &os) const
     { os << "change_id (\"" << from << "\" , \"" << to << "\")"; }
 
     /**
@@ -4796,7 +4796,7 @@ struct MccLibraryExpr : public MccFGExp
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
@@ -4812,7 +4812,7 @@ struct MccLibraryExpr : public MccFGExp
   /**
    * The vector containing the sub-structures.
    */
-  std::vector< _LibStruc* > *strucs;
+  vector< _LibStruc* > *strucs;
 
 protected:
   
@@ -4831,7 +4831,7 @@ public:
    * @param lsv the vector containing the library sub-structures.
    */
   MccLibraryExpr (MccInputMode *im, MccModelSorterStrategy *mss, 
-		  std::vector< _LibStruc* > *lsv)
+		  vector< _LibStruc* > *lsv)
     : inputMode (im), sorter (mss), strucs (lsv) { }
 
   /**
@@ -4874,7 +4874,7 @@ public:
    * Generates a new strip sub-structure and puts it in the vector.
    * @param rv the residue name vector.
    */
-  void GenStripStruc (std::vector< MccResidueName* > *rv)
+  void GenStripStruc (vector< MccResidueName* > *rv)
   { strucs->push_back (new _StripStruc (rv)); }
 
   /**
@@ -4891,14 +4891,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5001,14 +5001,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5033,7 +5033,7 @@ struct MccNewTagStat : public MccPStruct
   /**
    * The query expression structure.
    */
-  std::vector< MccQueryExpr* > *exprs;
+  vector< MccQueryExpr* > *exprs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -5051,7 +5051,7 @@ public:
    * @param i the name of the tag.
    * @param e the query expression structure.
    */
-  MccNewTagStat (bool o, char *i, std::vector< MccQueryExpr* > *e)
+  MccNewTagStat (bool o, char *i, vector< MccQueryExpr* > *e)
     : resq_opt (o), id (i), exprs (e) { }
 
   /**
@@ -5096,14 +5096,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5180,7 +5180,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const
+  virtual void display (ostream &os) const
   { os << "note (\"" << str << "\")"; }
 
   /**
@@ -5188,7 +5188,7 @@ public:
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5252,14 +5252,14 @@ struct MccNotesStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const { os << "notes"; }
+  virtual void display (ostream &os) const { os << "notes"; }
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5365,20 +5365,20 @@ struct MccPairStat : public MccPStruct
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector containing the pairing sub-structures.
    */
-  std::vector< _PairStruc* > *strucs;
+  vector< _PairStruc* > *strucs;
 
 
   // LIFECYCLE ------------------------------------------------------------
@@ -5386,13 +5386,13 @@ struct MccPairStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccPairStat () : strucs (new std::vector< _PairStruc* > ()) { }
+  MccPairStat () : strucs (new vector< _PairStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param psv the vector containing the pairing sub-structures.
    */
-  MccPairStat (std::vector< _PairStruc* > *psv) : strucs (psv) { }
+  MccPairStat (vector< _PairStruc* > *psv) : strucs (psv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -5447,14 +5447,14 @@ struct MccPairStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5517,14 +5517,14 @@ struct MccQuitStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const { os << "quit"; }
+  virtual void display (ostream &os) const { os << "quit"; }
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5625,20 +5625,20 @@ struct MccRelationCstStat : public MccPStruct
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector of _RelationStruc.
    */
-  std::vector< _RelationStruc* > *strucs;
+  vector< _RelationStruc* > *strucs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -5646,13 +5646,13 @@ struct MccRelationCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccRelationCstStat () : strucs (new std::vector< _RelationStruc* > ()) { }
+  MccRelationCstStat () : strucs (new vector< _RelationStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param asv the relation sub-structure vector.
    */
-  MccRelationCstStat (std::vector< _RelationStruc* > *asv) : strucs (asv) { }
+  MccRelationCstStat (vector< _RelationStruc* > *asv) : strucs (asv) { }
   
   /**
    * Initializes the object with the rights content.
@@ -5697,14 +5697,14 @@ struct MccRelationCstStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5781,7 +5781,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const
+  virtual void display (ostream &os) const
   { os << "remark (\"" << str << "\")"; }
 
   /**
@@ -5789,7 +5789,7 @@ public:
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5853,14 +5853,14 @@ struct MccResetDBStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const { os << "reset_db"; }
+  virtual void display (ostream &os) const { os << "reset_db"; }
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -5924,14 +5924,14 @@ struct MccResetStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const { os << "reset"; }
+  virtual void display (ostream &os) const { os << "reset"; }
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -6046,20 +6046,20 @@ struct MccResidueStat : public MccPStruct
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector of residue sub-structures.
    */
-  std::vector< _ResidueStruc* > *strucs;
+  vector< _ResidueStruc* > *strucs;
 
 
   // LIFECYCLE ------------------------------------------------------------
@@ -6067,13 +6067,13 @@ struct MccResidueStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccResidueStat () : strucs (new std::vector< _ResidueStruc* > ()) { }
+  MccResidueStat () : strucs (new vector< _ResidueStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param rsv the vector of residue sub-structures.
    */
-  MccResidueStat (std::vector< _ResidueStruc* > *rsv) : strucs (rsv) { }
+  MccResidueStat (vector< _ResidueStruc* > *rsv) : strucs (rsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -6128,14 +6128,14 @@ struct MccResidueStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -6220,14 +6220,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -6327,14 +6327,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };  
 
 
@@ -6443,14 +6443,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };  
 
 
@@ -6539,14 +6539,14 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -6622,7 +6622,7 @@ public:
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const
+  virtual void display (ostream &os) const
   { os << "source (\"" << str << "\")"; }
 
   /**
@@ -6630,7 +6630,7 @@ public:
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -6780,20 +6780,20 @@ struct MccTorsionCstStat : public MccPStruct
      * Displays the structure.
      * @param os the output stream where the message is displayed.
      */
-    void display (std::ostream &os) const;
+    void display (ostream &os) const;
 
     /**
      * Displays the script in human readable form.
      * @param os the output stream used.
      * @param ident the identation level.
      */
-    void ppdisplay (std::ostream &os, int indent = 0) const;
+    void ppdisplay (ostream &os, int indent = 0) const;
   };
 
   /**
    * The vector of torsion sub-structures.
    */
-  std::vector< _TorsionStruc* > *strucs;
+  vector< _TorsionStruc* > *strucs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -6801,13 +6801,13 @@ struct MccTorsionCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccTorsionCstStat () : strucs (new std::vector< _TorsionStruc* > ()) { }
+  MccTorsionCstStat () : strucs (new vector< _TorsionStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param tsv the torsion sub-structure vector.
    */
-  MccTorsionCstStat (std::vector< _TorsionStruc* > *tsv) : strucs (tsv) { }
+  MccTorsionCstStat (vector< _TorsionStruc* > *tsv) : strucs (tsv) { }
 
   /**
    * Initializes the object with the rights content.
@@ -6874,14 +6874,14 @@ struct MccTorsionCstStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const;
+  virtual void display (ostream &os) const;
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -6945,14 +6945,14 @@ struct MccVersion : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (std::ostream &os) const { os << "version"; }
+  virtual void display (ostream &os) const { os << "version"; }
 
   /**
    * Displays the script in human readable form.
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  virtual void ppdisplay (std::ostream &os, int indent = 0) const;
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -7487,7 +7487,7 @@ public:
  * @param ex the exception to display.
  * @return the output stream used.
  */
-std::ostream& operator<< (std::ostream &os, const CLexerException &ex);
+ostream& operator<< (ostream &os, const CLexerException &ex);
 
 
 
@@ -7585,7 +7585,7 @@ public:
  * @param ex the exception to display.
  * @return the output stream used.
  */
-std::ostream& operator<< (std::ostream &os, const CParserException &ex);
+ostream& operator<< (ostream &os, const CParserException &ex);
 
 
 #endif

@@ -19,22 +19,23 @@ AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
 AC_PROG_MAKE_SET
 
 AC_PROG_CXX
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 AC_CANONICAL_HOST
 AC_PROG_LEX
 AC_PROG_YACC
 AC_PATH_PROG(AR,ar)
+AC_PROG_INSTALL
 
 if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
     case "$host" in
     *-sgi-*)
-	CXXFLAGS="$CXXFLAGS -O2 -woff 1681 -ptused -LANG:std"
+	CXXFLAGS="$CXXFLAGS -O2 -LANG:std"
   	DEPFLAGS="-M"
   	LDFLAGS=""
 	LDNAMEPARAM="-Wl,-soname,"
-  	LINKOPTIONS="-shared -woff 47"
-	ARXX="$AR"
-	AROPTIONS="crs"
+  	LINKOPTIONS="-shared"
+	ARXX="$CXX"
+	AROPTIONS="-ar -o"
 	;;
     *-sun-*)
 	CXXFLAGS="$CXXFLAGS -xO2"
@@ -55,14 +56,6 @@ elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
 	ARXX="$AR"
 	AROPTIONS="crs"
 fi
-
-
-AC_PROG_INSTALL
-
-AC_ARG_WITH(malloc,
-[  --with-malloc           replace STL allocator with malloc],
-AC_DEFINE(__USE_MALLOC),
-)
 
 
 AC_SUBST(PACKAGE)

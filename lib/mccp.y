@@ -34,48 +34,48 @@
   float floatval;
   char *textval;
   MccPStruct *mccval;
-  std::vector< MccPStruct* > *vmccval;
-  std::vector< MccResidueStat::_ResidueStruc* > *rsv;
+  vector< MccPStruct* > *vmccval;
+  vector< MccResidueStat::_ResidueStruc* > *rsv;
   MccResidueStat::_ResidueStruc *rs;
-  std::vector< MccConnectStat::_ConnectStruc* > *csv;
+  vector< MccConnectStat::_ConnectStruc* > *csv;
   MccConnectStat::_ConnectStruc *cs;
-  std::vector< MccPairStat::_PairStruc* > *psv;
+  vector< MccPairStat::_PairStruc* > *psv;
   MccPairStat::_PairStruc *ps;
-  std::vector< MccAngleCstStat::_AngleStruc* > *asv;
+  vector< MccAngleCstStat::_AngleStruc* > *asv;
   MccAngleCstStat::_AngleStruc *as;
-  std::vector< MccCycleCstStat::_CycleStruc* > *cysv;
+  vector< MccCycleCstStat::_CycleStruc* > *cysv;
   MccCycleCstStat::_CycleStruc *cys;
-  std::vector< MccDistCstStat::_DistStruc* > *dsv;
+  vector< MccDistCstStat::_DistStruc* > *dsv;
   MccDistCstStat::_DistStruc *ds;
-  std::vector< MccTorsionCstStat::_TorsionStruc* > *tsv;
+  vector< MccTorsionCstStat::_TorsionStruc* > *tsv;
   MccRelationCstStat::_RelationStruc *rels;
-  std::vector< MccRelationCstStat::_RelationStruc* > *relsv;
+  vector< MccRelationCstStat::_RelationStruc* > *relsv;
   MccTorsionCstStat::_TorsionStruc *ts;
-  std::vector< MccAddPdbStat::_AddPdbStruc* > *addsv;
+  vector< MccAddPdbStat::_AddPdbStruc* > *addsv;
   MccAddPdbStat::_AddPdbStruc *adds;
-  std::vector< char* > *textv;
-  std::vector< MccQueryExpr* > *qsv;
+  vector< char* > *textv;
+  vector< MccQueryExpr* > *qsv;
   MccQueryExpr *qs;
   MccQFunc *qfunc;
-  std::vector< MccBacktrackExpr::_GenBTStruc* > *btsv;
+  vector< MccBacktrackExpr::_GenBTStruc* > *btsv;
   MccBacktrackExpr::_GenBTStruc *bts;
-  std::vector< MccLibraryExpr::_LibStruc* > *lsv;
+  vector< MccLibraryExpr::_LibStruc* > *lsv;
   MccLibraryExpr::_LibStruc *ls;
   MccAS ats;
-  std::vector< MccResidueName* > *rrv;
+  vector< MccResidueName* > *rrv;
   MccResidueName *rr;
   MccFragGenStruc *fgr;
   MccFGExp *fgs;
   MccOutputMode *expo;
   MccInputMode *inmo;
   MccBacktrackSize *btsz;
-  std::vector< int > *tlv;
+  vector< int > *tlv;
   MccSamplingSize *smpls;
   cutoffs *ctfs;
   MccModelFilterStrategy *mf;
   MccModelSorterStrategy *ms;
   MccMosesQueries *mqs;
-  std::pair< MccQueryExpr*, MccSamplingSize* > *qsssp;
+  pair< MccQueryExpr*, MccSamplingSize* > *qsssp;
 }
 
 
@@ -303,13 +303,13 @@
 
 statement_star:   /* empty */
                    {
-		     astv = new std::vector< MccPStruct* > ();
+		     astv = new vector< MccPStruct* > ();
 		   }
                 | statement_star statement
                    {
 		     if (interactive_parser)
 		       {
-			 astv = new std::vector< MccPStruct* > (1, $2);
+			 astv = new vector< MccPStruct* > (1, $2);
 			 YYACCEPT;
 		       }
 		     else
@@ -370,7 +370,7 @@ residue:   TOK_RESIDUE TOK_LPAREN resdef_plus TOK_RPAREN
 
 resdef_plus:   resdef
                  {
-		   $$ = new std::vector< MccResidueStat::_ResidueStruc* > (1, $1);
+		   $$ = new vector< MccResidueStat::_ResidueStruc* > (1, $1);
 		 }
               | resdef_plus resdef
                  {
@@ -396,7 +396,7 @@ connect:   TOK_CONNECT TOK_LPAREN condef_plus TOK_RPAREN
 
 condef_plus:   condef
                 {
-		  $$ = new std::vector< MccConnectStat::_ConnectStruc* > (1, $1);
+		  $$ = new vector< MccConnectStat::_ConnectStruc* > (1, $1);
 		}
              | condef_plus condef
                 {
@@ -422,7 +422,7 @@ pair:   TOK_PAIR TOK_LPAREN pairdef_plus TOK_RPAREN
 
 pairdef_plus:   pairdef
                  {
-		   $$ = new std::vector< MccPairStat::_PairStruc* > (1, $1);
+		   $$ = new vector< MccPairStat::_PairStruc* > (1, $1);
 		 }
              | pairdef_plus pairdef
                 {
@@ -518,7 +518,7 @@ timelimit_exp:   TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN
 
 timelimit_plus:  timelimit
                    { 
-		     $$ = new std::vector< int > (1, $1);
+		     $$ = new vector< int > (1, $1);
 		   }
                 | timelimit_plus timelimit
                    {
@@ -576,7 +576,7 @@ angleCst:   TOK_ANGLE TOK_LPAREN angledef_plus TOK_RPAREN
 
 angledef_plus:   angledef
                   {
-		    $$ = new std::vector< MccAngleCstStat::_AngleStruc* > (1, $1);
+		    $$ = new vector< MccAngleCstStat::_AngleStruc* > (1, $1);
 		  }
                | angledef_plus angledef
                   {
@@ -619,7 +619,7 @@ cycleCst:   TOK_CYCLE TOK_LPAREN cycledef_plus TOK_RPAREN
 
 cycledef_plus:   cycledef
                   {
-		    $$ = new std::vector< MccCycleCstStat::_CycleStruc* > (1, $1);
+		    $$ = new vector< MccCycleCstStat::_CycleStruc* > (1, $1);
 		  }
                | cycledef_plus cycledef
                   {
@@ -645,7 +645,7 @@ distCst:   TOK_DISTANCE TOK_LPAREN distdef_plus TOK_RPAREN
 
 distdef_plus:   distdef
                  {
-		   $$ = new std::vector< MccDistCstStat::_DistStruc* > (1, $1);
+		   $$ = new vector< MccDistCstStat::_DistStruc* > (1, $1);
 		 }
               | distdef_plus distdef
                   {
@@ -671,7 +671,7 @@ relationCst:   TOK_RELATION TOK_LPAREN relationdef_plus TOK_RPAREN
 
 relationdef_plus:   relationdef
                   {
-		    $$ = new std::vector< MccRelationCstStat::_RelationStruc* > (1, $1);
+		    $$ = new vector< MccRelationCstStat::_RelationStruc* > (1, $1);
 		  }
                | relationdef_plus relationdef
                   {
@@ -697,7 +697,7 @@ torsionCst:   TOK_TORSION TOK_LPAREN torsiondef_plus TOK_RPAREN
 
 torsiondef_plus:   torsiondef
                     {
-		      $$ = new std::vector< MccTorsionCstStat::_TorsionStruc* > (1, $1);
+		      $$ = new vector< MccTorsionCstStat::_TorsionStruc* > (1, $1);
 		    }
                  | torsiondef_plus torsiondef
                     {
@@ -735,7 +735,7 @@ addpdb:   TOK_ADDPDB TOK_LPAREN addpdbdefs_plus TOK_RPAREN
 
 addpdbdefs_plus:   addpdbdefs
                     {
-		      $$ = new std::vector< MccAddPdbStat::_AddPdbStruc* > (1, $1);
+		      $$ = new vector< MccAddPdbStat::_AddPdbStruc* > (1, $1);
 		    }
                  | addpdbdefs_plus addpdbdefs
                     {
@@ -777,7 +777,7 @@ tfo_opt:   /* empty */ { $$ = .5; }
 	 
 pdbfile_plus:   TOK_STRING
                  {
-		   $$ = new std::vector< char* > (1, $1);
+		   $$ = new vector< char* > (1, $1);
 		 }
               | pdbfile_plus TOK_STRING
                  {
@@ -840,7 +840,7 @@ theo_confo:  /* empty */     { $$ = false; }
 
 queryexp_plus:   queryexp
                   {
-		    $$ = new std::vector< MccQueryExpr* > (1, $1);
+		    $$ = new vector< MccQueryExpr* > (1, $1);
 		  }
                | queryexp_plus queryexp
                   {
@@ -857,7 +857,7 @@ queryexp:   TOK_LBRACE filename_star qprop_opt TOK_RBRACE
 ;
 
 
-filename_star:   /* empty */ { $$ = new std::vector< char* > (); }
+filename_star:   /* empty */ { $$ = new vector< char* > (); }
                | filename_star filename
                   {
 		    $$ = $1;
@@ -939,7 +939,7 @@ backtrackexp: TOK_BACKTRACK TOK_LPAREN fgRef_opt res_place_plus TOK_RPAREN
 
 res_place_plus:   res_place
                    {
-		     $$ = new std::vector< MccBacktrackExpr::_GenBTStruc* > (1, $1);
+		     $$ = new vector< MccBacktrackExpr::_GenBTStruc* > (1, $1);
 		   }
                 | res_place_plus res_place
                    {
@@ -1020,7 +1020,7 @@ model_sorter:   TOK_CLUSTERED TOK_LPAREN TOK_INTEGER atomset_opt atomsetopt_opt 
 
 libopt_star:   /* empty */
                 {
-		  $$ = new std::vector< MccLibraryExpr::_LibStruc* > ();
+		  $$ = new vector< MccLibraryExpr::_LibStruc* > ();
 		}
              | libopt_star libopt
                 {
@@ -1083,7 +1083,7 @@ mosesqueries:  cgau_resdef_opt gu_resdef_opt loop_resdef_opt stem_condef_opt loo
 cgau_resdef_opt:          /* empty */ { $$ = 0; }
                       | TOK_CGAURESDEF queryexp sampling
                          {
-			   $$ = new std::pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
 			 }
 ;
 
@@ -1091,7 +1091,7 @@ cgau_resdef_opt:          /* empty */ { $$ = 0; }
 gu_resdef_opt:      /* empty */ { $$ = 0; }
                       | TOK_GURESDEF queryexp sampling
                          {
-			   $$ = new std::pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
 			 }
 ;
 
@@ -1099,7 +1099,7 @@ gu_resdef_opt:      /* empty */ { $$ = 0; }
 loop_resdef_opt:       /* empty */ { $$ = 0; }
                       | TOK_LOOPRESDEF queryexp sampling
                          {
-			   $$ = new std::pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
 			 }
 ;
 
@@ -1107,7 +1107,7 @@ loop_resdef_opt:       /* empty */ { $$ = 0; }
 stem_condef_opt:       /* empty */ { $$ = 0; }
                       | TOK_STEMCONDEF queryexp sampling
                          {
-			   $$ = new std::pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
 			 }
 ;
 
@@ -1115,7 +1115,7 @@ stem_condef_opt:       /* empty */ { $$ = 0; }
 loop_condef_opt:       /* empty */ { $$ = 0; }
                       | TOK_LOOPCONDEF queryexp sampling
                          {
-			   $$ = new std::pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
 			 }
 ;
 
@@ -1123,7 +1123,7 @@ loop_condef_opt:       /* empty */ { $$ = 0; }
 cgau_pairdef_opt:       /* empty */ { $$ = 0; }
                       | TOK_CGAUPAIRDEF queryexp sampling
                          {
-			   $$ = new std::pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
 			 }
 ;
 
@@ -1131,7 +1131,7 @@ cgau_pairdef_opt:       /* empty */ { $$ = 0; }
 gu_pairdef_opt:         /* empty */ { $$ = 0; }
                       | TOK_GUPAIRDEF queryexp sampling
                          {
-			   $$ = new std::pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
+			   $$ = new pair< MccQueryExpr*, MccSamplingSize* > ($2, $3);
 			 }
 ;
 
@@ -1164,7 +1164,7 @@ atomsetopt_opt:   /* empty */ { $$ = MCC_NO_OPTION; }
 ;
 
 
-residueRef_star:   /* empty */ { $$ = new std::vector< MccResidueName* > (); }
+residueRef_star:   /* empty */ { $$ = new vector< MccResidueName* > (); }
                  | residueRef_star residueRef
                     {
 		      $$ = $1;
@@ -1173,7 +1173,7 @@ residueRef_star:   /* empty */ { $$ = new std::vector< MccResidueName* > (); }
 ;
 
 
-residueRef_plus:   residueRef { $$ = new std::vector< MccResidueName* > (1, $1); }
+residueRef_plus:   residueRef { $$ = new vector< MccResidueName* > (1, $1); }
                  | residueRef_plus residueRef
                     {
 		      $$ = $1;
