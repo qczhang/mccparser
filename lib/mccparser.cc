@@ -605,7 +605,9 @@ MccAddPdbStat::_AddPdbStruc::ppdisplay (ostream &os, int indent) const
 
 MccAddPdbStat::MccAddPdbStat (const MccAddPdbStat &right)
   : strucs (new vector< _AddPdbStruc* > ()),
-    cutoff (right.cutoff)
+    cutoffs_asp (new map< char, float > (*right.cutoffs_asp))
+//     standard_cutoff (right.standard_cutoff),
+//     adjacent_cutoff (right.adjacent_cutoff)
 {
   vector< _AddPdbStruc* >::const_iterator cit;
   
@@ -622,6 +624,8 @@ MccAddPdbStat::~MccAddPdbStat ()
   for (it = strucs->begin (); it != strucs->end (); ++it)
     delete *it;
   delete strucs;
+
+  delete this->cutoffs_asp;
 }
 
 
@@ -634,12 +638,18 @@ MccAddPdbStat::operator= (const MccAddPdbStat &right)
     vector< _AddPdbStruc* >::const_iterator cit;
     vector< _AddPdbStruc* >::iterator it;
 
-    cutoff = right.cutoff;
+//     standard_cutoff = right.standard_cutoff;
+//     adjacent_cutoff = right.adjacent_cutoff;
+
     for (it = strucs->begin (); it != strucs->end (); ++it)
       delete *it;
     strucs->clear ();
+
     for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
       strucs->push_back ((*cit)->clone ());
+
+    delete this->cutoffs_asp;
+    this->cutoffs_asp = new map< char, float > (*right.cutoffs_asp);
   }
   return *this;
 }
@@ -658,16 +668,23 @@ void
 MccAddPdbStat::display (ostream &os) const
 {
   vector< _AddPdbStruc* >::iterator it;
+  map< char, float >::iterator cit;
 
   os << "add_pdb (";
-  if (cutoff >= 0.0)
-    os << " cutoff " << cutoff;
-  for (it = strucs->begin (); it != strucs->end (); ++it)
+  
+  if (!this->cutoffs_asp->empty ())
   {
-    if (it != strucs->begin ())
-      os << ' ';
-    (*it)->display (os);
+    os << " cutoff";
+    for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
+      os << ' ' << cit->first << " = " << cit->second;
   }
+
+//   if (standard_cutoff >= 0.0)
+//     os << " cutoff " << standard_cutoff;
+//   if (adjacent_cutoff >= 0.0)
+//     os << ' ' << adjacent_cutoff;
+  for (it = strucs->begin (); it != strucs->end (); ++it)
+    (*it)->display (os << ' ');
   os << ')';
 }
   
@@ -677,15 +694,25 @@ void
 MccAddPdbStat::ppdisplay (ostream &os, int indent) const
 {
   vector< _AddPdbStruc* >::iterator it;
+  map< char, float >::iterator cit;
 
   os << "add_pdb" << endl;
   whitespaces (os, indent + 2);
   os << '(';
-  if (cutoff >= 0.0)
+//   if (standard_cutoff >= 0.0)
+//   {
+//     os << endl;
+//     whitespaces (os, indent + 2);
+//     os << "cutoff " << standard_cutoff;
+//     if (adjacent_cutoff >= 0.0)
+//       os << ' ' << adjacent_cutoff;
+//   }
+  if (!this->cutoffs_asp->empty ())
   {
-    os << endl;
-    whitespaces (os, indent + 2);
-    os << "cutoff " << cutoff;
+    whitespaces (os, indent + 4);
+    os << "cutoff";
+    for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
+      os << ' ' << cit->first << " = " << cit->second;
   }
   for (it = strucs->begin (); it != strucs->end (); ++it)
   {
@@ -1420,9 +1447,19 @@ MccCycleExpr::ppdisplay (ostream &os, int indent) const
 
 MccCacheExpr::MccCacheExpr (const MccCacheExpr &right)
   : fgref (right.fgref->clone ()),
-    filter (right.filter->clone ())
-{ }
+    filter (right.filter)
+{ 
+  if (this->filter)
+    this->filter = this->filter->clone ();
+}
 
+
+MccCacheExpr::~MccCacheExpr ()
+{
+  delete this->fgref;
+  if (this->filter)
+    delete this->filter;
+}
 
 
 MccCacheExpr&
@@ -1430,10 +1467,15 @@ MccCacheExpr::operator= (const MccCacheExpr &right)
 {
   if (this != &right)
   {
-    delete fgref;
-    fgref = right.fgref->clone ();
-    delete filter;
-    filter = right.filter->clone ();
+    delete this->fgref;
+    this->fgref = right.fgref->clone ();
+    if (this->filter)
+    {
+      delete this->filter;
+      this->filter = 0;
+    }
+    if (right.filter)
+      this->filter = right.filter->clone ();
   }
   return *this;
 }
@@ -1453,8 +1495,8 @@ MccCacheExpr::display (ostream &os) const
 {
   os << "cache (";
   fgref->display (os);
-  os << " ";
-  filter->display (os);
+  if (this->filter)
+    filter->display (os);
   os << ')';
 }
 
@@ -1466,8 +1508,11 @@ MccCacheExpr::ppdisplay (ostream &os, int indent) const
   os << "cache (";
   fgref->ppdisplay (os, indent);
   os << endl;
-  whitespaces (os, indent + 4);
-  filter->ppdisplay (os, indent);
+  if (this->filter)
+  {
+    whitespaces (os, indent + 4);
+    filter->ppdisplay (os, indent);
+  }
   os << ')' << endl;
 }
 
@@ -3339,18 +3384,19 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-
-MccRmsdModelFilterStrategy&
-MccRmsdModelFilterStrategy::operator= (const MccRmsdModelFilterStrategy &right)
+MccRMSDModelFilter&
+MccRMSDModelFilter::operator= (const MccRMSDModelFilter &right)
 {
   if (this != &right)
   {
     rmsBound = right.rmsBound;
-    alignFlag = right.alignFlag;
     if (this->atomset)
+    {
       delete this->atomset;
-    if ((this->atomset = right.atomset))
-      this->atomset = this->atomset->clone ();
+      this->atomset = 0;
+    }
+    if (right.atomset)
+      this->atomset = right.atomset->clone ();
   }
   return *this;
 }
@@ -3358,7 +3404,7 @@ MccRmsdModelFilterStrategy::operator= (const MccRmsdModelFilterStrategy &right)
 
 
 void
-MccRmsdModelFilterStrategy::accept (MccVisitor *visitor)
+MccRMSDModelFilter::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
@@ -3366,11 +3412,9 @@ MccRmsdModelFilterStrategy::accept (MccVisitor *visitor)
 
 
 void
-MccRmsdModelFilterStrategy::display (ostream &os) const
+MccRMSDModelFilter::display (ostream &os) const
 {
   os << "rmsd (" << rmsBound;
-  if (alignFlag)
-    os << " align";
   if (this->atomset)
     this->atomset->display (os);
   os << ")";
@@ -3379,7 +3423,7 @@ MccRmsdModelFilterStrategy::display (ostream &os) const
 
 
 void
-MccRmsdModelFilterStrategy::ppdisplay (ostream &os, int indent) const
+MccRMSDModelFilter::ppdisplay (ostream &os, int indent) const
 {
   display (os);
 }

@@ -15,6 +15,7 @@
   #include <stdlib.h>
   #include <string.h>
   #include <math.h>
+  #include <map>
 
   #include "mccparser.h"
 
@@ -31,6 +32,9 @@
   int intval;
   bool boolval;
   float floatval;
+  pair< char, float >* cutoffval;
+  map< char, float >* cutoffmap;
+  //pair< float, float >* twofloatval;
   char *textval;
   MccPStruct *mccval;
   vector< MccPStruct* > *vmccval;
@@ -66,7 +70,7 @@
   MccOutputMode *expo;
   MccInputMode *inmo;
   MccSamplingSize *smpls;
-  MccModelFilterStrategy *mf;
+  MccRMSDModelFilter *mf;
 }
 
 
@@ -88,7 +92,6 @@
 %token TOK_ADDPDB
 %token TOK_BASEADJACENCY
 %token TOK_RIBOADJACENCY
-%token TOK_ALIGN
 %token TOK_ANGLE
 %token TOK_ANGSTROMS
 %token TOK_ANY
@@ -145,6 +148,7 @@
 %token <textval> TOK_IDENT
 %token <textval> TOK_QUOTED_IDENT
 %token <textval> TOK_STRING
+%token <charval> TOK_CHAR
 
 
 %type <mccval> statement
@@ -189,7 +193,10 @@
 %type <mccval> addpdb
 %type <addsv> addpdbdefs_plus
 %type <adds> addpdbdefs
-%type <floatval> cutoff_opt
+ //%type <twofloatval> cutoff_opt
+%type <cutoffval> cutoff
+%type <cutoffmap> cutoff_plus
+%type <cutoffmap> cutoff_opt
 %type <textv> pdbfile_plus
 %type <mccval> displayfg
 %type <mccval> env
@@ -227,7 +234,6 @@
 %type <btsv> res_place_plus
 %type <bts> res_place
 %type <fgs> cacheexp
-%type <boolval> align_opt
 %type <fgs> libraryexp
 %type <inmo> input_mode
 %type <lsv> libopt_star
@@ -297,12 +303,6 @@ statement:   sequence { $$ = $1; }
 
 sequence:  TOK_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
             {
-	      if (strlen ($3) != 1) {
-		delete[] $3;
-		delete[] $4;
-		delete[] $5;
-		throw ParserException ("Invalid sequence type.");	      
-	      }
 	      $$ = new MccSequenceStat ($3[0], $4, $5);
 	      delete[] $3;
 	    }
@@ -428,9 +428,9 @@ model_filter_opt: /* empty */ { $$ = 0; }
 
 
 
-model_filter: TOK_RMSD TOK_LPAREN flt align_opt atomset_opt TOK_RPAREN
+model_filter: TOK_RMSD TOK_LPAREN flt atomset_opt TOK_RPAREN
              {
-	       $$ = new MccRmsdModelFilterStrategy ($3, $4, $5);
+	       $$ = new MccRMSDModelFilter ($3, $4);
 	     }
 ;
 
@@ -780,6 +780,7 @@ newtag:   TOK_NEWTAG TOK_LPAREN TOK_STRING queryexp_plus TOK_RPAREN
 addpdb:   TOK_ADDPDB TOK_LPAREN cutoff_opt addpdbdefs_plus TOK_RPAREN
            {
 	     $$ = new MccAddPdbStat ($4, $3);
+	     delete $3;
 	   }
 ;
 
@@ -803,9 +804,66 @@ addpdbdefs:   pdbfile_plus
 ;
 
 
+// cutoff_opt:
+
+// /* empty */
+// { 
+//   $$ = new pair< float, float > (-1.0, -1.0); 
+// }
+// | TOK_CUTOFF flt 
+// { 
+//   $$ = new pair< float, float > ($2, -1.0); 
+// }
+// | TOK_CUTOFF flt flt 
+// { 
+//   $$ = new pair< float, float > ($2, $3); 
+// }
+// ;
+
+
 cutoff_opt:
-                 { $$ = -1.0; }
-| TOK_CUTOFF flt { $$ = $2; }
+
+/* empty */
+{
+  $$ = new map< char, float > ();
+}
+| TOK_CUTOFF flt
+{
+  $$ = new map< char, float > ();
+  $$->insert (make_pair ('A', $2));
+  $$->insert (make_pair ('S', $2));
+  $$->insert (make_pair ('P', $2));
+}
+| TOK_CUTOFF cutoff_plus
+{
+  $$ = $2;
+}
+;
+
+
+cutoff_plus:
+
+cutoff
+{
+  $$ = new map< char, float > ();
+  $$->insert (*$1);
+  delete $1;
+}
+| cutoff_plus cutoff
+{
+  $$ = $1;
+  $$->insert (*$2);
+  delete $2;
+}
+;
+
+
+cutoff:
+
+TOK_CHAR TOK_ASSIGN flt
+{
+  $$ = new pair< char, float > ($1, $3);
+}
 ;
 
 	 
@@ -1004,15 +1062,10 @@ cycleexp:   TOK_CYCLE TOK_LPAREN residueRef_star TOK_RPAREN
 ;
 
 
-cacheexp:   TOK_CACHE TOK_LPAREN fgRef model_filter TOK_RPAREN
+cacheexp:   TOK_CACHE TOK_LPAREN fgRef model_filter_opt TOK_RPAREN
              {
 	       $$ = new MccCacheExpr ($3, $4);
 	     }
-;
-
-
-align_opt:   /* empty */ { $$ = false; }
-           | TOK_ALIGN { $$ = true; }
 ;
 
 

@@ -77,7 +77,6 @@ INTEGER_LIT  (-?{DIGIT}+)
 add_pdb          return TOK_ADDPDB;
 base_adjacency   return TOK_BASEADJACENCY;
 ribose_adjacency return TOK_RIBOADJACENCY;
-align            return TOK_ALIGN;
 angle            return TOK_ANGLE;
 angstroms        return TOK_ANGSTROMS;
 Angstroms        return TOK_ANGSTROMS;
@@ -132,6 +131,8 @@ days             return TOK_DAY;
 d                return TOK_DAY;
 
 
+{LETTER}        mcclval.charval = mcctext[0]; return TOK_CHAR; 
+
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
 
 {INTEGER_LIT}\.{DIGIT}*  mcclval.floatval = atof (mcctext); return TOK_FLOAT;
@@ -149,8 +150,6 @@ d                return TOK_DAY;
                                        mcclval.textval = mcccopy (mcctext);
 				       return TOK_IDENT;
                                      }
-
-
 
 
            /** Definition of QUOTES indentifiers.  */

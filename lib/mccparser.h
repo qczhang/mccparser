@@ -465,62 +465,6 @@ public:
 };
 
 
-/**
- * @short Struct representing the abstract model filter strategy.
- *
- * @author Martin Larose <larosem@iro.umontreal.ca>
- */
-struct MccModelFilterStrategy
-{
-
-public:
-
-  // LIFECYCLE ------------------------------------------------------------
-
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccModelFilterStrategy () { }
-  
-  /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  virtual MccModelFilterStrategy* clone () const = 0;
-    
-  /**
-   * Destroys the object.
-   */
-  virtual ~MccModelFilterStrategy () { }
-
-  // OPERATORS ------------------------------------------------------------
-
-  // ACCESS ---------------------------------------------------------------
-  
-  // METHODS --------------------------------------------------------------
-
-  /**
-   * Accepts the visitor and calls it on itself.
-   * @param visitor the visitor.
-   */
-  virtual void accept (MccVisitor *visitor) = 0;
-
-  // I/O  -----------------------------------------------------------------
-  
-  /**
-   * Displays the structure.
-   * @param os the output stream where the message is displayed.
-   */
-  virtual void display (ostream &os) const = 0;
-
-  /**
-   * Displays the script in human readable form.
-   * @param os the output stream used.
-   * @param ident the identation level.
-   */
-  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
-};  
-
 
 /**
  * @short Struct representing the residue reference.
@@ -609,7 +553,6 @@ public:
    */
   void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
-
 
 
 /**
@@ -1739,6 +1682,100 @@ public:
   
 
 /**
+ * @short Struct representing the rmsd filter cache.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccRMSDModelFilter 
+{
+  /**
+   * The rms bound.
+   */
+  float rmsBound;
+
+  /**
+   * The atomset filter expression.
+   */
+  MccASFunc* atomset;
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+  
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccRMSDModelFilter () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param rb the rms bound.
+   * @param asfn atomset filter expression.
+   */
+  MccRMSDModelFilter (float rb, MccASFunc* asfn)
+    : rmsBound (rb), atomset (asfn) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccRMSDModelFilter (const MccRMSDModelFilter &right)
+    : rmsBound (right.rmsBound),
+      atomset (right.atomset)
+  { if (this->atomset) this->atomset = this->atomset->clone (); }
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccRMSDModelFilter* clone () const { return new MccRMSDModelFilter (*this); }
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccRMSDModelFilter ()
+  { if (this->atomset) delete this->atomset; }
+  
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccRMSDModelFilter& operator= (const MccRMSDModelFilter &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};  
+
+
+/**
  * @short Struct representing the AST node of the "add_pdb" form.
  *
  * This structure is a vector of sub-structures _AddPdbStruc.
@@ -1835,10 +1872,17 @@ struct MccAddPdbStat : public MccPStruct
    */
   vector< _AddPdbStruc* > *strucs;
   
+  map< char, float >* cutoffs_asp;
+
   /**
-   * The cutoff value for the relations annotation.
+   * The standard cutoff value for relations' annotation.
    */
-  float cutoff;
+  //float standard_cutoff;
+
+  /**
+   * The cutoff value for adjacent relations only.
+   */
+  //float adjacent_cutoff;
 
   // LIFECYCLE ------------------------------------------------------------
 
@@ -1847,7 +1891,9 @@ struct MccAddPdbStat : public MccPStruct
    */
   MccAddPdbStat ()
     : strucs (new vector< _AddPdbStruc* > ()),
-      cutoff (-1)
+      cutoffs_asp (new map< char, float > ())
+//       standard_cutoff (-1.0),
+//       adjacent_cutoff (-1.0)
   { }
 
   /**
@@ -1855,9 +1901,13 @@ struct MccAddPdbStat : public MccPStruct
    * @param apsv the add_pdb sub-structure vector.
    * @param cut the cutoff value.
    */
-  MccAddPdbStat (vector< _AddPdbStruc* > *apsv, float cut)
+  MccAddPdbStat (vector< _AddPdbStruc* > *apsv, 
+		 map< char, float >* cutmap)
+//float scut, float acut)
     : strucs (apsv),
-      cutoff (cut)
+      cutoffs_asp (cutmap)
+//       standard_cutoff (scut),
+//       adjacent_cutoff (acut)
   { }
 
   /**
@@ -2967,7 +3017,7 @@ struct MccCacheExpr : public MccFGExp
   /**
    * The model cache.
    */
-  MccModelFilterStrategy *filter;
+  MccRMSDModelFilter *filter;
   
 protected:
   
@@ -2985,7 +3035,7 @@ public:
    * @param f the FG structure to cache.
    * @param c the model filter structure.
    */
-  MccCacheExpr (MccFragGenStruc *f, MccModelFilterStrategy *c)
+  MccCacheExpr (MccFragGenStruc *f, MccRMSDModelFilter *c)
     : fgref (f), filter (c) { }
 
   /**
@@ -2997,7 +3047,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccCacheExpr () { delete fgref; delete filter; }
+  virtual ~MccCacheExpr ();
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4705,7 +4755,7 @@ struct MccExploreStat : public MccPStruct
   /**
    * The model cache.
    */
-  MccModelFilterStrategy *filter;
+  MccRMSDModelFilter *filter;
 
   /**
    * The exploration duration limit.
@@ -4737,7 +4787,7 @@ public:
   MccExploreStat (MccFragGenStruc* fg,
 		  char* an,
 		  vector< _ParamStruc* >* psv,
-		  MccModelFilterStrategy *f,
+		  MccRMSDModelFilter *f,
 		  int tmax,
 		  MccOutputMode *ef)
     : fg_struc (fg),
@@ -6242,106 +6292,6 @@ public:
 
 
 
-/**
- * @short Struct representing the rmsd filter cache.
- *
- * @author Martin Larose <larosem@iro.umontreal.ca>
- */
-struct MccRmsdModelFilterStrategy : public MccModelFilterStrategy
-{
-  /**
-   * The rms bound.
-   */
-  float rmsBound;
-
-  /**
-   * The align flag.
-   */
-  bool alignFlag;
-
-  /**
-   * The atomset filter expression.
-   */
-  MccASFunc* atomset;
-  
-  // LIFECYCLE ------------------------------------------------------------
-
-protected:
-  
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccRmsdModelFilterStrategy () { }
-  
-public:
-
-  /**
-   * Initializes the object.
-   * @param rb the rms bound.
-   * @param af the align flag.
-   * @param asfn atomset filter expression.
-   */
-  MccRmsdModelFilterStrategy (float rb, bool af, MccASFunc* asfn)
-    : rmsBound (rb), alignFlag (af), atomset (asfn) { }
-
-  /**
-   * Initializes the object with the rights content.
-   * @param right the object to copy.
-   */
-  MccRmsdModelFilterStrategy (const MccRmsdModelFilterStrategy &right)
-    : rmsBound (right.rmsBound),
-      alignFlag (right.alignFlag),
-      atomset (right.atomset)
-  { if (this->atomset) this->atomset = this->atomset->clone (); }
-
-  /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  virtual MccModelFilterStrategy* clone () const { return new MccRmsdModelFilterStrategy (*this); }
-    
-  /**
-   * Destroys the object.
-   */
-  virtual ~MccRmsdModelFilterStrategy ()
-  { if (this->atomset) delete this->atomset; }
-  
-
-  // OPERATORS ------------------------------------------------------------
-
-  /**
-   * Assigns the rights content into the object.
-   * @param right the object to copy.
-   * @return itself.
-   */
-  MccRmsdModelFilterStrategy& operator= (const MccRmsdModelFilterStrategy &right);
-  
-  // ACCESS ---------------------------------------------------------------
-  
-  // METHODS --------------------------------------------------------------
-
-  /**
-   * Accepts the visitor and calls it on itself.
-   * @param visitor the visitor.
-   */
-  virtual void accept (MccVisitor *visitor);
-
-  // I/O  -----------------------------------------------------------------
-  
-  /**
-   * Displays the structure.
-   * @param os the output stream where the message is displayed.
-   */
-  virtual void display (ostream &os) const;
-
-  /**
-   * Displays the script in human readable form.
-   * @param os the output stream used.
-   * @param ident the identation level.
-   */
-  virtual void ppdisplay (ostream &os, int indent = 0) const;
-};  
-
 
 /**
  * @short Struct representing the AST node for the "sequence" statement.
@@ -7247,10 +7197,10 @@ public:
   virtual void visit (MccRestoreStat *struc) = 0;
   
   /**
-   * Visits the MccRmsdModelFilterStrategy structure.
+   * Visits the MccRMSDModelFilter structure.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccRmsdModelFilterStrategy *struc) = 0;
+  virtual void visit (MccRMSDModelFilter *struc) = 0;
   
   /**
    * Visits the MccSamplingSize structure.
