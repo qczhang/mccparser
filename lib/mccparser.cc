@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Mon Sep 29 11:37:22 2003
-// Update Count     : 27
+// Last Modified On : Tue Oct 28 09:33:18 2003
+// Update Count     : 28
 // Status           : Ok.
 // 
 
@@ -4720,6 +4720,70 @@ MccPlacerPairStat::ppdisplay (ostream &os, int indent) const
   os << ')' << endl;
 }
 
+
+MccPlacerFragmentStat::MccPlacerFragmentStat (const MccPlacerFragmentStat &right)
+{
+  frag_name = strdup (right.frag_name);
+  inputMode = right.inputMode->clone ();
+}
+
+
+MccPlacerFragmentStat::~MccPlacerFragmentStat ()
+{
+  delete[] frag_name;
+  delete inputMode;
+}
+
+
+
+MccPlacerFragmentStat&
+MccPlacerFragmentStat::operator= (const MccPlacerFragmentStat &right)
+{
+  if (this != &right)
+    {
+      delete[] frag_name;
+      frag_name = strdup (right.frag_name);
+      delete inputMode;
+      inputMode = right.inputMode->clone ();
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerFragmentStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerFragmentStat::display (ostream &os) const
+{
+  os << "fragment (" << frag_name << ' ';
+  inputMode->display (os);
+  os << ')';
+}
+
+
+
+void
+MccPlacerFragmentStat::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  os << "fragment" << endl;
+  whitespaces (os, indent);
+  os << '(' << endl;
+  whitespaces (os, indent + 2);
+  os << frag_name << endl;
+  inputMode->ppdisplay (os, indent + 2);
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
 MccPlacerBuildStat::_GenBTStruc::_GenBTStruc (const MccPlacerBuildStat::_GenBTStruc &right)
   : ref (0), res (0), fg_struc (0), res_v (0)
 {
@@ -4814,7 +4878,9 @@ MccPlacerBuildStat::_BTStruc&
 MccPlacerBuildStat::_BTStruc::operator= (const MccPlacerBuildStat::_BTStruc &right)
 {
   if (this != &right)
-    MccPlacerBuildStat::_BTStruc::operator= (right);
+    {
+      MccPlacerBuildStat::_GenBTStruc::operator= (right);
+    }
   return *this;
 }
 
@@ -4851,6 +4917,73 @@ MccPlacerBuildStat::_BTStruc::ppdisplay (ostream &os, int indent) const
       os << ' ';
       (*it)->ppdisplay (os, indent);
     }
+  os << ')';
+}
+
+
+MccPlacerBuildStat::_PlaceStruc::_PlaceStruc (const MccPlacerBuildStat::_PlaceStruc &right)
+  : MccPlacerBuildStat::_GenBTStruc (right)
+{
+  frag_name = strdup (right.frag_name);
+}
+
+
+MccPlacerBuildStat::_PlaceStruc::~_PlaceStruc ()
+{
+  if (ref)
+    delete ref;
+  delete res;
+  delete[] frag_name;
+}
+
+
+void
+MccPlacerBuildStat::_PlaceStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+MccPlacerBuildStat::_PlaceStruc&
+MccPlacerBuildStat::_PlaceStruc::operator= (const MccPlacerBuildStat::_PlaceStruc &right)
+{
+  if (this != &right)
+    {
+      MccPlacerBuildStat::_GenBTStruc::operator= (right);
+      delete[] frag_name;
+      frag_name = strdup (right.frag_name);
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerBuildStat::_PlaceStruc::display (ostream &os) const
+{
+  os << "place (" << frag_name << ' ';
+  if (ref)
+    ref->display (os);
+  os << ' ';
+  res->display (os);
+  os << ')';
+}
+
+
+
+void
+MccPlacerBuildStat::_PlaceStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  os << "place (" << frag_name << ' ';
+  if (ref)
+    {
+      ref->ppdisplay (os, indent);
+      os << ' ';
+    }
+  res->ppdisplay (os, indent);
   os << ')';
 }
 
@@ -4898,46 +5031,6 @@ MccPlacerBuildStat::_ClashStruc::ppdisplay (ostream &os, int indent) const
 }
 
 
-// MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (char mmode,
-// 						  char ecmode, char ecmo1,
-// 						  char ocmode, float ocmo1, float ocmo2)
-//   : method_mode (mmode),
-//     precst_mode (ecmode),
-//     postcst_mode (ocmode),
-//     pre_mode_intensity (ecmo1),
-//     post_mode_rmin (ocmo1),
-//     post_mode_rmax (ocmo2)
-// {
-
-// }
-
-
-// MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (const MccPlacerBuildStat::_ClosureStruc& right)
-//   : method_mode (right.method_mode),
-//     precst_mode (right.precst_mode),
-//     postcst_mode (right.postcst_mode),
-//     pre_mode_intensity (right.pre_mode_intensity),
-//     post_mode_rmin (right.post_mode_rmin),
-//     post_mode_rmax (right.post_mode_rmax)
-// {
-
-// }
-  
-
-// MccPlacerBuildStat::_ClosureStruc&
-// MccPlacerBuildStat::_ClosureStruc::operator= (const MccPlacerBuildStat::_ClosureStruc& right)
-// {
-//   if (this != &right)
-//     {
-//       method_mode = right.method_mode;
-//       precst_mode = right.precst_mode;
-//       postcst_mode = right.postcst_mode;
-//       pre_mode_intensity = right.pre_mode_intensity;
-//       post_mode_rmin = right.post_mode_rmin;
-//       post_mode_rmax = right.post_mode_rmax;
-//     }
-//   return *this;
-// }
 
 MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (char mmode,
 						  char pcmode,
@@ -5147,7 +5240,8 @@ MccPlacerBuildStat::MccPlacerBuildStat (const MccPlacerBuildStat &right)
   : closure (right.closure->clone ()),
     ribopt (right.ribopt->clone ()),
     strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ()),
-    all_id (right.all_id)
+    all_id (right.all_id),
+    frag_names (right.frag_names)
 {
   vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
 
@@ -5180,6 +5274,7 @@ MccPlacerBuildStat::operator= (const MccPlacerBuildStat &right)
       vector< MccPlacerBuildStat::_GenBTStruc* >::iterator it;
 
       all_id = right.all_id;
+      frag_names = right.frag_names;
 
       delete clash;
       clash = right.clash->clone ();
@@ -5206,31 +5301,43 @@ MccPlacerBuildStat::Accept (MccVisitor *visitor)
 }
 
 
-void
-MccPlacerBuildStat::GenBTStruc (MccPlacerResidueName *rf,
-				vector< MccPlacerResidueName* > *rv)
-{
-  vector< MccPlacerResidueName* >::const_iterator rvit;
+// void
+// MccPlacerBuildStat::GenBTStruc (MccPlacerResidueName *rf,
+// 				vector< MccPlacerResidueName* > *rv)
+// {
+//   vector< MccPlacerResidueName* >::const_iterator rvit;
   
-  all_id.insert (make_pair (rf->id, rf->no));
-  for (rvit = rv->begin (); rvit != rv->end (); ++rvit)
-    all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
+//   all_id.insert (make_pair (rf->id, rf->no));
+//   for (rvit = rv->begin (); rvit != rv->end (); ++rvit)
+//     all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
 
-  strucs->push_back (new _BTStruc (rf, rv));
-}
+//   strucs->push_back (new _BTStruc (rf, rv));
+// }
 
 
 void
 MccPlacerBuildStat::AddBTStrucs (vector< _GenBTStruc* > *bts)
 {
-  vector< MccPlacerResidueName* >::const_iterator rvit;
-  vector< _GenBTStruc* >::const_iterator btsit;
+  vector< MccPlacerResidueName* >::iterator rvit;
+  vector< _GenBTStruc* >::iterator btsit;
+  _PlaceStruc* ps = 0;
 
   for (btsit = bts->begin (); btsit != bts->end (); ++btsit)
     {
       all_id.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
-      for (rvit = (*btsit)->res_v->begin (); rvit != (*btsit)->res_v->end (); ++rvit)
-	all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
+
+      if ((*btsit)->res)
+	all_id.insert (make_pair ((*btsit)->res->id, (*btsit)->res->no));
+      
+      if ((*btsit)->res_v)
+	for (rvit = (*btsit)->res_v->begin (); rvit != (*btsit)->res_v->end (); ++rvit)
+	  all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
+
+      if ((ps = dynamic_cast< _PlaceStruc* > (*btsit)) != 0)
+	{
+	  frag_names.push_back (ps->frag_name);
+	  cout << "will place fragment " << ps->frag_name << endl;
+	}
     }
 
   strucs->insert (strucs->end (), bts->begin (), bts->end ()); delete bts;

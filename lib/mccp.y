@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Mon Sep 29 11:37:18 2003
- * Update Count     : 28
+ * Last Modified On : Tue Oct 28 09:33:14 2003
+ * Update Count     : 29
  * Status           : Ok.
  */
 
@@ -198,6 +198,7 @@
 %token TOK_PLACER_SEQUENCE
 %token TOK_PLACER_CONNECT
 %token TOK_PLACER_PAIR
+%token TOK_PLACER_FRAGMENT
 %token TOK_PLACER_BUILD
 %token TOK_PLACER_SEARCH
 %token TOK_CLASH
@@ -338,6 +339,7 @@
 %type <prrv> placer_residueRef_star
 %type <prrv> placer_residueRef_plus
 %type <prr> placer_residueRef_opt
+%type <mccval> placer_fragment
 %type <mccval> placer_build
 %type <pbx> clash_opt
 %type <pbc> closure_opt
@@ -407,6 +409,7 @@ statement:   sequence { $$ = $1; }
            | placer_sequence { $$ = $1; }
            | placer_connect { $$ = $1; }
            | placer_pair { $$ = $1; }
+           | placer_fragment { $$ = $1; }
            | placer_build { $$ = $1; }
            | placer_search { $$ = $1; }
 
@@ -1384,6 +1387,12 @@ placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
 ;
 
 
+placer_fragment: TOK_PLACER_FRAGMENT TOK_LPAREN TOK_IDENT input_mode  TOK_RPAREN
+{
+  $$ = new MccPlacerFragmentStat ($3, $4);
+}
+;
+
 
 placer_build: TOK_PLACER_BUILD TOK_LPAREN clash_opt closure_opt ribose_opt /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
                {
@@ -1406,28 +1415,6 @@ clash_opt:  /* empty */
 {
   $$ = new MccPlacerBuildStat::_ClashStruc ($3[0], $4);
 };
-
-
-
-// closure_opt: /* empty */
-// {
-//   $$ = new MccPlacerBuildStat::_ClosureStruc (); 
-// }
-// | TOK_CLOSURE TOK_LPAREN closure_mode TOK_RPAREN
-// {
-//   $$ = $3;
-// }
-// ;
-
-// closure_mode: TOK_CLM_RMSD
-// {
-//   $$ = new MccPlacerBuildStat::_ClosureStruc ('r');
-// }
-// | TOK_CLM_DIST
-// {
-//   $$ = new MccPlacerBuildStat::_ClosureStruc ('d');
-// }
-// ;
 
 
 closure_opt: /* empty */
@@ -1454,23 +1441,6 @@ closure_mode_opt:
   $$ = 'd';
 }
 ;
-
-
-
-
-// ribose_opt: /* empty */
-// {
-//   $$ = new MccPlacerBuildStat::_RibStruc ();
-// }
-// | TOK_RIBOSE TOK_LPAREN flt ribose_builder_opt ribose_qfct_opt TOK_RPAREN
-// {
-//   $$ = new MccPlacerBuildStat::_RibStruc ($3);
-// }
-// // optimizer parameters : min_shift, min_drop, shift_rate
-// | TOK_RIBOSE TOK_LPAREN flt TOK_ROP TOK_LPAREN flt flt flt TOK_RPAREN TOK_RPAREN
-// {
-//   $$ = new MccPlacerBuildStat::_RibStruc ($3, $6, $7, $8);
-// };
 
 
 ribose_opt: /* empty */
@@ -1537,13 +1507,17 @@ placer_res_place_plus:   placer_res_place
 
 
 placer_res_place:  TOK_LPAREN placer_residueRef placer_residueRef_star TOK_RPAREN
-             {
-	       $$ = new MccPlacerBuildStat::_BTStruc ($2, $3);
-	     }
-//           | TOK_PLACE TOK_LPAREN residueRef residueRef fgRef TOK_RPAREN
-//              {
-// 	       $$ = new MccBacktrackExpr::_PlaceStruc ($3, $4, $5);
-// 	     }
+{
+  $$ = new MccPlacerBuildStat::_BTStruc ($2, $3);
+}
+| TOK_PLACE TOK_LPAREN TOK_IDENT placer_residueRef placer_residueRef TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_PlaceStruc ($3, $4, $5);
+}
+| TOK_PLACE TOK_LPAREN TOK_IDENT placer_residueRef TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_PlaceStruc ($3, $4);
+}
 ;
 
 

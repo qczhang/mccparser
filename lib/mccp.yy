@@ -155,7 +155,8 @@ d            return TOK_DAY;
 
 placer_sequence     return TOK_PLACER_SEQUENCE; 
 placer_connect      return TOK_PLACER_CONNECT; 
-placer_pair         return TOK_PLACER_PAIR; 
+placer_pair         return TOK_PLACER_PAIR;
+fragment            return TOK_PLACER_FRAGMENT;
 placer_build        return TOK_PLACER_BUILD;
 clash               return TOK_CLASH;
 closure             return TOK_CLOSURE;
