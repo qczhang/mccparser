@@ -3,9 +3,9 @@
  * Copyright © 2000-01 , 2002, 2002Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Labo Lbit
- * Last Modified On : Thu Oct 31 10:38:52 2002
- * Update Count     : 19
+ * Last Modified By : Philippe Thibault
+ * Last Modified On : Mon Mar 17 11:42:22 2003
+ * Update Count     : 21
  * Status           : Ok.
  */
 
