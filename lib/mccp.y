@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Wed Mar 26 13:56:55 2003
- * Update Count     : 23
+ * Last Modified On : Tue Apr 15 11:50:14 2003
+ * Update Count     : 24
  * Status           : Ok.
  */
 
@@ -13,7 +13,7 @@
 %{
   #include <iostream.h>
   #include <vector.h>
-  #include <pair.h>
+  #include <map.h>
   #include <stdlib.h>
   #include <string.h>
   #include <math.h>
@@ -84,6 +84,9 @@
   vector< MccPlacerResidueName* > *prrv;
   vector< MccPlacerBuildStat::_GenBTStruc* > *pbtsv;
   MccPlacerBuildStat::_GenBTStruc *pbts;
+  MccPlacerSearchStat::_Params *pssp;
+  map< int, float >* mif;
+  pair< int, float>* pif;
   //!
 }
 
@@ -195,7 +198,7 @@
 %token TOK_PLACER_CONNECT
 %token TOK_PLACER_PAIR
 %token TOK_PLACER_BUILD
-%token TOK_PLACER_EXPLORE
+%token TOK_PLACER_SEARCH
 //!
 
 %type <mccval> statement
@@ -331,7 +334,10 @@
 %type <mccval> placer_build
 %type <pbtsv> placer_res_place_plus
 %type <pbts> placer_res_place
-%type <mccval> placer_explore
+%type <mccval> placer_search
+%type <pssp> search_mode
+%type <mif> search_params_star
+%type <pif> search_params
 //!
 
 %type <textval> ident_plus
@@ -389,7 +395,7 @@ statement:   sequence { $$ = $1; }
            | placer_connect { $$ = $1; }
            | placer_pair { $$ = $1; }
            | placer_build { $$ = $1; }
-           | placer_explore { $$ = $1; }
+           | placer_search { $$ = $1; }
 
 ;
 
@@ -1415,12 +1421,35 @@ placer_res_place:  TOK_LPAREN placer_residueRef placer_residueRef_star TOK_RPARE
 ;
 
 
-placer_explore:   TOK_PLACER_EXPLORE TOK_LPAREN model_filter_opt output_mode_opt TOK_RPAREN
+placer_search:   TOK_PLACER_SEARCH TOK_LPAREN search_mode model_filter_opt output_mode_opt TOK_RPAREN
             {
-	      $$ = new MccPlacerExploreStat ($3, $4);
+	      $$ = new MccPlacerSearchStat ($3, $4, $5);
 	    }
 ;
 
+
+search_mode: TOK_IDENT TOK_LPAREN search_params_star TOK_RPAREN
+{
+  $$ = new MccPlacerSearchStat::_Params ($1, $3);
+};
+
+
+search_params_star: /* empty */
+{
+  $$ = new map< int, float > ();
+}
+| search_params_star search_params
+{
+  $$ = $1;
+  $$->insert (*$2);
+  delete $2;
+};
+
+
+search_params: TOK_IDENT flt
+{
+  $$ = new pair< int, float > (MccPlacerSearchStat::getParamId ($1), (float)$2);
+};
 
 // TODO!
 // placer_clashCst: TOK_PLACER_CLASHCST TOK_LPAREN TOK_IDENT flt TOK_RPAREN

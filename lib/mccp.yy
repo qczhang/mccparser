@@ -84,7 +84,7 @@ Angstroms    return TOK_ANGSTROMS;
 angstrom     return TOK_ANGSTROMS;
 Angstrom     return TOK_ANGSTROMS;
 backbone_only return TOK_BBATOMS;
-backtrack    return TOK_BACKTRACK;
+backtrackb    return TOK_BACKTRACK;
 backtrack_size return TOK_BACKTRACKSIZE;
 base_only    return TOK_BASEATOMS;
 cache        return TOK_CACHE;
@@ -157,7 +157,7 @@ placer_sequence     return TOK_PLACER_SEQUENCE;
 placer_connect      return TOK_PLACER_CONNECT; 
 placer_pair         return TOK_PLACER_PAIR; 
 placer_build        return TOK_PLACER_BUILD;
-placer_explore      return TOK_PLACER_EXPLORE;
+placer_search       return TOK_PLACER_SEARCH;
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
 

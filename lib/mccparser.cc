@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed Mar 26 13:56:59 2003
-// Update Count     : 22
+// Last Modified On : Tue Apr 15 11:50:18 2003
+// Update Count     : 23
 // Status           : Ok.
 // 
 
@@ -5008,9 +5008,94 @@ MccPlacerBuildStat::ppdisplay (ostream &os, int indent) const
 }
 
 
+const int MccPlacerSearchStat::paramid_MaxLevelRetry = 0;
+const int MccPlacerSearchStat::paramid_MaxLevelBacktrack = 1;
+const int MccPlacerSearchStat::paramid_invalid = -1;
 
-MccPlacerExploreStat::MccPlacerExploreStat (const MccPlacerExploreStat &right)
-  : //fg_struc (new MccFragGenStruc (*right.fg_struc)),
+const char* MccPlacerSearchStat::paramstr_MaxLevelRetry = "max_level_retry";
+const char* MccPlacerSearchStat::paramstr_MaxLevelBacktrack = "max_level_backtrack";
+const char* MccPlacerSearchStat::paramstr_invalid = "(invalid id)";
+
+
+MccPlacerSearchStat::_Params::_Params (const _Params& right)
+  : algo_name (strdup (right.algo_name)),
+    params (0)
+{
+  if (right.params)
+    params = new map< int, float > (*right.params);
+}
+
+
+MccPlacerSearchStat::_Params::~_Params ()
+{
+  delete[] algo_name;
+  if (params)
+    delete params;
+}
+
+
+MccPlacerSearchStat::_Params&
+MccPlacerSearchStat::_Params::operator= (const _Params& right)
+{
+  if (this != &right)
+    {
+      algo_name = strdup (right.algo_name);
+      if (params)
+	{
+	  delete params;
+	  params = 0;
+	}
+      if (right.params)
+	params = new map< int, float > (*right.params);
+    }
+  return *this;
+}
+
+
+void
+MccPlacerSearchStat::_Params::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+void
+MccPlacerSearchStat::_Params::display (ostream &os) const
+{
+  map< int, float >::const_iterator mit;
+  
+  os << algo_name << " ( ";
+  if (params)
+    for (mit = params->begin (); mit != params->end (); ++mit)
+      os << MccPlacerSearchStat::getParamStr (mit->first) << ' '
+	 << mit->second << ' ';
+  os << ')';
+}
+
+
+
+void
+MccPlacerSearchStat::_Params::ppdisplay (ostream &os, int indent) const
+{
+  map< int, float >::const_iterator mit;
+  os << algo_name << endl;
+  whitespaces (os, indent);
+  os << '(' << endl;
+
+  if (params)
+    for (mit = params->begin (); mit != params->end (); ++mit)
+      {
+	whitespaces (os, indent + 2);
+	os << MccPlacerSearchStat::getParamStr (mit->first) << ' '
+	   << mit->second << endl;
+      }
+
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
+MccPlacerSearchStat::MccPlacerSearchStat (const MccPlacerSearchStat &right)
+  : mode (right.mode->clone ()),
     filter (0),
     expOutput (0)
 {
@@ -5022,13 +5107,13 @@ MccPlacerExploreStat::MccPlacerExploreStat (const MccPlacerExploreStat &right)
 
 
 
-MccPlacerExploreStat&
-MccPlacerExploreStat::operator= (const MccPlacerExploreStat &right)
+MccPlacerSearchStat&
+MccPlacerSearchStat::operator= (const MccPlacerSearchStat &right)
 {
   if (this != &right)
     {
-//       delete fg_struc;
-//       fg_struc = right.fg_struc->clone ();
+      delete mode;
+      mode = right.mode->clone ();
       if (filter)
 	{
 	  delete filter;
@@ -5048,9 +5133,32 @@ MccPlacerExploreStat::operator= (const MccPlacerExploreStat &right)
 }
 
 
+const char*
+MccPlacerSearchStat::getParamStr (int id)
+{
+  switch (id)
+    {
+    case paramid_MaxLevelRetry:
+      return paramstr_MaxLevelRetry;
+    case paramid_MaxLevelBacktrack:
+      return paramstr_MaxLevelBacktrack;
+    }
+  return paramstr_invalid;
+}
+
+
+int
+MccPlacerSearchStat::getParamId (const char* str)
+{
+  if (strcmp (str, paramstr_MaxLevelRetry) == 0)
+    return paramid_MaxLevelRetry;
+  else if (strcmp (str, paramstr_MaxLevelBacktrack) == 0)
+    return paramid_MaxLevelBacktrack;
+  return paramid_invalid;
+}
 
 void
-MccPlacerExploreStat::Accept (MccVisitor *visitor)
+MccPlacerSearchStat::Accept (MccVisitor *visitor)
 {
   visitor->Visit (this);
 }
@@ -5058,10 +5166,10 @@ MccPlacerExploreStat::Accept (MccVisitor *visitor)
 
 
 void
-MccPlacerExploreStat::display (ostream &os) const
+MccPlacerSearchStat::display (ostream &os) const
 {
-  os << "placer_explore (";
-  //  fg_struc->display (os);
+  os << "placer_search ( ";
+  mode->display (os);
   if (filter)
     {
       os << ' ';
@@ -5078,13 +5186,13 @@ MccPlacerExploreStat::display (ostream &os) const
 
 
 void
-MccPlacerExploreStat::ppdisplay (ostream &os, int indent) const
+MccPlacerSearchStat::ppdisplay (ostream &os, int indent) const
 {
-  os << "placer_explore" << endl;
+  os << "placer_search" << endl;
   whitespaces (os, indent);
   os << '(' << endl;
-  whitespaces (os, indent + 2);
-  //  fg_struc->ppdisplay (os, indent + 2);
+  mode->ppdisplay (os, indent + 2);
+  
   if (filter)
     {
       os << endl;

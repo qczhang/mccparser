@@ -7827,18 +7827,79 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
+
 /**
- * @short Struct representing the AST node "placer_explore".
+ * @short Struct representing the AST node "placer_search".
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccPlacerExploreStat : public MccPStruct
+struct MccPlacerSearchStat : public MccPStruct
 {
-//   /**
-//    * The FG struct to explore.
-//    */
-//   MccFragGenStruc *fg_struc;
 
+  struct _Params
+  {
+    char* algo_name;
+    map< int, float >* params;
+
+    // LIFECYCLE ------------------------------------------------------------
+    
+  private:
+    /**
+     * Initializes the object. It should never be used.
+     */
+    _Params () { }
+  public:
+
+    /**
+     * Initializes the object.
+     */
+    _Params (char* name, map< int, float >* p = 0)
+      : algo_name (strdup (name)), params (p)
+    { }
+
+    _Params (const _Params& right);
+
+    virtual ~_Params ();
+
+    virtual _Params* clone () const { return new _Params (*this); }
+
+    // OPERATORS ------------------------------------------------------------
+
+    virtual _Params& operator= (const _Params& right);
+    
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void Accept (MccVisitor *visitor);
+
+    // I/O ------------------------------------------------------------------
+    
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    virtual void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
+    
+  };
+
+  
+  /**
+   * The search algorithm id and parameters.
+   */
+  _Params* mode;
+  
   /**
    * The model cache.
    */
@@ -7848,6 +7909,17 @@ struct MccPlacerExploreStat : public MccPStruct
    * The explore output file structure.
    */
   MccOutputMode *expOutput;
+
+  /**
+   * Id for parameters string <-> int mapping;
+   */
+  static const int paramid_MaxLevelRetry;
+  static const int paramid_MaxLevelBacktrack;
+  static const int paramid_invalid;
+
+  static const char* paramstr_MaxLevelRetry;
+  static const char* paramstr_MaxLevelBacktrack;
+  static const char* paramstr_invalid;
   
 protected:
   
@@ -7856,7 +7928,7 @@ protected:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccPlacerExploreStat () { }
+  MccPlacerSearchStat () { }
   
 public:
 
@@ -7866,28 +7938,27 @@ public:
    * @param mc the model cache.
    * @param ef the explore output file structure.
    */
-  MccPlacerExploreStat (/*MccFragGenStruc* fg,*/ MccModelFilterStrategy *f,
-		  MccOutputMode *ef)
-    : /*fg_struc (fg),*/ filter (f), expOutput (ef) { }
+  MccPlacerSearchStat (_Params* md, MccModelFilterStrategy *f = 0, MccOutputMode *ef = 0)
+    : mode (md), filter (f), expOutput (ef) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccPlacerExploreStat (const MccPlacerExploreStat &right);
+  MccPlacerSearchStat (const MccPlacerSearchStat &right);
 
   /**
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccPlacerExploreStat* clone () const { return new MccPlacerExploreStat (*this); }
+  virtual MccPlacerSearchStat* clone () const { return new MccPlacerSearchStat (*this); }
     
   /**
    * Destroys the object.
    */
-  virtual ~MccPlacerExploreStat ()
+  virtual ~MccPlacerSearchStat ()
   {
-//     delete fg_struc;
+    delete mode;
     if (filter)
       delete filter;
     if (expOutput)
@@ -7901,12 +7972,15 @@ public:
    * @param right the object to copy.
    * @return itself.
    */
-  virtual MccPlacerExploreStat& operator= (const MccPlacerExploreStat &right);
+  virtual MccPlacerSearchStat& operator= (const MccPlacerSearchStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
   // METHODS --------------------------------------------------------------
 
+  static int getParamId (const char* str);
+  static const char* getParamStr (int id);
+  
   /**
    * Accepts the visitor and calls it on itself.
    * @param visitor the visitor.
@@ -8402,12 +8476,18 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccPlacerBuildStat *struc) = 0;
-  
+
   /**
-   * Visits the MccPlacerExploreStat structure.
+   * Visits the MccPlacerSearchStat::_Params sub-structure.
    * @param struc the evaluated structure.
    */
-  virtual void Visit (MccPlacerExploreStat *struc) = 0;
+  virtual void Visit (MccPlacerSearchStat::_Params *struc) = 0;
+  
+  /**
+   * Visits the MccPlacerSearchStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerSearchStat *struc) = 0;
   
   //!
 
