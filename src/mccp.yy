@@ -1,11 +1,11 @@
 /*                               -*- Mode: C -*- 
  * mccp.yy
- * Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
- * Last Modified By : Philippe Thibault
- * Last Modified On : Wed Mar 21 11:19:52 2001
- * Update Count     : 6
+ * Last Modified By : Martin Larose
+ * Last Modified On : Wed Mar 21 17:30:44 2001
+ * Update Count     : 7
  * Status           : Ok.
  */
 
@@ -127,6 +127,11 @@ zipped       return TOK_ZIPPED;
 {INTEGER_LIT}\.{DIGIT}*  mcclval.floatval = atof (mcctext); return TOK_FLOAT;
 
 {LETTER}{DIGIT}+  mcclval.textval = mcccopy (mcctext); return TOK_RESNAME;
+
+{DIGIT}{LETTER}{LETTER}?{DIGIT}[\*M]? {
+                                        mcclval.textval = mcccopy (mcctext);
+					return TOK_ATOM;
+                                      }
 
 [-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]*  {
                                      mcclval.textval = mcccopy (mcctext);

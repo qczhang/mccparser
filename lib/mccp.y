@@ -1,11 +1,11 @@
 /*                               -*- Mode: C -*- 
  * mccp.y
- * Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
- * Last Modified By : Philippe Thibault
- * Last Modified On : Wed Mar 21 11:19:29 2001
- * Update Count     : 9
+ * Last Modified By : Martin Larose
+ * Last Modified On : Wed Mar 21 17:30:42 2001
+ * Update Count     : 10
  * Status           : Ok.
  */
 
@@ -132,6 +132,7 @@
 %token <intval> TOK_INTEGER
 %token <floatval> TOK_FLOAT
 %token <textval> TOK_RESNAME
+%token <textval> TOK_ATOM
 %token <textval> TOK_IDENT
 %token <textval> TOK_QUOTED_IDENT
 %token <textval> TOK_STRING
@@ -882,6 +883,7 @@ residueRef:   TOK_INTEGER { $$ = new MccResidueName ($1); }
 
 atomRef:   TOK_IDENT { $$ = $1; }
          | TOK_RESNAME { $$ = $1; }
+         | TOK_ATOM { $$ = $1; }
 ;
 
 
