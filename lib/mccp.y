@@ -1,11 +1,11 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.y
- * Copyright © 2000-01 , 2002Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-01 , 2002, 2002Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Labo Lbit
- * Last Modified On : Thu Oct 31 10:23:55 2002
- * Update Count     : 18
+ * Last Modified On : Thu Oct 31 10:38:52 2002
+ * Update Count     : 19
  * Status           : Ok.
  */
 
@@ -458,7 +458,7 @@ exploreLV: TOK_EXPLORELV TOK_LPAREN fgRef model_filter_opt output_mode_opt timel
 
 
 model_filter_opt: /* empty */ { $$ = 0; }
-                  | model_filter { $$ = $1 }
+                  | model_filter { $$ = $1; }
 ;
 
 
@@ -886,7 +886,7 @@ queryandexp:   queryfaceexp { $$ = $1; }
 ;
 
 
-queryfaceexp:  querynotexp { $$ = $1 }
+queryfaceexp:  querynotexp { $$ = $1; }
              | querynotexp TOK_FACE querynotexp
                 {
 		  $$ = new MccQFaceFunc ($1, $3);
@@ -991,7 +991,7 @@ input_mode:   TOK_PDB TOK_STRING  /* deprecated */
 
 
 model_sorter_opt: /* empty */ { $$ = 0; }
-                  | model_sorter { $$ = $1 }
+                  | model_sorter { $$ = $1; }
 ;
 
 
