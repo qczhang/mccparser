@@ -1,11 +1,11 @@
 ############################ -*- Mode: Makefile -*- ###########################
 ## Makefile.in
-## Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+## Copyright © 2000-02 Laboratoire de Biologie Informatique et Théorique.
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 15:57:45 2000
-## Last Modified By : Martin Larose
-## Last Modified On : Tue Sep 25 15:57:52 2001
-## Update Count     : 2
+## Last Modified By : Patrick Gendron
+## Last Modified On : Fri Feb 22 14:49:22 2002
+## Update Count     : 3
 ## Status           : Unknown.
 ###############################################################################
 
@@ -47,7 +47,7 @@ all all-static static:
 	   (cd $$subdir && $(MAKE) $@) || exit 1; \
 	  done
 
-install install-static:
+install install-static install-doc:
 	@ for subdir in $(SUBDIRS); do \
 	   echo "Building $@ in $$subdir"; \
 	   (cd $$subdir && $(MAKE) $@) || exit 1; \

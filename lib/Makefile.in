@@ -1,11 +1,11 @@
 ############################ -*- Mode: Makefile -*- ###########################
 ## Makefile.in
-## Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+## Copyright © 2000-02 Laboratoire de Biologie Informatique et Théorique.
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:06:06 2000
-## Last Modified By : Martin Larose
-## Last Modified On : Wed Sep 26 10:14:16 2001
-## Update Count     : 6
+## Last Modified By : Patrick Gendron
+## Last Modified On : Fri Feb 22 14:49:27 2002
+## Update Count     : 7
 ## Status           : Ok.
 ###############################################################################
 
@@ -133,6 +133,9 @@ install-static: static
           done;
 	@ rm -f $(includedir)/$(PACKAGE)
 	@ ln -s $(PACKAGE)-$(VERSION) $(includedir)/$(PACKAGE)
+
+install-doc:
+	@ echo "Nothing to do"
 
 uninstall:
 	@ rm -f $(libdir)/$(LIBRARY).a

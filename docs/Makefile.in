@@ -1,11 +1,11 @@
 ############################ -*- Mode: Makefile -*- ###########################
 ## Makefile.in
-## Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+## Copyright © 2000-02 Laboratoire de Biologie Informatique et Théorique.
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:02:59 2000
-## Last Modified By : Martin Larose
-## Last Modified On : Tue Dec  4 14:51:52 2001
-## Update Count     : 3
+## Last Modified By : Patrick Gendron
+## Last Modified On : Fri Feb 22 14:49:24 2002
+## Update Count     : 4
 ## Status           : Ok.
 ###############################################################################
 
@@ -64,7 +64,10 @@ Manual.html: Manual.dvi
 	@ latex2html -address "<a href=\"mailto:Webmaster <adbit@iro.umontreal.ca>\">Webmaster</a>" -info "" -no_navigation Manual.tex
 
 
-install install-static: doc
+install install-static:
+	@ echo "Documentation not installed.  Use make install-doc."
+
+install-doc: doc
 	@ $(srcdir)/../mkinstalldirs $(datadir)/$(PACKAGE)/$(VERSION)/doc
 	@ for file in Manual.ps Manual.pdf; do \
 	   $(INSTALL_DATA) $$file $(datadir)/$(PACKAGE)/$(VERSION)/doc; \
