@@ -5809,10 +5809,9 @@ struct MccResidueStat : public MccPStruct
      */
     MccSamplingSize *ssize;
 
-    /**
-     * 
-     */
-    bool theo_flag;
+    //! theo confo
+//     bool theo_flag;
+    //!
 
   protected:
     
@@ -5833,9 +5832,16 @@ struct MccResidueStat : public MccPStruct
      * @param ss the sampling size struct.
      */
     _ResidueStruc (MccResidueName *r1, MccResidueName *r2,
-		   MccQueryExpr *exp, MccSamplingSize *ss, bool tf = false)
-      : res1 (r1), res2 (r2), expr (exp), ssize (ss), theo_flag (tf) 
+		   MccQueryExpr *exp, MccSamplingSize *ss)
+      : res1 (r1), res2 (r2), expr (exp), ssize (ss)
       { }
+
+    //! theo confo
+//     _ResidueStruc (MccResidueName *r1, MccResidueName *r2,
+// 		   MccQueryExpr *exp, MccSamplingSize *ss, bool tf = false)
+//       : res1 (r1), res2 (r2), expr (exp), ssize (ss), theo_flag (tf) 
+//       { }
+    //!
 
     /**
      * Initializes the object with the rights content.
@@ -6793,6 +6799,496 @@ struct MccVersion : public MccPStruct
 
 
 
+//! placer
+
+/**
+ * @short Struct representing the AST node for the "placer_sequence" statement.
+ *
+ * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+ */
+struct MccPlacerSequenceStat : public MccPStruct
+{
+  /**
+   * The type of the defined sequence [pdr].
+   */
+  char type;
+
+  /**
+   * The residue name of the first residue in the sequence.
+   */
+  MccResidueName *res;
+
+  /**
+   * The sequence.
+   */
+  char *seq;
+
+protected:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccPlacerSequenceStat () { }
+
+public:
+
+  /**
+   * Initializes the object.
+   * @param typ the type of the defined sequence.
+   * @param res the residue name of the first residue in the sequence.
+   * @param str the sequence.
+   */
+  MccPlacerSequenceStat (char typ, MccResidueName *r, char *str)
+    : type (typ), res (r), seq (str)
+  { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccPlacerSequenceStat (const MccPlacerSequenceStat &right);
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccPlacerSequenceStat () { delete res; delete[] seq; }
+
+  // OPERATORS -----------------------------------------------------------
+
+  /**
+   * Assigns the rights values in the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccPlacerSequenceStat& operator= (const MccPlacerSequenceStat &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccPlacerSequenceStat* clone () const { return new MccPlacerSequenceStat (*this); }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
+ * @short Struct representing the "placer_connect" AST node.
+ *
+ * It contains a local struct _PlacerConnectStruc that collects each statement.
+ *
+ * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+ */
+struct MccPlacerConnectStat : public MccPStruct
+{
+  /**
+   * @short Sub-structure containing the connect informations.
+   *
+   * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+   */
+  struct _PlacerConnectStruc
+  {
+    /**
+     * The name of the first residue in the relation.
+     */
+    MccResidueName *res1;
+
+    /**
+     * The name of the second residue in the relation.
+     */
+    MccResidueName *res2;
+
+    /**
+     * The query expression structure.
+     */
+    MccQueryExpr *expr;
+
+    /**
+     * The sampling size structure.
+     */
+    MccSamplingSize *ssize;
+
+    
+    // LIFECYCLE ------------------------------------------------------------
+
+  private:
+    /**
+     * Initializes the object.  It should never be used.
+     */
+    _PlacerConnectStruc () { }
+  public:
+
+    /**
+     * Initializes the object.
+     * @param r1 the name of the first residue in the relation.
+     * @param r2 the name of the second residue in the relation.
+     * @param e the query expression structure.
+     * @param s the sampling size structure.
+     */
+    _PlacerConnectStruc (MccResidueName *r1, MccResidueName *r2, 
+		   MccQueryExpr *e, MccSamplingSize *s)
+      : res1 (r1), res2 (r2), expr (e), ssize (s) { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _PlacerConnectStruc (const _PlacerConnectStruc &right);
+  
+    /**
+     * Destroys the object.
+     */
+    ~_PlacerConnectStruc () { delete res1; delete res2; delete expr; delete ssize; }
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    _PlacerConnectStruc& operator= (const _PlacerConnectStruc &right);
+    
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    _PlacerConnectStruc* clone () const { return new _PlacerConnectStruc (*this); }
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
+    // I/O ------------------------------------------------------------------
+    
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
+  };
+  
+  /**
+   * The vector containing the connect sub-structures.
+   */
+  vector< _PlacerConnectStruc* > *strucs;
+
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccPlacerConnectStat () : strucs (new vector< _PlacerConnectStruc* > ()) { }
+
+  /**
+   * Initializes the object.
+   * @param csv the vector containing the connect sub-structures.
+   */
+  MccPlacerConnectStat (vector< _PlacerConnectStruc* > *csv) : strucs (csv) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccPlacerConnectStat (const MccPlacerConnectStat &right);
+  
+  /**
+   * Destroys the object.  Clears the vector of sub-structures.
+   */
+  virtual ~MccPlacerConnectStat ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccPlacerConnectStat& operator= (const MccPlacerConnectStat &right);
+    
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccPlacerConnectStat* clone () const { return new MccPlacerConnectStat (*this); }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  /**
+   * Generates a new connect sub-structure and puts it in the vector.
+   * @param r1 the name of the first residue.
+   * @param r2 the name of the second residue.
+   * @param e the query expression structure.
+   * @param s the sampling size structure.
+   */
+  void GenPlacerConnectStruc (MccResidueName *r1, MccResidueName *r2,
+			MccQueryExpr *e, MccSamplingSize *s)
+  { strucs->push_back (new _PlacerConnectStruc (r1, r2, e, s)); }
+
+  // I/O ------------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
+ * @short Struct representing the AST node "placer_pair" statement.
+ *
+ * The struct contains a local substatement: _PlacerPairStruc that contains each
+ * pairing description.
+ *
+ * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+ */
+struct MccPlacerPairStat : public MccPStruct
+{
+  /**
+   * @short Sub-structure containing the pairing informations.
+   *
+   * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+   */
+  struct _PlacerPairStruc
+  {
+    /**
+     * The name of the first residue in the relation.
+     */
+    MccResidueName *res1;
+
+    /**
+     * The name of the second residue in the relation.
+     */
+    MccResidueName *res2;
+
+    /**
+     * The query expression structure.
+     */
+    MccQueryExpr *expr;
+
+    /**
+     * The sampling size structure.
+     */
+    MccSamplingSize *ssize;
+
+  protected:
+
+    // LIFECYCLE ------------------------------------------------------------
+
+    /**
+     * Initializes the object.  It should never be used.
+     */
+    _PlacerPairStruc () { }
+    
+  public:
+
+    /**
+     * Initializes the object.
+     * @param r1 the name of the first residue.
+     * @param r2 the name of the second residue.
+     * @param e the query expression structure.
+     * @param s the sampling size structure.
+     */
+    _PlacerPairStruc (MccResidueName *r1, 
+		MccResidueName *r2, MccQueryExpr *e, MccSamplingSize *s)
+      : res1 (r1), res2 (r2), expr (e), ssize (s) { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _PlacerPairStruc (const _PlacerPairStruc &right);
+
+    /**
+     * Destroys the object.
+     */
+    ~_PlacerPairStruc () { delete res1; delete res2; delete expr; delete ssize; }
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    _PlacerPairStruc& operator= (const _PlacerPairStruc &right);
+  
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    _PlacerPairStruc* clone () const { return new _PlacerPairStruc (*this); }
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void Accept (MccVisitor *visitor);
+
+    // I/O  -----------------------------------------------------------------
+    
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
+  };
+
+  /**
+   * The vector containing the pairing sub-structures.
+   */
+  vector< _PlacerPairStruc* > *strucs;
+
+
+  // LIFECYCLE ------------------------------------------------------------
+    
+  /**
+   * Initializes the object.
+   */
+  MccPlacerPairStat () : strucs (new vector< _PlacerPairStruc* > ()) { }
+
+  /**
+   * Initializes the object.
+   * @param psv the vector containing the pairing sub-structures.
+   */
+  MccPlacerPairStat (vector< _PlacerPairStruc* > *psv) : strucs (psv) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccPlacerPairStat (const MccPlacerPairStat &right);
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccPlacerPairStat ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccPlacerPairStat& operator= (const MccPlacerPairStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+   virtual MccPlacerPairStat* clone () const { return new MccPlacerPairStat (*this); }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  /**
+   * Generates a new pairing sub-structures and puts it in the vector.
+   * @param r1 the name of the first residue.
+   * @param r2 the name of the second residue.
+   * @param e the query expression structure.
+   * @param s the sampling size structure.
+   */   
+  void GenPlacerPairStruc (MccResidueName *r1, MccResidueName *r2,
+		     MccQueryExpr *e, MccSamplingSize *s)
+  { strucs->push_back (new _PlacerPairStruc (r1, r2, e, s)); }
+  
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+//!
+
+
+
+
+
 /**
  * @short Basic visitor class for the parser structures.
  *
@@ -7210,7 +7706,41 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccVersion *struc) = 0;
- 
+
+  //! placer
+
+  /**
+   * Visits the MccPlacerSequenceStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerSequenceStat *struc) = 0;
+  
+  /**
+   * Visits the local MccPlacerConnectStat sub-structure _PlacerConnectStruc.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerConnectStat::_PlacerConnectStruc *struc) = 0;
+  
+  /**
+   * Visits the MccPlacerConnectStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerConnectStat *struc) = 0;
+    /**
+   * Visits the local MccPlacerPairStat sub-structure _PlacerPairStruc.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerPairStat::_PlacerPairStruc *struc) = 0;
+  
+  /**
+   * Visits the MccPlacerPairStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccPlacerPairStat *struc) = 0;
+  
+  //!
+
+  
   // I/O  -----------------------------------------------------------------
 
 };
@@ -7402,6 +7932,7 @@ public:
 
   // I/O ------------------------------------------------------------------
 };
+
 
 /**
  * Displays the message to the output stream.

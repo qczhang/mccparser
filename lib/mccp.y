@@ -74,6 +74,13 @@
   MccModelSorterStrategy *ms;
   MccMosesQueries *mqs;
   pair< MccQueryExpr*, MccSamplingSize* > *qsssp;
+
+  //! placer
+  vector< MccPlacerConnectStat::_PlacerConnectStruc* > *pcsv;
+  MccPlacerConnectStat::_PlacerConnectStruc *pcs;
+  vector< MccPlacerPairStat::_PlacerPairStruc* > *ppsv;
+  MccPlacerPairStat::_PlacerPairStruc *pps;
+  //!
 }
 
 
@@ -156,7 +163,6 @@
 %token TOK_SOURCE
 %token TOK_STEMCONDEF
 %token TOK_STRIP
-%token TOK_THEOCONFO
 %token TOK_TIMELIMIT
 %token TOK_TRANSFO
 %token TOK_TFOCUT
@@ -176,11 +182,25 @@
 %token <textval> TOK_QUOTED_IDENT
 %token <textval> TOK_STRING
 
+//! theo confo
+%token TOK_THEOCONFO
+//!
+
+//! placer
+%token TOK_PLACER_SEQUENCE
+%token TOK_PLACER_CONNECT
+%token TOK_PLACER_PAIR
+//!
+
 %type <mccval> statement
 %type <mccval> sequence
 %type <mccval> assign
 %type <smpls> sampling
-%type <boolval> theo_confo
+
+//! theo confo
+// %type <boolval> theo_confo
+//!
+
 %type <mccval> residue
 %type <rsv> resdef_plus
 %type <rs> resdef
@@ -290,6 +310,15 @@
 %type <fgr> fgRef_opt
 %type <fgr> fgRef
 
+//! placer
+%type <mccval> placer_sequence
+%type <mccval> placer_connect
+%type <pcsv> placer_condef_plus
+%type <pcs> placer_condef
+%type <mccval> placer_pair
+%type <ppsv> placer_pairdef_plus
+%type <pps> placer_pairdef
+//!
 
 %type <textval> ident_plus
 %type <floatval> flt
@@ -341,6 +370,12 @@ statement:   sequence { $$ = $1; }
            | resetdb { $$ = $1; }
            | version { $$ = $1; }
            | quit { $$ = $1; }
+//! placer
+           | placer_sequence { $$ = $1; }
+           | placer_connect { $$ = $1; }
+           | placer_pair { $$ = $1; }
+
+
 ;
 
 
@@ -376,12 +411,20 @@ resdef_plus:   resdef
 ;
 
 
-resdef:  residueRef residueRef_opt queryexp sampling theo_confo
+resdef:  residueRef residueRef_opt queryexp sampling
            {
-	     $$ = new MccResidueStat::_ResidueStruc ($1, $2, $3, $4, $5);
+	     $$ = new MccResidueStat::_ResidueStruc ($1, $2, $3, $4);
 	   }
 ;
 
+
+//! theo confo
+// resdef:  residueRef residueRef_opt queryexp sampling theo_confo
+//            {
+// 	     $$ = new MccResidueStat::_ResidueStruc ($1, $2, $3, $4, $5);
+// 	   }
+// ;
+//!
 
 connect:   TOK_CONNECT TOK_LPAREN condef_plus TOK_RPAREN
             {
@@ -825,10 +868,11 @@ sampling: TOK_INTEGER             { $$ = new MccSamplingSize ($1, true); }
           | flt TOK_PERCENT       { $$ = new MccSamplingSize ($1, false); }
 ;
 
-theo_confo:  /* empty */     { $$ = false; }
-             | TOK_THEOCONFO { $$ = true; }
-;
-
+//! theo confo
+// theo_confo:  /* empty */     { $$ = false; }
+//              | TOK_THEOCONFO { $$ = true; }
+// ;
+//!
 
 queryexp_plus:   queryexp
                   {
@@ -1219,6 +1263,85 @@ ident_plus:   TOK_IDENT { $$ = $1; }
 flt:   TOK_INTEGER { $$ = $1; }
      | TOK_FLOAT { $$ = $1; }
 ;
+
+
+//! placer
+
+placer_sequence:  TOK_PLACER_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
+{
+  if (strlen ($3) != 1)
+    throw CParserException ("Invalid sequence type.");
+  $$ = new MccPlacerSequenceStat ($3[0], $4, $5);
+}
+;
+
+placer_connect:   TOK_PLACER_CONNECT TOK_LPAREN placer_condef_plus TOK_RPAREN
+            {
+	      $$ = new MccPlacerConnectStat ($3);
+	    }
+;
+
+
+placer_condef_plus:   placer_condef
+                {
+		  $$ = new vector< MccPlacerConnectStat::_PlacerConnectStruc* > (1, $1);
+		}
+             | placer_condef_plus placer_condef
+                {
+		  $$ = $1;
+		  $$->push_back ($2);
+		}
+;
+
+
+placer_condef:   residueRef residueRef queryexp sampling
+           {
+	     $$ = new MccPlacerConnectStat::_PlacerConnectStruc ($1, $2, $3, $4);
+	   }
+;
+
+
+placer_pair:   TOK_PLACER_PAIR TOK_LPAREN placer_pairdef_plus TOK_RPAREN
+         {
+	   $$ = new MccPlacerPairStat ($3);
+	 }
+;
+
+
+placer_pairdef_plus:   placer_pairdef
+                 {
+		   $$ = new vector< MccPlacerPairStat::_PlacerPairStruc* > (1, $1);
+		 }
+             | placer_pairdef_plus placer_pairdef
+                {
+		  $$ = $1;
+		  $$->push_back ($2);
+		}
+;
+
+
+placer_pairdef:   residueRef residueRef queryexp sampling
+            {
+	      $$ = new MccPlacerPairStat::_PlacerPairStruc ($1, $2, $3, $4);
+	    }
+;
+
+
+
+// TODO!
+// placer_clashCst: TOK_PLACER_CLASHCST TOK_LPAREN TOK_IDENT flt TOK_RPAREN
+// {
+//   $$ = new MccPlacerClashCstStat ($3, $4);
+// }
+// ;
+
+// placer_closureCst: TOK_PLACER_CLASHCST TOK_LPAREN TOK_IDENT closure_range closure_range closure_range TOK_RPAREN
+
+// ;
+
+// placer_riboseCst:
+
+// ;
 
 
 %%

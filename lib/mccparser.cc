@@ -3447,8 +3447,10 @@ MccResidueStat::_ResidueStruc::_ResidueStruc (const MccResidueStat::_ResidueStru
   : res1 (new MccResidueName (*right.res1)),
     res2 (0),
     expr (new MccQueryExpr (*right.expr)),
-    ssize (new MccSamplingSize (*right.ssize)),
-    theo_flag (right.theo_flag)
+    ssize (new MccSamplingSize (*right.ssize))
+  //! theo confo
+//     theo_flag (right.theo_flag)
+  //!
 {
   if (right.res2)
     res2 = new MccResidueName (*right.res2);
@@ -3473,7 +3475,9 @@ MccResidueStat::_ResidueStruc::operator= (const MccResidueStat::_ResidueStruc &r
       expr = new MccQueryExpr (*right.expr);
       delete ssize;
       ssize = new MccSamplingSize (*right.ssize);
-      theo_flag = right.theo_flag;
+      //! theo confo
+//       theo_flag = right.theo_flag;
+      //!
     }
   return *this;
 }
@@ -4351,6 +4355,358 @@ CParserException::operator<< (const char *s)
   return *this;
 }
 
+
+//! placer
+
+MccPlacerSequenceStat::MccPlacerSequenceStat (const MccPlacerSequenceStat &right)
+  : type (right.type),
+    res (new MccResidueName (*right.res))
+{
+  seq = new char[strlen (right.seq) + 1];
+  strcpy (seq, right.seq);
+}
+
+
+
+MccPlacerSequenceStat&
+MccPlacerSequenceStat::operator= (const MccPlacerSequenceStat &right)
+{
+  if (this != &right)
+    {
+      type = right.type;
+      delete res;
+      res = new MccResidueName (*right.res);
+      delete[] seq;
+      seq = new char[strlen (right.seq) + 1];
+      strcpy (seq, right.seq);
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerSequenceStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerSequenceStat::display (ostream &os) const
+{
+  os << "placer_sequence (" << type << ' ';
+  res->display (os);
+  os << ' ' << seq << ')';
+}
+
+
+
+void
+MccPlacerSequenceStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "placer_sequence (" << type << ' ';
+  res->ppdisplay (os, indent);
+  os << ' ' << seq << ')' << endl;
+}
+
+
+MccPlacerConnectStat::_PlacerConnectStruc::_PlacerConnectStruc (const MccPlacerConnectStat::_PlacerConnectStruc &right)
+  : res1 (new MccResidueName (*right.res1)),
+    res2 (new MccResidueName (*right.res2)),
+    expr (new MccQueryExpr (*right.expr)),
+    ssize (right.ssize)
+{ }
+
+
+
+MccPlacerConnectStat::_PlacerConnectStruc&
+MccPlacerConnectStat::_PlacerConnectStruc::operator= (const MccPlacerConnectStat::_PlacerConnectStruc &right)
+{
+  if (this != &right)
+    {
+      delete res1;
+      res1 = new MccResidueName (*right.res1);
+      delete res2;      
+      res2 = new MccResidueName (*right.res2);
+      delete expr;
+      expr = new MccQueryExpr (*right.expr);
+      ssize = right.ssize;
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerConnectStat::_PlacerConnectStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerConnectStat::_PlacerConnectStruc::display (ostream &os) const
+{
+  res1->display (os);
+  os << ' ';
+  res2->display (os);
+  os << ' ';
+  expr->display (os);
+  os << ' ';
+  ssize->display (os);
+}
+
+
+
+void
+MccPlacerConnectStat::_PlacerConnectStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ' ';
+  res2->ppdisplay (os, indent);
+  os << ' ';
+  expr->ppdisplay (os, indent);
+  os << ' ';
+  ssize->ppdisplay (os, indent);
+}
+
+
+
+MccPlacerConnectStat::MccPlacerConnectStat (const MccPlacerConnectStat &right)
+  : strucs (new vector< MccPlacerConnectStat::_PlacerConnectStruc* > ())
+{
+  vector< MccPlacerConnectStat::_PlacerConnectStruc* >::const_iterator cit;
+
+  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+    strucs->push_back (new _PlacerConnectStruc (**cit));
+}
+
+
+
+MccPlacerConnectStat::~MccPlacerConnectStat ()
+{
+  vector< _PlacerConnectStruc* >::iterator it;
+
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    delete *it;
+
+  delete strucs;
+}
+
+
+
+MccPlacerConnectStat&
+MccPlacerConnectStat::operator= (const MccPlacerConnectStat &right)
+{
+  if (this != &right)
+    {
+      vector< MccPlacerConnectStat::_PlacerConnectStruc* >::const_iterator cit;
+      vector< MccPlacerConnectStat::_PlacerConnectStruc* >::iterator it;
+      
+      for (it = strucs->begin (); it != strucs->end (); it++)
+	delete *it;
+      strucs->clear ();
+      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+	strucs->push_back (new _PlacerConnectStruc (**cit));
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerConnectStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerConnectStat::display (ostream &os) const
+{
+  vector< _PlacerConnectStruc* >::iterator it;
+
+  os << "placer_connect (";
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    {
+      if (it != strucs->begin ())
+	os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerConnectStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _PlacerConnectStruc* >::iterator it;
+
+  os << "placer_connect" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+MccPlacerPairStat::_PlacerPairStruc::_PlacerPairStruc (const MccPlacerPairStat::_PlacerPairStruc &right)
+  : res1 (new MccResidueName (*right.res1)),
+    res2 (new MccResidueName (*right.res2)),
+    expr (new MccQueryExpr (*right.expr)),
+    ssize (right.ssize)
+{ }
+
+
+
+MccPlacerPairStat::_PlacerPairStruc&
+MccPlacerPairStat::_PlacerPairStruc::operator= (const MccPlacerPairStat::_PlacerPairStruc &right)
+{
+  if (this != &right)
+    {
+      delete res1;
+      res1 = new MccResidueName (*right.res1);
+      delete res2;
+      res2 = new MccResidueName (*right.res2);
+      delete expr;
+      expr = new MccQueryExpr (*right.expr);
+      ssize = right.ssize;
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerPairStat::_PlacerPairStruc::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerPairStat::_PlacerPairStruc::display (ostream &os) const
+{
+  res1->display (os);
+  os << ' ';
+  res2->display (os);
+  os << ' ';
+  expr->display (os);
+  os << ' ';
+  ssize->display (os);
+}
+
+
+
+void
+MccPlacerPairStat::_PlacerPairStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  res1->ppdisplay (os, indent);
+  os << ' ';
+  res2->ppdisplay (os, indent);
+  os << ' ';
+  expr->ppdisplay (os, indent);
+  os << ' ';
+  ssize->ppdisplay (os, indent);
+}
+
+
+
+MccPlacerPairStat::MccPlacerPairStat (const MccPlacerPairStat &right)
+  : strucs (new vector< MccPlacerPairStat::_PlacerPairStruc* > ())
+{
+  vector< MccPlacerPairStat::_PlacerPairStruc* >::const_iterator cit;
+
+  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+    strucs->push_back (new MccPlacerPairStat::_PlacerPairStruc (**cit));
+}
+
+
+
+MccPlacerPairStat::~MccPlacerPairStat ()
+{
+  vector< _PlacerPairStruc* >::iterator it;
+
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    delete *it;
+  delete strucs;
+}
+
+
+
+MccPlacerPairStat&
+MccPlacerPairStat::operator= (const MccPlacerPairStat &right)
+{
+  if (this != &right)
+    {
+      vector< MccPlacerPairStat::_PlacerPairStruc* >::const_iterator cit;
+      vector< MccPlacerPairStat::_PlacerPairStruc* >::iterator it;
+
+      for (it = strucs->begin (); it != strucs->end (); it++)
+	delete *it;
+      strucs->clear ();
+      for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
+	strucs->push_back (new MccPlacerPairStat::_PlacerPairStruc (**cit));
+    }
+  return *this;
+}
+
+
+
+void
+MccPlacerPairStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccPlacerPairStat::display (ostream &os) const
+{
+  vector< _PlacerPairStruc* >::iterator it;
+  
+  os << "placer_pair (";
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    {
+      if (it != strucs->begin ())
+	os << ' ';
+      (*it)->display (os);
+    }
+  os << ')';
+}
+
+
+
+void
+MccPlacerPairStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _PlacerPairStruc* >::iterator it;
+  
+  os << "placer_pair" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 4);
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+//!
 
 
 ostream&

@@ -151,9 +151,11 @@ hr           return TOK_HR;
 hours        return TOK_HR;
 days         return TOK_DAY;
 d            return TOK_DAY;
-t            return TOK_THEOCONFO;
-T            return TOK_THEOCONFO;
-theo         return TOK_THEOCONFO;
+
+
+placer_sequence     return TOK_PLACER_SEQUENCE; 
+placer_connect      return TOK_PLACER_CONNECT; 
+placer_pair         return TOK_PLACER_PAIR; 
 
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
