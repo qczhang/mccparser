@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Thu Aug 31 13:42:28 2000
-// Update Count     : 3
+// Last Modified On : Thu Aug 31 14:48:21 2000
+// Update Count     : 4
 // Status           : Ok.
 // 
 
@@ -16,6 +16,7 @@
 
 #include <iostream.h>
 #include <vector.h>
+#include <stdio.h>
 
 #include "UMcsymLib.h"
 
