@@ -1,8 +1,8 @@
 /*                               -*- Mode: C -*- 
- * tokens.l
+ * lex.yy
  * Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
- * Created On       : Tue Aug 22 10:33:44 2000
+ * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : 
  * Last Modified On : 
  * Update Count     : 0
@@ -92,15 +92,9 @@ vdw_distance return TOK_VDWDIST;
 version      return TOK_VERSION;
 zipped       return TOK_ZIPPED;
 
-{INTEGER_LIT}                                yylval = atoi (yytext);
-                                             return TOK_INTEGER;
-{FLOAT_LIT}                                  yylval = atof (yytext);
-                                             return TOK_FLOAT;
-{LETTER}{DIGIT}+                             yylval = yytext;
-                                             return TOK_RESNAME;
-[-_<>a-zA-Z][-_<>%\.a-zA-Z0-9]*              yylval = yytext;
-                                             return TOK_IDENT;
-\'[-_\ \t<>a-zA-Z][-_\ \t<>%\.a-zA-Z0-9]*\'  yylval = yytext;
-                                             return TOK_IDENT;
-{LETTER}({LETTER}|{DIGIT})*\'?               yylval = yytext;
-                                             return TOK_ATOM;
+{INTEGER_LIT}                 yylval = atoi (yytext); return TOK_INTEGER;
+{FLOAT_LIT}                   yylval = atof (yytext); return TOK_FLOAT;
+{LETTER}{DIGIT}+              yylval = yytext; return TOK_RESNAME;
+[-_<>a-zA-Z][-_<>%\.a-zA-Z0-9]*              yylval = yytext; return TOK_IDENT;
+\'[-_\ \t<>a-zA-Z][-_\ \t<>%\.a-zA-Z0-9]*\'  yylval = yytext; return TOK_IDENT;
+{LETTER}({LETTER}|{DIGIT})*\'?               yylval = yytext; return TOK_ATOM;
