@@ -1,6 +1,6 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.h
-// Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
@@ -3755,6 +3755,95 @@ public:
 
 
 /**
+ * @short Class representing the file option on AST nodes "explore" and
+ * "restore".
+ *
+ * @author Martin Larose (<a href="mailto:larosem@iro.umontreal.ca">larosem@iro.umontreal.ca</a>)
+ */
+struct MccFileRnamlOutput : public MccOutputMode
+{
+  /**
+   * The output file name.
+   */
+  char *name;
+
+  /**
+   * The boolean indicating if the files will be zipped.
+   */
+  bool zipped;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+  
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccFileRnamlOutput () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param name the ouput file name.
+   * @param z the boolean indicating if the files will be zipped.
+   */
+  MccFileRnamlOutput (char *name, bool z) : name (name), zipped (z) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccFileRnamlOutput (const MccFileRnamlOutput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of the current object.
+   */
+  virtual MccOutputMode* clone () const { return new MccFileRnamlOutput (*this); }
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccFileRnamlOutput () { delete[] name; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccFileRnamlOutput& operator= (const MccFileRnamlOutput &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
  * @short Struct representing the backtrack size option on AST nodes "exploreLV"
  *
  * @author Philippe Thibault  <thibaup@IRO.UMontreal.CA>
@@ -4129,6 +4218,89 @@ public:
    * @param right the struct to copy.
    */
   MccSocketBinaryInput& operator= (const MccSocketBinaryInput &right);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Input model class for rnaml files.
+ *
+ * @author Martin Larose (<a href="mailto:larosem@iro.umontreal.ca">larosem@iro.umontreal.ca</a>)
+ */
+struct MccFileRnamlInput : public MccInputMode
+{
+  /**
+   * The file name.
+   */
+  char *name;  
+  
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should not be used.
+   */
+  MccFileRnamlInput () { }
+
+public:
+
+  /**
+   * Initializes the object with a name.
+   * @param n the name of the input file(s).
+   */
+  MccFileRnamlInput (char *n) : name (n) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccFileRnamlInput (const MccFileRnamlInput &right);
+
+  /**
+   * Copies the object.
+   * @return a clone of itself.
+   */
+  virtual MccFileRnamlInput* clone () const
+  { return new MccFileRnamlInput (*this); }
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccFileRnamlInput () { delete[] name; }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccFileRnamlInput& operator= (const MccFileRnamlInput &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -7026,6 +7198,12 @@ public:
   virtual void Visit (MccSocketBinaryOutput *struc) = 0;
   
   /**
+   * Visits the MccFileRnamlOutput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccFileRnamlOutput *struc) = 0;
+  
+  /**
    * Visits the MccFilePdbInput structure.
    * @param struc the evaluated structure.
    */
@@ -7042,6 +7220,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void Visit (MccSocketBinaryInput *struc) = 0;
+  
+  /**
+   * Visits the MccFileRnamlInput structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccFileRnamlInput *struc) = 0;
   
   /**
    * Visits the MccExploreStat structure.

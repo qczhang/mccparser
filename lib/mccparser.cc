@@ -1,6 +1,6 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.cc
-// Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
@@ -1930,6 +1930,46 @@ MccSocketBinaryOutput::display (ostream &os) const
 
 
 
+MccFileRnamlOutput::MccFileRnamlOutput (const MccFileRnamlOutput &right)
+  : name (strdup (right.name)),
+    zipped (right.zipped)
+{ }
+
+
+
+MccFileRnamlOutput&
+MccFileRnamlOutput::operator= (const MccFileRnamlOutput &right)
+{
+  if (this != &right)
+    {
+      delete[] name;
+      name = strdup (right.name);
+      zipped = right.zipped;
+    }
+  return *this;
+}
+
+
+
+void
+MccFileRnamlOutput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccFileRnamlOutput::display (ostream &os) const
+{
+  os << "file_rnaml (\"" << name << "\"";
+  if (zipped)
+    os << " zipped";
+  os << ")";
+}
+
+
+
 MccFilePdbInput::MccFilePdbInput (const MccFilePdbInput &right)
   : name (strdup (right.name))
 { }
@@ -2037,6 +2077,41 @@ MccSocketBinaryInput::display (ostream &os) const
 {
   os << "socket_bin (\"" << serverName << " " << port
      << " \"" << modelName << "\")";
+}
+
+
+
+MccFileRnamlInput::MccFileRnamlInput (const MccFileRnamlInput &right)
+  : name (strdup (right.name))
+{ }
+
+
+
+MccFileRnamlInput&
+MccFileRnamlInput::operator= (const MccFileRnamlInput &right)
+{
+  if (this != &right)
+    {
+      delete[] name;
+      name = strdup (right.name);
+    }
+  return *this;
+}
+
+
+
+void
+MccFileRnamlInput::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccFileRnamlInput::display (ostream &os) const
+{
+  os << "file_rnaml (\"" << name << "\")";
 }
 
 

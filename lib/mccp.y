@@ -1,6 +1,6 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.y
- * Copyright © 2000-01 , 2002, 2002Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Labo Lbit
@@ -134,6 +134,7 @@
 %token TOK_PDB
 %token TOK_FILE_BINARY
 %token TOK_FILE_PDB
+%token TOK_FILE_RNAML
 %token TOK_MFOLD_EPC
 %token TOK_MFOLD_OUTPUT
 %token TOK_MFOLD_WIN
@@ -493,6 +494,10 @@ output_mode:   /* deprecated */
              | TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
                {
 		 $$ = new MccSocketBinaryOutput ($3, $4, $5);
+	       }
+             | TOK_FILE_RNAML TOK_LPAREN TOK_STRING zfile_opt TOK_RPAREN
+               {
+		 $$ = new MccFileRnamlOutput ($3, $4);
 	       }
 ;
 
@@ -986,6 +991,10 @@ input_mode:   TOK_PDB TOK_STRING  /* deprecated */
             | TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
               {
 		$$ = new MccSocketBinaryInput ($3, $4, $5);
+	      }
+            | TOK_FILE_RNAML TOK_LPAREN TOK_STRING TOK_RPAREN
+              {
+		$$ = new MccFileRnamlInput ($3);
 	      }
 ;
 
