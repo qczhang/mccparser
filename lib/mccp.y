@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Tue Apr 15 11:50:14 2003
- * Update Count     : 24
+ * Last Modified On : Tue May 20 08:54:15 2003
+ * Update Count     : 25
  * Status           : Ok.
  */
 
@@ -27,6 +27,7 @@
 
 
 %union {
+  char charval;
   int intval;
   bool boolval;
   float floatval;
@@ -189,9 +190,6 @@
 %token <textval> TOK_QUOTED_IDENT
 %token <textval> TOK_STRING
 
-//! theo confo
-%token TOK_THEOCONFO
-//!
 
 //! placer
 %token TOK_PLACER_SEQUENCE
@@ -199,6 +197,7 @@
 %token TOK_PLACER_PAIR
 %token TOK_PLACER_BUILD
 %token TOK_PLACER_SEARCH
+%token TOK_CLOSURE
 //!
 
 %type <mccval> statement
@@ -206,9 +205,6 @@
 %type <mccval> assign
 %type <smpls> sampling
 
-//! theo confo
-// %type <boolval> theo_confo
-//!
 
 %type <mccval> residue
 %type <rsv> resdef_plus
@@ -332,6 +328,7 @@
 %type <prrv> placer_residueRef_plus
 %type <prr> placer_residueRef_opt
 %type <mccval> placer_build
+%type <charval> closure_opt
 %type <pbtsv> placer_res_place_plus
 %type <pbts> placer_res_place
 %type <mccval> placer_search
@@ -438,14 +435,6 @@ resdef:  residueRef residueRef_opt queryexp sampling
 	   }
 ;
 
-
-//! theo confo
-// resdef:  residueRef residueRef_opt queryexp sampling theo_confo
-//            {
-// 	     $$ = new MccResidueStat::_ResidueStruc ($1, $2, $3, $4, $5);
-// 	   }
-// ;
-//!
 
 connect:   TOK_CONNECT TOK_LPAREN condef_plus TOK_RPAREN
             {
@@ -889,11 +878,6 @@ sampling: TOK_INTEGER             { $$ = new MccSamplingSize ($1, true); }
           | flt TOK_PERCENT       { $$ = new MccSamplingSize ($1, false); }
 ;
 
-//! theo confo
-// theo_confo:  /* empty */     { $$ = false; }
-//              | TOK_THEOCONFO { $$ = true; }
-// ;
-//!
 
 queryexp_plus:   queryexp
                   {
@@ -1385,17 +1369,27 @@ placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
 
 
 
-placer_build: TOK_PLACER_BUILD TOK_LPAREN /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
+placer_build: TOK_PLACER_BUILD TOK_LPAREN closure_opt /*fgRef_opt*/ placer_res_place_plus TOK_RPAREN
                {
-		 MccPlacerBuildStat *tmp = new MccPlacerBuildStat ();
+		 MccPlacerBuildStat *tmp = new MccPlacerBuildStat ($3);
 
 // 		 if ($3)
 // 		   tmp->GenFGStruc ($3);
 // 		 tmp->AddBTStrucs ($4);
-		 tmp->AddBTStrucs ($3);
+		 tmp->AddBTStrucs ($4);
 		 $$ = tmp;
 	       }
 ;
+
+
+closure_opt: /* empty */
+{
+  $$ = 'f'; 
+}
+| TOK_CLOSURE TOK_LPAREN TOK_IDENT TOK_RPAREN
+{
+  $$ = $3[0];
+};
 
 
 placer_res_place_plus:   placer_res_place
@@ -1458,9 +1452,6 @@ search_params: TOK_IDENT flt
 // }
 // ;
 
-// placer_closureCst: TOK_PLACER_CLASHCST TOK_LPAREN TOK_IDENT closure_range closure_range closure_range TOK_RPAREN
-
-// ;
 
 // placer_riboseCst:
 

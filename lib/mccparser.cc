@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Tue Apr 15 11:50:18 2003
-// Update Count     : 23
+// Last Modified On : Tue May 20 08:54:18 2003
+// Update Count     : 24
 // Status           : Ok.
 // 
 
@@ -3448,9 +3448,6 @@ MccResidueStat::_ResidueStruc::_ResidueStruc (const MccResidueStat::_ResidueStru
     res2 (0),
     expr (new MccQueryExpr (*right.expr)),
     ssize (new MccSamplingSize (*right.ssize))
-  //! theo confo
-//     theo_flag (right.theo_flag)
-  //!
 {
   if (right.res2)
     res2 = new MccResidueName (*right.res2);
@@ -3475,9 +3472,6 @@ MccResidueStat::_ResidueStruc::operator= (const MccResidueStat::_ResidueStruc &r
       expr = new MccQueryExpr (*right.expr);
       delete ssize;
       ssize = new MccSamplingSize (*right.ssize);
-      //! theo confo
-//       theo_flag = right.theo_flag;
-      //!
     }
   return *this;
 }

@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed Mar 26 13:57:01 2003
-// Update Count     : 27
+// Last Modified On : Tue May 20 08:54:19 2003
+// Update Count     : 28
 // Status           : Ok.
 // 
 
@@ -5809,9 +5809,6 @@ struct MccResidueStat : public MccPStruct
      */
     MccSamplingSize *ssize;
 
-    //! theo confo
-//     bool theo_flag;
-    //!
 
   protected:
     
@@ -5835,13 +5832,6 @@ struct MccResidueStat : public MccPStruct
 		   MccQueryExpr *exp, MccSamplingSize *ss)
       : res1 (r1), res2 (r2), expr (exp), ssize (ss)
       { }
-
-    //! theo confo
-//     _ResidueStruc (MccResidueName *r1, MccResidueName *r2,
-// 		   MccQueryExpr *exp, MccSamplingSize *ss, bool tf = false)
-//       : res1 (r1), res2 (r2), expr (exp), ssize (ss), theo_flag (tf) 
-//       { }
-    //!
 
     /**
      * Initializes the object with the rights content.
@@ -7718,6 +7708,11 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
 //     virtual void ppdisplay (ostream &os, int indent = 0) const;
 //   };
 
+/**
+ * Tag for the closure constraint type.
+ */
+  char closure_tag;
+  
   /**
    * The vector containing the different backtrack sub-structures.
    */
@@ -7734,14 +7729,22 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
 
   /**
    * Initializes the object.
+   * @param ctag Closure constraint type tag.
    */
-  MccPlacerBuildStat () : strucs (new vector< _GenBTStruc* > ()) { }
+  MccPlacerBuildStat (char ctag = 'f')
+    : closure_tag (ctag),
+      strucs (new vector< _GenBTStruc* > ())
+  { }
 
   /**
    * Initializes the object.
    * @param s the vector containing the different backtrack sub-structures.
+   * @param ctag Closure constraint type tag.
    */
-  MccPlacerBuildStat (vector< _GenBTStruc* > *s) : strucs (s) { }
+  MccPlacerBuildStat (vector< _GenBTStruc* > *s, char ctag = 'f')
+    : closure_tag (ctag),
+      strucs (s)
+  { }
 
   /**
    * Initializes the object with the rights content.
