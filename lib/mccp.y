@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Tue Sep  5 13:37:46 2000
- * Update Count     : 6
+ * Last Modified On : Wed Sep  6 16:53:35 2000
+ * Update Count     : 7
  * Status           : Ok.
  */
 
@@ -18,9 +18,9 @@
 
   #include "mccparser.h"
 
-  extern int yylex ();
-  extern int yylineno;
-  int yyerror (char *s);
+  extern int mcclex ();
+  extern int mcclineno;
+  int mccerror (char *s);
 %}
 
 
@@ -895,7 +895,7 @@ flt:   TOK_INTEGER { $$ = $1; }
 %%
 
 int
-yyerror (char *s)
+mccerror (char *s)
 {
-  throw CParserException ("Parse error at line ") << yylineno << ".";
+  throw CParserException ("Parse error at line ") << mcclineno << ".";
 }

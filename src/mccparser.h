@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Tue Sep  5 16:02:10 2000
-// Update Count     : 8
+// Last Modified On : Wed Sep  6 16:53:46 2000
+// Update Count     : 9
 // Status           : Ok.
 // 
 
@@ -38,16 +38,16 @@ extern bool interactive_parser;
 
 
 /**
- * The variable containing the input stream.  It is defined in lex.yy.c.
+ * The variable containing the input stream.  It is defined in lex.mccp.c.
  */
-extern FILE *yyin;
+extern FILE *mccin;
 
 
 
 /**
  * The parser function.  It is defined in y.tab.c.
  */
-extern int yyparse ();
+extern int mccparse ();
 
 
 

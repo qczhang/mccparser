@@ -4,8 +4,8 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Fri Sep  1 13:08:52 2000
-%% Update Count     : 4
+%% Last Modified On : Wed Sep  6 16:54:40 2000
+%% Update Count     : 5
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -67,9 +67,9 @@ instructions:
 \item assign to the boolean variable {\tt interactive\_parser} the true
   value for an interactive parser or a false value when a file is to be
   parsed;
-\item assign to {\tt yyin} the {\tt FILE*} of the input; assign stdin for
+\item assign to {\tt mccin} the {\tt FILE*} of the input; assign stdin for
   interactive input or the result of the {\tt fopen} call on the input file;
-\item use {\tt yyparse ()} to parse the input.  The result can be found
+\item use {\tt mccparse ()} to parse the input.  The result can be found
   in the {\tt astv} variable defined in the library.  Its type is
   \verb+vector< MccPStruc* >*+.  We can display the parsed stream by using
   the method {\tt display (ostream\&)} defined for each {\tt MccPStruc};

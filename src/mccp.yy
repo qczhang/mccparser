@@ -4,12 +4,13 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Fri Sep  1 13:08:56 2000
- * Update Count     : 2
+ * Last Modified On : Wed Sep  6 16:53:38 2000
+ * Update Count     : 3
  * Status           : Ok.
  */
 
 
+%option noyywrap
 %option stack
 %{
   #include <iostream.h>
@@ -19,8 +20,8 @@
   #include "mccparser.h"
   #include "y.tab.h"
 
-  char* copy (const char *str);
-  int yylineno = 0;
+  char* mcccopy (const char *str);
+  int mcclineno = 0;
 %}
 
 
@@ -35,7 +36,7 @@ INTEGER_LIT  (-?{DIGIT}+)
              char *string_buf_ptr = string_buf;
 
 
-<INITIAL,QUERIES>\n        ++yylineno;           
+<INITIAL,QUERIES>\n        ++mcclineno;           
 <INITIAL,QUERIES>[ \t]+       
 <INITIAL,QUERIES>\/\/.*
 ,            return TOK_COMMA;
@@ -99,14 +100,14 @@ vdw_distance return TOK_VDWDIST;
 version      return TOK_VERSION;
 zipped       return TOK_ZIPPED;
 
-{INTEGER_LIT}     yylval.intval = atoi (yytext); return TOK_INTEGER;
+{INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
 
-{INTEGER_LIT}\.{DIGIT}*  yylval.floatval = atof (yytext); return TOK_FLOAT;
+{INTEGER_LIT}\.{DIGIT}*  mcclval.floatval = atof (mcctext); return TOK_FLOAT;
 
-{LETTER}{DIGIT}+  yylval.textval = copy (yytext); return TOK_RESNAME;
+{LETTER}{DIGIT}+  mcclval.textval = mcccopy (mcctext); return TOK_RESNAME;
 
 [-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]*  {
-                                     yylval.textval = copy (yytext);
+                                     mcclval.textval = mcccopy (mcctext);
 				     return TOK_IDENT;
                                    }
 
@@ -117,12 +118,12 @@ zipped       return TOK_ZIPPED;
 <QUOTES>\'       {
                    yy_pop_state ();
 		   *string_buf_ptr = '\0';
-		   yylval.textval = copy (string_buf);
+		   mcclval.textval = mcccopy (string_buf);
 		   return TOK_QUOTED_IDENT;
                  }
 
 <QUOTES>[^\']+    {
-                   char *yptr = yytext;
+                   char *yptr = mcctext;
 
 		   while (*yptr)
 		     *string_buf_ptr++ = *yptr++;
@@ -136,16 +137,16 @@ zipped       return TOK_ZIPPED;
 <STRINGS>\"      {
                    yy_pop_state ();
 		   *string_buf_ptr = '\0';
-		   yylval.textval = copy (string_buf);
+		   mcclval.textval = mcccopy (string_buf);
 		   return TOK_STRING;
                  }
 
-<STRINGS>\n      *string_buf_ptr++ = '\n'; yylineno++;
+<STRINGS>\n      *string_buf_ptr++ = '\n'; mcclineno++;
                    
-<STRINGS>\\.     *string_buf_ptr++ = '\\'; *string_buf_ptr++ = yytext[1];
+<STRINGS>\\.     *string_buf_ptr++ = '\\'; *string_buf_ptr++ = mcctext[1];
 
 <STRINGS>[^\\\"]+     {
-                        char *yptr = yytext;
+                        char *yptr = mcctext;
 
 		        while (*yptr)
 			  *string_buf_ptr++ = *yptr++;
@@ -156,25 +157,26 @@ zipped       return TOK_ZIPPED;
 
 \{                         { yy_push_state (QUERIES); return TOK_LBRACE; }
 <QUERIES>{INTEGER_LIT}     {
-                             yylval.textval = copy (yytext);
+                             mcclval.textval = mcccopy (mcctext);
                              return TOK_IDENT;
                            }
 <QUERIES>file              return TOK_FILENAME;
 <QUERIES>[-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]* {
-                                             yylval.textval = copy (yytext);
+                                             mcclval.textval = mcccopy (mcctext);
 					     return TOK_IDENT;
                                            }
 <QUERIES>\}                { yy_pop_state (); return TOK_RBRACE; }
 
-.                          { throw CLexerException ("Token error: invalid character ")
-			       << yytext[0] << " at line " << yylineno
+.                          {
+                             throw CLexerException ("Token error: invalid character ")
+			       << mcctext[0] << " at line " << mcclineno
 			       << '.' ;
                            } 
 %%
 
 
 char*
-copy (const char *str)
+mcccopy (const char *str)
 {
   char *tmp = new char[strlen (str) + 1];
 

@@ -4,8 +4,8 @@
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:06:06 2000
 ## Last Modified By : Martin Larose
-## Last Modified On : Thu Aug 31 13:07:19 2000
-## Update Count     : 1
+## Last Modified On : Wed Sep  6 16:53:32 2000
+## Update Count     : 2
 ## Status           : Ok.
 ###############################################################################
 
@@ -54,9 +54,11 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 .cc.lo:
 	$(CXX) $(CXXSHFLAGS) -I$(srcdir) $(DEFS) -c $< -o $@
 
+LEXERPREFIX = mcc
+
 SOURCES = mccparser.cc
 
-CSOURCES = lex.yy.c y.tab.c
+CSOURCES = lex.$(LEXERPREFIX).c y.tab.c
 
 HEADERS = $(SOURCES:.cc=.h)
 
@@ -82,16 +84,16 @@ $(LIBRARY).a: $(OBJECTS)
 TAGS: $(SOURCES) $(HEADERS)
 	@ etags --c++ $^
 
-lex.yy.c: mccp.yy
-	$(LEX) $<
+lex.$(LEXERPREFIX).c: mccp.yy
+	$(LEX) -P$(LEXERPREFIX) $<
 
 y.tab.c y.tab.h: mccp.y
-	$(YACC) -d $^
+	$(YACC) -p $(LEXERPREFIX) -d $^
 
-lex.yy.o: lex.yy.c y.tab.h
+lex.$(LEXERPREFIX).o: lex.$(LEXERPREFIX).c y.tab.h
 	$(CXX) $(CXXFLAGS) -I. -I$(srcdir) $(DEFS) -c $<
 
-lex.yy.lo: lex.yy.c y.tab.h
+lex.$(LEXERPREFIX).lo: lex.$(LEXERPREFIX).c y.tab.h
 	$(CXX) $(CXXSHFLAGS) -I. -I$(srcdir) $(DEFS) -c $< -o $@
 
 y.tab.o: y.tab.c y.tab.h
@@ -140,7 +142,7 @@ clean: mostlyclean
 	@ echo "Cleaning project"
 	@ rm -f $(LIBRARY).so $(LIBRARY).a
 	@ rm -f $(OBJECTS) $(SHOBJECTS) TAGS
-	@ rm -f lex.yy.c y.tab.c y.tab.h
+	@ rm -f lex.$(LEXERPREFIX).c y.tab.c y.tab.h
 	@ rm -f *.d
 
 distclean: clean
