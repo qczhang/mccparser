@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Mon Nov 26 12:09:11 2001
-// Update Count     : 17
+// Last Modified On : Tue Dec  4 14:52:02 2001
+// Update Count     : 18
 // Status           : Ok.
 // 
 
@@ -155,7 +155,6 @@ struct cutoffs
 };
 
 
-
 /**
  * @short Parent struct for the mcc parser structures.
  *
@@ -201,7 +200,7 @@ struct MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccPStruct* Copy () const = 0;
+  virtual MccPStruct* clone () const = 0;
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -272,7 +271,7 @@ struct MccFGExp
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccFGExp* Copy () const = 0;
+  virtual MccFGExp* clone () const = 0;
   
   /**
    * Accepts the visitor and calls it on itself.
@@ -340,6 +339,12 @@ public:
   MccFragGenStruc (const MccFragGenStruc &right);
 
   /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccFragGenStruc* clone () const { return new MccFragGenStruc (*this); }
+
+  /**
    * Destroys the object.
    */
   ~MccFragGenStruc () { delete[] ident; }
@@ -358,17 +363,125 @@ public:
   // METHODS --------------------------------------------------------------
 
   /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  MccFragGenStruc* Copy () const { return new MccFragGenStruc (*this); }
-
-  /**
    * Accepts the visitor and calls it on itself.
    * @param visitor the visitor.
    */
   void Accept (MccVisitor *visitor);
   
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Struct representing the sampling size on AST nodes "residue",
+ * "connect" and "pair" 
+ *
+ * @author Philippe Thibault <thibaup@IRO.UMontreal.CA>
+ */
+struct MccSamplingSize
+{
+  /**
+   * Contains either an absolute value or a proportion factor
+   * of a set size
+   */
+  union
+  {
+    int absVal;    // absolute size
+    float propFact;    // proportion of whole set
+  };
+
+  /**
+   * Indicates if the current union value is an absolute size.
+   */
+  bool discrete;
+
+protected:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccSamplingSize () { }
+  
+public:
+  
+  /**
+   * Initializes the object.
+   * @param ssize  set sampling size, either an absolute value or a
+   * proportion (%) of whole set, depending on pflag value.
+   * @param pflag flag indicating if ssize is a proportion or an absolute
+   * value. 
+   */
+  MccSamplingSize (float ssize, bool pflag);
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccSamplingSize (const MccSamplingSize &right);
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccSamplingSize* clone () const { return new MccSamplingSize (*this); }
+    
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccSamplingSize () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  MccSamplingSize& operator= (const MccSamplingSize &right);
+
+  // ACCESS ---------------------------------------------------------------
+
+  /**
+   * Tells if the sampling is a fixed size of a proportion.
+   * @return true if the sampling is a fixed size.
+   */
+  bool isDiscrete () const { return discrete; }
+
+  /**
+   * Gets the concrete value of the sampling.
+   * @return the integer value of the union.
+   */
+  int getSamplingSize () const { return absVal; }
+
+  /**
+   * Gets the proportion value of the sampling.
+   * @return the float value of the union.
+   */
+  float getSamplingFactor () const { return propFact; }
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -451,7 +564,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  MccResidueName* Copy () const { return new MccResidueName (*this); }
+  MccResidueName* clone () const { return new MccResidueName (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -523,7 +636,7 @@ struct MccQFunc
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQFunc* Copy () const = 0;
+  virtual MccQFunc* clone () const = 0;
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -591,7 +704,7 @@ struct MccQTrueFunc : public MccQFunc
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQTrueFunc* Copy () const { return new MccQTrueFunc (*this); }
+  virtual MccQTrueFunc* clone () const { return new MccQTrueFunc (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -679,7 +792,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQIdentFunc* Copy () const { return new MccQIdentFunc (*this); }
+  virtual MccQIdentFunc* clone () const { return new MccQIdentFunc (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -737,7 +850,7 @@ public:
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccQNotFunc (const MccQNotFunc &right) : fn (right.fn->Copy ()) { }
+  MccQNotFunc (const MccQNotFunc &right) : fn (right.fn->clone ()) { }
 
   /**
    * Destroys the object.
@@ -773,7 +886,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQNotFunc* Copy () const { return new MccQNotFunc (*this); }
+  virtual MccQNotFunc* clone () const { return new MccQNotFunc (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -839,7 +952,7 @@ public:
    * @param right_val the object to copy.
    */
   MccQFaceFunc (const MccQFaceFunc &right_val)
-    : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
+    : left (right_val.left->clone ()), right (right_val.right->clone ()) { }
   
   /**
    * Destroys the object.
@@ -863,7 +976,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQFaceFunc* Copy () const { return new MccQFaceFunc (*this); }
+  virtual MccQFaceFunc* clone () const { return new MccQFaceFunc (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -930,7 +1043,7 @@ public:
    * @param right_val the object to copy.
    */
   MccQAndFunc (const MccQAndFunc &right_val)
-    : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
+    : left (right_val.left->clone ()), right (right_val.right->clone ()) { }
   
   /**
    * Destroys the object.
@@ -954,7 +1067,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQAndFunc* Copy () const { return new MccQAndFunc (*this); }
+  virtual MccQAndFunc* clone () const { return new MccQAndFunc (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -1020,7 +1133,7 @@ public:
    * @param right_val the object to copy.
    */
   MccQOrFunc (const MccQOrFunc &right_val)
-    : left (right_val.left->Copy ()), right (right_val.right->Copy ()) { }
+    : left (right_val.left->clone ()), right (right_val.right->clone ()) { }
   
   /**
    * Destroys the object.
@@ -1044,7 +1157,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccQOrFunc* Copy () const { return new MccQOrFunc (*this); }
+  virtual MccQOrFunc* clone () const { return new MccQOrFunc (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -1133,7 +1246,7 @@ struct MccQueryExpr
    * Replicates the object.
    * @return a copy of the current object.
    */
-  MccQueryExpr* Copy () const { return new MccQueryExpr (*this); }
+  MccQueryExpr* clone () const { return new MccQueryExpr (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -1249,7 +1362,7 @@ struct MccAddPdbStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _AddPdbStruc* Copy () const { return new _AddPdbStruc (*this); }
+    _AddPdbStruc* clone () const { return new _AddPdbStruc (*this); }
 
     /**
      * Accepts the visitor and calls it on itself.
@@ -1320,7 +1433,7 @@ struct MccAddPdbStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccAddPdbStat* Copy () const { return new MccAddPdbStat (*this); }
+  virtual MccAddPdbStat* clone () const { return new MccAddPdbStat (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -1424,7 +1537,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccAdjacencyCstStat* Copy () const
+  virtual MccAdjacencyCstStat* clone () const
   { return new MccAdjacencyCstStat (*this); }
 
   /**
@@ -1564,7 +1677,7 @@ struct MccAngleCstStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _AngleStruc* Copy () const { return new _AngleStruc (*this); }
+    _AngleStruc* clone () const { return new _AngleStruc (*this); }
 
     /**
      * Accepts the visitor and calls it on itself.
@@ -1635,7 +1748,7 @@ struct MccAngleCstStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccAngleCstStat* Copy () const
+  virtual MccAngleCstStat* clone () const
   { return new MccAngleCstStat (*this); }
 
   /**
@@ -1742,7 +1855,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccAssignStat* Copy () const { return new MccAssignStat (*this); }
+  virtual MccAssignStat* clone () const { return new MccAssignStat (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -1860,7 +1973,7 @@ struct MccBacktrackExpr : public MccFGExp
      * Replicates the object.  The replication is controlled by the children.
      * @return a copy of the current object.
      */
-    virtual _GenBTStruc* Copy () const = 0;
+    virtual _GenBTStruc* clone () const = 0;
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -1936,7 +2049,7 @@ struct MccBacktrackExpr : public MccFGExp
      * Replicates the object.
      * @return a copy of the current object.
      */
-    virtual _FGStruc* Copy () const { return new _FGStruc (*this); }
+    virtual _FGStruc* clone () const { return new _FGStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -2013,7 +2126,7 @@ struct MccBacktrackExpr : public MccFGExp
      * Replicates the object.
      * @return a copy of the current object.
      */
-    virtual _BTStruc* Copy () const { return new _BTStruc (*this); }
+    virtual _BTStruc* clone () const { return new _BTStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -2091,7 +2204,7 @@ struct MccBacktrackExpr : public MccFGExp
      * Replicates the object.
      * @return a copy of the current object.
      */
-    virtual _PlaceStruc* Copy () const { return new _PlaceStruc (*this); }
+    virtual _PlaceStruc* clone () const { return new _PlaceStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -2163,7 +2276,7 @@ struct MccBacktrackExpr : public MccFGExp
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccBacktrackExpr* Copy () const
+  virtual MccBacktrackExpr* clone () const
   { return new MccBacktrackExpr (*this); }
     
   /**
@@ -2305,7 +2418,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccCacheExpr* Copy () const { return new MccCacheExpr (*this); }
+  virtual MccCacheExpr* clone () const { return new MccCacheExpr (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -2412,7 +2525,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccClashCstStat* Copy () const { return new MccClashCstStat (*this); }
+  virtual MccClashCstStat* clone () const { return new MccClashCstStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -2470,9 +2583,9 @@ struct MccConnectStat : public MccPStruct
     MccQueryExpr *expr;
 
     /**
-     * The size of the sampling.
+     * The sampling size structure.
      */
-    int ssize;
+    MccSamplingSize *ssize;
 
     
     // LIFECYCLE ------------------------------------------------------------
@@ -2489,10 +2602,10 @@ struct MccConnectStat : public MccPStruct
      * @param r1 the name of the first residue in the relation.
      * @param r2 the name of the second residue in the relation.
      * @param e the query expression structure.
-     * @param s the size of the sampling.
+     * @param s the sampling size structure.
      */
     _ConnectStruc (MccResidueName *r1, MccResidueName *r2, 
-		   MccQueryExpr *e, int s)
+		   MccQueryExpr *e, MccSamplingSize *s)
       : res1 (r1), res2 (r2), expr (e), ssize (s) { }
 
     /**
@@ -2504,7 +2617,7 @@ struct MccConnectStat : public MccPStruct
     /**
      * Destroys the object.
      */
-    ~_ConnectStruc () { delete res1; delete res2; delete expr; }
+    ~_ConnectStruc () { delete res1; delete res2; delete expr; delete ssize; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -2523,7 +2636,7 @@ struct MccConnectStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _ConnectStruc* Copy () const { return new _ConnectStruc (*this); }
+    _ConnectStruc* clone () const { return new _ConnectStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -2594,7 +2707,7 @@ struct MccConnectStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccConnectStat* Copy () const { return new MccConnectStat (*this); }
+  virtual MccConnectStat* clone () const { return new MccConnectStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -2607,10 +2720,10 @@ struct MccConnectStat : public MccPStruct
    * @param r1 the name of the first residue.
    * @param r2 the name of the second residue.
    * @param e the query expression structure.
-   * @param s the size of the sampling.
+   * @param s the sampling size structure.
    */
   void GenConnectStruc (MccResidueName *r1, MccResidueName *r2,
-			MccQueryExpr *e, int s)
+			MccQueryExpr *e, MccSamplingSize *s)
   { strucs->push_back (new _ConnectStruc (r1, r2, e, s)); }
 
   // I/O ------------------------------------------------------------------
@@ -2628,7 +2741,6 @@ struct MccConnectStat : public MccPStruct
    */
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
-
 
 
 /**
@@ -2713,7 +2825,7 @@ struct MccCycleCstStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _CycleStruc* Copy () const { return new _CycleStruc (*this); }
+    _CycleStruc* clone () const { return new _CycleStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -2784,7 +2896,7 @@ struct MccCycleCstStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  MccCycleCstStat* Copy () const { return new MccCycleCstStat (*this); }
+  MccCycleCstStat* clone () const { return new MccCycleCstStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -2876,7 +2988,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  MccDisplayFGStat* Copy () const { return new MccDisplayFGStat (*this); }
+  MccDisplayFGStat* clone () const { return new MccDisplayFGStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -3002,7 +3114,7 @@ struct MccDistCstStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _DistStruc* Copy () const { return new _DistStruc (*this); }
+    _DistStruc* clone () const { return new _DistStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -3073,7 +3185,7 @@ struct MccDistCstStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccDistCstStat* Copy () const { return new MccDistCstStat (*this); }
+  virtual MccDistCstStat* clone () const { return new MccDistCstStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -3350,8 +3462,8 @@ public:
 
 
 /**
- * @short Class representing the socket binary option on AST nodes "explore"
- *        and "restore".
+ * @short Class representing the socket binary option on AST nodes "explore",
+ * "exploreLV" and "restore".
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
@@ -3372,9 +3484,9 @@ struct MccSocketBinaryOutput : public MccOutputMode
    */
   char *modelName;
 
-  // LIFECYCLE ------------------------------------------------------------
-
 protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
   
   /**
    * Initializes the object.  It should never be used.
@@ -3443,6 +3555,90 @@ public:
    * @param ident the identation level.
    */
   virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Struct representing the backtrack size option on AST nodes "exploreLV"
+ *
+ * @author Philippe Thibault  <thibaup@IRO.UMontreal.CA>
+ */
+struct MccBacktrackSize
+{
+
+  /**
+   * The maximum number of backtracked levels.
+   */
+  int maxBT;
+
+  /**
+   * The maximum number of retries on same level.
+   */
+  int maxLR;
+
+protected:
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccBacktrackSize () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param bt max number of backtracked levels
+   * @param lr max number of retries on same level
+   */
+  MccBacktrackSize (int bt, int lr) : maxBT (bt), maxLR (lr) { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccBacktrackSize (const MccBacktrackSize &right) 
+    : maxBT (right.maxBT), maxLR (right.maxLR) { }
+
+  /**
+   * Destructs the object.
+   */
+  ~MccBacktrackSize () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the right struct values to the object.
+   * @param right the struct to copy.
+   */
+  const MccBacktrackSize& operator= (const MccBacktrackSize &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccBacktrackSize* clone () const { return new MccBacktrackSize (*this); }
+    
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
 };
 
 
@@ -3830,8 +4026,131 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccExploreStat* Copy () const { return new MccExploreStat (*this); }
+  virtual MccExploreStat* clone () const { return new MccExploreStat (*this); }
     
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void Accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+
+/**
+ * @short Struct representing the AST node "exploreLV".
+ *
+ * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+ */
+struct MccExploreLVStat : public MccPStruct
+{
+  /**
+   * The FG struct to explore.
+   */
+  MccFragGenStruc *fg_struc;
+
+  /**
+   * The explore output file structure.
+   */
+  MccOutputMode *expOutput;
+
+  /**
+   * The number of processes in parallel exploration.
+   */
+  int jobs;
+
+  /**
+   * vector of time limits (sec)
+   */
+  vector< int > *vtlimits;
+
+  /**
+   * Exploration time limit (sec)
+   */
+  int tlimit;
+
+  /**
+   * Size of the backtrack phase
+   */
+  MccBacktrackSize *btsize;
+
+protected:
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccExploreLVStat () : MccPStruct () { }
+  
+public:
+
+  /**
+   * Initializes the object.
+   * @param fg the FG struct to explore.
+   * @param ef the output mode structure.
+   * @param bs size of the backtrack phase
+   * @param tl exploration time limits
+   */
+  MccExploreLVStat (MccFragGenStruc* fg, MccOutputMode *ef, 
+		    int j, vector< int > *tl, MccBacktrackSize *bs);
+
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccExploreLVStat (const MccExploreLVStat &right);
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccExploreLVStat* clone () const
+  { return new MccExploreLVStat (*this); }
+    
+  /**
+   * Destructs the object.
+   */
+  virtual ~MccExploreLVStat () 
+  {
+    delete fg_struc;
+    if (expOutput)
+      delete expOutput; 
+    if (btsize)
+      delete btsize;
+    if (vtlimits)
+      delete vtlimits;
+  }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  virtual MccExploreLVStat& operator= (const MccExploreLVStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+ 
+  // METHODS --------------------------------------------------------------
+  
   /**
    * Accepts the visitor and calls it on itself.
    * @param visitor the visitor.
@@ -3937,7 +4256,7 @@ struct MccLibraryExpr : public MccFGExp
      * Replicates the object.  The replication is controlled by the children.
      * @return a copy of the current object.
      */
-    virtual _LibStruc* Copy () const = 0;
+    virtual _LibStruc* clone () const = 0;
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -4006,7 +4325,7 @@ struct MccLibraryExpr : public MccFGExp
      * Replicates the object.
      * @return a copy of the current object.
      */
-    virtual _StripStruc* Copy () const { return new _StripStruc (*this); }
+    virtual _StripStruc* clone () const { return new _StripStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -4076,7 +4395,7 @@ struct MccLibraryExpr : public MccFGExp
      * Replicates the object.
      * @return a copy of the current object.
      */
-    virtual _ChangeIdStruc* Copy () const { return new _ChangeIdStruc (*this); }
+    virtual _ChangeIdStruc* clone () const { return new _ChangeIdStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -4158,7 +4477,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccLibraryExpr* Copy () const { return new MccLibraryExpr (*this); }
+  virtual MccLibraryExpr* clone () const { return new MccLibraryExpr (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -4269,7 +4588,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccNewTagStat* Copy () const { return new MccNewTagStat (*this); }
+  virtual MccNewTagStat* clone () const { return new MccNewTagStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -4353,7 +4672,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccNoteStat* Copy () const { return new MccNoteStat (*this); }
+  virtual MccNoteStat* clone () const { return new MccNoteStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -4425,7 +4744,7 @@ struct MccNotesStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccNotesStat* Copy () const { return new MccNotesStat (*this); }
+  virtual MccNotesStat* clone () const { return new MccNotesStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -4484,18 +4803,19 @@ struct MccPairStat : public MccPStruct
     MccQueryExpr *expr;
 
     /**
-     * The sampling size.
+     * The sampling size structure.
      */
-    int ssize;
+    MccSamplingSize *ssize;
 
+  protected:
 
     // LIFECYCLE ------------------------------------------------------------
 
-  private:
     /**
      * Initializes the object.  It should never be used.
      */
     _PairStruc () { }
+    
   public:
 
     /**
@@ -4503,10 +4823,10 @@ struct MccPairStat : public MccPStruct
      * @param r1 the name of the first residue.
      * @param r2 the name of the second residue.
      * @param e the query expression structure.
-     * @param s the sampling size.
+     * @param s the sampling size structure.
      */
     _PairStruc (MccResidueName *r1, 
-		MccResidueName *r2, MccQueryExpr *e, int s)
+		MccResidueName *r2, MccQueryExpr *e, MccSamplingSize *s)
       : res1 (r1), res2 (r2), expr (e), ssize (s) { }
 
     /**
@@ -4518,7 +4838,7 @@ struct MccPairStat : public MccPStruct
     /**
      * Destroys the object.
      */
-    ~_PairStruc () { delete res1; delete res2; delete expr; }
+    ~_PairStruc () { delete res1; delete res2; delete expr; delete ssize; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -4537,7 +4857,7 @@ struct MccPairStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _PairStruc* Copy () const { return new _PairStruc (*this); }
+    _PairStruc* clone () const { return new _PairStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -4608,7 +4928,7 @@ struct MccPairStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-   virtual MccPairStat* Copy () const { return new MccPairStat (*this); }
+   virtual MccPairStat* clone () const { return new MccPairStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -4621,10 +4941,10 @@ struct MccPairStat : public MccPStruct
    * @param r1 the name of the first residue.
    * @param r2 the name of the second residue.
    * @param e the query expression structure.
-   * @param s the sampling size.
+   * @param s the sampling size structure.
    */   
   void GenPairStruc (MccResidueName *r1, MccResidueName *r2,
-		     MccQueryExpr *e, int s)
+		     MccQueryExpr *e, MccSamplingSize *s)
   { strucs->push_back (new _PairStruc (r1, r2, e, s)); }
   
   // I/O  -----------------------------------------------------------------
@@ -4689,7 +5009,7 @@ struct MccQuitStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-   virtual MccQuitStat* Copy () const { return new MccQuitStat (*this); }
+   virtual MccQuitStat* clone () const { return new MccQuitStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -4779,7 +5099,7 @@ struct MccRelationCstStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _RelationStruc* Copy () const { return new _RelationStruc (*this); }
+    _RelationStruc* clone () const { return new _RelationStruc (*this); }
 
     /**
      * Destroys the residue names and atom names.
@@ -4850,7 +5170,7 @@ struct MccRelationCstStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccRelationCstStat* Copy () const
+  virtual MccRelationCstStat* clone () const
   { return new MccRelationCstStat (*this); }
 
   /**
@@ -4953,7 +5273,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-   virtual MccRemarkStat* Copy () const { return new MccRemarkStat (*this); }
+   virtual MccRemarkStat* clone () const { return new MccRemarkStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -5025,7 +5345,7 @@ struct MccResetDBStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccResetDBStat* Copy () const { return new MccResetDBStat (*this); }
+  virtual MccResetDBStat* clone () const { return new MccResetDBStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -5096,7 +5416,7 @@ struct MccResetStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccResetStat* Copy () const { return new MccResetStat (*this); }
+  virtual MccResetStat* clone () const { return new MccResetStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -5155,18 +5475,19 @@ struct MccResidueStat : public MccPStruct
     MccQueryExpr *expr;
 
     /**
-     * The sampling size.
+     * The sampling size structure.
      */
-    int ssize;
+    MccSamplingSize *ssize;
 
-
+  protected:
+    
     // LIFECYCLE ------------------------------------------------------------
 
-  private:
     /**
      * Initializes the object.  It should never be used.
      */
     _ResidueStruc () { }
+    
   public:
 
     /**
@@ -5174,11 +5495,12 @@ struct MccResidueStat : public MccPStruct
      * @param r1 the first residue of the list.
      * @param r2 the last residue of the list.
      * @param exp the query expression struct.
-     * @param ss the sampling size.
+     * @param ss the sampling size struct.
      */
     _ResidueStruc (MccResidueName *r1, MccResidueName *r2,
-		   MccQueryExpr *exp, int ss)
-      : res1 (r1), res2 (r2), expr (exp), ssize (ss) { }
+		   MccQueryExpr *exp, MccSamplingSize *ss)
+      : res1 (r1), res2 (r2), expr (exp), ssize (ss) 
+      { }
 
     /**
      * Initializes the object with the rights content.
@@ -5189,7 +5511,8 @@ struct MccResidueStat : public MccPStruct
     /**
      * Destroys the object.
      */
-    ~_ResidueStruc () { delete res1; if (res2) delete res2; delete expr; }
+    ~_ResidueStruc () 
+    { delete res1; if (res2) delete res2; delete expr; delete ssize; }
 
     // OPERATORS ------------------------------------------------------------
 
@@ -5208,7 +5531,7 @@ struct MccResidueStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _ResidueStruc* Copy () const { return new _ResidueStruc (*this); }
+    _ResidueStruc* clone () const { return new _ResidueStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -5279,7 +5602,7 @@ struct MccResidueStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccResidueStat* Copy () const { return new MccResidueStat (*this); }
+  virtual MccResidueStat* clone () const { return new MccResidueStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -5292,10 +5615,10 @@ struct MccResidueStat : public MccPStruct
    * @param r1 the first residue of the list.
    * @param r2 the last residue of the list.
    * @param exp the query expression struct.
-   * @param ss the sampling size.
+   * @param ss the sampling size struct.
    */   
   void GenResidueStruc (MccResidueName *r1, MccResidueName *r2,
-			MccQueryExpr *exp, int ss)
+			MccQueryExpr *exp, MccSamplingSize *ss)
   { strucs->push_back (new _ResidueStruc (r1, r2, exp, ss)); }
   
   // I/O  -----------------------------------------------------------------
@@ -5382,7 +5705,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccRestoreStat* Copy () const { return new MccRestoreStat (*this); }
+  virtual MccRestoreStat* clone () const { return new MccRestoreStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -5408,6 +5731,8 @@ public:
 
 
 
+
+
 /**
  * @short Struct representing the AST node for the "sequence" statement.
  *
@@ -5430,14 +5755,15 @@ struct MccSequenceStat : public MccPStruct
    */
   char *seq;
 
+protected:
 
   // LIFECYCLE ------------------------------------------------------------
 
-private:
   /**
    * Initializes the object.  It should never be used.
    */
   MccSequenceStat () { }
+
 public:
 
   /**
@@ -5478,7 +5804,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccSequenceStat* Copy () const { return new MccSequenceStat (*this); }
+  virtual MccSequenceStat* clone () const { return new MccSequenceStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -5516,14 +5842,15 @@ struct MccSourceStat : public MccPStruct
    */
   char *str;
 
+protected:
 
   // LIFECYCLE ------------------------------------------------------------
 
-private:
   /**
    * Initializes the object.  It should never be used.
    */
   MccSourceStat () { }
+  
 public:
 
   /**
@@ -5560,7 +5887,7 @@ public:
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccSourceStat* Copy () const { return new MccSourceStat (*this); }
+  virtual MccSourceStat* clone () const { return new MccSourceStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -5718,7 +6045,7 @@ struct MccTorsionCstStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _TorsionStruc* Copy () const { return new _TorsionStruc (*this); }
+    _TorsionStruc* clone () const { return new _TorsionStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -5789,7 +6116,7 @@ struct MccTorsionCstStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccTorsionCstStat* Copy () const
+  virtual MccTorsionCstStat* clone () const
   { return new MccTorsionCstStat (*this); }
     
   /**
@@ -5883,7 +6210,7 @@ struct MccVersion : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccVersion* Copy () const { return new MccVersion (*this); }
+  virtual MccVersion* clone () const { return new MccVersion (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -6160,6 +6487,12 @@ public:
   virtual void Visit (MccExploreStat *struc) = 0;
   
   /**
+   * Visits the MccExploreLVStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccExploreLVStat *struc) = 0;
+  
+  /**
    * Visits the local MccLibraryExpr sub-structure _StripStruc.
    * @param struc the evaluated structure.
    */
@@ -6261,6 +6594,12 @@ public:
    */
   virtual void Visit (MccRestoreStat *struc) = 0;
   
+  /**
+   * Visits the MccSamplingSize structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void Visit (MccSamplingSize *struc) = 0;
+
   /**
    * Visits the MccSequenceStat structure.
    * @param struc the evaluated structure.

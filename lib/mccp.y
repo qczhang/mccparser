@@ -1,11 +1,11 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.y
- * Copyright © 2000, 2001 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Mon Nov 26 12:09:13 2001
- * Update Count     : 13
+ * Last Modified On : Tue Dec  4 14:52:04 2001
+ * Update Count     : 14
  * Status           : Ok.
  */
 
@@ -15,6 +15,7 @@
   #include <vector.h>
   #include <stdlib.h>
   #include <string.h>
+  #include <math.h>
 
   #include "mccparser.h"
 
@@ -64,6 +65,9 @@
   MccFGExp *fgs;
   MccOutputMode *expo;
   MccInputMode *inmo;
+  MccBacktrackSize *btsz;
+  vector< int > *tlv;
+  MccSamplingSize *smpls;
   cutoffs *ctfs;
 }
 
@@ -74,6 +78,7 @@
 %token TOK_COLON
 %token TOK_LBRACKET
 %token TOK_RBRACKET
+%token TOK_PERCENT
 %token TOK_LPAREN
 %token TOK_RPAREN
 %token TOK_ASSIGN
@@ -89,20 +94,21 @@
 %token TOK_ANY
 %token TOK_BBATOMS
 %token TOK_BACKTRACK
+%token TOK_BACKTRACKSIZE
 %token TOK_BASEATOMS
 %token TOK_CACHE
 %token TOK_CHANGEID
 %token TOK_CONFOCUT
 %token TOK_CONNECT
 %token TOK_CYCLE
-%token TOK_RMSCST
-%token TOK_DIRECTION
 %token TOK_DISPLAYFG
 %token TOK_DISTANCE
 %token TOK_EXPLORE
+%token TOK_EXPLORELV
 %token TOK_FILENAME
 %token TOK_PDB
 %token TOK_FIXEDDIST
+%token TOK_JOBS
 %token TOK_LIBRARY
 %token TOK_NEWTAG
 %token TOK_NOHYDRO
@@ -113,7 +119,6 @@
 %token TOK_FILE_BINARY
 %token TOK_FILE_PDB
 %token TOK_PLACE
-%token TOK_PROPERTIES
 %token TOK_PSEATOMS
 %token TOK_QUIT
 %token TOK_RELATION
@@ -124,22 +129,28 @@
 %token TOK_RESET
 %token TOK_RESETDB
 %token TOK_RESIDUE
-%token TOK_RESIDUEALIGN
 %token TOK_RESTORE
 %token TOK_RMSDBOUND
+%token TOK_SAMPLINGFACT
 %token TOK_SEQUENCE
 %token TOK_SOCKET_BINARY
 %token TOK_SOURCE
 %token TOK_STRIP
+%token TOK_TIMELIMIT
 %token TOK_TRANSFO
 %token TOK_TFOCUT
 %token TOK_TORSION
 %token TOK_VDWDIST
 %token TOK_VERSION
 %token TOK_ZIPPED
+%token TOK_SEC
+%token TOK_MIN
+%token TOK_HR
+%token TOK_DAY
 %token <intval> TOK_INTEGER
 %token <floatval> TOK_FLOAT
 %token <textval> TOK_RESNAME
+%token <textval> TOK_ATOM
 %token <textval> TOK_IDENT
 %token <textval> TOK_QUOTED_IDENT
 %token <textval> TOK_STRING
@@ -147,6 +158,7 @@
 %type <mccval> statement
 %type <mccval> sequence
 %type <mccval> assign
+%type <smpls> sampling
 %type <mccval> residue
 %type <rsv> resdef_plus
 %type <rs> resdef
@@ -157,9 +169,18 @@
 %type <psv> pairdef_plus
 %type <ps> pairdef
 %type <mccval> explore
+%type <mccval> exploreLV
 %type <mccval> restore
 %type <expo> output_mode_opt
 %type <expo> output_mode
+%type <intval> jobs_opt
+%type <intval> jobs
+%type <tlv>  timelimit_opt
+%type <tlv>  timelimit_exp
+%type <tlv>  timelimit_plus
+%type <intval> timelimit
+%type <btsz> backtracksize
+%type <btsz> backtracksize_opt
 %type <boolval> zfile_opt
 %type <mccval> source
 %type <mccval> adjacencyCst
@@ -232,6 +253,7 @@
 %type <fgr> fgRef_opt
 %type <fgr> fgRef
 
+
 %type <textval> ident_plus
 %type <floatval> flt
 %expect 1
@@ -262,6 +284,7 @@ statement:   sequence { $$ = $1; }
            | connect { $$ = $1; }
            | pair { $$ = $1; }
            | explore { $$ = $1; }
+           | exploreLV { $$ = $1; }
            | restore { $$ = $1; }
            | source { $$ = $1; }
            | adjacencyCst { $$ = $1; }
@@ -316,7 +339,7 @@ resdef_plus:   resdef
 ;
 
 
-resdef:  residueRef residueRef_opt queryexp TOK_INTEGER
+resdef:  residueRef residueRef_opt queryexp sampling
            {
 	     $$ = new MccResidueStat::_ResidueStruc ($1, $2, $3, $4);
 	   }
@@ -342,7 +365,7 @@ condef_plus:   condef
 ;
 
 
-condef:   residueRef residueRef queryexp TOK_INTEGER
+condef:   residueRef residueRef queryexp sampling
            {
 	     $$ = new MccConnectStat::_ConnectStruc ($1, $2, $3, $4);
 	   }
@@ -368,7 +391,7 @@ pairdef_plus:   pairdef
 ;
 
 
-pairdef:   residueRef residueRef queryexp TOK_INTEGER
+pairdef:   residueRef residueRef queryexp sampling
             {
 	      $$ = new MccPairStat::_PairStruc ($1, $2, $3, $4);
 	    }
@@ -387,6 +410,14 @@ restore:   TOK_RESTORE TOK_LPAREN TOK_STRING output_mode_opt TOK_RPAREN
 	      $$ = new MccRestoreStat ($3, $4);
 	    }
 ;
+
+
+exploreLV: TOK_EXPLORELV TOK_LPAREN fgRef output_mode_opt jobs_opt timelimit_opt backtracksize_opt TOK_RPAREN
+            {
+	      $$ = new MccExploreLVStat ($3, $4, $5, $6, $7);
+	    }
+;
+
 
 
 output_mode_opt:   /* empty */ { $$ = 0; }
@@ -414,9 +445,61 @@ output_mode:   /* deprecated */
 ;
 
 
+jobs_opt:  /* empty */ { $$ = 1; }
+          | jobs { $$ = $1; }
+;
+
+
+
+jobs:  TOK_JOBS TOK_LPAREN TOK_INTEGER TOK_RPAREN
+       { $$ = $3; }
+;
+
+
+
+timelimit_opt:  /* empty */ { $$ = 0; }
+               | timelimit_exp { $$ = $1; }
+;
+
+
+timelimit_exp:   TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN
+                   { $$ = $3; }
+;
+
+timelimit_plus:  timelimit
+                   { 
+		     $$ = new vector< int > (1, $1);
+		   }
+                | timelimit_plus timelimit
+                   {
+		     $$ = $1;
+		     $$->push_back ($2);
+                   }
+;
+
+
+timelimit:     TOK_INTEGER TOK_SEC { $$ = $1; }
+             | flt TOK_MIN { $$ = (int)rint ($1 * 60.0); }
+             | flt TOK_HR  { $$ = (int)rint ($1 * 3600.0); }
+             | flt TOK_DAY { $$ = (int)rint ($1 * 86400.0); }
+;
+
+
+
+backtracksize_opt:  /* empty */ { $$ = 0; }
+                   | backtracksize { $$ = $1; }
+;
+
+backtracksize:   TOK_BACKTRACKSIZE TOK_LPAREN TOK_INTEGER TOK_INTEGER TOK_RPAREN
+                  {
+		    $$ = new MccBacktrackSize ($3, $4);
+		  }
+;
+
 zfile_opt:   /* empty */ { $$ = false; }
            | TOK_ZIPPED { $$ = true; }
 ;
+
 
 
 source:   TOK_SOURCE TOK_LPAREN TOK_STRING TOK_RPAREN
@@ -696,6 +779,11 @@ quit:   TOK_QUIT { $$ = new MccQuitStat (); }
 ;
 
 
+sampling: TOK_INTEGER             { $$ = new MccSamplingSize ($1, true); }
+          | flt TOK_PERCENT       { $$ = new MccSamplingSize ($1, false); }
+;
+
+
 queryexp_plus:   queryexp
                   {
 		    $$ = new vector< MccQueryExpr* > (1, $1);
@@ -935,6 +1023,7 @@ residueRef:   TOK_INTEGER { $$ = new MccResidueName ($1); }
 
 atomRef:   TOK_IDENT { $$ = $1; }
          | TOK_RESNAME { $$ = $1; }
+         | TOK_ATOM { $$ = $1; }
 ;
 
 

@@ -1,11 +1,11 @@
 ############################ -*- Mode: Makefile -*- ###########################
 ## Makefile.in
-## Copyright © 2000 Laboratoire de Biologie Informatique et Théorique.
+## Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:02:59 2000
 ## Last Modified By : Martin Larose
-## Last Modified On : Fri Sep  1 13:08:50 2000
-## Update Count     : 2
+## Last Modified On : Tue Dec  4 14:51:52 2001
+## Update Count     : 3
 ## Status           : Ok.
 ###############################################################################
 
@@ -38,13 +38,13 @@ all all-static static:
 
 doc: Manual.pdf Manual.html html texi docbook
 
-html: $(srcdir)/../src/mccparser.h
+html: $(srcdir)/../lib/mccparser.h
 	@- kdoc -f html -d html -p --strip-h-path -n libmccparser -u "libmccparser" -z $^
 
-texi: $(srcdir)/../src/mccparser.h
+texi: $(srcdir)/../lib/mccparser.h
 	@- kdoc -f texinfo -d texi -p --strip-h-path $^
 
-docbook: $(srcdir)/../src/mccparser.h
+docbook: $(srcdir)/../lib/mccparser.h
 	@- kdoc -f docbook -d docbook -p --strip-h-path $^
 
 

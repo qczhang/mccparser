@@ -4,8 +4,8 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Mon Nov 26 12:09:05 2001
-%% Update Count     : 12
+%% Last Modified On : Tue Dec  4 14:51:54 2001
+%% Update Count     : 13
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -261,6 +261,10 @@ Changes from {\sc mcsym} version 3.2.4:
 \item the MccVisitor class was added;
 \item residue, connect, pair statements must contain at least one
   definition;
+\item sampling size for residue, connect and pair statements can be specified
+  as either an integer or a percentage, which represents a proportion
+  of whole set;
+\item exploreLV statement added, perform a probabilistic search;
 \item angle, cycle, distance and torsion statements must contain at least
   one definition;
 \item fixed\_\,distance, vdw\_\,distance atomset and atomsetopt options must
@@ -284,8 +288,11 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\terminal{pair} \terminal{(} \nonterminal{pairdef}+ \terminal{)}}
   \altrule{\terminal{explore} \terminal{(} \nonterminal{fgRef}
     \nonterminal{outputform}? \terminal{)}}
+  \altrule{\terminal{exploreLV} \terminal{(} \nonterminal{fgRef}
+    \nonterminal{outputform}? \nonterminal{jobs}? \nonterminal{time limit}?
+    \nonterminal{backtrack size}? \terminal{)}}
   \altrule{\terminal{restore} \terminal{(} \token{STRING}
-  \nonterminal{outputform}? \terminal{)}}
+    \nonterminal{outputform}? \terminal{)}}
   \altrule{\terminal{source} \terminal{(} \token{STRING} \terminal{)}}
   \altrule{\terminal{adjacency} \terminal{(} \nonterminal{fgRef}
   \token{FLOAT} \token{FLOAT} \terminal{)}}
@@ -314,24 +321,45 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\terminal{quit}}
 \end{grammarrule}
 \begin{grammarrule}{resdef}{\nonterminal{residueRef} \nonterminal{residueRef}?
-    \nonterminal{queryexp} \token{INTEGER}}
+    \nonterminal{queryexp} \nonterminal{sampling}}
 \end{grammarrule}
 \begin{grammarrule}{condef}{\nonterminal{residueRef} \nonterminal{residueRef}
-    \nonterminal{queryexp} \token{INTEGER}}
+    \nonterminal{queryexp} \nonterminal{sampling}}
   \altrule{\nonterminal{residueRef} \nonterminal{queryexp} \nonterminal{residueRef}
-    \nonterminal{queryexp} \nonterminal{queryexp} \token{INTEGER}}
+    \nonterminal{queryexp} \nonterminal{queryexp} \nonterminal{sampling}}
 \end{grammarrule}
 \begin{grammarrule}{pairdef}{\nonterminal{residueRef} \nonterminal{residueRef}
-    \nonterminal{queryexp} \token{INTEGER}}
+    \nonterminal{queryexp} \nonterminal{sampling}}
   \altrule{\nonterminal{residueRef} \nonterminal{queryexp} \nonterminal{residueRef}
-    \nonterminal{queryexp} \nonterminal{queryexp} \token{INTEGER}}
+    \nonterminal{queryexp} \nonterminal{queryexp} \nonterminal{sampling}}
+\end{grammarrule}
+\begin{grammarrule}{sampling}{\token{INTEGER} \terminal{\%}}
+  \altrule{\token{INTEGER}}
 \end{grammarrule}
 \begin{grammarrule}{outputform}{\terminal{file\_pdb} \terminal{(}
-    \token{STRING} \terminal{zipped} \terminal{)}}
+    \token{STRING} \terminal{zipped}? \terminal{)}}
   \altrule{\terminal{file\_bin} \terminal{(} \token{STRING}
-    \terminal{zipped} \terminal{)}}
+    \terminal{zipped}? \terminal{)}}
   \altrule{\terminal{socket\_bin} \terminal{(} \token{STRING}
     \token{INTEGER} \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{jobs}{\terminal{jobs} \terminal{(} \token{INTEGER}
+  \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{time limit}{\terminal{time\_\,limit} \terminal{(}
+    \nonterminal{timelimit}+ \terminal{)}}
+\end{grammarrule}
+\begin{grammarrule}{timelimit}{\token{INTEGER} \terminal{seconds}}
+  \altrule{\token{INTEGER} \terminal{sec}}
+  \altrule{\token{FLOAT} \terminal{minutes}}
+  \altrule{\token{FLOAT} \terminal{min}}
+  \altrule{\token{FLOAT} \terminal{hours}}
+  \altrule{\token{FLOAT} \terminal{hr}}
+  \altrule{\token{FLOAT} \terminal{days}}
+  \altrule{\token{FLOAT} \terminal{d}}  
+\end{grammarrule}
+\begin{grammarrule}{backtrack size}{\terminal{backtrack\_\,size} \terminal{(}
+    \token{INTEGER} \token{INTEGER} \terminal{)}}
 \end{grammarrule}
 \begin{biggrammarrule}{angledef}
   {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
@@ -448,7 +476,7 @@ Changes from {\sc mcsym} version 3.2.4:
   INTEGER \> = \> \verb|-?[0-9]+| \\
   FLOAT \> = \> \verb|(-?[0-9]+)(.[0-9]*)?| \\
   RESNAME \> = \> \verb|[a-zA-Z][0-9]+| \\
-  IDENT \> = \> \verb|[-_<>a-zA-Z][-_<>\'%$\.a-zA-Z0-9]*| \\
+  IDENT \> = \> \verb|[-_<>a-zA-Z][-_<>\'$\.a-zA-Z0-9]*| \\
   STRING \> = \> \verb|\"[^\\\"]*\"| \\
   QUOTED\_\,IDENT \> = \> \verb|\'[^\']*\'| \\
 \end{tabbing}

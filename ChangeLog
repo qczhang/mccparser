@@ -57,10 +57,6 @@
 
 	* src/mccp.yy, src/mccp.y, configure: Grammar corrections.
 
-2001-07-04  Martin Larose  <larosem@iro.umontreal.ca>
-
-	* src/mccp.yy, src/mccp.y, configure: Grammar corrections.
-
 2001-07-03  Patrick Gendron  <gendrop@mansarde.IRO.UMontreal.CA>
 
 	* src/mccparser.cc, src/mccparser.h, src/mccp.y, src/mccp.yy:
@@ -68,11 +64,12 @@
 
 2001-05-09  Philippe Thibault  <thibaup@mansarde.IRO.UMontreal.CA>
 
-	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y:
-	added grammar rules for probabilistic search option and sampling
+	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y
+	[1.1]: added grammar rules for probabilistic search option and
+	sampling
 
-	* docs/Manual.tex: updated documentation for probabilistic search
-	options and sampling
+	* docs/Manual.tex [1.1]: updated documentation for probabilistic
+	search options and sampling
 
 2001-03-22  Martin Larose  <larosem@iro.umontreal.ca>
 
@@ -81,17 +78,17 @@
 
 2001-03-21  Martin Larose  <larosem@iro.umontreal.ca>
 
-	* src/mccp.yy, src/mccp.y: [1.1] The atom token is added to scan
+	* src/mccp.yy, src/mccp.y [1.1]: The atom token is added to scan
 	atoms correctly.
 
 2001-03-21  Philippe Thibault  <thibaup@mansarde.IRO.UMontreal.CA>
 
-	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y:
-	[1.1] added probabilistic search
+	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y
+	[1.1]: Added probabilistic search
 
 2001-03-15  Labo Lbit  <adbit@mansarde.IRO.UMontreal.CA>
 
-	* configure, ChangeLog: [1.1] Freezed release for mcsym 3.2.5.
+	* configure, ChangeLog [1.1]: Freezed release for mcsym 3.2.5.
 
 2001-02-09  Martin Larose  <larosem@iro.umontreal.ca>
 

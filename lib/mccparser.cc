@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Martin Larose
-// Last Modified On : Mon Nov 26 12:09:08 2001
-// Update Count     : 11
+// Last Modified On : Tue Dec  4 14:51:57 2001
+// Update Count     : 12
 // Status           : Ok.
 // 
 
@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "mccparser.h"
+#include <math.h>
 
 
 
@@ -30,7 +31,6 @@ whitespaces (ostream &os, unsigned int indent)
   for (; indent > 0; --indent)
     os << ' ';
 }
-
 
 
 MccFragGenStruc::MccFragGenStruc (const MccFragGenStruc &right)
@@ -141,7 +141,7 @@ MccQNotFunc::operator= (const MccQNotFunc &right)
   if (this != &right)
     {
       delete fn;
-      fn = right.fn->Copy ();
+      fn = right.fn->clone ();
     }
   return *this;
 }
@@ -179,9 +179,9 @@ MccQFaceFunc::operator= (const MccQFaceFunc &right_val)
   if (this != &right_val)
     {
       delete left;
-      left = right_val.left->Copy ();
+      left = right_val.left->clone ();
       delete right;
-      right = right_val.right->Copy ();
+      right = right_val.right->clone ();
     }
   return *this;
 }
@@ -212,9 +212,9 @@ MccQAndFunc::operator= (const MccQAndFunc &right_val)
   if (this != &right_val)
     {
       delete left;
-      left = right_val.left->Copy ();
+      left = right_val.left->clone ();
       delete right;
-      right = right_val.right->Copy ();
+      right = right_val.right->clone ();
     }
   return *this;
 }
@@ -259,9 +259,9 @@ MccQOrFunc::operator= (const MccQOrFunc &right_val)
   if (this != &right_val)
     {
       delete left;
-      left = right_val.left->Copy ();
+      left = right_val.left->clone ();
       delete right;
-      right = right_val.right->Copy ();
+      right = right_val.right->clone ();
     }
   return *this;
 }
@@ -288,7 +288,7 @@ MccQOrFunc::ppdisplay (ostream &os, int indent) const
 
 MccQueryExpr::MccQueryExpr (const MccQueryExpr &right)
   : strs (new vector< char* > ()),
-    fn (right.fn->Copy ())
+    fn (right.fn->clone ())
 {
   vector< char* >::const_iterator cit;
 
@@ -334,7 +334,7 @@ MccQueryExpr::operator= (const MccQueryExpr &right)
 	  strs->push_back (tmp);
 	}
       delete fn;
-      fn = right.fn->Copy ();
+      fn = right.fn->clone ();
     }
   return *this;
 }
@@ -483,7 +483,7 @@ MccAddPdbStat::MccAddPdbStat (const MccAddPdbStat &right)
   vector< _AddPdbStruc* >::const_iterator cit;
   
   for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-    strucs->push_back ((*cit)->Copy ());
+    strucs->push_back ((*cit)->clone ());
 }
 
 
@@ -511,7 +511,7 @@ MccAddPdbStat::operator= (const MccAddPdbStat &right)
 	delete *it;
       strucs->clear ();
       for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-	strucs->push_back ((*cit)->Copy ());
+	strucs->push_back ((*cit)->clone ());
     }
   return *this;
 }
@@ -576,7 +576,7 @@ MccAdjacencyCstStat::operator= (const MccAdjacencyCstStat &right)
   if (this != &right)
     {
       delete fg_struc;
-      fg_struc = right.fg_struc->Copy ();
+      fg_struc = right.fg_struc->clone ();
       the_min = right.the_min;
       the_max = right.the_max;
     }
@@ -789,7 +789,7 @@ MccAngleCstStat::ppdisplay (ostream &os, int indent) const
 
 
 MccAssignStat::MccAssignStat (const MccAssignStat &right)
-  : expr (right.expr->Copy ())
+  : expr (right.expr->clone ())
 {
   ident = new char[strlen (right.ident)];
   strcpy (ident, right.ident);
@@ -806,7 +806,7 @@ MccAssignStat::operator= (const MccAssignStat &right)
       ident = new char[strlen (right.ident)];
       strcpy (ident, right.ident);
       delete expr;
-      expr = right.expr->Copy ();
+      expr = right.expr->clone ();
     }
   return *this;
 }
@@ -1058,7 +1058,7 @@ MccBacktrackExpr::MccBacktrackExpr (const MccBacktrackExpr &right)
   vector< MccBacktrackExpr::_GenBTStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back ((*cit)->Copy ());
+    strucs->push_back ((*cit)->clone ());
 }
 
 
@@ -1086,7 +1086,7 @@ MccBacktrackExpr::operator= (const MccBacktrackExpr &right)
 	delete *it;
       strucs->clear ();
       for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back ((*cit)->Copy ());
+	strucs->push_back ((*cit)->clone ());
     }
   return *this;
 }
@@ -1382,7 +1382,8 @@ MccConnectStat::_ConnectStruc::display (ostream &os) const
   res2->display (os);
   os << ' ';
   expr->display (os);
-  os << ' ' << ssize;
+  os << ' ';
+  ssize->display (os);
 }
 
 
@@ -1397,7 +1398,8 @@ MccConnectStat::_ConnectStruc::ppdisplay (ostream &os, int indent) const
   res2->ppdisplay (os, indent);
   os << ' ';
   expr->ppdisplay (os, indent);
-  os << ' ' << ssize;
+  os << ' ';
+  ssize->ppdisplay (os, indent);
 }
 
 
@@ -1826,6 +1828,27 @@ MccDistCstStat::ppdisplay (ostream &os, int indent) const
 
 
 
+const MccBacktrackSize&
+MccBacktrackSize::operator= (const MccBacktrackSize &right)
+{
+  if (this != &right) 
+    {
+      maxBT = right.maxBT;
+      maxLR = right.maxLR;
+    }
+  return *this;
+}
+
+
+
+void
+MccBacktrackSize::display (ostream &os) const
+{
+  os << "backtrack_size (" << maxBT << " " << maxLR << ")";
+}
+
+
+
 MccFilePdbOutput::MccFilePdbOutput (const MccFilePdbOutput &right)
   : form (strdup (right.form)),
     zipped (right.zipped)
@@ -2074,7 +2097,7 @@ MccExploreStat::operator= (const MccExploreStat &right)
   if (this != &right)
     {
       delete fg_struc;
-      fg_struc = new MccFragGenStruc (*right.fg_struc);
+      fg_struc = right.fg_struc->clone ();
       if (expOutput)
 	{
 	  delete expOutput;
@@ -2132,6 +2155,161 @@ MccExploreStat::ppdisplay (ostream &os, int indent) const
 
 
 
+MccExploreLVStat::MccExploreLVStat (MccFragGenStruc *fg, MccOutputMode *ef,
+				    int j, vector< int > *tl,
+				    MccBacktrackSize *bs)
+  : MccPStruct (), fg_struc (fg), expOutput (ef),
+    jobs (j),
+    vtlimits (tl),
+    tlimit (-1),
+    btsize (bs)
+{
+  if (vtlimits)
+    {
+      vector< int >::const_iterator it;
+      
+      tlimit = 0;
+      for (it = vtlimits->begin (); it != vtlimits->end (); it++)
+	tlimit += *it;
+    }
+}
+
+
+
+MccExploreLVStat::MccExploreLVStat (const MccExploreLVStat &right)
+  : MccPStruct (right),
+    fg_struc (right.fg_struc->clone ()),
+    expOutput (0),
+    jobs (right.jobs),
+    vtlimits (0),
+    tlimit (-1),
+    btsize (0)
+{
+  if (right.expOutput)
+    expOutput = right.expOutput->clone ();
+  if (right.btsize)
+    btsize = right.btsize->clone ();
+  if (right.vtlimits)
+    {
+      vtlimits = new vector< int > (*right.vtlimits);
+      tlimit = right.tlimit;
+    }
+}
+
+
+
+MccExploreLVStat&
+MccExploreLVStat::operator= (const MccExploreLVStat &right)
+{
+  if (this != &right)
+    {
+      MccPStruct::operator= (right);
+      delete fg_struc;
+      fg_struc = right.fg_struc->clone ();
+      if (expOutput)
+	{
+	  delete expOutput;
+	  expOutput = 0;
+	}
+      if (right.expOutput)
+	expOutput = right.expOutput->clone ();
+      jobs = right.jobs;
+      if (vtlimits)
+        {
+	  delete vtlimits;
+	  vtlimits = 0;
+	  tlimit = -1;
+	}
+      if (right.vtlimits)
+        {
+	  vtlimits = new vector< int  > (*right.vtlimits);
+	  tlimit = right.tlimit;
+	}
+      if (btsize)
+        {
+	  delete btsize;
+	  btsize = 0;
+	}
+      if (right.btsize)
+	btsize = right.btsize->clone ();
+    }
+  return *this;
+}
+
+
+
+void
+MccExploreLVStat::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccExploreLVStat::display (ostream &os) const
+{
+  os << "exploreLV (";
+  fg_struc->display (os);
+  if (expOutput)
+    {
+      os << ' ';
+      expOutput->display (os);
+    }
+  if (jobs != 1)
+    os << " jobs (" << jobs << ')';
+  if (vtlimits)
+    os << " time_limit (" << tlimit << " sec)";
+  if (btsize)
+    {
+      os << ' ';
+      btsize->display (os);
+    }
+  os << ')';
+}
+
+
+
+
+void
+MccExploreLVStat::ppdisplay (ostream &os, int indent) const
+{
+  os << "exploreLV" << endl;
+  whitespaces (os, indent + 2);
+  os << '(' << endl;
+  whitespaces (os, indent + 4);
+  fg_struc->ppdisplay (os, indent + 4);
+  if (expOutput)
+    {
+      os << endl;
+      whitespaces (os, indent + 4);
+      expOutput->ppdisplay (os, indent + 4);
+    }
+  if (jobs != 1)
+    {
+      os << endl;
+      whitespaces (os, indent + 4);
+      os << " jobs (" << jobs << ')';
+    }
+  if (vtlimits)
+    {
+      os << endl;
+      whitespaces (os, indent + 4);
+      os << " time_limit (" << tlimit << " sec)";
+    }
+  if (btsize)
+    {
+      os << endl;
+      whitespaces (os, indent + 4);
+      btsize->ppdisplay (os, indent + 4);
+    }
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
+
 MccLibraryExpr::_LibStruc::_LibStruc (const MccLibraryExpr::_LibStruc &right)
   : res_vec (0),
     from (right.from),
@@ -2143,7 +2321,7 @@ MccLibraryExpr::_LibStruc::_LibStruc (const MccLibraryExpr::_LibStruc &right)
       
       res_vec = new vector< MccResidueName* > ();
       for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
-	res_vec->push_back ((*cit)->Copy ());
+	res_vec->push_back ((*cit)->clone ());
     }
 }
       
@@ -2183,7 +2361,7 @@ MccLibraryExpr::_LibStruc::operator= (const MccLibraryExpr::_LibStruc &right)
 	  
 	  res_vec = new vector< MccResidueName* > ();
 	  for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
-	    res_vec->push_back ((*cit)->Copy ());
+	    res_vec->push_back ((*cit)->clone ());
 	}
       from = right.from;
       to = right.to;
@@ -2282,7 +2460,7 @@ MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
   vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
   
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back ((*cit)->Copy ());
+    strucs->push_back ((*cit)->clone ());
 }
 
 
@@ -2313,7 +2491,7 @@ MccLibraryExpr::operator= (const MccLibraryExpr &right)
 	delete *it;
       strucs->clear ();
       for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-	strucs->push_back ((*cit)->Copy ());
+	strucs->push_back ((*cit)->clone ());
     }
   return *this;
 }
@@ -2568,7 +2746,8 @@ MccPairStat::_PairStruc::display (ostream &os) const
   res2->display (os);
   os << ' ';
   expr->display (os);
-  os << ' ' << ssize;
+  os << ' ';
+  ssize->display (os);
 }
 
 
@@ -2583,7 +2762,8 @@ MccPairStat::_PairStruc::ppdisplay (ostream &os, int indent) const
   res2->ppdisplay (os, indent);
   os << ' ';
   expr->ppdisplay (os, indent);
-  os << ' ' << ssize;
+  os << ' ';
+  ssize->ppdisplay (os, indent);
 }
 
 
@@ -2689,9 +2869,9 @@ MccQuitStat::ppdisplay (ostream &os, int indent) const
 
 
 MccRelationCstStat::_RelationStruc::_RelationStruc (const MccRelationCstStat::_RelationStruc &right)
-  : ref (right.ref->Copy ()),
-    res (right.res->Copy ()),
-    expr (right.expr->Copy ())
+  : ref (right.ref->clone ()),
+    res (right.res->clone ()),
+    expr (right.expr->clone ())
 {
 }
 
@@ -2712,11 +2892,11 @@ MccRelationCstStat::_RelationStruc::operator= (const MccRelationCstStat::_Relati
   if (this != &right)
     {
       delete ref;
-      ref = right.ref->Copy ();
+      ref = right.ref->clone ();
       delete res;
-      res = right.res->Copy ();
+      res = right.res->clone ();
       delete expr;
-      expr = right.expr->Copy ();
+      expr = right.expr->clone ();
     }
   return *this;
 }
@@ -2763,7 +2943,7 @@ MccRelationCstStat::MccRelationCstStat (const MccRelationCstStat &right)
   vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-    strucs->push_back ((*cit)->Copy ());
+    strucs->push_back ((*cit)->clone ());
 }
 
 
@@ -2791,7 +2971,7 @@ MccRelationCstStat::operator= (const MccRelationCstStat &right)
 	delete *it;
       strucs->clear ();
       for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-	strucs->push_back ((*cit)->Copy ());
+	strucs->push_back ((*cit)->clone ());
     }
   return *this;
 }
@@ -2967,7 +3147,8 @@ MccResidueStat::_ResidueStruc::display (ostream &os) const
       os << ' ';
     }
   expr->display (os);
-  os << ' ' << ssize;
+  os << ' ';
+  ssize->display (os);
 }
 
 
@@ -2985,7 +3166,8 @@ MccResidueStat::_ResidueStruc::ppdisplay (ostream &os, int indent) const
       os << ' ';
     }
   expr->ppdisplay (os, indent);
-  os << ' ' << ssize;
+  os << ' ';
+  ssize->ppdisplay (os, indent);
 }
 
 
@@ -3139,6 +3321,63 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
   os << endl;
   whitespaces (os, indent + 2);
   os << ')' << endl;
+}
+
+
+
+MccSamplingSize::MccSamplingSize (float ssize, bool pflag)
+  : discrete (pflag)
+{
+  if (discrete)
+    absVal = (int)rint (ssize);
+  else
+    propFact = ssize / 100.0;
+}
+
+
+
+MccSamplingSize::MccSamplingSize (const MccSamplingSize &right)
+  : discrete (right.discrete)
+{
+  if (discrete)
+    absVal = right.absVal;
+  else
+    propFact = right.propFact;
+}
+
+
+
+MccSamplingSize&
+MccSamplingSize::operator= (const MccSamplingSize &right)
+{
+  if (this != &right)
+    {
+      discrete = right.discrete;
+      if (discrete)
+	absVal = right.absVal;
+      else
+	propFact = right.propFact;
+    }
+  return *this;
+}
+
+
+
+void
+MccSamplingSize::Accept (MccVisitor *visitor)
+{
+  visitor->Visit (this);
+}
+
+
+
+void
+MccSamplingSize::display (ostream &os) const
+{
+  if (discrete)
+    os << absVal;
+  else
+    os << propFact * 100.0 << '%';
 }
 
 
