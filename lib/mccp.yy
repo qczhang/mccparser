@@ -40,6 +40,8 @@
 		  && ferror( yyin ) ) \
 		YY_FATAL_ERROR( "input in flex scanner failed" );
 
+using namespace std;
+
 
 char* mcccopy (const char *str);
 int mcclineno = 0;

@@ -3,26 +3,24 @@
 // Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
-// Last Modified By : Martin Larose
-// Last Modified On : Wed Nov 19 14:35:43 2003
-// Update Count     : 22
-// Status           : Ok.
-// 
+// $Revision$
+// $Id$
 
 
 #ifndef _mccparser_h_
 #define _mccparser_h_
-
 
 #include <iostream>
 #include <utility>
 #include <stdio.h>
 #include <vector>
 
-
 class MccPStruct;
 class MccVisitor;
 class MccQueryExpr;
+
+using namespace std;
+
 
 
 /**

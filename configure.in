@@ -29,26 +29,24 @@ if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
     *-sgi-*)
 	CXXFLAGS="$CXXFLAGS -O2 -woff 1681 -ptused -LANG:std"
   	DEPFLAGS="-M"
-  	LDFLAGS="-shared"
+  	LDFLAGS=""
 	LDNAMEPARAM="-Wl,-soname,"
-  	LINKOPTIONS= ;;
+  	LINKOPTIONS="-woff 47"
+	;;
     *-sun-*)
 	CXXFLAGS="$CXXFLAGS -O2"
 	DEPFLAGS="-xM1"
-        LDFLAGS="-G"
+        LDFLAGS=""
 	LDNAMEPARAM="-h"
-        LINKOPTIONS= ;;
+	LINKOPTIONS="-G"
+	;;
     esac;
 elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
 	CXXFLAGS="$CXXFLAGS -Wall";
 	DEPFLAGS="-MM"
-	case "$host" in
-	*-sun-*) LDNAMEPARAM="-Wl,-h,"
-	         LDFLAGS="-G";;
-	*)       LDNAMEPARAM="-Wl,-soname,"
-	         LDFLAGS="-shared";;
-	esac;
-	LINKOPTIONS=;
+	LDNAMEPARAM="-Wl,-soname,"
+	LDFLAGS=""
+	LINKOPTIONS="-shared";
 fi
 
 

@@ -20,6 +20,8 @@
 
   #include "mccparser.h"
 
+  using namespace std;
+
   extern int mcclex ();
   extern int mcclineno;
   int mccerror (const char *s);
