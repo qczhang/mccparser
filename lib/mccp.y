@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Wed May 28 10:42:30 2003
- * Update Count     : 27
+ * Last Modified On : Mon Sep 29 11:37:18 2003
+ * Update Count     : 28
  * Status           : Ok.
  */
 
@@ -202,7 +202,12 @@
 %token TOK_PLACER_SEARCH
 %token TOK_CLASH
 %token TOK_CLOSURE
+%token TOK_CLPREC
+%token TOK_CLPREC_C1P
 %token TOK_RIBOSE
+%token TOK_ROPT5D
+%token TOK_ROPT2D
+%token TOK_REST
 %token TOK_ROP
 //!
 
@@ -336,7 +341,10 @@
 %type <mccval> placer_build
 %type <pbx> clash_opt
 %type <pbc> closure_opt
+%type <charval> closure_mode_opt
 %type <pbr> ribose_opt
+%type <floatval> ribose_value_opt
+%type <textval> ribose_qfct_opt
 %type <pbtsv> placer_res_place_plus
 %type <pbts> placer_res_place
 %type <mccval> placer_search
@@ -1400,29 +1408,120 @@ clash_opt:  /* empty */
 };
 
 
+
+// closure_opt: /* empty */
+// {
+//   $$ = new MccPlacerBuildStat::_ClosureStruc (); 
+// }
+// | TOK_CLOSURE TOK_LPAREN closure_mode TOK_RPAREN
+// {
+//   $$ = $3;
+// }
+// ;
+
+// closure_mode: TOK_CLM_RMSD
+// {
+//   $$ = new MccPlacerBuildStat::_ClosureStruc ('r');
+// }
+// | TOK_CLM_DIST
+// {
+//   $$ = new MccPlacerBuildStat::_ClosureStruc ('d');
+// }
+// ;
+
+
 closure_opt: /* empty */
 {
   $$ = new MccPlacerBuildStat::_ClosureStruc (); 
 }
-| TOK_CLOSURE TOK_LPAREN TOK_IDENT TOK_RPAREN
+| TOK_CLOSURE TOK_LPAREN closure_mode_opt TOK_CLPREC TOK_CLPREC_C1P TOK_INTEGER TOK_PERCENT TOK_RPAREN
 {
-  $$ = new MccPlacerBuildStat::_ClosureStruc ($3[0]);
-};
+  $$ = new MccPlacerBuildStat::_ClosureStruc ($3, 'c', $6); 
+}
+;
+
+
+closure_mode_opt:
+{
+  $$ = 'd';
+}
+| TOK_RMSD
+{
+  $$ = 'r';
+}
+| TOK_DISTANCE
+{
+  $$ = 'd';
+}
+;
+
+
+
+
+// ribose_opt: /* empty */
+// {
+//   $$ = new MccPlacerBuildStat::_RibStruc ();
+// }
+// | TOK_RIBOSE TOK_LPAREN flt ribose_builder_opt ribose_qfct_opt TOK_RPAREN
+// {
+//   $$ = new MccPlacerBuildStat::_RibStruc ($3);
+// }
+// // optimizer parameters : min_shift, min_drop, shift_rate
+// | TOK_RIBOSE TOK_LPAREN flt TOK_ROP TOK_LPAREN flt flt flt TOK_RPAREN TOK_RPAREN
+// {
+//   $$ = new MccPlacerBuildStat::_RibStruc ($3, $6, $7, $8);
+// };
 
 
 ribose_opt: /* empty */
 {
   $$ = new MccPlacerBuildStat::_RibStruc ();
 }
-| TOK_RIBOSE TOK_LPAREN flt TOK_RPAREN
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_ROPT5D ribose_qfct_opt TOK_RPAREN
 {
-  $$ = new MccPlacerBuildStat::_RibStruc ($3);
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, '5', $5, -1, -1, -1);
 }
-// optimizer parameters : min_shift, min_drop, shift_rate
-| TOK_RIBOSE TOK_LPAREN flt TOK_ROP TOK_LPAREN flt flt flt TOK_RPAREN TOK_RPAREN
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_ROPT5D flt flt flt ribose_qfct_opt TOK_RPAREN
 {
-  $$ = new MccPlacerBuildStat::_RibStruc ($3, $6, $7, $8);
-};
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, '5', $8, $5, $6, $7);
+}
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_ROPT2D ribose_qfct_opt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, '2', $5, -1, -1, -1);
+}
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_ROPT2D flt flt flt ribose_qfct_opt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, '2', $8, $5, $6, $7);
+}
+| TOK_RIBOSE TOK_LPAREN ribose_value_opt TOK_REST ribose_qfct_opt TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_RibStruc ($3, 'o', $5, -1, -1, -1);
+}
+;
+
+
+ribose_value_opt:
+/* empty */
+{
+  $$ = -1;
+}
+| flt
+{
+  $$ = $1;
+}
+;
+
+
+ribose_qfct_opt:
+/* empty */
+{
+  $$ = 0;
+}
+| TOK_IDENT
+{
+  $$ = $1;
+}
+;
 
 
 placer_res_place_plus:   placer_res_place

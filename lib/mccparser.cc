@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed May 28 10:42:34 2003
-// Update Count     : 26
+// Last Modified On : Mon Sep 29 11:37:22 2003
+// Update Count     : 27
 // Status           : Ok.
 // 
 
@@ -4898,12 +4898,75 @@ MccPlacerBuildStat::_ClashStruc::ppdisplay (ostream &os, int indent) const
 }
 
 
+// MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (char mmode,
+// 						  char ecmode, char ecmo1,
+// 						  char ocmode, float ocmo1, float ocmo2)
+//   : method_mode (mmode),
+//     precst_mode (ecmode),
+//     postcst_mode (ocmode),
+//     pre_mode_intensity (ecmo1),
+//     post_mode_rmin (ocmo1),
+//     post_mode_rmax (ocmo2)
+// {
+
+// }
+
+
+// MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (const MccPlacerBuildStat::_ClosureStruc& right)
+//   : method_mode (right.method_mode),
+//     precst_mode (right.precst_mode),
+//     postcst_mode (right.postcst_mode),
+//     pre_mode_intensity (right.pre_mode_intensity),
+//     post_mode_rmin (right.post_mode_rmin),
+//     post_mode_rmax (right.post_mode_rmax)
+// {
+
+// }
+  
+
+// MccPlacerBuildStat::_ClosureStruc&
+// MccPlacerBuildStat::_ClosureStruc::operator= (const MccPlacerBuildStat::_ClosureStruc& right)
+// {
+//   if (this != &right)
+//     {
+//       method_mode = right.method_mode;
+//       precst_mode = right.precst_mode;
+//       postcst_mode = right.postcst_mode;
+//       pre_mode_intensity = right.pre_mode_intensity;
+//       post_mode_rmin = right.post_mode_rmin;
+//       post_mode_rmax = right.post_mode_rmax;
+//     }
+//   return *this;
+// }
+
+MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (char mmode,
+						  char pcmode,
+						  int pcmode_cover)
+  : method_mode (mmode),
+    precst_mode (pcmode),
+    pre_mode_coverage (pcmode_cover)
+{
+
+}
+
+
+MccPlacerBuildStat::_ClosureStruc::_ClosureStruc (const MccPlacerBuildStat::_ClosureStruc& right)
+  : method_mode (right.method_mode),
+    precst_mode (right.precst_mode),
+    pre_mode_coverage (right.pre_mode_coverage)
+{
+
+}
+  
+
 MccPlacerBuildStat::_ClosureStruc&
 MccPlacerBuildStat::_ClosureStruc::operator= (const MccPlacerBuildStat::_ClosureStruc& right)
 {
   if (this != &right)
     {
-      intensity = right.intensity;
+      method_mode = right.method_mode;
+      precst_mode = right.precst_mode;
+      pre_mode_coverage = right.pre_mode_coverage;
     }
   return *this;
 }
@@ -4920,15 +4983,24 @@ MccPlacerBuildStat::_ClosureStruc::display (ostream &os) const
 {
   os << "closure (";
 
-  switch (intensity)
+  switch (method_mode)
     {
-    case 'l': os << "low";  break;
-    case 'm': os << "mid";  break;
-    case 'h': os << "high"; break;
-    case 's': os << "strength"; break;
-    case 'f': os << "free"; break;
-    default:  os << "???";  break;
+    case 'r': case 'R': os << "rmsd"; break;
+    case 'd': case 'D': os << "distance"; break;
+    default: os << "???"; break;
     }
+  switch (precst_mode)
+    {
+    case 'f': case 'F': break;
+    case 'c': case 'C':os << "pre_constraint c1p " << pre_mode_coverage << '%'; break;
+    default: os << "pre_constraint ???"; break;
+    }
+//   switch (postcst_mode)
+//     {
+//     case 'f': case 'F': os << "postcst_free"; break;
+//     case 'v': case 'V': os << "postcst_value " << post_mode_rmin << post_mode_rmax; break;
+//     default: os << "postcst_???"; break;
+//     }
 
   os << ')';
 }
@@ -4939,8 +5011,73 @@ void
 MccPlacerBuildStat::_ClosureStruc::ppdisplay (ostream &os, int indent) const
 {
   whitespaces (os, indent);
-  display (os);
+  os << "closure (" << endl;
+  whitespaces (os, indent+2);
+  switch (method_mode)
+    {
+    case 'r': case 'R': os << "rmsd"; break;
+    case 'd': case 'D': os << "distance"; break;
+    default: os << "???"; break;
+    }
   os << endl;
+  whitespaces (os, indent+2);
+  switch (precst_mode)
+    {
+    case 'f': case 'F': break;
+    case 'c': case 'C': os << "pre_constraint c1p " << pre_mode_coverage << '%'; break;
+    default: os << "pre_constraint ???"; break;
+    }
+  os << endl;
+//   whitespaces (os, indent+2);
+//   switch (postcst_mode)
+//     {
+//     case 'f': case 'F': os << "postcst_free"; break;
+//     case 'v': case 'V': os << "postcst_value " << post_mode_rmin << post_mode_rmax; break;
+//     default: os << "postcst_???"; break;
+//     }
+  
+//   os << endl;
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
+MccPlacerBuildStat::_RibStruc::_RibStruc ()
+  : build_error (-1),
+    builder_tag ('o'),
+    min_shift (-1),
+    min_drop (-1),
+    shift_rate (-1)
+{
+  builder_qfct = strdup ("bond_length");
+}
+
+
+MccPlacerBuildStat::_RibStruc::_RibStruc (float be, char bt, char* bqf, float ms, float md, float sr)
+  : build_error (be),
+    builder_tag (bt),
+    min_shift (ms),
+    min_drop (md),
+    shift_rate (sr)
+{
+  builder_qfct = bqf ? strdup (bqf) : strdup ("bond_length");
+}
+
+
+MccPlacerBuildStat::_RibStruc::_RibStruc (const _RibStruc &right)
+  : build_error (right.build_error),
+    builder_tag (right.builder_tag),
+    min_shift (right.min_shift),
+    min_drop (right.min_drop),
+    shift_rate (right.shift_rate)
+{
+  builder_qfct = strdup (right.builder_qfct);
+}
+
+
+MccPlacerBuildStat::_RibStruc::~_RibStruc ()
+{
+  delete[] builder_qfct;
 }
 
 
@@ -4950,6 +5087,9 @@ MccPlacerBuildStat::_RibStruc::operator= (const MccPlacerBuildStat::_RibStruc& r
   if (this != &right)
     {
       build_error = right.build_error;
+      builder_tag = right.builder_tag;
+      delete[] builder_qfct;
+      builder_qfct = strdup (right.builder_qfct);
       min_shift = right.min_shift;
       min_drop = right.min_drop;
       shift_rate = right.shift_rate;
@@ -4968,10 +5108,28 @@ void
 MccPlacerBuildStat::_RibStruc::display (ostream &os) const
 {
   os << "ribose ("
-     << build_error << ' '
-     << min_shift << ' '
-     << min_drop << ' '
-     << shift_rate << ')';
+     << build_error << ' ';
+  switch (builder_tag)
+    {
+    case '5':
+      os << "optimizer5d "
+	 << min_shift << ' '
+	 << min_drop << ' '
+	 << shift_rate << ' ';
+      break;
+    case '2':
+      os << "optimizer2d "
+	 << min_shift << ' '
+	 << min_drop << ' '
+	 << shift_rate << ' ';
+      break;
+    case 'o':
+      os << "estimator ";
+      break;
+    default:
+      os << "??? ";
+    }
+  os << ')';
 }
 
 
@@ -4989,8 +5147,7 @@ MccPlacerBuildStat::MccPlacerBuildStat (const MccPlacerBuildStat &right)
   : closure (right.closure->clone ()),
     ribopt (right.ribopt->clone ()),
     strucs (new vector< MccPlacerBuildStat::_GenBTStruc* > ()),
-    headmap (right.headmap),
-    tailmap (right.tailmap)
+    all_id (right.all_id)
 {
   vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
 
@@ -5022,8 +5179,7 @@ MccPlacerBuildStat::operator= (const MccPlacerBuildStat &right)
       vector< MccPlacerBuildStat::_GenBTStruc* >::const_iterator cit;
       vector< MccPlacerBuildStat::_GenBTStruc* >::iterator it;
 
-      headmap = right.headmap;
-      tailmap = right.tailmap;
+      all_id = right.all_id;
 
       delete clash;
       clash = right.clash->clone ();
@@ -5054,26 +5210,11 @@ void
 MccPlacerBuildStat::GenBTStruc (MccPlacerResidueName *rf,
 				vector< MccPlacerResidueName* > *rv)
 {
-  pair< map< char, int >::iterator, bool > insit;
   vector< MccPlacerResidueName* >::const_iterator rvit;
-
-  insit = headmap.insert (make_pair (rf->id, rf->no));
-  if (!insit.second && rf->no < insit.first->second)
-    insit.first->second = rf->no;
-  insit = tailmap.insert (make_pair (rf->id, rf->no));
-  if (!insit.second && rf->no > insit.first->second)
-    insit.first->second = rf->no;
-
+  
+  all_id.insert (make_pair (rf->id, rf->no));
   for (rvit = rv->begin (); rvit != rv->end (); ++rvit)
-    {
-      insit = headmap.insert (make_pair ((*rvit)->id, (*rvit)->no));
-      if (!insit.second && (*rvit)->no < insit.first->second)
-	insit.first->second = (*rvit)->no;
-      
-      insit = tailmap.insert (make_pair ((*rvit)->id, (*rvit)->no));
-      if (!insit.second && (*rvit)->no > insit.first->second)
-	insit.first->second = (*rvit)->no;
-    }
+    all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
 
   strucs->push_back (new _BTStruc (rf, rv));
 }
@@ -5082,29 +5223,14 @@ MccPlacerBuildStat::GenBTStruc (MccPlacerResidueName *rf,
 void
 MccPlacerBuildStat::AddBTStrucs (vector< _GenBTStruc* > *bts)
 {
-  pair< map< char, int >::iterator, bool > insit;
   vector< MccPlacerResidueName* >::const_iterator rvit;
   vector< _GenBTStruc* >::const_iterator btsit;
 
   for (btsit = bts->begin (); btsit != bts->end (); ++btsit)
     {
-      insit = headmap.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
-      if (!insit.second && (*btsit)->ref->no < insit.first->second)
-	insit.first->second = (*btsit)->ref->no;
-      insit = tailmap.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
-      if (!insit.second && (*btsit)->ref->no > insit.first->second)
-	insit.first->second = (*btsit)->ref->no;
-
+      all_id.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
       for (rvit = (*btsit)->res_v->begin (); rvit != (*btsit)->res_v->end (); ++rvit)
-	{
-	  insit = headmap.insert (make_pair ((*rvit)->id, (*rvit)->no));
-	  if (!insit.second && (*rvit)->no < insit.first->second)
-	    insit.first->second = (*rvit)->no;
-      
-	  insit = tailmap.insert (make_pair ((*rvit)->id, (*rvit)->no));
-	  if (!insit.second && (*rvit)->no > insit.first->second)
-	    insit.first->second = (*rvit)->no;
-	}
+	all_id.insert (make_pair ((*rvit)->id, (*rvit)->no));
     }
 
   strucs->insert (strucs->end (), bts->begin (), bts->end ()); delete bts;

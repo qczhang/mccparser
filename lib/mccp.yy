@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Philippe Thibault
- * Last Modified On : Wed May 28 10:42:33 2003
- * Update Count     : 22
+ * Last Modified On : Mon Sep 29 11:37:21 2003
+ * Update Count     : 23
  * Status           : Ok.
  */
 
@@ -159,8 +159,12 @@ placer_pair         return TOK_PLACER_PAIR;
 placer_build        return TOK_PLACER_BUILD;
 clash               return TOK_CLASH;
 closure             return TOK_CLOSURE;
+pre_constraint      return TOK_CLPREC;
+c1p                 return TOK_CLPREC_C1P;
 ribose              return TOK_RIBOSE;
-optimizer           return TOK_ROP;
+optimizer5d         return TOK_ROPT5D;
+optimizer2d         return TOK_ROPT2D;
+estimator           return TOK_REST;
 placer_search       return TOK_PLACER_SEARCH;
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;

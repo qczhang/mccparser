@@ -4,8 +4,8 @@
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // Last Modified By : Philippe Thibault
-// Last Modified On : Wed May 28 10:42:35 2003
-// Update Count     : 30
+// Last Modified On : Mon Sep 29 11:37:24 2003
+// Update Count     : 31
 // Status           : Ok.
 // 
 
@@ -17,8 +17,9 @@
 #include <iostream.h>
 #include <vector.h>
 #include <map.h>
+#include <set.h>
 #include <stdio.h>
-
+#include <values.h>
 
 
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
@@ -29,6 +30,21 @@ void mcc_switch_to_buffer (YY_BUFFER_STATE);
 class MccPStruct;
 class MccVisitor;
 class MccQueryExpr;
+
+
+struct idno_cmp
+{
+  /**
+   * Lexicographical test for (char,int) couple.
+   * @param p1 the first pair.
+   * @param p2 the second pair.
+   * @return the result of the test.
+   */
+  bool operator() (const pair< char, int >& p1, const pair< char, int >& p2) const
+  { return p1.first == p2.first ? p1.second < p2.second : p1.first < p2.first; }
+};
+
+typedef set< pair< char, int >, idno_cmp > idno_set;
 
 
 /**
@@ -7824,26 +7840,36 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
      * 'f': free (unconstrained)
      *
      */
-    char intensity;
+    //char intensity;
+
+    char method_mode, precst_mode;//, postcst_mode;
+    int pre_mode_coverage;
+    //float post_mode_rmin, post_mode_rmax;
     
     // LIFECYCLE ------------------------------------------------------------
     
     /**
      * Initializes the object.
      */
-    _ClosureStruc () : intensity ('f') { }
+//     _ClosureStruc (char mmode = 'r',
+// 		   char ecmode = 'c', char ecmo1 = 'l',
+// 		   char ocmode = 'f', float ocmo1 = -1, float ocmo2 = MAXFLOAT);
+    _ClosureStruc (char mmode = 'd',
+		   char pcmode = 'f',
+		   int pcmode_cover = -1);
 
     /**
      * Initializes the object.
      * @param i the constraint intensity
      */
-    _ClosureStruc (char i) : intensity (i) { }
+    //_ClosureStruc (char i) : intensity (i) { }
 
     /**
      * Initializes the object with the rights content.
      * @param right the object to copy.
      */
-    _ClosureStruc (const _ClosureStruc &right) : intensity (right.intensity) { }
+    //_ClosureStruc (const _ClosureStruc &right) : intensity (right.intensity) { }
+    _ClosureStruc (const _ClosureStruc &right);
     
     /**
      * Destroys the object.
@@ -7905,6 +7931,16 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
      * Build error threshold (A*A)
      */
     float build_error;
+
+    /**
+     * Tag identifying builder method.
+     */
+    char builder_tag;
+
+    /**
+     * String identifying builder quality function.
+     */
+    char* builder_qfct;
     
     /**
      * Torsion shift threshold in optimization (rad). 
@@ -7926,11 +7962,7 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
     /**
      * Initializes the object.
      */
-    _RibStruc ()
-      : build_error (-1),
-	min_shift (-1),
-	min_drop (-1),
-	shift_rate (-1) { }
+    _RibStruc ();
 
     /**
      * Initializes the object.
@@ -7939,28 +7971,18 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
      * @param md the drop threshold.
      * @param sr the shift rate.
      */
-    _RibStruc (float be, float ms = -1, float md = -1, float sr = -1)
-      : build_error (be),
-	min_shift (ms),
-	min_drop (md),
-	shift_rate (sr)
-    { }
+    _RibStruc (float be, char bt, char* bqf, float ms, float md, float sr);
 
     /**
      * Initializes the object with the rights content.
      * @param right the object to copy.
      */
-    _RibStruc (const _RibStruc &right)
-      : build_error (right.build_error),
-	min_shift (right.min_shift),
-	min_drop (right.min_drop),
-	shift_rate (right.shift_rate)
-    { }
+    _RibStruc (const _RibStruc &right);
     
     /**
      * Destroys the object.
      */
-    ~_RibStruc () { }
+    ~_RibStruc ();
 
     // OPERATORS ------------------------------------------------------------
 
@@ -8028,8 +8050,8 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
    * Container for strand extrema, addressed by chainid and resno.
    * Maps minimal and maximal resno for a chainid.
    */
-  map< char, int > headmap, tailmap;
-  
+  //map< char, int > headmap, tailmap;
+  idno_set all_id;
   
   // LIFECYCLE ------------------------------------------------------------
 
