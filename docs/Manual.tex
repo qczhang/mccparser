@@ -4,8 +4,8 @@
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Martin Larose
-%% Last Modified On : Fri Feb  9 10:47:07 2001
-%% Update Count     : 9
+%% Last Modified On : Wed Jul  4 12:02:53 2001
+%% Update Count     : 10
 %% Status           : Ok.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -360,25 +360,28 @@ Changes from {\sc mcsym} version 3.2.4:
 \begin{grammarrule}{cfo}{\terminal{confo\_\,cutoff} \token{FLOAT}}
 \end{grammarrule}
 \begin{grammarrule}{queryexp}{\terminal{\{} \nonterminal{filename}*
-    \nonterminal{qprop}? \terminal{\}}}
+    \nonterminal{queryorexp}? \terminal{\}}}
 \end{grammarrule}
 \begin{grammarrule}{filename}{\terminal{file} \terminal{(} \token{STRING}
     \terminal{)}}
-\end{grammarrule}
-\begin{grammarrule}{qprop}{\terminal{\&\&}? \nonterminal{queryorexp}}
 \end{grammarrule}
 \begin{grammarrule}{queryorexp}{\nonterminal{queryandexp}}
   \altrule{\nonterminal{queryorexp} \terminal{\boldmath{$||$}}
     \nonterminal{queryandexp}}
 \end{grammarrule}
-\begin{grammarrule}{queryandexp}{\nonterminal{querynotexp}}
+\begin{grammarrule}{queryandexp}{\nonterminal{queryfaceexp}}
   \altrule{\nonterminal{queryandexp} \terminal{\&\&}
-    \nonterminal{querynotexp}}
+    \nonterminal{queryfaceexp}}
+\end{grammarrule}
+\begin{grammarrule}{queryfaceexp}{\nonterminal{querynotexp}}
+  \altrule{\nonterminal{queryidentexp} \terminal{/}
+    \nonterminal{queryidentexp}}
 \end{grammarrule}
 \begin{grammarrule}{querynotexp}{\nonterminal{queryidentexp}}
   \altrule{\terminal{!} \nonterminal{querynotexp}}
 \end{grammarrule}
 \begin{grammarrule}{queryidentexp}{\token{IDENT}}
+  \altrule{\terminal{any}}
   \altrule{\terminal{(} \nonterminal{queryorexp} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{fgexp}{\terminal{backtrack} \terminal{(} \nonterminal{fgRef}?
