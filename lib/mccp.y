@@ -1387,9 +1387,9 @@ placer_residueRef:   TOK_INTEGER { $$ = new MccPlacerResidueName ($1); }
 ;
 
 
-placer_fragment: TOK_PLACER_FRAGMENT TOK_LPAREN TOK_IDENT input_mode  TOK_RPAREN
+placer_fragment: TOK_PLACER_FRAGMENT TOK_LPAREN TOK_IDENT placer_residueRef input_mode TOK_RPAREN
 {
-  $$ = new MccPlacerFragmentStat ($3, $4);
+  $$ = new MccPlacerFragmentStat ($3, $4, $5);
 }
 ;
 
@@ -1510,13 +1510,13 @@ placer_res_place:  TOK_LPAREN placer_residueRef placer_residueRef_star TOK_RPARE
 {
   $$ = new MccPlacerBuildStat::_BTStruc ($2, $3);
 }
-| TOK_PLACE TOK_LPAREN TOK_IDENT placer_residueRef placer_residueRef TOK_RPAREN
-{
-  $$ = new MccPlacerBuildStat::_PlaceStruc ($3, $4, $5);
-}
 | TOK_PLACE TOK_LPAREN TOK_IDENT placer_residueRef TOK_RPAREN
 {
   $$ = new MccPlacerBuildStat::_PlaceStruc ($3, $4);
+}
+| TOK_PLACE TOK_LPAREN TOK_IDENT TOK_RPAREN
+{
+  $$ = new MccPlacerBuildStat::_PlaceStruc ($3);
 }
 ;
 

@@ -7382,6 +7382,8 @@ struct MccPlacerFragmentStat : public MccPStruct
 {
 
   char* frag_name;
+
+  MccPlacerResidueName *frag_res;
   
   /**
    * The input model mode.
@@ -7404,8 +7406,9 @@ public:
    * Initializes the object.
    * @param im the input model mode.
    */
-  MccPlacerFragmentStat (char* name, MccInputMode *im)
+  MccPlacerFragmentStat (char* name, MccPlacerResidueName *fr, MccInputMode *im)
     : frag_name (strdup (name)),
+      frag_res (fr),
       inputMode (im)
   { }
 
@@ -7682,16 +7685,8 @@ struct MccPlacerBuildStat : public MccPStruct //public MccFGExp
      * @param fg the FG structure.
      */
     _PlaceStruc (char* name,
-		 MccPlacerResidueName *pr,
-		 MccPlacerResidueName *fr)
-      : _GenBTStruc (pr, fr, 0, 0),
-	frag_name (strdup (name))
-    { }
-
-    
-    _PlaceStruc (char* name,
-		 MccPlacerResidueName *fr)
-      : _GenBTStruc (0, fr, 0, 0),
+		 MccPlacerResidueName *pr = 0)
+      : _GenBTStruc (pr, 0, 0, 0),
 	frag_name (strdup (name))
     { }
 

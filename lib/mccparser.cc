@@ -4724,6 +4724,7 @@ MccPlacerPairStat::ppdisplay (ostream &os, int indent) const
 MccPlacerFragmentStat::MccPlacerFragmentStat (const MccPlacerFragmentStat &right)
 {
   frag_name = strdup (right.frag_name);
+  frag_res = right.frag_res->clone ();
   inputMode = right.inputMode->clone ();
 }
 
@@ -4731,6 +4732,7 @@ MccPlacerFragmentStat::MccPlacerFragmentStat (const MccPlacerFragmentStat &right
 MccPlacerFragmentStat::~MccPlacerFragmentStat ()
 {
   delete[] frag_name;
+  delete frag_res;
   delete inputMode;
 }
 
@@ -4743,6 +4745,8 @@ MccPlacerFragmentStat::operator= (const MccPlacerFragmentStat &right)
     {
       delete[] frag_name;
       frag_name = strdup (right.frag_name);
+      delete frag_res;
+      frag_res = right.frag_res->clone ();
       delete inputMode;
       inputMode = right.inputMode->clone ();
     }
@@ -4763,6 +4767,8 @@ void
 MccPlacerFragmentStat::display (ostream &os) const
 {
   os << "fragment (" << frag_name << ' ';
+  frag_res->display (os);
+  os << ' ';
   inputMode->display (os);
   os << ')';
 }
@@ -4778,7 +4784,12 @@ MccPlacerFragmentStat::ppdisplay (ostream &os, int indent) const
   os << '(' << endl;
   whitespaces (os, indent + 2);
   os << frag_name << endl;
-  inputMode->ppdisplay (os, indent + 2);
+  whitespaces (os, indent + 2);
+  frag_res->display (os);
+  os << endl;
+  whitespaces (os, indent + 2);
+  inputMode->display (os);
+  os << endl;
   whitespaces (os, indent);
   os << ')' << endl;
 }
@@ -4932,7 +4943,6 @@ MccPlacerBuildStat::_PlaceStruc::~_PlaceStruc ()
 {
   if (ref)
     delete ref;
-  delete res;
   delete[] frag_name;
 }
 
@@ -4965,8 +4975,6 @@ MccPlacerBuildStat::_PlaceStruc::display (ostream &os) const
   os << "place (" << frag_name << ' ';
   if (ref)
     ref->display (os);
-  os << ' ';
-  res->display (os);
   os << ')';
 }
 
@@ -4983,7 +4991,6 @@ MccPlacerBuildStat::_PlaceStruc::ppdisplay (ostream &os, int indent) const
       ref->ppdisplay (os, indent);
       os << ' ';
     }
-  res->ppdisplay (os, indent);
   os << ')';
 }
 
@@ -5324,7 +5331,8 @@ MccPlacerBuildStat::AddBTStrucs (vector< _GenBTStruc* > *bts)
 
   for (btsit = bts->begin (); btsit != bts->end (); ++btsit)
     {
-      all_id.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
+      if ((*btsit)->ref)
+	all_id.insert (make_pair ((*btsit)->ref->id, (*btsit)->ref->no));
 
       if ((*btsit)->res)
 	all_id.insert (make_pair ((*btsit)->res->id, (*btsit)->res->no));
