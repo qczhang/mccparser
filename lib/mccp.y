@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Fri Nov 10 18:20:34 2000
- * Update Count     : 8
+ * Last Modified On : Wed Jul  4 11:41:46 2001
+ * Update Count     : 9
  * Status           : Ok.
  */
 
@@ -83,6 +83,7 @@
 %token TOK_ALIGN
 %token TOK_ALLATOMS
 %token TOK_ANGLE
+%token TOK_ANY
 %token TOK_BBATOMS
 %token TOK_BACKTRACK
 %token TOK_BASEATOMS
@@ -193,7 +194,6 @@
 %type <textv> filename_star
 %type <textval> filename
 %type <qfunc> qprop_opt
-%type <qfunc> qprop
 %type <qfunc> queryorexp
 %type <qfunc> queryandexp
 %type <qfunc> querynotexp
@@ -681,12 +681,7 @@ filename:   TOK_FILENAME TOK_LPAREN TOK_STRING TOK_RPAREN
 			
 
 qprop_opt:   /* empty */ { $$ = new MccQTrueFunc (); }
-           | qprop { $$ = $1; }
-;
-
-
-qprop:   TOK_AND queryorexp { $$ = $2; }
-       | queryorexp { $$ = $1; }
+           | queryorexp { $$ = $1; }
 ;
 
 
@@ -699,10 +694,6 @@ queryorexp:   queryandexp { $$ = $1; }
 
 
 queryandexp:   queryfaceexp { $$ = $1; }
-             | queryandexp queryfaceexp
-                {
-		  $$ = new MccQAndFunc ($1, $2);
-		}
              | queryandexp TOK_AND queryfaceexp
                 {
 		  $$ = new MccQAndFunc ($1, $3);
@@ -711,7 +702,7 @@ queryandexp:   queryfaceexp { $$ = $1; }
 
 
 queryfaceexp:  querynotexp { $$ = $1 }
-             | queryfaceexp TOK_FACE querynotexp 
+             | queryidentexp TOK_FACE queryidentexp
                 {
 		  $$ = new MccQFaceFunc ($1, $3);
 		}
@@ -728,6 +719,7 @@ querynotexp:   queryidentexp { $$ = $1; }
 
 
 queryidentexp: TOK_IDENT { $$ = new MccQIdentFunc ($1); }
+               | TOK_ANY { $$ = new MccQTrueFunc (); }
                | TOK_LPAREN queryorexp TOK_RPAREN { $$ = $2; }
 ;
 

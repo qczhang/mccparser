@@ -4,8 +4,8 @@
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * Last Modified By : Martin Larose
- * Last Modified On : Thu Jan  4 16:49:06 2001
- * Update Count     : 5
+ * Last Modified On : Wed Jul  4 11:41:48 2001
+ * Update Count     : 6
  * Status           : Ok.
  */
 
@@ -189,6 +189,7 @@ zipped       return TOK_ZIPPED;
                              return TOK_IDENT;
                            }
 <QUERIES>file              return TOK_FILENAME;
+<QUERIES>any               return TOK_ANY;
 <QUERIES>[-_<>a-zA-Z][-_<>\'%\.a-zA-Z0-9]* {
                                              mcclval.textval = mcccopy (mcctext);
 					     return TOK_IDENT;
