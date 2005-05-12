@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -*- Mode: Latex -*- %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Manual.tex
-%% Copyright © 2000-01 Laboratoire de Biologie Informatique et Théorique.
+%% Copyright Â© 2000-01 Laboratoire de Biologie Informatique et ThÃ©orique.
 %% Author           : Martin Larose
 %% Created On       : Thu Aug 31 12:48:48 2000
 %% Last Modified By : Philippe Thibault
@@ -16,7 +16,7 @@
 \usepackage{isolatin1}
 \usepackage[ps2pdf,backref,hyperindex,colorlinks,bookmarks]{hyperref}
 \title{{\sc mccparser} manual}
-\author{Laboratoire de Biologie Informatique et Théorique}
+\author{Laboratoire de Biologie Informatique et ThÃ©orique}
 \date{\today}
 
 \pagestyle{myheadings}
@@ -69,7 +69,7 @@ To include the parser in an application, you must follow these instructions:
   parsed;
 \item assign to {\tt mccin} the {\tt FILE*} of the input; assign stdin for
   interactive input or the result of the {\tt fopen} call on the input file;
-\item when you are using a interactive parser, create a new CMccInput or one
+\item when you are using a interactive parser, create a new MccInput or one
   of it's derivative and assign it to the input\_class variable; in case of
   a batch parser, you don't need to assign it any value;
 \item use {\tt mccparse ()} to parse the input.  The result can be found
@@ -98,7 +98,7 @@ eval (FILE *fd)
     {
       mccparse ();
       for (it = astv->begin (); it != astv->end (); it++)
-        (*it)->Accept (&visitor);
+        (*it)->accept (&visitor);
     }
   catch (...)
     {
@@ -124,7 +124,7 @@ eval ()
   vector< MccPStruct* >::iterator it;
 
   mccin = stdin;
-  input_class = new CMccInput ();
+  input_class = new MccInput ();
   interactive_parser = true;
   astv = 0;
   MyVisitor visitor;
@@ -135,7 +135,7 @@ eval ()
         {
           mccparse ();
           for (it = astv->begin (); it != astv->end (); ++it)
-            (*it)->Accept (&visitor);
+            (*it)->accept (&visitor);
         }
       catch (...)
         {
@@ -169,7 +169,7 @@ eval (FILE *fd)
     {
       mccparse ();
       for (it = astv->begin (); it != astv->end (); it++)
-        (*it)->Accept (&visitor);
+        (*it)->accept (&visitor);
     }
   catch (...)
     {
@@ -191,11 +191,11 @@ eval (FILE *fd)
 }
 \end{verbatim}
 
-The class CMccInput is a wrapper around the interactive read function.  The
+The class MccInput is a wrapper around the interactive read function.  The
 parser calls {\tt input\_class->nextchar ()} to get the next typed
-character.  The implementation of CMccInput's nextchar is a simple {\tt getc
+character.  The implementation of MccInput's nextchar is a simple {\tt getc
   ()} call.  If you want to implement a different input procedure (buffered,
-string buffered, etc) you can build a child class of CMccInput and modify
+string buffered, etc) you can build a child class of MccInput and modify
 it's {\tt nextchar ()} method.
 
 To read from a string instead of a file, you can follow these instructions:
@@ -231,7 +231,7 @@ eval (const char *str)
       mccparse ();
       
       for (it = astv->begin (); it != astv->end (); ++it)
-        (*it)->Accept (&visitor);
+        (*it)->accept (&visitor);
 
       mcc_delete_buffer (handle);
       for (it = astv->begin (); it != astv->end (); ++it)
@@ -251,6 +251,28 @@ eval (const char *str)
 
 
 \section{Changes}
+
+Changes for version 1.5
+\begin{itemize}
+\item removed statements residue, connect and pair;
+\item new statement relations to define all relations within the model;
+\item renamed statement res\_clash to clash;
+\item new statement ribose\_adjacency to restrict ribose building
+  values;
+\item new statement base\_adjacency to restrict implicit base
+  adjacency;
+\item removed exploreLV statement;
+\item modified explore statement: identifier for the search algorithm
+  and optional parameters;
+\item new merge expression to place a fragment by shared nitrogen bases;
+\item modified atomset expressions to boolean expression alike the
+  query expressions;
+\item modified statement add\_pdb: cutoffs specific to adjacent, stacking
+  or pairing relations;
+\item new statement env and display\_db for more debugging
+  informations. 
+\item removed moses expressions;
+\end{itemize}
 
 Changes from {\sc mcsym} version 3.2.4:
 \begin{itemize}
@@ -286,85 +308,71 @@ Changes from {\sc mcsym} version 3.2.4:
 \end{grammarrule}
 \begin{grammarrule}{statement}{\terminal{sequence} \terminal{(} \token{IDENT}
     \nonterminal{residueRef} \token{IDENT}+ \terminal{)}}
+  \altrule{\token{relations} \terminal{(} \nonterminal{reldef}+ \terminal{)}}
   \altrule{\token{IDENT} \terminal{=} \nonterminal{fgexp}}
-  \altrule{\terminal{residue} \terminal{(} \nonterminal{resdef}+ \terminal{)}}
-  \altrule{\terminal{connect} \terminal{(} \nonterminal{condef}+ \terminal{)}}
-  \altrule{\terminal{pair} \terminal{(} \nonterminal{pairdef}+ \terminal{)}}
-  \altrule{\terminal{explore} \terminal{(} \nonterminal{fgRef}
-    \nonterminal{model filter}? \nonterminal{outputform}? \terminal{)}}
-  \altrule{\terminal{exploreLV} \terminal{(} \nonterminal{fgRef}
-    \nonterminal{model filter}? \nonterminal{outputform}?
-    \nonterminal{time limit}? \nonterminal{backtrack size}? \terminal{)}}
+  \altrule{\terminal{clash} \terminal{(} \nonterminal{fgRef}
+    \nonterminal{fixorvdw}? \token{FLOAT} \nonterminal{atomset}?
+    \terminal{)}}
+  \altrule{\terminal{ribose\_adjacency} \terminal{(} \nonterminal{fgRef}
+  \token{FLOAT} \terminal{)}}
+  \altrule{\terminal{base\_adjacency} \terminal{(} \nonterminal{fgRef}
+    \token{INTEGER} \terminal{\%} \terminal{)}}
+  \altrule{\terminal{distance} \terminal{(} \nonterminal{distdef}+ \terminal{)}}
+  \altrule{\terminal{angle} \terminal{(} \nonterminal{angledef}+ \terminal{)}}
+  \altrule{\terminal{torsion} \terminal{(} \nonterminal{torsiondef}+
+    \terminal{)}}
+  \altrule{\terminal{relation} \terminal{(} \nonterminal{relationdef}+
+    \terminal{)}}
+  \altrule{\terminal{explore} \terminal{(} \nonterminal{fgRef} \token{IDENT} \nonterminal{exploreparam}* \nonterminal{modelfilter}? \nonterminal{timelimit}? \nonterminal{outputform}? \terminal{)}}
   \altrule{\terminal{restore} \terminal{(} \token{STRING}
     \nonterminal{outputform}? \terminal{)}}
   \altrule{\terminal{source} \terminal{(} \token{STRING} \terminal{)}}
-  \altrule{\terminal{adjacency} \terminal{(} \nonterminal{fgRef}
-  \token{FLOAT} \token{FLOAT} \terminal{)}}
-  \altrule{\terminal{angle} \terminal{(} \nonterminal{angledef}+ \terminal{)}}
-  \altrule{\terminal{res\_\,clash} \terminal{(} \nonterminal{fgRef}
-    \nonterminal{fixorvdw}? \token{FLOAT} \nonterminal{atomset}?
-    \terminal{no\_\,hydrogen}? \terminal{)}}
-  \altrule{\terminal{cycle} \terminal{(} \nonterminal{cycledef}+ \terminal{)}}
-  \altrule{\terminal{distance} \terminal{(} \nonterminal{distdef}+ \terminal{)}}
-  \altrule{\terminal{torsion} \terminal{(} \nonterminal{torsiondef}+
-    \terminal{)}}
-  \altrule{\terminal{new\_\,tag} \terminal{(} \nonterminal{resortfo}
-    \token{STRING} \nonterminal{queryexp}+ \terminal{)}}
-  \altrule{\terminal{add\_\,pdb} \terminal{(} \nonterminal{addpdbdefs}+
-    \terminal{)}}
+  \altrule{\terminal{notes}}
+  \altrule{\terminal{env}}
   \altrule{\terminal{display\_\,fg} \terminal{(} \nonterminal{fgRef}
     \terminal{)}}
-  \altrule{\terminal{note} \terminal{(} \token{STRING} \terminal{)}}
-  \altrule{\terminal{notes}}
-  \altrule{\terminal{relation} \terminal{(} \nonterminal{relationdef}+
+  \altrule{\terminal{display\_db}}
+  \altrule{\terminal{new\_\,tag} \terminal{(} \nonterminal{resortfo}
+    \token{STRING} \nonterminal{queryexp}+ \terminal{)}}
+  \altrule{\terminal{add\_\,pdb} \terminal{(} \nonterminal{cutoff}? \token{STRING}+
     \terminal{)}}
+  \altrule{\terminal{note} \terminal{(} \token{STRING} \terminal{)}}
   \altrule{\terminal{remark} \terminal{(} \token{STRING} \terminal{)}}
   \altrule{\terminal{reset}}
   \altrule{\terminal{reset\_\,db}}
   \altrule{\terminal{version}}
   \altrule{\terminal{quit}}
 \end{grammarrule}
-\begin{grammarrule}{resdef}{\nonterminal{residueRef} \nonterminal{residueRef}?
-    \nonterminal{queryexp} \nonterminal{sampling}}
+\begin{grammarrule}{reldef}{\nonterminal{residueRefpair}+ \nonterminal{queryexp} \nonterminal{sampling}}
 \end{grammarrule}
-\begin{grammarrule}{condef}{\nonterminal{residueRef} \nonterminal{residueRef}
-    \nonterminal{queryexp} \nonterminal{sampling}}
-  \altrule{\nonterminal{residueRef} \nonterminal{queryexp} \nonterminal{residueRef}
-    \nonterminal{queryexp} \nonterminal{queryexp} \nonterminal{sampling}}
+\begin{grammarrule}{exploreparam}{\token{STRING} \token{FLOAT}}
 \end{grammarrule}
-\begin{grammarrule}{pairdef}{\nonterminal{residueRef} \nonterminal{residueRef}
-    \nonterminal{queryexp} \nonterminal{sampling}}
-  \altrule{\nonterminal{residueRef} \nonterminal{queryexp} \nonterminal{residueRef}
-    \nonterminal{queryexp} \nonterminal{queryexp} \nonterminal{sampling}}
+\begin{grammarrule}{residueRefpair}{\nonterminal{residueRef}
+    \nonterminal{residueRef}}
+  \altrule{\nonterminal{residueRef} \terminal{-} \nonterminal{residueRef}}
 \end{grammarrule}
 \begin{grammarrule}{sampling}{\token{FLOAT} \terminal{\%}}
   \altrule{\token{INTEGER}}
 \end{grammarrule}
-\begin{grammarrule}{model filter}{\terminal{rmsd} \terminal{(} \token{INTEGER}
-    \terminal{align}? \nonterminal{atomset}? \terminal{no\_\,hydrogen}? 
-    \terminal{)}}
+\begin{grammarrule}{modelfilter}{\terminal{rmsd} \terminal{(}
+    \token{FLOAT} \nonterminal{atomset}? \terminal{)}}
 \end{grammarrule}
-\begin{grammarrule}{outputform}{\terminal{file\_pdb} \terminal{(}
-    \token{STRING} \terminal{zipped}? \terminal{)}}
-  \altrule{\terminal{file\_bin} \terminal{(} \token{STRING}
-    \terminal{zipped}? \terminal{)}}
-  \altrule{\terminal{socket\_bin} \terminal{(} \token{STRING}
-    \token{INTEGER} \token{STRING} \terminal{)}}
+\begin{grammarrule}{outputform}{\terminal{pdb} \terminal{(}
+    \token{STRING} \terminal{zipped}? \nonterminal{grouping}? \terminal{)}}
+  \altrule{\terminal{bin} \terminal{(} \token{STRING}
+    \terminal{zipped}? \nonterminal{grouping}? \terminal{)}}
+  \altrule{\terminal{rnaml} \terminal{(} \token{STRING}
+    \terminal{zipped}? \nonterminal{grouping}? \terminal{)}}
+  \altrule{\terminal{socket} \terminal{(} \token{STRING}
+    \token{INTEGER} \token{STRING} \nonterminal{grouping}? \terminal{)}}
 \end{grammarrule}
-\begin{grammarrule}{time limit}{\terminal{time\_\,limit} \terminal{(}
-    \nonterminal{timelimit}+ \terminal{)}}
+\begin{grammarrule}{grouping}{\terminal{single}}
+  \altrule{\terminal{multiple}}
 \end{grammarrule}
-\begin{grammarrule}{timelimit}{\token{INTEGER} \terminal{seconds}}
-  \altrule{\token{INTEGER} \terminal{sec}}
-  \altrule{\token{FLOAT} \terminal{minutes}}
-  \altrule{\token{FLOAT} \terminal{min}}
-  \altrule{\token{FLOAT} \terminal{hours}}
-  \altrule{\token{FLOAT} \terminal{hr}}
-  \altrule{\token{FLOAT} \terminal{days}}
-  \altrule{\token{FLOAT} \terminal{d}}  
+\begin{grammarrule}{timelimit}{\terminal{time\_\,limit} \terminal{(}
+    \nonterminal{timeexp}+ \terminal{)}}
 \end{grammarrule}
-\begin{grammarrule}{backtrack size}{\terminal{backtrack\_\,size} \terminal{(}
-    \token{INTEGER} \token{INTEGER} \terminal{)}}
+\begin{grammarrule}{timeexp}{\token{INTEGER} \token{STRING}}
 \end{grammarrule}
 \begin{biggrammarrule}{angledef}
   {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
@@ -374,9 +382,6 @@ Changes from {\sc mcsym} version 3.2.4:
 \end{biggrammarrule}
 \begin{grammarrule}{fixorvdw}{\terminal{fixed\_\,distance}}
   \altrule{\terminal{vdw\_\,distance}}
-\end{grammarrule}
-\begin{grammarrule}{cycledef}{\nonterminal{residueRef} \nonterminal{residueRef}
-    \token{INTEGER} \token{FLOAT}}
 \end{grammarrule}
 \begin{biggrammarrule}{distdef}
   {\nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
@@ -393,17 +398,11 @@ Changes from {\sc mcsym} version 3.2.4:
     \nonterminal{residueRef} \terminal{:} \nonterminal{atomRef}
     \token{FLOAT} \token{FLOAT}}
 \end{biggrammarrule}
-\begin{grammarrule}{resortfo}{\terminal{res}}
-  \altrule{\terminal{tfo}}
+\begin{grammarrule}{cutoff}{\terminal{cutoff} \token{FLOAT}}
+  \altrule{\terminal{cutoff} \nonterminal{cutoff class}+}
 \end{grammarrule}
-\begin{grammarrule}{addpdbdefs}{\nonterminal{cutoff}? \token{STRING}+}
-\end{grammarrule}
-\begin{grammarrule}{cutoff}{\nonterminal{tfo} \nonterminal{cfo}?}
-  \altrule{\nonterminal{cfo} \nonterminal{tfo}?}
-\end{grammarrule}
-\begin{grammarrule}{tfo}{\terminal{tfo\_\,cutoff} \token{FLOAT}}
-\end{grammarrule}
-\begin{grammarrule}{cfo}{\terminal{confo\_\,cutoff} \token{FLOAT}}
+\begin{grammarrule}{cutoff class}{\token{STRING} \terminal{=}
+    \token{FLOAT}}
 \end{grammarrule}
 \begin{grammarrule}{queryexp}{\terminal{\{} \nonterminal{filename}*
     \nonterminal{queryorexp}? \terminal{\}}}
@@ -430,75 +429,49 @@ Changes from {\sc mcsym} version 3.2.4:
   \altrule{\terminal{(} \nonterminal{queryorexp} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{fgexp}{\terminal{backtrack} \terminal{(} \nonterminal{fgRef}?
-    \nonterminal{res\_\,place}+ \terminal{)}}
+    \nonterminal{resplace}+ \terminal{)}}
   \altrule{\terminal{cache} \terminal{(} \nonterminal{fgRef}
-    \nonterminal{model filter} \terminal{)}}
+    \nonterminal{modelfilter}? \terminal{)}}
   \altrule{\terminal{library} \terminal{(} \nonterminal{inputform}
-    \nonterminal{libopt}* \terminal{)}}
-  \altrule{\terminal{moses} \terminal{(} \nonterminal{resrange}? \nonterminal{ctfileid}?
-    \nonterminal{mosesqueries} \nonterminal{mfold\_epc}? \nonterminal{mfold\_win}?
-    \nonterminal{mfold\_output}? \terminal{)}}
+    \nonterminal{libopt}* \terminal{as\_is}? \terminal{)}}
 \end{grammarrule}
-\begin{grammarrule}{res\_\,place}{\terminal{(} \nonterminal{residueRef}
+\begin{grammarrule}{resplace}{\terminal{(} \nonterminal{residueRef}
     \nonterminal{residueRef}* \terminal{)}}
   \altrule{\terminal{place} \terminal{(} \nonterminal{residueRef}
     \nonterminal{residueRef} \nonterminal{fgRef} \terminal{)}}
+  \altrule{\terminal{merge} \terminal{(} \nonterminal{fgRef}
+    \token{FLOAT} \nonterminal{atomset}? \terminal{)}}
 \end{grammarrule}
-\begin{grammarrule}{inputform}{\terminal{file\_pdb} \terminal{(}
+\begin{grammarrule}{inputform}{\terminal{pdb} \terminal{(}
     \token{STRING} \terminal{)}}
-  \altrule{\terminal{file\_bin} \terminal{(} \token{STRING} \terminal{)}}
-  \altrule{\terminal{socket\_bin} \terminal{(} \token{STRING}
+  \altrule{\terminal{bin} \terminal{(} \token{STRING} \terminal{)}}
+  \altrule{\terminal{rnaml} \terminal{(} \token{STRING} \terminal{)}}
+  \altrule{\terminal{socket} \terminal{(} \token{STRING}
     \token{INTEGER} \token{STRING} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{libopt}{\terminal{strip} \terminal{(}
     \nonterminal{residueRef}+ \terminal{)}}
-  \altrule{\terminal{change\_\,id} \terminal{(} \token{STRING} \terminal{,}
-    \token{STRING} \terminal{)}}
+  \altrule{\terminal{change\_\,id} \terminal{(}
+    \nonterminal{residueRef} \terminal{,} \nonterminal{residueRef}
+    \terminal{)}}
+  \altrule{\terminal{change\_\,id} \terminal{(}
+    \token{STRING} \terminal{,} \token{STRING} \terminal{)}}
 \end{grammarrule}
-\begin{grammarrule}{resrange}{\token{RESNAME} \terminal{-} \token{RESNAME}}
-  \altrule{\token{INTEGER} \terminal{-} \token{INTEGER}}
+\begin{grammarrule}{atomset}{\nonterminal{atomsetor}}
 \end{grammarrule}
-\begin{grammarrule}{ctfileid}{\terminal{sec\_struct} \terminal{(}
-    \token{INTEGER} \terminal{)}}
+\begin{grammarrule}{atomsetor}{\nonterminal{atomsetand}}
+  \altrule{\nonterminal{atomsetor} \terminal{\boldmath{$||$}}
+    \nonterminal{atomsetand}}
 \end{grammarrule}
-\begin{grammarrule}{mosesqueries}{\terminal{cgau\_resdef}? \terminal{gu\_resdef}?
-    \terminal{loop\_resdef}? \terminal{stem\_condef}? \terminal{loop\_condef}? 
-    \terminal{cgau\_pairdef}? \terminal{gu\_pairdef}?} 
+\begin{grammarrule}{atomsetand}{\nonterminal{atomsetnot}}
+  \altrule{\nonterminal{atomsetand} \terminal{\&\&}
+    \nonterminal{atomsetnot}}
 \end{grammarrule}
-\begin{grammarrule}{cgau\_resdef}{\terminal{stem\_cg\_au\_residue} \nonterminal{queryexp}
-    \nonterminal{sampling}}
+\begin{grammarrule}{atomsetnot}{\nonterminal{atomsetident}}
+  \altrule{\terminal{!} \nonterminal{atomsetnot}}
 \end{grammarrule}
-\begin{grammarrule}{gu\_resdef}{\terminal{stem\_gu\_residue} \nonterminal{queryexp}
-    \nonterminal{sampling}}
-\end{grammarrule}
-\begin{grammarrule}{loop\_resdef}{\terminal{loop\_residue} \nonterminal{queryexp}
-    \nonterminal{sampling}}
-\end{grammarrule}
-\begin{grammarrule}{stem\_condef}{\terminal{stem\_connect} \nonterminal{queryexp}
-    \nonterminal{sampling}}
-\end{grammarrule}
-\begin{grammarrule}{loop\_condef}{\terminal{loop\_connect} \nonterminal{queryexp}
-    \nonterminal{sampling}}
-\end{grammarrule}
-\begin{grammarrule}{cgau\_pairdef}{\terminal{stem\_cg\_au\_pair} \nonterminal{queryexp}
-    \nonterminal{sampling}}
-\end{grammarrule}
-\begin{grammarrule}{gu\_pairdef}{\terminal{stem\_gu\_pair} \nonterminal{queryexp}
-    \nonterminal{sampling}}
-\end{grammarrule}
-\begin{grammarrule}{mfold\_epc}{\terminal{mfold\_epc} \terminal{(}
-    \token{INTEGER} \terminal{\%} \terminal{)}}
-\end{grammarrule}
-\begin{grammarrule}{mfold\_win}{\terminal{mfold\_win} \terminal{(}
-    \token{INTEGER} \terminal{)}}
-\end{grammarrule}
-\begin{grammarrule}{mfold\_output}{\terminal{mfold\_output} \terminal{(}
-    \token{STRING} \terminal{)}}
-\end{grammarrule}
-\begin{grammarrule}{atomset}{\terminal{all}}
-  \altrule{\terminal{base\_\,only}}
-  \altrule{\terminal{backbone\_\,only}}
-  \altrule{\terminal{pse\_\,only}}
+\begin{grammarrule}{atomsetident}{\token{IDENT}}
+  \altrule{\terminal{(} \nonterminal{atomsetor} \terminal{)}}
 \end{grammarrule}
 \begin{grammarrule}{residueRef}{\token{INTEGER}}
   \altrule{\token{RESNAME}}

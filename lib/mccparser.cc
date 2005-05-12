@@ -606,8 +606,6 @@ MccAddPdbStat::_AddPdbStruc::ppdisplay (ostream &os, int indent) const
 MccAddPdbStat::MccAddPdbStat (const MccAddPdbStat &right)
   : strucs (new vector< _AddPdbStruc* > ()),
     cutoffs_asp (new map< char, float > (*right.cutoffs_asp))
-//     standard_cutoff (right.standard_cutoff),
-//     adjacent_cutoff (right.adjacent_cutoff)
 {
   vector< _AddPdbStruc* >::const_iterator cit;
   
@@ -637,9 +635,6 @@ MccAddPdbStat::operator= (const MccAddPdbStat &right)
   {
     vector< _AddPdbStruc* >::const_iterator cit;
     vector< _AddPdbStruc* >::iterator it;
-
-//     standard_cutoff = right.standard_cutoff;
-//     adjacent_cutoff = right.adjacent_cutoff;
 
     for (it = strucs->begin (); it != strucs->end (); ++it)
       delete *it;
@@ -679,10 +674,6 @@ MccAddPdbStat::display (ostream &os) const
       os << ' ' << cit->first << " = " << cit->second;
   }
 
-//   if (standard_cutoff >= 0.0)
-//     os << " cutoff " << standard_cutoff;
-//   if (adjacent_cutoff >= 0.0)
-//     os << ' ' << adjacent_cutoff;
   for (it = strucs->begin (); it != strucs->end (); ++it)
     (*it)->display (os << ' ');
   os << ')';
@@ -699,14 +690,6 @@ MccAddPdbStat::ppdisplay (ostream &os, int indent) const
   os << "add_pdb" << endl;
   whitespaces (os, indent + 2);
   os << '(';
-//   if (standard_cutoff >= 0.0)
-//   {
-//     os << endl;
-//     whitespaces (os, indent + 2);
-//     os << "cutoff " << standard_cutoff;
-//     if (adjacent_cutoff >= 0.0)
-//       os << ' ' << adjacent_cutoff;
-//   }
   if (!this->cutoffs_asp->empty ())
   {
     whitespaces (os, indent + 4);
@@ -1258,6 +1241,62 @@ MccBacktrackExpr::_PlaceStruc::ppdisplay (ostream &os, int indent) const
 }
 
 
+void
+MccBacktrackExpr::_MergeStruc::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+
+MccBacktrackExpr::_MergeStruc&
+MccBacktrackExpr::_MergeStruc::operator= (const MccBacktrackExpr::_MergeStruc &right)
+{
+  if (this != &right)
+  {
+    MccBacktrackExpr::_GenBTStruc::operator= (right);
+
+    rmsBound = right.rmsBound;
+    if (this->atomset)
+    {
+      delete this->atomset;
+      this->atomset = 0;
+    }
+    if (right.atomset)
+      this->atomset = right.atomset->clone ();
+  }
+  return *this;
+}
+
+
+
+void
+MccBacktrackExpr::_MergeStruc::display (ostream &os) const
+{
+  os << "merge (";
+  fg_struc->display (os);
+  os << ' ' << rmsBound;
+  if (this->atomset)
+    this->atomset->display (os);
+  os << ')';
+}
+
+
+
+void
+MccBacktrackExpr::_MergeStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  os << "merge (";
+  fg_struc->display (os);
+  os << ' ' << rmsBound;
+  if (this->atomset)
+    this->atomset->display (os);
+  os << ')';
+}
+
+
 
 MccBacktrackExpr::MccBacktrackExpr (const MccBacktrackExpr &right)
   : strucs (new vector< MccBacktrackExpr::_GenBTStruc* > ())
@@ -1736,6 +1775,27 @@ MccMultimerCstStat::ppdisplay (ostream &os, int indent) const
 }
 
 
+void
+MccDisplayDBStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccDisplayDBStat::display (ostream &os) const
+{
+  os << "display_db";
+}
+
+
+void
+MccDisplayDBStat::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  os << "display_db";
+}
+
 
 MccDisplayFGStat::MccDisplayFGStat (const MccDisplayFGStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc))
@@ -1952,7 +2012,8 @@ MccEnvStat::ppdisplay (ostream &os, int indent) const
 
 MccFilePdbOutput::MccFilePdbOutput (const MccFilePdbOutput &right)
   : form (strdup (right.form)),
-    zipped (right.zipped)
+    zipped (right.zipped),
+    mult_file (right.mult_file)
 { }
 
 
@@ -1965,6 +2026,7 @@ MccFilePdbOutput::operator= (const MccFilePdbOutput &right)
     delete[] form;
     form = strdup (right.form);
     zipped = right.zipped;
+    mult_file = right.mult_file;
   }
   return *this;
 }
@@ -1983,8 +2045,12 @@ void
 MccFilePdbOutput::display (ostream &os) const
 {
   os << "file_pdb (\"" << form << "\"";
-  if (zipped)
+  if (zipped) 
     os << " zipped";
+  if (mult_file) 
+    os << " multiple";
+  else 
+    os << " single";
   os << ")";
 }
 
@@ -1992,7 +2058,8 @@ MccFilePdbOutput::display (ostream &os) const
 
 MccFileBinaryOutput::MccFileBinaryOutput (const MccFileBinaryOutput &right)
   : form (strdup (right.form)),
-    zipped (right.zipped)
+    zipped (right.zipped),
+    mult_file (right.mult_file)
 { }
 
 
@@ -2005,6 +2072,7 @@ MccFileBinaryOutput::operator= (const MccFileBinaryOutput &right)
     delete[] form;
     form = strdup (right.form);
     zipped = right.zipped;
+    mult_file = right.mult_file;
   }
   return *this;
 }
@@ -2025,6 +2093,10 @@ MccFileBinaryOutput::display (ostream &os) const
   os << "file_bin (\"" << form << "\"";
   if (zipped)
     os << " zipped";
+  if (mult_file) 
+    os << " multiple";
+  else 
+    os << " single";
   os << ")";
 }
 
@@ -2033,7 +2105,8 @@ MccFileBinaryOutput::display (ostream &os) const
 MccSocketBinaryOutput::MccSocketBinaryOutput (const MccSocketBinaryOutput &right)
   : serverName (strdup (right.serverName)),
     port (right.port),
-    modelName (strdup (right.modelName))
+    modelName (strdup (right.modelName)),
+    mult_file (right.mult_file)
 { }
 
 
@@ -2048,6 +2121,7 @@ MccSocketBinaryOutput::operator= (const MccSocketBinaryOutput &right)
     port = right.port;
     delete[] modelName;
     modelName = strdup (right.modelName);
+    mult_file = right.mult_file;
   }
   return *this;
 }
@@ -2066,55 +2140,20 @@ void
 MccSocketBinaryOutput::display (ostream &os) const
 {
   os << "socket_bin (\"" << serverName << "\" " << port
-     << " \"" << modelName << "\")";
-}
-
-
-
-MccSocketPdbOutput::MccSocketPdbOutput (const MccSocketPdbOutput &right)
-  : serverName (strdup (right.serverName)),
-    port (right.port),
-    modelName (strdup (right.modelName))
-{ }
-
-
-
-MccSocketPdbOutput&
-MccSocketPdbOutput::operator= (const MccSocketPdbOutput &right)
-{
-  if (this != &right)
-  {
-    delete[] serverName;
-    serverName = strdup (right.serverName);
-    port = right.port;
-    delete[] modelName;
-    modelName = strdup (right.modelName);
-  }
-  return *this;
-}
-
-
-
-void
-MccSocketPdbOutput::accept (MccVisitor *visitor)
-{
-  visitor->visit (this);
-}
-
-
-
-void
-MccSocketPdbOutput::display (ostream &os) const
-{
-  os << "socket_pdb (\"" << serverName << "\" " << port
-     << " \"" << modelName << "\")";
+     << " \"" << modelName << "\"";
+  if (mult_file) 
+    os << " multiple";
+  else 
+    os << " single";
+  os << ")";
 }
 
 
 
 MccFileRnamlOutput::MccFileRnamlOutput (const MccFileRnamlOutput &right)
   : name (strdup (right.name)),
-    zipped (right.zipped)
+    zipped (right.zipped),
+    mult_file (right.mult_file)
 { }
 
 
@@ -2127,6 +2166,7 @@ MccFileRnamlOutput::operator= (const MccFileRnamlOutput &right)
     delete[] name;
     name = strdup (right.name);
     zipped = right.zipped;
+    mult_file = right.mult_file;
   }
   return *this;
 }
@@ -2147,6 +2187,10 @@ MccFileRnamlOutput::display (ostream &os) const
   os << "file_rnaml (\"" << name << "\"";
   if (zipped)
     os << " zipped";
+  if (mult_file) 
+    os << " multiple";
+  else 
+    os << " single";
   os << ")";
 }
 
@@ -3425,7 +3469,12 @@ MccRMSDModelFilter::display (ostream &os) const
 void
 MccRMSDModelFilter::ppdisplay (ostream &os, int indent) const
 {
-  display (os);
+  os << endl;
+  whitespaces (os, indent);
+  os << "rmsd (" << rmsBound;
+  if (this->atomset)
+    this->atomset->display (os);
+  os << ")";
 }
 
 

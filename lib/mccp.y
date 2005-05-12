@@ -21,6 +21,8 @@
 
   using namespace std;
 
+  #define YYERROR_VERBOSE 1
+
   extern int mcclex ();
   extern int mcclineno;
   int mccerror (const char *s);
@@ -34,7 +36,7 @@
   float floatval;
   pair< char, float >* cutoffval;
   map< char, float >* cutoffmap;
-  //pair< float, float >* twofloatval;
+  //pair< bool, bool >* twoboolval;
   char *textval;
   MccPStruct *mccval;
   vector< MccPStruct* > *vmccval;
@@ -101,6 +103,7 @@
 %token TOK_CHANGEID
 %token TOK_CUTOFF
 %token TOK_CYCLE
+%token TOK_DISPLAYDB
 %token TOK_DISPLAYFG
 %token TOK_DISTANCE
 %token TOK_ENV
@@ -108,17 +111,19 @@
 %token TOK_FILENAME
 %token TOK_FIXEDDIST
 %token TOK_LIBRARY
+%token TOK_MERGE
 %token TOK_MULTIMER
+%token TOK_MULTIPLE
 %token TOK_NEWTAG
 %token TOK_NOTE
 %token TOK_NOTES
-%token TOK_FILE_BINARY
-%token TOK_FILE_PDB
-%token TOK_FILE_RNAML
+%token TOK_BINARY
+%token TOK_PDB
+%token TOK_RNAML
 %token TOK_PLACE
 %token TOK_PSEATOMS
 %token TOK_QUIT
-%token TOK_RELATION
+%token TOK_RELATIONCST
 %token TOK_RELATIONS
 %token TOK_REMARK
 %token TOK_CLASH
@@ -127,8 +132,8 @@
 %token TOK_RESTORE
 %token TOK_RMSD
 %token TOK_SEQUENCE
-%token TOK_SOCKET_BINARY
-%token TOK_SOCKET_PDB
+%token TOK_SINGLE
+%token TOK_SOCKET
 %token TOK_SOURCE
 %token TOK_STRIP
 %token TOK_TIMELIMIT
@@ -148,8 +153,6 @@
 %token <textval> TOK_IDENT
 %token <textval> TOK_QUOTED_IDENT
 %token <textval> TOK_STRING
-%token <charval> TOK_CHAR
-
 
 %type <mccval> statement
 %type <mccval> sequence
@@ -171,6 +174,7 @@
 %type <intval>  timelimit_plus
 %type <intval> timelimit
 %type <boolval> zfile_opt
+%type <boolval> mfile_opt
 %type <mccval> source
 %type <mccval> baseAdjCst
 %type <mccval> riboAdjCst
@@ -198,6 +202,7 @@
 %type <cutoffmap> cutoff_plus
 %type <cutoffmap> cutoff_opt
 %type <textv> pdbfile_plus
+%type <mccval> displaydb
 %type <mccval> displayfg
 %type <mccval> env
 %type <mccval> note
@@ -289,6 +294,7 @@ statement:   sequence { $$ = $1; }
            | torsionCst { $$ = $1; }
            | newtag { $$ = $1; }
            | addpdb { $$ = $1; }
+           | displaydb { $$ = $1; }
            | displayfg { $$ = $1; }
            | env { $$ = $1; }
            | note { $$ = $1; }
@@ -444,25 +450,21 @@ output_mode_opt:   /* empty */ { $$ = 0; }
 
 output_mode:  
 
-TOK_FILE_PDB TOK_LPAREN TOK_STRING zfile_opt TOK_RPAREN
+TOK_PDB TOK_LPAREN TOK_STRING zfile_opt mfile_opt TOK_RPAREN
 {
-  $$ = new MccFilePdbOutput ($3, $4);
+  $$ = new MccFilePdbOutput ($3, $4, $5);
 }
-| TOK_FILE_BINARY TOK_LPAREN TOK_STRING zfile_opt TOK_RPAREN
+| TOK_BINARY TOK_LPAREN TOK_STRING zfile_opt mfile_opt TOK_RPAREN
 {
-  $$ = new MccFileBinaryOutput ($3, $4);
+  $$ = new MccFileBinaryOutput ($3, $4, $5);
 }
-| TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
+| TOK_RNAML TOK_LPAREN TOK_STRING zfile_opt mfile_opt TOK_RPAREN
 {
-  $$ = new MccSocketBinaryOutput ($3, $4, $5);
+  $$ = new MccFileRnamlOutput ($3, $4, $5);
 }
-| TOK_SOCKET_PDB TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
+| TOK_SOCKET TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING mfile_opt TOK_RPAREN
 {
-  $$ = new MccSocketPdbOutput ($3, $4, $5);
-}
-| TOK_FILE_RNAML TOK_LPAREN TOK_STRING zfile_opt TOK_RPAREN
-{
-  $$ = new MccFileRnamlOutput ($3, $4);
+  $$ = new MccSocketBinaryOutput ($3, $4, $5, $6);
 }
 ;
 
@@ -504,21 +506,32 @@ timelimit
 
 timelimit:
 
-TOK_INTEGER TOK_SEC
+TOK_INTEGER TOK_STRING
 {
-  $$ = $1;
-}
-| flt TOK_MIN
-{
-  $$ = (int)rint ($1 * 60.0);
-}
-| flt TOK_HR
-{
-  $$ = (int)rint ($1 * 3600.0);
-}
-| flt TOK_DAY
-{
-  $$ = (int)rint ($1 * 86400.0);
+  $$ = 0;
+  switch ($2[0])
+  {
+  case 's':
+  case 'S':
+    $$ = $1; 
+    break;
+  case 'm':
+  case 'M':
+    $$ = $1 * 60;
+    break;
+  case 'h':
+  case 'H':
+    $$ = $1 * 3600; 
+    break;
+  case 'd':
+  case 'D':
+    $$ = $1 * 86400; 
+    break;
+  default:
+    delete[] $2;
+    mccerror ("unknown time expression");
+  }
+  delete[] $2;
 }
 ;
 
@@ -527,6 +540,11 @@ zfile_opt:   /* empty */ { $$ = false; }
            | TOK_ZIPPED { $$ = true; }
 ;
 
+
+mfile_opt:
+/* empty */    { $$ = true; }
+| TOK_SINGLE   { $$ = false; }
+| TOK_MULTIPLE { $$ = true; }
 
 
 source:   TOK_SOURCE TOK_LPAREN TOK_STRING TOK_RPAREN
@@ -718,7 +736,7 @@ distdef:   residueRef TOK_COLON atomRef residueRef TOK_COLON atomRef flt flt
 ;
 
 
-relationCst:   TOK_RELATION TOK_LPAREN relationdef_plus TOK_RPAREN
+relationCst:   TOK_RELATIONCST TOK_LPAREN relationdef_plus TOK_RPAREN
                {
 		 $$ = new MccRelationCstStat ($3);
 	       }
@@ -779,8 +797,7 @@ newtag:   TOK_NEWTAG TOK_LPAREN TOK_STRING queryexp_plus TOK_RPAREN
 
 addpdb:   TOK_ADDPDB TOK_LPAREN cutoff_opt addpdbdefs_plus TOK_RPAREN
            {
-	     $$ = new MccAddPdbStat ($4, $3);
-	     delete $3;
+	     $$ = new MccAddPdbStat ($3, $4);
 	   }
 ;
 
@@ -802,23 +819,6 @@ addpdbdefs:   pdbfile_plus
 		 $$ = new MccAddPdbStat::_AddPdbStruc ($1);
 	       }
 ;
-
-
-// cutoff_opt:
-
-// /* empty */
-// { 
-//   $$ = new pair< float, float > (-1.0, -1.0); 
-// }
-// | TOK_CUTOFF flt 
-// { 
-//   $$ = new pair< float, float > ($2, -1.0); 
-// }
-// | TOK_CUTOFF flt flt 
-// { 
-//   $$ = new pair< float, float > ($2, $3); 
-// }
-// ;
 
 
 cutoff_opt:
@@ -860,9 +860,10 @@ cutoff
 
 cutoff:
 
-TOK_CHAR TOK_ASSIGN flt
+TOK_IDENT TOK_ASSIGN flt
 {
-  $$ = new pair< char, float > ($1, $3);
+  $$ = new pair< char, float > ($1[0], $3);
+  delete[] $1;
 }
 ;
 
@@ -878,6 +879,11 @@ pdbfile_plus:   TOK_STRING
 		 }
 ;
 
+displaydb:   TOK_DISPLAYDB
+              {
+		$$ = new MccDisplayDBStat ();
+	      }
+;
 
 displayfg:   TOK_DISPLAYFG TOK_LPAREN fgRef TOK_RPAREN
               {
@@ -1052,6 +1058,10 @@ res_place:  TOK_LPAREN residueRef residueRef_star TOK_RPAREN
              {
 	       $$ = new MccBacktrackExpr::_PlaceStruc ($3, $4, $5);
 	     }
+          | TOK_MERGE TOK_LPAREN fgRef flt atomset_opt TOK_RPAREN
+             {
+	       $$ = new MccBacktrackExpr::_MergeStruc ($3, $4, $5);
+	     }
 ;
 
 
@@ -1080,19 +1090,19 @@ TOK_LIBRARY TOK_LPAREN input_mode libopt_star asis_opt TOK_RPAREN
 
 input_mode:
 
-TOK_FILE_BINARY TOK_LPAREN TOK_STRING TOK_RPAREN
+TOK_BINARY TOK_LPAREN TOK_STRING TOK_RPAREN
 {
   $$ = new MccFileBinaryInput ($3);
 }
-| TOK_FILE_PDB TOK_LPAREN TOK_STRING TOK_RPAREN
+| TOK_PDB TOK_LPAREN TOK_STRING TOK_RPAREN
 {
   $$ = new MccFilePdbInput ($3);
 }
-| TOK_SOCKET_BINARY TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
+| TOK_SOCKET TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
 {
   $$ = new MccSocketBinaryInput ($3, $4, $5);
 }
-| TOK_FILE_RNAML TOK_LPAREN TOK_STRING TOK_RPAREN
+| TOK_RNAML TOK_LPAREN TOK_STRING TOK_RPAREN
 {
   $$ = new MccFileRnamlInput ($3);
 }
@@ -1215,6 +1225,6 @@ int
 mccerror (const char *s)
 {
   ParserException ex ("Parse error at line ");
-  ex << mcclineno;
+  ex << (mcclineno + 1) << ": " << s;
   throw ex;
 }

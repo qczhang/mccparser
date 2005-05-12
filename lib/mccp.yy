@@ -88,22 +88,25 @@ cache            return TOK_CACHE;
 change_id        return TOK_CHANGEID;
 cutoff           return TOK_CUTOFF;
 cycle            return TOK_CYCLE;
+display_db       return TOK_DISPLAYDB;
 display_fg       return TOK_DISPLAYFG;
 distance         return TOK_DISTANCE;
 env              return TOK_ENV;
 explore          return TOK_EXPLORE;
-file_bin         return TOK_FILE_BINARY;
-file_pdb         return TOK_FILE_PDB;
-file_rnaml       return TOK_FILE_RNAML;
+bin              return TOK_BINARY;
+pdb              return TOK_PDB;
+rnaml            return TOK_RNAML;
 fixed_distance   return TOK_FIXEDDIST;
 library          return TOK_LIBRARY;
+merge            return TOK_MERGE;
 multimer         return TOK_MULTIMER;
+multiple         return TOK_MULTIPLE;
 new_tag          return TOK_NEWTAG;
 note             return TOK_NOTE;
 notes            return TOK_NOTES;
 place            return TOK_PLACE;
 quit             return TOK_QUIT;
-relation         return TOK_RELATION;
+relation_cst     return TOK_RELATIONCST;
 relations        return TOK_RELATIONS;
 remark           return TOK_REMARK;
 clash            return TOK_CLASH;
@@ -112,8 +115,8 @@ reset_db         return TOK_RESETDB;
 restore          return TOK_RESTORE;
 rmsd             return TOK_RMSD;
 sequence         return TOK_SEQUENCE;
-socket_bin       return TOK_SOCKET_BINARY;
-socket_pdb       return TOK_SOCKET_PDB;
+single           return TOK_SINGLE;
+socket           return TOK_SOCKET;
 source           return TOK_SOURCE;
 strip            return TOK_STRIP;
 time_limit       return TOK_TIMELIMIT;
@@ -121,17 +124,7 @@ torsion          return TOK_TORSION;
 vdw_distance     return TOK_VDWDIST;
 version          return TOK_VERSION;
 zipped           return TOK_ZIPPED;
-sec              return TOK_SEC;
-seconds          return TOK_SEC;
-min              return TOK_MIN;
-minutes          return TOK_MIN;
-hr               return TOK_HR;
-hours            return TOK_HR;
-days             return TOK_DAY;
-d                return TOK_DAY;
 
-
-{LETTER}        mcclval.charval = mcctext[0]; return TOK_CHAR; 
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
 
@@ -150,6 +143,7 @@ d                return TOK_DAY;
                                        mcclval.textval = mcccopy (mcctext);
 				       return TOK_IDENT;
                                      }
+
 
 
            /** Definition of QUOTES indentifiers.  */

@@ -48,7 +48,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 	      [ -s $@ ] || rm -f $@'
 
 %.o: %.cc
-	$(CXX) $(CXXFLAGS) -I$(srcdir) $(DEFS) -c $<
+	$(CXX) $(CXXFLAGS) -I.. -I$(srcdir) $(DEFS) -c $<
 
 % : %.o
 % : %.cc
@@ -56,7 +56,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
 LEXERPREFIX = mcc
 
-SOURCES = mccparser.cc
+SOURCES = mccparser.cc Version.cc
 
 CSOURCES = lex.$(LEXERPREFIX).c y.tab.c
 
@@ -87,7 +87,7 @@ lex.$(LEXERPREFIX).c: mccp.yy
 	$(LEX) -P$(LEXERPREFIX) $<
 
 y.tab.c y.tab.h: mccp.y
-	$(YACC) -p $(LEXERPREFIX) -d $^
+	$(YACC) -p $(LEXERPREFIX) -d -t --report=all $^
 
 lex.$(LEXERPREFIX).o: lex.$(LEXERPREFIX).c y.tab.h
 	$(CXX) $(CXXFLAGS) -I. -I$(srcdir) $(DEFS) -c $<

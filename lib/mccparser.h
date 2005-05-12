@@ -1874,16 +1874,6 @@ struct MccAddPdbStat : public MccPStruct
   
   map< char, float >* cutoffs_asp;
 
-  /**
-   * The standard cutoff value for relations' annotation.
-   */
-  //float standard_cutoff;
-
-  /**
-   * The cutoff value for adjacent relations only.
-   */
-  //float adjacent_cutoff;
-
   // LIFECYCLE ------------------------------------------------------------
 
   /**
@@ -1892,8 +1882,6 @@ struct MccAddPdbStat : public MccPStruct
   MccAddPdbStat ()
     : strucs (new vector< _AddPdbStruc* > ()),
       cutoffs_asp (new map< char, float > ())
-//       standard_cutoff (-1.0),
-//       adjacent_cutoff (-1.0)
   { }
 
   /**
@@ -1901,13 +1889,10 @@ struct MccAddPdbStat : public MccPStruct
    * @param apsv the add_pdb sub-structure vector.
    * @param cut the cutoff value.
    */
-  MccAddPdbStat (vector< _AddPdbStruc* > *apsv, 
-		 map< char, float >* cutmap)
-//float scut, float acut)
+  MccAddPdbStat (map< char, float >* cutmap,
+		 vector< _AddPdbStruc* > *apsv)
     : strucs (apsv),
       cutoffs_asp (cutmap)
-//       standard_cutoff (scut),
-//       adjacent_cutoff (acut)
   { }
 
   /**
@@ -2816,6 +2801,105 @@ struct MccBacktrackExpr : public MccFGExp
   };
 
   /**
+   * @short Struct containing the placement of a FG by merging shared residues.
+   *
+   * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+   */
+  struct _MergeStruc : public _GenBTStruc
+  {
+    /**
+     * The rms bound.
+     */
+    float rmsBound;
+    
+    /**
+     * The atomset filter expression.
+     */
+    MccASFunc* atomset;
+
+    // LIFECYCLE ------------------------------------------------------------
+
+  private:
+    /**
+     * Initializes the object. It should never be used.
+     */
+    _MergeStruc () : _GenBTStruc () { }
+  public:
+
+    /**
+     * Initializes the object.
+     * @param fg the FG structure.
+     * @param rb the rms bound.
+     * @param asfn atomset filter expression.
+     */
+    _MergeStruc (MccFragGenStruc *fg, float rb, MccASFunc* asfn)
+      : _GenBTStruc (0, 0, fg, 0),
+	rmsBound (rb), 
+	atomset (asfn) 
+    { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _MergeStruc (const _MergeStruc &right) 
+      : _GenBTStruc (right),
+	rmsBound (right.rmsBound),
+	atomset (0 == right.atomset ? right.atomset : right.atomset->clone ())
+    { }
+    
+    /**
+     * Destroys the object.
+     */
+    virtual ~_MergeStruc () 
+    { 
+      delete fg_struc; 
+      if (atomset) delete atomset;
+    }
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    _MergeStruc& operator= (const _MergeStruc &right);
+    
+    // ACCESS ---------------------------------------------------------------
+    
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    virtual _MergeStruc* clone () const { return new _MergeStruc (*this); }
+    
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    virtual void accept (MccVisitor *visitor);
+    
+    // I/O ------------------------------------------------------------------
+    
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    virtual void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    virtual void ppdisplay (ostream &os, int indent = 0) const;
+  };
+
+
+  /**
    * The vector containing the different backtrack sub-structures.
    */
   vector< _GenBTStruc* > *strucs;
@@ -3385,6 +3469,73 @@ struct MccMultimerCstStat : public MccPStruct
 };
 
 
+/**
+ * @short Struct representing the AST node "display_db" statement.
+ *
+ * @author Philippe Thibault <thibaup@iro.umontreal.ca>
+ */
+struct MccDisplayDBStat : public MccPStruct
+{
+
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccDisplayDBStat () { }
+
+  /**
+   * Initializes the object with the right struct.
+   * @param right the struct to copy.
+   */
+  MccDisplayDBStat (const MccDisplayDBStat &right) { }
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccDisplayDBStat () {  }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccDisplayDBStat& operator= (const MccDisplayDBStat &right) { return *this; }
+
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccDisplayDBStat* clone () const { return new MccDisplayDBStat (*this); }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
 
 /**
  * @short Struct representing the AST node "display_fg" statement.
@@ -3821,6 +3972,7 @@ struct MccFilePdbOutput : public MccOutputMode
    */
   bool zipped;
 
+  bool mult_file;
 
   // LIFECYCLE ------------------------------------------------------------
 
@@ -3838,7 +3990,7 @@ public:
    * @param f the C form that will be used for file output.
    * @param z the boolean indicating if the files will be zipped.
    */
-  MccFilePdbOutput (char *f, bool z) : form (f), zipped (z) { }
+  MccFilePdbOutput (char *f, bool z, bool m) : form (f), zipped (z), mult_file (m) { }
 
   /**
    * Initializes the object with the rights content.
@@ -3911,6 +4063,8 @@ struct MccFileBinaryOutput : public MccOutputMode
    */
   bool zipped;
 
+  bool mult_file;
+
 
   // LIFECYCLE ------------------------------------------------------------
 
@@ -3928,7 +4082,7 @@ public:
    * @param f the C form that will be used for file output.
    * @param z the boolean indicating if the files will be zipped.
    */
-  MccFileBinaryOutput (char *f, bool z) : form (f), zipped (z) { }
+  MccFileBinaryOutput (char *f, bool z, bool m) : form (f), zipped (z), mult_file (m) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4007,6 +4161,8 @@ struct MccSocketBinaryOutput : public MccOutputMode
    */
   char *modelName;
 
+  bool mult_file;
+
 protected:
   
   // LIFECYCLE ------------------------------------------------------------
@@ -4020,12 +4176,12 @@ public:
 
   /**
    * Initializes the object.
-   * @param n the server name.
-   * @param p the server port number.
-   * @param m the C form that will be used for the model name.
+   * @param sn the server name.
+   * @param sp the server port number.
+   * @param mn the C form that will be used for the model name.
    */
-  MccSocketBinaryOutput (char *n, int p, char *m)
-    : serverName (n), port (p), modelName (m) { }
+  MccSocketBinaryOutput (char *sn, int sp, char *mn, bool m)
+    : serverName (sn), port (sp), modelName (mn), mult_file (m) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4081,105 +4237,6 @@ public:
 };
 
 
-
-/**
- * @short Class representing the socket pdb option on AST nodes "explore",
- * "exploreLV" and "restore".
- *
- * @author Martin Larose <larosem@iro.umontreal.ca>
- */
-struct MccSocketPdbOutput : public MccOutputMode
-{
-  /**
-   * The server name.
-   */
-  char *serverName;
-
-  /**
-   * The port number.
-   */
-  int port;
-
-  /**
-   * The C form that will be used for the model name.
-   */
-  char *modelName;
-
-protected:
-  
-  // LIFECYCLE ------------------------------------------------------------
-  
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccSocketPdbOutput () { }
-  
-public:
-
-  /**
-   * Initializes the object.
-   * @param n the server name.
-   * @param p the server port number.
-   * @param m the C form that will be used for the model name.
-   */
-  MccSocketPdbOutput (char *n, int p, char *m)
-    : serverName (n), port (p), modelName (m) { }
-
-  /**
-   * Initializes the object with the rights content.
-   * @param right the object to copy.
-   */
-  MccSocketPdbOutput (const MccSocketPdbOutput &right);
-
-  /**
-   * Copies the object.
-   * @return a clone of the current object.
-   */
-  virtual MccOutputMode* clone () const
-  { return new MccSocketPdbOutput (*this); }
-    
-  /**
-   * Destroys the object.
-   */
-  virtual ~MccSocketPdbOutput ()
-  { delete[] serverName; delete[] modelName; }
-
-  // OPERATORS ------------------------------------------------------------
-
-  /**
-   * Assigns the right struct values to the object.
-   * @param right the struct to copy.
-   */
-  MccSocketPdbOutput& operator= (const MccSocketPdbOutput &right);
-
-  // ACCESS ---------------------------------------------------------------
-  
-  // METHODS --------------------------------------------------------------
-
-  /**
-   * Accepts the visitor and calls it on itself.
-   * @param visitor the visitor.
-   */
-  virtual void accept (MccVisitor *visitor);
-
-  // I/O  -----------------------------------------------------------------
-  
-  /**
-   * Displays the structure.
-   * @param os the output stream where the message is displayed.
-   */
-  virtual void display (ostream &os) const;
-
-  /**
-   * Displays the script in human readable form.
-   * @param os the output stream used.
-   * @param ident the identation level.
-   */
-  virtual void ppdisplay (ostream &os, int indent = 0) const { display (os); }
-};
-
-
-
 /**
  * @short Class representing the file option on AST nodes "explore" and
  * "restore".
@@ -4198,6 +4255,8 @@ struct MccFileRnamlOutput : public MccOutputMode
    */
   bool zipped;
 
+  bool mult_file;
+
   // LIFECYCLE ------------------------------------------------------------
 
 protected:
@@ -4214,7 +4273,7 @@ public:
    * @param name the ouput file name.
    * @param z the boolean indicating if the files will be zipped.
    */
-  MccFileRnamlOutput (char *name, bool z) : name (name), zipped (z) { }
+  MccFileRnamlOutput (char *name, bool z, bool m) : name (name), zipped (z), mult_file (m) { }
 
   /**
    * Initializes the object with the rights content.
@@ -5795,7 +5854,7 @@ struct MccQuitStat : public MccPStruct
 
 
 /**
- * @short Struct representing the "relation" statement.
+ * @short Struct representing the "relation_cst" statement.
  *
  * This statement generate constraints between two residues related together
  * by properties.  This struct owns a local struct _RelationStruc
@@ -6973,6 +7032,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void visit (MccBacktrackExpr::_PlaceStruc *struc) = 0;
+
+  /**
+   * Visits the MccBacktrackExpr::_MergeStruc sub-structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccBacktrackExpr::_MergeStruc *struc) = 0;
   
   /**
    * Visits the MccBacktrackExpr structure.
@@ -7010,6 +7075,12 @@ public:
    */
   virtual void visit (MccMultimerCstStat *struc) = 0;
   
+  /**
+   * Visits the MccDisplayDBStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccDisplayDBStat *struc) = 0;
+
   /**
    * Visits the MccDisplayFGStat structure.
    * @param struc the evaluated structure.
@@ -7051,13 +7122,7 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void visit (MccSocketBinaryOutput *struc) = 0;
-  
-  /**
-   * Visits the MccSocketPdbOutput structure.
-   * @param struc the evaluated structure.
-   */
-  virtual void visit (MccSocketPdbOutput *struc) = 0;
-  
+    
   /**
    * Visits the MccFileRnamlOutput structure.
    * @param struc the evaluated structure.
