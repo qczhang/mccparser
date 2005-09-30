@@ -1,0 +1,25 @@
+//                              -*- Mode: C++ -*- 
+// config.h.in
+// Copyright © 2005 Laboratoire de Biologie Informatique et Théorique
+//                  Université de Montréal.
+// Author           : Philippe Thibault <philippe.thibault@umontreal.ca>
+// Created On       : Wed May 11 10:21:50 2005
+// $Revision$
+// $Id$
+// 
+
+#ifndef _mccparser_config_h_
+#define _mccparser_config_h_
+
+
+#undef PACKAGE
+
+#undef VERSION
+
+#undef VERSION_CPU
+
+#undef VERSION_VENDOR
+
+#undef VERSION_OS
+
+#endif
