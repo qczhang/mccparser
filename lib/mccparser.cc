@@ -35,24 +35,13 @@ whitespaces (ostream &os, unsigned int indent)
 }
 
 
-MccFragGenStruc::MccFragGenStruc (const MccFragGenStruc &right)
-  : special_char (right.special_char)
-{
-  ident = new char[strlen (right.ident) + 1];
-  strcpy (ident, right.ident);
-}
-
-
-
 MccFragGenStruc&
 MccFragGenStruc::operator= (const MccFragGenStruc &right)
 {
   if (this != &right)
   {
-    delete ident;
-    ident = new char[strlen (right.ident) + 1];
-    strcpy (ident, right.ident);
-    special_char = right.special_char;
+    this->ident = right.ident;
+    this->special_char = right.special_char;
   }
   return *this;
 }
@@ -98,13 +87,161 @@ MccResidueName::accept (MccVisitor *visitor)
 }
 
 
+MccResidueNamePairs&
+MccResidueNamePairs::operator= (const MccResidueNamePairs& right)
+{
+  if (this != &right)
+  {
+    this->pairs = right.pairs;
+    this->ranges = right.ranges;
+  }
+  return *this;
+}
+
+
+void
+MccResidueNamePairs::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccResidueNamePairs::add (const MccResidueNamePairs& rnp)
+{
+  this->pairs.insert (this->pairs.end (), rnp.pairs.begin (), rnp.pairs.end ());
+  this->ranges.insert (this->ranges.end (), rnp.ranges.begin (), rnp.ranges.end ());
+}
+
+
+void 
+MccResidueNamePairs::add (const MccResidueName& rn1, const MccResidueName& rn2)
+{
+  pair< MccResidueName, MccResidueName > p (rn1, rn2);
+  this->pairs.push_back (p);
+}
+
+
+void 
+MccResidueNamePairs::addRange (const MccResidueName& rn1, const MccResidueName& rn2)
+{
+  pair< MccResidueName, MccResidueName > p (rn1, rn2);
+  this->ranges.push_back (p);
+}
+
+
+void
+MccResidueNamePairs::display (ostream &os) const
+{
+  list< pair< MccResidueName, MccResidueName > >::const_iterator it;
+
+  os.fail ();
+
+  for (it = this->pairs.begin (); it != this->pairs.end (); ++it)
+  {
+    if (it != this->pairs.begin ()) os << ", ";
+    it->first.display (os);
+    os << " ";
+    it->second.display (os);
+  }
+
+  if (!this->pairs.empty ()) os << ", ";
+
+  for (it = this->ranges.begin (); it != this->ranges.end (); ++it)
+  {
+    if (it != this->ranges.begin ()) os << ", ";
+    it->first.display (os);
+    os << ":";
+    it->second.display (os);
+  }
+}
+
+
+void
+MccResidueNamePairs::ppdisplay (ostream &os, int indent) const
+{
+  this->display (os);
+}
+
+
+MccResidueNameSingletons&
+MccResidueNameSingletons::operator= (const MccResidueNameSingletons& right)
+{
+  if (this != &right)
+  {
+    this->singletons = right.singletons;
+    this->ranges = right.ranges;
+  }
+  return *this;
+}
+
+
+void
+MccResidueNameSingletons::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccResidueNameSingletons::add (const MccResidueNameSingletons& rnp)
+{
+  this->singletons.insert (this->singletons.end (), rnp.singletons.begin (), rnp.singletons.end ());
+  this->ranges.insert (this->ranges.end (), rnp.ranges.begin (), rnp.ranges.end ());
+}
+
+
+void 
+MccResidueNameSingletons::add (const MccResidueName& rn)
+{
+  this->singletons.push_back (rn);
+}
+
+
+void 
+MccResidueNameSingletons::addRange (const MccResidueName& rn1, const MccResidueName& rn2)
+{
+  pair< MccResidueName, MccResidueName > p (rn1, rn2);
+  this->ranges.push_back (p);
+}
+
+
+void
+MccResidueNameSingletons::display (ostream &os) const
+{
+  list< MccResidueName >::const_iterator sit;
+  list< pair< MccResidueName, MccResidueName > >::const_iterator rit;
+
+  for (sit = this->singletons.begin (); sit != this->singletons.end (); ++sit)
+  {
+    if (sit != this->singletons.begin ()) os << ", ";
+    sit->display (os);
+  }
+
+  if (!this->singletons.empty ()) os << ", ";
+
+  for (rit = this->ranges.begin (); rit != this->ranges.end (); ++rit)
+  {
+    if (rit != this->ranges.begin ()) os << ", ";
+    rit->first.display (os);
+    os << ":";
+    rit->second.display (os);
+  }
+}
+
+
+void
+MccResidueNameSingletons::ppdisplay (ostream &os, int indent) const
+{
+  this->display (os);
+}
+
 
 void
 MccQTrueFunc::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
-
 
 
 MccQIdentFunc::MccQIdentFunc (const MccQIdentFunc &right)
@@ -707,6 +844,128 @@ MccAddPdbStat::ppdisplay (ostream &os, int indent) const
 }
 
 
+MccDBSetVersionStat&
+MccDBSetVersionStat::operator= (const MccDBSetVersionStat &right)
+{
+  if (this != &right)
+  {
+    this->dbversion = right.dbversion;
+  }
+  return *this;
+}
+
+ 
+void
+MccDBSetVersionStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+
+void
+MccDBSetVersionStat::display (ostream &os) const
+{
+  os << "db_version (\"" << this->dbversion << "\")";
+}
+  
+
+
+void
+MccDBSetVersionStat::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  this->display (os);
+}
+
+
+MccDBInsertStat::MccDBInsertStat (const MccDBInsertStat &right)
+  : cutoffs_asp (new map< char, float > (*right.cutoffs_asp)),
+    inputMode (right.inputMode->clone ())
+{
+
+}
+
+
+
+MccDBInsertStat::~MccDBInsertStat ()
+{
+  delete this->cutoffs_asp;
+  delete this->inputMode;
+}
+
+
+
+MccDBInsertStat&
+MccDBInsertStat::operator= (const MccDBInsertStat &right)
+{
+  if (this != &right)
+  {
+    delete this->cutoffs_asp;
+    this->cutoffs_asp = new map< char, float > (*right.cutoffs_asp);
+
+    delete this->inputMode;
+    this->inputMode = right.inputMode->clone ();
+  }
+  return *this;
+}
+
+
+  
+void
+MccDBInsertStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+
+void
+MccDBInsertStat::display (ostream &os) const
+{
+  map< char, float >::iterator cit;
+
+  os << "db_insert (";
+  
+  if (!this->cutoffs_asp->empty ())
+  {
+    os << " cutoff";
+    for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
+      os << ' ' << cit->first << " = " << cit->second;
+  }
+
+  this->inputMode->display (os);
+
+  os << ')';
+}
+  
+
+
+void
+MccDBInsertStat::ppdisplay (ostream &os, int indent) const
+{
+  map< char, float >::iterator cit;
+
+  os << "add_pdb" << endl;
+  whitespaces (os, indent + 2);
+  os << '(';
+  if (!this->cutoffs_asp->empty ())
+  {
+    whitespaces (os, indent + 4);
+    os << "cutoff";
+    for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
+      os << ' ' << cit->first << " = " << cit->second;
+  }
+
+  whitespaces (os, indent + 4);
+  this->inputMode->ppdisplay (os, indent);
+
+  os << endl;
+  whitespaces (os, indent + 2);
+  os << ')' << endl;
+}
+
+
 MccBaseAdjacencyCstStat::MccBaseAdjacencyCstStat (const MccBaseAdjacencyCstStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc)),
     coverage (right.coverage)
@@ -752,54 +1011,6 @@ MccBaseAdjacencyCstStat::ppdisplay (ostream &os, int indent) const
   fg_struc->ppdisplay (os, indent);
   os << ' ' << this->coverage << "%)" << endl;
 }
-
-
-MccRiboseAdjacencyCstStat::MccRiboseAdjacencyCstStat (const MccRiboseAdjacencyCstStat &right)
-  : fg_struc (new MccFragGenStruc (*right.fg_struc)),
-    the_max (right.the_max)
-{ }
-
-
-
-MccRiboseAdjacencyCstStat&
-MccRiboseAdjacencyCstStat::operator= (const MccRiboseAdjacencyCstStat &right)
-{
-  if (this != &right)
-  {
-    delete fg_struc;
-    fg_struc = right.fg_struc->clone ();
-    the_max = right.the_max;
-  }
-  return *this;
-}
-
-
-
-void
-MccRiboseAdjacencyCstStat::accept (MccVisitor *visitor)
-{
-  visitor->visit (this);
-}
-
-
-void
-MccRiboseAdjacencyCstStat::display (ostream &os) const
-{
-  os << "ribose_adjacency (";
-  fg_struc->display (os);
-  os << ' ' << the_max << ')';
-}
-
-
-
-void
-MccRiboseAdjacencyCstStat::ppdisplay (ostream &os, int indent) const
-{
-  os << "ribose_adjacency (";
-  fg_struc->ppdisplay (os, indent);
-  os << ' ' << the_max << ')' << endl;
-}
-
 
 
 MccAngleCstStat::_AngleStruc::_AngleStruc (const MccAngleCstStat::_AngleStruc &right)
@@ -1776,24 +1987,24 @@ MccMultimerCstStat::ppdisplay (ostream &os, int indent) const
 
 
 void
-MccDisplayDBStat::accept (MccVisitor *visitor)
+MccDBDisplayStat::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
 
 
 void
-MccDisplayDBStat::display (ostream &os) const
+MccDBDisplayStat::display (ostream &os) const
 {
-  os << "display_db";
+  os << "db_display";
 }
 
 
 void
-MccDisplayDBStat::ppdisplay (ostream &os, int indent) const
+MccDBDisplayStat::ppdisplay (ostream &os, int indent) const
 {
   whitespaces (os, indent);
-  os << "display_db";
+  os << "db_display";
 }
 
 
@@ -1842,6 +2053,66 @@ MccDisplayFGStat::ppdisplay (ostream &os, int indent) const
   os << ')' << endl;
 }
 
+
+MccDBFilterStat::MccDBFilterStat (map< char, float >* cutmap) 
+  : cutoffs_asp (cutmap) 
+{ 
+    
+}
+
+
+MccDBFilterStat::MccDBFilterStat (const MccDBFilterStat &right)
+  : cutoffs_asp (new map< char, float > (*right.cutoffs_asp))
+{ }
+
+
+MccDBFilterStat::~MccDBFilterStat ()
+{
+  delete this->cutoffs_asp;
+}
+
+
+MccDBFilterStat&
+MccDBFilterStat::operator= (const MccDBFilterStat &right)
+{
+  if (this != &right)
+  {
+    delete this->cutoffs_asp;
+    this->cutoffs_asp = new map< char, float > (*right.cutoffs_asp);
+  }
+  return *this;
+}
+
+
+
+void
+MccDBFilterStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+
+void
+MccDBFilterStat::display (ostream &os) const
+{
+  map< char, float >::iterator cit;
+
+  os << "db_filter (cutoff";
+  for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
+    os << ' ' << cit->first << " = " << cit->second;
+  os << ")";
+}
+
+
+
+void
+MccDBFilterStat::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  this->display (os);
+  os << endl;
+}
 
 
 MccDistCstStat::_DistStruc::_DistStruc (const MccDistCstStat::_DistStruc &right)
@@ -2010,23 +2281,15 @@ MccEnvStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccFilePdbOutput::MccFilePdbOutput (const MccFilePdbOutput &right)
-  : form (strdup (right.form)),
-    zipped (right.zipped),
-    mult_file (right.mult_file)
-{ }
-
-
 
 MccFilePdbOutput&
 MccFilePdbOutput::operator= (const MccFilePdbOutput &right)
 {
   if (this != &right)
   {
-    delete[] form;
-    form = strdup (right.form);
-    zipped = right.zipped;
-    mult_file = right.mult_file;
+    this->filename = right.filename;
+    this->zipped = right.zipped;
+    this->mult_file = right.mult_file;
   }
   return *this;
 }
@@ -2044,7 +2307,7 @@ MccFilePdbOutput::accept (MccVisitor *visitor)
 void
 MccFilePdbOutput::display (ostream &os) const
 {
-  os << "file_pdb (\"" << form << "\"";
+  os << "pdb (\"" << filename << "\"";
   if (zipped) 
     os << " zipped";
   if (mult_file) 
@@ -2055,24 +2318,14 @@ MccFilePdbOutput::display (ostream &os) const
 }
 
 
-
-MccFileBinaryOutput::MccFileBinaryOutput (const MccFileBinaryOutput &right)
-  : form (strdup (right.form)),
-    zipped (right.zipped),
-    mult_file (right.mult_file)
-{ }
-
-
-
 MccFileBinaryOutput&
 MccFileBinaryOutput::operator= (const MccFileBinaryOutput &right)
 {
   if (this != &right)
   {
-    delete[] form;
-    form = strdup (right.form);
-    zipped = right.zipped;
-    mult_file = right.mult_file;
+    this->filename = right.filename;
+    this->zipped = right.zipped;
+    this->mult_file = right.mult_file;
   }
   return *this;
 }
@@ -2090,10 +2343,10 @@ MccFileBinaryOutput::accept (MccVisitor *visitor)
 void
 MccFileBinaryOutput::display (ostream &os) const
 {
-  os << "file_bin (\"" << form << "\"";
-  if (zipped)
+  os << "bin (\"" << this->filename << "\"";
+  if (this->zipped)
     os << " zipped";
-  if (mult_file) 
+  if (this->mult_file) 
     os << " multiple";
   else 
     os << " single";
@@ -2102,25 +2355,14 @@ MccFileBinaryOutput::display (ostream &os) const
 
 
 
-MccSocketBinaryOutput::MccSocketBinaryOutput (const MccSocketBinaryOutput &right)
-  : serverName (strdup (right.serverName)),
-    port (right.port),
-    modelName (strdup (right.modelName)),
-    mult_file (right.mult_file)
-{ }
-
-
-
 MccSocketBinaryOutput&
 MccSocketBinaryOutput::operator= (const MccSocketBinaryOutput &right)
 {
   if (this != &right)
   {
-    delete[] serverName;
-    serverName = strdup (right.serverName);
+    serverName = right.serverName;
     port = right.port;
-    delete[] modelName;
-    modelName = strdup (right.modelName);
+    modelName = right.modelName;
     mult_file = right.mult_file;
   }
   return *this;
@@ -2139,7 +2381,7 @@ MccSocketBinaryOutput::accept (MccVisitor *visitor)
 void
 MccSocketBinaryOutput::display (ostream &os) const
 {
-  os << "socket_bin (\"" << serverName << "\" " << port
+  os << "socket (\"" << serverName << "\" " << port
      << " \"" << modelName << "\"";
   if (mult_file) 
     os << " multiple";
@@ -2150,21 +2392,12 @@ MccSocketBinaryOutput::display (ostream &os) const
 
 
 
-MccFileRnamlOutput::MccFileRnamlOutput (const MccFileRnamlOutput &right)
-  : name (strdup (right.name)),
-    zipped (right.zipped),
-    mult_file (right.mult_file)
-{ }
-
-
-
 MccFileRnamlOutput&
 MccFileRnamlOutput::operator= (const MccFileRnamlOutput &right)
 {
   if (this != &right)
   {
-    delete[] name;
-    name = strdup (right.name);
+    this->filename = right.filename;
     zipped = right.zipped;
     mult_file = right.mult_file;
   }
@@ -2184,7 +2417,7 @@ MccFileRnamlOutput::accept (MccVisitor *visitor)
 void
 MccFileRnamlOutput::display (ostream &os) const
 {
-  os << "file_rnaml (\"" << name << "\"";
+  os << "rnaml (\"" << filename << "\"";
   if (zipped)
     os << " zipped";
   if (mult_file) 
@@ -2196,19 +2429,13 @@ MccFileRnamlOutput::display (ostream &os) const
 
 
 
-MccFilePdbInput::MccFilePdbInput (const MccFilePdbInput &right)
-  : name (strdup (right.name))
-{ }
-
-
 
 MccFilePdbInput&
 MccFilePdbInput::operator= (const MccFilePdbInput &right)
 {
   if (this != &right)
   {
-    delete[] name;
-    name = strdup (right.name);
+    this->filename = right.filename;
   }
   return *this;
 }
@@ -2226,15 +2453,8 @@ MccFilePdbInput::accept (MccVisitor *visitor)
 void
 MccFilePdbInput::display (ostream &os) const
 {
-  os << "file_pdb (\"" << name << "\")";
+  os << "pdb (\"" << filename << "\")";
 }
-
-
-
-MccFileBinaryInput::MccFileBinaryInput (const MccFileBinaryInput &right)
-  : name (strdup (right.name))
-{ }
-
 
 
 MccFileBinaryInput&
@@ -2242,8 +2462,7 @@ MccFileBinaryInput::operator= (const MccFileBinaryInput &right)
 {
   if (this != &right)
   {
-    delete[] name;
-    name = strdup (right.name);
+    this->filename = right.filename;
   }
   return *this;
 }
@@ -2261,16 +2480,9 @@ MccFileBinaryInput::accept (MccVisitor *visitor)
 void
 MccFileBinaryInput::display (ostream &os) const
 {
-  os << "file_bin (\"" << name << "\")";
+  os << "bin (\"" << filename << "\")";
 }
 
-
-
-MccSocketBinaryInput::MccSocketBinaryInput (const MccSocketBinaryInput &right)
-  : serverName (strdup (right.serverName)),
-    port (right.port),
-    modelName (strdup (right.modelName))
-{ }
 
 
 
@@ -2279,11 +2491,9 @@ MccSocketBinaryInput::operator= (const MccSocketBinaryInput &right)
 {
   if (this != &right)
   {
-    delete[] serverName;
-    serverName = strdup (right.serverName);
+    serverName = right.serverName;
     port = right.port;
-    delete[] modelName;
-    modelName = strdup (right.modelName);
+    modelName = right.modelName;
   }
   return *this;
 }
@@ -2301,16 +2511,9 @@ MccSocketBinaryInput::accept (MccVisitor *visitor)
 void
 MccSocketBinaryInput::display (ostream &os) const
 {
-  os << "socket_bin (\"" << serverName << " " << port
+  os << "socket (\"" << serverName << " " << port
      << " \"" << modelName << "\")";
 }
-
-
-
-MccFileRnamlInput::MccFileRnamlInput (const MccFileRnamlInput &right)
-  : name (strdup (right.name))
-{ }
-
 
 
 MccFileRnamlInput&
@@ -2318,8 +2521,7 @@ MccFileRnamlInput::operator= (const MccFileRnamlInput &right)
 {
   if (this != &right)
   {
-    delete[] name;
-    name = strdup (right.name);
+    filename = right.filename;
   }
   return *this;
 }
@@ -2337,73 +2539,26 @@ MccFileRnamlInput::accept (MccVisitor *visitor)
 void
 MccFileRnamlInput::display (ostream &os) const
 {
-  os << "file_rnaml (\"" << name << "\")";
-}
-
-
-MccExploreStat::_ParamStruc&
-MccExploreStat::_ParamStruc::operator= (const MccExploreStat::_ParamStruc& right)
-{
-  if (this != &right)
-  {
-    delete[] this->name;
-    this->name = strdup (right.name);
-    this->value = right.value;
-  }
-  return *this;
-}
-
-
-void
-MccExploreStat::_ParamStruc::accept (MccVisitor *visitor)
-{
-  visitor->visit (this);
-}
-
-
-void
-MccExploreStat::_ParamStruc::display (ostream &os) const
-{
-  os << this->name << ' ' << this->value;
-}
-
-
-void
-MccExploreStat::_ParamStruc::ppdisplay (ostream &os, int indent) const
-{
-  os << this->name << endl;
-  whitespaces (os, indent);
-  os << this->value << endl;
+  os << "rnaml (\"" << filename << "\")";
 }
 
 
 
 MccExploreStat::MccExploreStat (const MccExploreStat &right)
-  : fg_struc (new MccFragGenStruc (*right.fg_struc)),
-    algo (strdup (right.algo)),
-    filter (0),
-    timelimit (right.timelimit),
-    expOutput (0)
+  : fg_struc (right.fg_struc),
+    fg_parameters (right.fg_parameters),
+    exp_parameters (right.exp_parameters),
+    filter (0 == right.filter ? 0 : right.filter->clone ()),
+    output (0 == right.output ? 0 : right.output->clone ())
+    
 {
-  if (right.filter)
-    this->filter = right.filter->clone ();
-  if (right.expOutput)
-    this->expOutput = right.expOutput->clone ();
 }
 
 
 MccExploreStat::~MccExploreStat ()
 {
-  delete this->fg_struc;
-  delete[] this->algo;
-  vector< _ParamStruc* >::iterator pit;
-  for (pit = this->params->begin (); this->params->end () != pit; ++pit)
-    delete *pit;
-  delete this->params;
-  if (this->filter)
-    delete this->filter;
-  if (this->expOutput)
-    delete this->expOutput;
+  if (this->filter) delete this->filter;
+  if (this->output) delete this->output;
 }
 
 
@@ -2412,35 +2567,11 @@ MccExploreStat::operator= (const MccExploreStat &right)
 {
   if (this != &right)
   {
-    delete fg_struc;
-    fg_struc = right.fg_struc->clone ();
-    delete[] this->algo;
-    algo = strdup (right.algo);
-    
-    vector< _ParamStruc* >::iterator pit;
-    for (pit = this->params->begin (); this->params->end () != pit; ++pit)
-      delete *pit;
-    this->params->clear ();
-    for (pit = right.params->begin (); right.params->end () != pit; ++pit)
-      this->params->push_back ((*pit)->clone ());
-
-    delete *pit;
-    if (filter)
-    {
-      delete filter;
-      filter = 0;
-    }
-    if (right.filter)
-      filter = right.filter->clone ();
-    if (expOutput)
-    {
-      delete expOutput;
-      expOutput = 0;
-    }
-    if (right.expOutput)
-      expOutput = right.expOutput->clone ();
-
-    timelimit = right.timelimit;
+    this->fg_struc = right.fg_struc;
+    this->fg_parameters = right.fg_parameters;
+    this->exp_parameters = right.exp_parameters;
+    this->filter = 0 == right.filter ? 0 : right.filter->clone ();
+    this->output = 0 == right.output ? 0 : right.output->clone ();
   }
   return *this;
 }
@@ -2458,27 +2589,39 @@ MccExploreStat::accept (MccVisitor *visitor)
 void
 MccExploreStat::display (ostream &os) const
 {
+  map< string, string >::const_iterator it;
+
   os << "explore (";
-  this->fg_struc->display (os);
-  os << ' ' << this->algo;
-  vector< _ParamStruc* >::iterator pit;
-  for (pit = this->params->begin (); this->params->end () != pit; ++pit)
+  this->fg_struc.display (os);
+  
+  if (!this->fg_parameters.empty ())
   {
-    os << ' ';
-    (*pit)->display (os);
+    os << " parameter (";
+    for (it = this->fg_parameters.begin (); it != this->fg_parameters.end (); ++it)
+      os << " " << it->first << " = " << it->second;
+    os << ")";
   }
+
+  if (!this->exp_parameters.empty ())
+  {
+    os << " option (";
+    for (it = this->exp_parameters.begin (); it != this->exp_parameters.end (); ++it)
+      os << " " << it->first << " = " << it->second;
+    os << ")";
+  }
+
   if (this->filter)
   {
     os << ' ';
     this->filter->display (os);
   }
-  if (timelimit > 0)
-    os << " time_limit (" << timelimit << " seconds)";
-  if (this->expOutput)
+
+  if (this->output)
   {
     os << ' ';
-    this->expOutput->display (os);
+    this->output->display (os);
   }
+
   os << ')';
 }
 
@@ -2487,39 +2630,51 @@ MccExploreStat::display (ostream &os) const
 void
 MccExploreStat::ppdisplay (ostream &os, int indent) const
 {
+  map< string, string >::const_iterator it;
+
+  whitespaces (os, indent);
   os << "explore" << endl;
   whitespaces (os, indent);
   os << '(' << endl;
+
   whitespaces (os, indent + 2);
-  this->fg_struc->ppdisplay (os, indent + 2);
-  os << endl;
-  whitespaces (os, indent + 2);
-  os << this->algo;
-  vector< _ParamStruc* >::iterator pit;
-  for (pit = this->params->begin (); this->params->end () != pit; ++pit)
+  this->fg_struc.display (os);
+
+  if (!this->fg_parameters.empty ())
   {
     os << endl;
     whitespaces (os, indent + 2);
-    (*pit)->ppdisplay (os, indent + 2);
+    os << "parameter" << endl;
+    whitespaces (os, indent + 2);
+    os << "(" << endl;
+    for (it = this->fg_parameters.begin (); it != this->fg_parameters.end (); ++it)
+    {
+      whitespaces (os, indent + 4);
+      os << it->first << " = " << it->second << endl;
+    }
+    whitespaces (os, indent + 2);
+    os << ")";
   }
-  if (this->filter)
+
+  if (!this->exp_parameters.empty ())
   {
     os << endl;
     whitespaces (os, indent + 2);
-    this->filter->ppdisplay (os, indent + 2);
-  }
-  if (timelimit > 0)
-  {
-    os << endl;
+    os << "option" << endl;
     whitespaces (os, indent + 2);
-    os << " time_limit (" << timelimit << " seconds)";
-  }
-  if (this->expOutput)
-  {
-    os << endl;
+    os << "(" << endl;
+    for (it = this->exp_parameters.begin (); it != this->exp_parameters.end (); ++it)
+    {
+      whitespaces (os, indent + 4);
+      os << it->first << " = " << it->second << endl;
+    }
     whitespaces (os, indent + 2);
-    this->expOutput->ppdisplay (os, indent + 2);
+    os << ")";
   }
+
+  if (this->filter) this->filter->ppdisplay (os, indent + 2);
+  if (this->output) this->output->ppdisplay (os, indent + 2);
+
   os << endl;
   whitespaces (os, indent);
   os << ')' << endl;
@@ -2952,41 +3107,44 @@ MccNotesStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccRelationsStat::_RelationsStruc::_RelationsStruc (const MccRelationsStat::_RelationsStruc &right)
-  : resrefs (new vector< char* > (right.resrefs->size ())),
+MccRelationStat::_RelationStruc::_RelationStruc (const MccRelationStat::_RelationStruc &right)
+  : rnpairs (right.rnpairs->clone ()),//resrefs (new vector< char* > (right.resrefs->size ())),
     expr (right.expr->clone ()),
     ssize (right.ssize->clone ())
 {
-  vector< char* >::const_iterator it;
-  for (it = right.resrefs->begin (); right.resrefs->end () != it; ++it)
-    this->resrefs->push_back (strdup (*it));
+//   vector< char* >::const_iterator it;
+//   for (it = right.resrefs->begin (); right.resrefs->end () != it; ++it)
+//     this->resrefs->push_back (strdup (*it));
 }
 
 
-MccRelationsStat::_RelationsStruc::~_RelationsStruc ()
+MccRelationStat::_RelationStruc::~_RelationStruc ()
 {
-  vector< char* >::iterator it;
-  for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
-    delete[] *it;
-  delete this->resrefs;
+//   vector< char* >::iterator it;
+//   for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
+//     delete[] *it;
+  //delete this->resrefs;
+  delete this->rnpairs;
   delete this->expr;
   delete this->ssize;
 }
 
 
-MccRelationsStat::_RelationsStruc&
-MccRelationsStat::_RelationsStruc::operator= (const MccRelationsStat::_RelationsStruc &right)
+MccRelationStat::_RelationStruc&
+MccRelationStat::_RelationStruc::operator= (const MccRelationStat::_RelationStruc &right)
 {
   if (this != &right)
   {
-    vector< char* >::iterator it;
-    vector< char* >::const_iterator cit;
-    for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
-      delete[] *it;
-    delete this->resrefs;
-    this->resrefs = new vector< char* > (right.resrefs->size ());
-    for (cit = right.resrefs->begin (); right.resrefs->end () != cit; ++cit)
-      this->resrefs->push_back (strdup (*it));
+//     vector< char* >::iterator it;
+//     vector< char* >::const_iterator cit;
+//     for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
+//       delete[] *it;
+//     delete this->resrefs;
+//     this->resrefs = new vector< char* > (right.resrefs->size ());
+//     for (cit = right.resrefs->begin (); right.resrefs->end () != cit; ++cit)
+//       this->resrefs->push_back (strdup (*it));
+    delete this->rnpairs;
+    rnpairs = right.rnpairs->clone ();
     delete expr;
     expr = right.expr->clone ();
     delete ssize;
@@ -2997,79 +3155,82 @@ MccRelationsStat::_RelationsStruc::operator= (const MccRelationsStat::_Relations
 
 
 void
-MccRelationsStat::_RelationsStruc::accept (MccVisitor *visitor)
+MccRelationStat::_RelationStruc::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
 
 
 void
-MccRelationsStat::_RelationsStruc::display (ostream &os) const
+MccRelationStat::_RelationStruc::display (ostream &os) const
 {
-  vector< char* >::const_iterator it;
-  for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
-  {
-    if (this->resrefs->begin () != it)
-      os << ',';
-    os << *it;
-  }
+//   vector< char* >::const_iterator it;
+//   for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
+//   {
+//     if (this->resrefs->begin () != it)
+//       os << ',';
+//     os << *it;
+//   }
+  this->rnpairs->display (os);
   os << ' ';
-  expr->display (os);
+  this->expr->display (os);
   os << ' ';
-  ssize->display (os);
+  this->ssize->display (os);
 }
 
 
 void
-MccRelationsStat::_RelationsStruc::ppdisplay (ostream &os, int indent) const
+MccRelationStat::_RelationStruc::ppdisplay (ostream &os, int indent) const
 {
   os << endl;
   whitespaces (os, indent);
-  vector< char* >::const_iterator it;
-  for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
-  {
-    if (this->resrefs->begin () != it)
-      os << ',';
-    os << *it;
-  }
+//   vector< char* >::const_iterator it;
+//   for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
+//   {
+//     if (this->resrefs->begin () != it)
+//       os << ',';
+//     os << *it;
+//   }
+//   os << ' ';
+  this->rnpairs->display (os);
   os << ' ';
-  expr->ppdisplay (os, indent);
+  this->expr->display (os);
   os << ' ';
-  ssize->ppdisplay (os, indent);
+  this->ssize->display (os);
 }
 
 
-MccRelationsStat::MccRelationsStat (const MccRelationsStat &right)
-  : strucs (new vector< MccRelationsStat::_RelationsStruc* > (right.strucs->size ()))
+MccRelationStat::MccRelationStat (const MccRelationStat &right)
+  : strucs (new vector< MccRelationStat::_RelationStruc* > (right.strucs->size ()))
 {
-  vector< MccRelationsStat::_RelationsStruc* >::const_iterator cit;
+  vector< MccRelationStat::_RelationStruc* >::const_iterator cit;
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    this->strucs->push_back (new MccRelationsStat::_RelationsStruc (**cit));
+    this->strucs->push_back (new MccRelationStat::_RelationStruc (**cit));
 }
 
 
-MccRelationsStat::~MccRelationsStat ()
+MccRelationStat::~MccRelationStat ()
 {
-  vector< _RelationsStruc* >::iterator it;
+  vector< _RelationStruc* >::iterator it;
   for (it = this->strucs->begin (); it != this->strucs->end (); ++it)
     delete *it;
   delete this->strucs;
 }
 
 
-MccRelationsStat&
-MccRelationsStat::operator= (const MccRelationsStat &right)
+MccRelationStat&
+MccRelationStat::operator= (const MccRelationStat &right)
 {
   if (this != &right)
   {
-    vector< MccRelationsStat::_RelationsStruc* >::const_iterator cit;
-    vector< MccRelationsStat::_RelationsStruc* >::iterator it;
+    vector< MccRelationStat::_RelationStruc* >::const_iterator cit;
+    vector< MccRelationStat::_RelationStruc* >::iterator it;
     for (it = this->strucs->begin (); it != this->strucs->end (); ++it)
       delete *it;
     delete this->strucs;
-    this->strucs = new vector< MccRelationsStat::_RelationsStruc* > (right.strucs->size ());
+    this->strucs = new vector< MccRelationStat::_RelationStruc* > (right.strucs->size ());
     for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-      this->strucs->push_back (new MccRelationsStat::_RelationsStruc (**cit));
+      this->strucs->push_back (new MccRelationStat::_RelationStruc (**cit));
   }
   return *this;
 }
@@ -3077,7 +3238,7 @@ MccRelationsStat::operator= (const MccRelationsStat &right)
 
 
 void
-MccRelationsStat::accept (MccVisitor *visitor)
+MccRelationStat::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
@@ -3085,9 +3246,9 @@ MccRelationsStat::accept (MccVisitor *visitor)
 
 
 void
-MccRelationsStat::display (ostream &os) const
+MccRelationStat::display (ostream &os) const
 {
-  vector< _RelationsStruc* >::iterator it;
+  vector< _RelationStruc* >::iterator it;
   
   os << "pair (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -3102,9 +3263,9 @@ MccRelationsStat::display (ostream &os) const
 
 
 void
-MccRelationsStat::ppdisplay (ostream &os, int indent) const
+MccRelationStat::ppdisplay (ostream &os, int indent) const
 {
-  vector< _RelationsStruc* >::iterator it;
+  vector< _RelationStruc* >::iterator it;
   
   os << "pair" << endl;
   whitespaces (os, indent + 2);
@@ -3116,6 +3277,272 @@ MccRelationsStat::ppdisplay (ostream &os, int indent) const
   os << ')' << endl;
 }
 
+
+MccBacktrackRstStat::MccBacktrackRstStat (const MccFragGenStruc& fg, 
+					  const map< string, string >& par)
+  : fg_struc (fg),
+    parameters (par)
+{ 
+}
+
+
+MccBacktrackRstStat::MccBacktrackRstStat (const MccBacktrackRstStat& brst)
+  : fg_struc (brst.fg_struc),
+    parameters (brst.parameters)
+{
+}
+
+
+MccBacktrackRstStat&
+MccBacktrackRstStat::operator= (const MccBacktrackRstStat& brst)
+{
+  if (this != &brst)
+  {
+    fg_struc = brst.fg_struc;
+    parameters = brst.parameters;
+  }
+  return *this;
+}
+
+
+void
+MccBacktrackRstStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccBacktrackRstStat::display (ostream& os) const
+{
+  map< string, string >::const_iterator it;
+
+  this->fg_struc.display (os << "backtrack_rst (");
+   
+  for (it = this->parameters.begin (); it != this->parameters.end (); ++it)
+    os << " " << it->first << " = " << it->second;
+
+  os << ")";
+}
+
+
+void
+MccBacktrackRstStat::ppdisplay (ostream& os, int indent) const
+{
+  map< string, string >::const_iterator it;
+
+  whitespaces (os, indent);
+  os << "backtrack_rst" << endl;
+  whitespaces (os, indent);
+  os << "(" << endl;
+  whitespaces (os, indent + 2);
+  this->fg_struc.display (os);
+
+  for (it = this->parameters.begin (); it != this->parameters.end (); ++it)
+  {
+    os << endl;
+    whitespaces (os, indent + 2);
+    os << it->first << " = " << it->second;
+  }
+
+  os << endl;
+  whitespaces (os, indent);
+  os << ")" << endl;
+}
+
+
+MccRiboseRstStat::MccRiboseRstStat (const MccFragGenStruc& fg, 
+				    const map< string, string >& par)
+  : fg_struc (fg),
+    parameters (par)
+{ 
+}
+
+
+MccRiboseRstStat::MccRiboseRstStat (const MccFragGenStruc& fg, 
+				    const MccResidueNameSingletons& res,
+				    const map< string, string >& par)
+  : fg_struc (fg),
+    restrictions (res),
+    parameters (par)
+{ 
+}
+
+
+MccRiboseRstStat::MccRiboseRstStat (const MccRiboseRstStat& rrst)
+  : fg_struc (rrst.fg_struc),
+    restrictions (rrst.restrictions),
+    parameters (rrst.parameters)
+{
+}
+
+
+MccRiboseRstStat&
+MccRiboseRstStat::operator= (const MccRiboseRstStat& rrst)
+{
+  if (this != &rrst)
+  {
+    fg_struc = rrst.fg_struc;
+    restrictions = rrst.restrictions;
+    parameters = rrst.parameters;
+  }
+  return *this;
+}
+
+
+void
+MccRiboseRstStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccRiboseRstStat::display (ostream& os) const
+{
+  map< string, string >::const_iterator it;
+
+  this->fg_struc.display (os << "ribose_rst (");
+
+  if (!this->restrictions.empty ())
+  {
+    this->restrictions.display (os << "[");
+    os << "]";
+  }
+   
+  for (it = this->parameters.begin (); it != this->parameters.end (); ++it)
+    os << " " << it->first << " = " << it->second;
+
+  os << ")";
+}
+
+
+void
+MccRiboseRstStat::ppdisplay (ostream& os, int indent) const
+{
+  map< string, string >::const_iterator it;
+
+  whitespaces (os, indent);
+  os << "ribose_rst" << endl;
+  whitespaces (os, indent);
+  os << "(" << endl;
+  whitespaces (os, indent + 2);
+  this->fg_struc.display (os);
+
+  if (!this->restrictions.empty ())
+  {
+    this->restrictions.display (os << "[");
+    os << "]";
+  }
+
+  for (it = this->parameters.begin (); it != this->parameters.end (); ++it)
+  {
+    os << endl;
+    whitespaces (os, indent + 2);
+    os << it->first << " = " << it->second;
+  }
+
+  os << endl;
+  whitespaces (os, indent);
+  os << ")" << endl;
+}
+
+
+MccImplicitPhosphateRstStat::MccImplicitPhosphateRstStat (const MccFragGenStruc& fg, 
+							  const map< string, string >& par)
+  : fg_struc (fg),
+    parameters (par)
+{ 
+}
+
+
+MccImplicitPhosphateRstStat::MccImplicitPhosphateRstStat (const MccFragGenStruc& fg, 
+							  const MccResidueNamePairs& res,
+							  const map< string, string >& par)
+  : fg_struc (fg),
+    restrictions (res),
+    parameters (par)
+{ 
+}
+
+
+MccImplicitPhosphateRstStat::MccImplicitPhosphateRstStat (const MccImplicitPhosphateRstStat& rrst)
+  : fg_struc (rrst.fg_struc),
+    restrictions (rrst.restrictions),
+    parameters (rrst.parameters)
+{
+}
+
+
+MccImplicitPhosphateRstStat&
+MccImplicitPhosphateRstStat::operator= (const MccImplicitPhosphateRstStat& rrst)
+{
+  if (this != &rrst)
+  {
+    fg_struc = rrst.fg_struc;
+    restrictions = rrst.restrictions;
+    parameters = rrst.parameters;
+  }
+  return *this;
+}
+
+
+void
+MccImplicitPhosphateRstStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccImplicitPhosphateRstStat::display (ostream& os) const
+{
+  map< string, string >::const_iterator it;
+
+  this->fg_struc.display (os << "ribose_rst (");
+
+  if (!this->restrictions.empty ())
+  {
+    this->restrictions.display (os << "[");
+    os << "]";
+  }
+   
+  for (it = this->parameters.begin (); it != this->parameters.end (); ++it)
+    os << " " << it->first << " = " << it->second;
+
+  os << ")";
+}
+
+
+void
+MccImplicitPhosphateRstStat::ppdisplay (ostream& os, int indent) const
+{
+  map< string, string >::const_iterator it;
+
+  whitespaces (os, indent);
+  os << "ribose_rst" << endl;
+  whitespaces (os, indent);
+  os << "(" << endl;
+  whitespaces (os, indent + 2);
+  this->fg_struc.display (os);
+
+  if (!this->restrictions.empty ())
+  {
+    this->restrictions.display (os << "[");
+    os << "]";
+  }
+
+  for (it = this->parameters.begin (); it != this->parameters.end (); ++it)
+  {
+    os << endl;
+    whitespaces (os, indent + 2);
+    os << it->first << " = " << it->second;
+  }
+
+  os << endl;
+  whitespaces (os, indent);
+  os << ")" << endl;
+}
 
 
 void
@@ -3135,7 +3562,7 @@ MccQuitStat::ppdisplay (ostream &os, int indent) const
 
 
 
-MccRelationCstStat::_RelationStruc::_RelationStruc (const MccRelationCstStat::_RelationStruc &right)
+MccImplicitRelationCstStat::_ImplicitRelationStruc::_ImplicitRelationStruc (const MccImplicitRelationCstStat::_ImplicitRelationStruc &right)
   : ref (right.ref->clone ()),
     res (right.res->clone ()),
     expr (right.expr->clone ())
@@ -3144,7 +3571,7 @@ MccRelationCstStat::_RelationStruc::_RelationStruc (const MccRelationCstStat::_R
 
   
 
-MccRelationCstStat::_RelationStruc::~_RelationStruc ()
+MccImplicitRelationCstStat::_ImplicitRelationStruc::~_ImplicitRelationStruc ()
 {
   delete ref;
   delete res;
@@ -3153,8 +3580,8 @@ MccRelationCstStat::_RelationStruc::~_RelationStruc ()
 
 
 
-MccRelationCstStat::_RelationStruc&
-MccRelationCstStat::_RelationStruc::operator= (const MccRelationCstStat::_RelationStruc &right)
+MccImplicitRelationCstStat::_ImplicitRelationStruc&
+MccImplicitRelationCstStat::_ImplicitRelationStruc::operator= (const MccImplicitRelationCstStat::_ImplicitRelationStruc &right)
 {
   if (this != &right)
   {
@@ -3171,7 +3598,7 @@ MccRelationCstStat::_RelationStruc::operator= (const MccRelationCstStat::_Relati
   
 
 void
-MccRelationCstStat::_RelationStruc::accept (MccVisitor *visitor)
+MccImplicitRelationCstStat::_ImplicitRelationStruc::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
@@ -3179,7 +3606,7 @@ MccRelationCstStat::_RelationStruc::accept (MccVisitor *visitor)
 
 
 void
-MccRelationCstStat::_RelationStruc::display (ostream &os) const
+MccImplicitRelationCstStat::_ImplicitRelationStruc::display (ostream &os) const
 {
   ref->display (os);
   os << ' ';
@@ -3191,7 +3618,7 @@ MccRelationCstStat::_RelationStruc::display (ostream &os) const
 
 
 void
-MccRelationCstStat::_RelationStruc::ppdisplay (ostream &os, int indent) const
+MccImplicitRelationCstStat::_ImplicitRelationStruc::ppdisplay (ostream &os, int indent) const
 {
   os << endl;
   whitespaces (os, indent);
@@ -3204,10 +3631,10 @@ MccRelationCstStat::_RelationStruc::ppdisplay (ostream &os, int indent) const
 
 
 
-MccRelationCstStat::MccRelationCstStat (const MccRelationCstStat &right)
-  : strucs (new vector< MccRelationCstStat::_RelationStruc* > ())
+MccImplicitRelationCstStat::MccImplicitRelationCstStat (const MccImplicitRelationCstStat &right)
+  : strucs (new vector< MccImplicitRelationCstStat::_ImplicitRelationStruc* > ())
 {
-  vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
+  vector< MccImplicitRelationCstStat::_ImplicitRelationStruc* >::const_iterator cit;
 
   for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
     strucs->push_back ((*cit)->clone ());
@@ -3215,9 +3642,9 @@ MccRelationCstStat::MccRelationCstStat (const MccRelationCstStat &right)
 
 
 
-MccRelationCstStat::~MccRelationCstStat ()
+MccImplicitRelationCstStat::~MccImplicitRelationCstStat ()
 {
-  vector< _RelationStruc* >::iterator it;
+  vector< _ImplicitRelationStruc* >::iterator it;
 
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
@@ -3226,13 +3653,13 @@ MccRelationCstStat::~MccRelationCstStat ()
 
 
 
-MccRelationCstStat&
-MccRelationCstStat::operator= (const MccRelationCstStat &right)
+MccImplicitRelationCstStat&
+MccImplicitRelationCstStat::operator= (const MccImplicitRelationCstStat &right)
 {
   if (this != &right)
   {
-    vector< MccRelationCstStat::_RelationStruc* >::const_iterator cit;
-    vector< MccRelationCstStat::_RelationStruc* >::iterator it;
+    vector< MccImplicitRelationCstStat::_ImplicitRelationStruc* >::const_iterator cit;
+    vector< MccImplicitRelationCstStat::_ImplicitRelationStruc* >::iterator it;
 
     for (it = strucs->begin (); it != strucs->end (); it++)
       delete *it;
@@ -3246,7 +3673,7 @@ MccRelationCstStat::operator= (const MccRelationCstStat &right)
 
 
 void
-MccRelationCstStat::accept (MccVisitor *visitor)
+MccImplicitRelationCstStat::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
@@ -3254,9 +3681,9 @@ MccRelationCstStat::accept (MccVisitor *visitor)
 
 
 void
-MccRelationCstStat::display (ostream &os) const
+MccImplicitRelationCstStat::display (ostream &os) const
 {
-  vector< _RelationStruc* >::iterator it;
+  vector< _ImplicitRelationStruc* >::iterator it;
 
   os << "relation (";
   for (it = strucs->begin (); it != strucs->end (); it++)
@@ -3271,9 +3698,9 @@ MccRelationCstStat::display (ostream &os) const
 
 
 void
-MccRelationCstStat::ppdisplay (ostream &os, int indent) const
+MccImplicitRelationCstStat::ppdisplay (ostream &os, int indent) const
 {
-  vector< _RelationStruc* >::iterator it;
+  vector< _ImplicitRelationStruc* >::iterator it;
 
   os << "relation" << endl;
   whitespaces (os, indent + 2);
@@ -3327,7 +3754,7 @@ MccRemarkStat::ppdisplay (ostream &os, int indent) const
 
 
 void
-MccResetDBStat::accept (MccVisitor *visitor)
+MccDBResetStat::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
@@ -3335,7 +3762,7 @@ MccResetDBStat::accept (MccVisitor *visitor)
 
 
 void
-MccResetDBStat::ppdisplay (ostream &os, int indent) const
+MccDBResetStat::ppdisplay (ostream &os, int indent) const
 {
   display (os);
   os << endl;
@@ -3834,6 +4261,99 @@ MccVersion::ppdisplay (ostream &os, int indent) const
   os << endl;
 }
 
+
+MccReportImplicitPhosphateStat::MccReportImplicitPhosphateStat (const MccFragGenStruc& fg)
+  : fg_struc (fg)
+{ 
+}
+
+
+MccReportImplicitPhosphateStat::MccReportImplicitPhosphateStat (const MccReportImplicitPhosphateStat& obj)
+  : fg_struc (obj.fg_struc)
+{
+}
+
+
+MccReportImplicitPhosphateStat&
+MccReportImplicitPhosphateStat::operator= (const MccReportImplicitPhosphateStat& obj)
+{
+  if (this != &obj)
+  {
+    fg_struc = obj.fg_struc;
+  }
+  return *this;
+}
+
+
+void
+MccReportImplicitPhosphateStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccReportImplicitPhosphateStat::display (ostream& os) const
+{
+  this->fg_struc.display (os << "report_implicit_phosphate (");
+  os << ")";
+}
+
+
+void
+MccReportImplicitPhosphateStat::ppdisplay (ostream& os, int indent) const
+{
+  whitespaces (os, indent);
+  this->display (os);
+  os << endl;
+}
+
+
+MccReportRiboseStat::MccReportRiboseStat (const MccFragGenStruc& fg)
+  : fg_struc (fg)
+{ 
+}
+
+
+MccReportRiboseStat::MccReportRiboseStat (const MccReportRiboseStat& obj)
+  : fg_struc (obj.fg_struc)
+{
+}
+
+
+MccReportRiboseStat&
+MccReportRiboseStat::operator= (const MccReportRiboseStat& obj)
+{
+  if (this != &obj)
+  {
+    fg_struc = obj.fg_struc;
+  }
+  return *this;
+}
+
+
+void
+MccReportRiboseStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccReportRiboseStat::display (ostream& os) const
+{
+  this->fg_struc.display (os << "report_ribose (");
+  os << ")";
+}
+
+
+void
+MccReportRiboseStat::ppdisplay (ostream& os, int indent) const
+{
+  whitespaces (os, indent);
+  this->display (os);
+  os << endl;
+}
 
 
 LexerException::LexerException (const char *s)

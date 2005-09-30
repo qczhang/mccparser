@@ -16,27 +16,13 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <list>
 
 class MccPStruct;
 class MccVisitor;
 class MccQueryExpr;
 
 using namespace std;
-
-
-struct idno_cmp
-{
-  /**
-   * Lexicographical test for (char,int) couple.
-   * @param p1 the first pair.
-   * @param p2 the second pair.
-   * @return the result of the test.
-   */
-  bool operator() (const pair< char, int >& p1, const pair< char, int >& p2) const
-  { return p1.first == p2.first ? p1.second < p2.second : p1.first < p2.first; }
-};
-
-typedef set< pair< char, int >, idno_cmp > idno_set;
 
 
 /**
@@ -274,7 +260,7 @@ struct MccFragGenStruc
   /**
    * The name of the FG.
    */
-  char *ident;
+  string ident;
 
   /**
    * The variable indicates if the identifier contains any special
@@ -285,25 +271,30 @@ struct MccFragGenStruc
 
   // LIFECYCLE ------------------------------------------------------------
 
-private:
   /**
    * Initializes the object.  It should never be used.
    */
-  MccFragGenStruc () : ident (0), special_char (false) { }
-public:
+  MccFragGenStruc () 
+    : special_char (false) 
+  { }
 
   /**
    * Initializes the object.
    * @param i the name of the FG.
    * @param sp the variable specifying if the ident contains any special char.
    */
-  MccFragGenStruc (char *i, bool sp = false) : ident (i), special_char (sp) { }
+  MccFragGenStruc (const string& i, bool sp = false) 
+    : ident (i), special_char (sp) 
+  { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccFragGenStruc (const MccFragGenStruc &right);
+  MccFragGenStruc (const MccFragGenStruc &right)
+    : ident (right.ident),
+      special_char (right.special_char)
+  { }
 
   /**
    * Replicates the object.
@@ -314,7 +305,7 @@ public:
   /**
    * Destroys the object.
    */
-  ~MccFragGenStruc () { delete[] ident; }
+  ~MccFragGenStruc () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -348,7 +339,10 @@ public:
    * @param os the output stream used.
    * @param ident the identation level.
    */
-  void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+  void ppdisplay (ostream &os, int indent = 0) const 
+  { 
+    display (os); 
+  }
 };
 
 
@@ -486,12 +480,10 @@ struct MccResidueName
   
   // LIFECYCLE ------------------------------------------------------------
 
-private:
   /**
-   * Initializes the object.  It should never be used.
+   * Initializes the object.
    */
-  MccResidueName () { }
-public:
+  MccResidueName () : id (' '), no (-1) { }
 
   /**
    * Initializes the object.
@@ -522,6 +514,11 @@ public:
 
   MccResidueName& operator= (const MccResidueName &right);
   
+  bool operator< (const MccResidueName& rn) const
+  {
+    return this->id == rn.id ? this->no < rn.no : this->id < rn.id;
+  }
+
   // ACCESS ---------------------------------------------------------------
 
   // METHODS --------------------------------------------------------------
@@ -552,6 +549,179 @@ public:
    * @param ident the identation level.
    */
   void ppdisplay (ostream &os, int indent = 0) const { display (os); }
+};
+
+
+
+/**
+ * @short Struct representing a list of residue reference pair.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccResidueNamePairs
+{
+  
+  list< pair< MccResidueName, MccResidueName > > pairs;
+  list< pair< MccResidueName, MccResidueName > > ranges;
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+public:
+
+  /**
+   * Initializes the object.
+   */
+  MccResidueNamePairs () { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccResidueNamePairs (const MccResidueNamePairs& right)
+    : pairs (right.pairs),
+      ranges (right.ranges)
+  { }
+  
+  /**
+   * Destroys the object.
+   */
+  ~MccResidueNamePairs () 
+  { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  MccResidueNamePairs& operator= (const MccResidueNamePairs& right);
+  
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccResidueNamePairs* clone () const 
+  { 
+    return new MccResidueNamePairs (*this); 
+  }
+
+  bool empty () const
+  {
+    return this->pairs.empty () && this->ranges.empty ();
+  }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  void accept (MccVisitor *visitor);
+  
+  void add (const MccResidueNamePairs& rnp);
+
+  void add (const MccResidueName& rn1, const MccResidueName& rn2);
+
+  void addRange (const MccResidueName& rn1, const MccResidueName& rn2);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
+ * @short Struct representing a list of residue reference singletons.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccResidueNameSingletons
+{
+  
+  list< MccResidueName > singletons;
+  list< pair< MccResidueName, MccResidueName > > ranges;
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+public:
+
+  /**
+   * Initializes the object.
+   */
+  MccResidueNameSingletons () { }
+
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccResidueNameSingletons (const MccResidueNameSingletons& right)
+    : singletons (right.singletons),
+      ranges (right.ranges)
+  { }
+  
+  /**
+   * Destroys the object.
+   */
+  ~MccResidueNameSingletons () 
+  { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  MccResidueNameSingletons& operator= (const MccResidueNameSingletons& right);
+  
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccResidueNameSingletons* clone () const 
+  { 
+    return new MccResidueNameSingletons (*this); 
+  }
+
+  bool empty () const
+  {
+    return this->singletons.empty () && this->ranges.empty ();
+  }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  void accept (MccVisitor *visitor);
+  
+  void add (const MccResidueNameSingletons& rnp);
+
+  void add (const MccResidueName& rn);
+
+  void addRange (const MccResidueName& rn1, const MccResidueName& rn2);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  void ppdisplay (ostream &os, int indent = 0) const;
 };
 
 
@@ -1700,14 +1870,15 @@ struct MccRMSDModelFilter
   
   // LIFECYCLE ------------------------------------------------------------
 
-protected:
+public:
   
   /**
    * Initializes the object.  It should never be used.
    */
-  MccRMSDModelFilter () { }
-  
-public:
+  MccRMSDModelFilter () 
+    : rmsBound (numeric_limits< float >::max ()),
+      atomset (0)
+  { }
 
   /**
    * Initializes the object.
@@ -2022,95 +2193,6 @@ public:
    */
   virtual MccBaseAdjacencyCstStat* clone () const
   { return new MccBaseAdjacencyCstStat (*this); }
-
-  /**
-   * Accepts the visitor and calls it on itself.
-   * @param visitor the visitor.
-   */
-  virtual void accept (MccVisitor *visitor);
-
-  // I/O  -----------------------------------------------------------------
-
-  /**
-   * Displays the structure.
-   * @param os the output stream where the message is displayed.
-   */
-  virtual void display (ostream &os) const;
-
-  /**
-   * Displays the script in human readable form.
-   * @param os the output stream used.
-   * @param ident the identation level.
-   */
-  virtual void ppdisplay (ostream &os, int indent = 0) const;
-};
-
-
-/**
- * @short Struct representing the AST node "adjacency".
- *
- * @author Martin Larose <larosem@iro.umontreal.ca>
- */
-struct MccRiboseAdjacencyCstStat : public MccPStruct
-{
-  /**
-   * The struct identifying the FG.
-   */
-  MccFragGenStruc *fg_struc;
-  
-  /**
-   * The maximum adjacency value.
-   */
-  float the_max;
-  
-
-  // LIFECYCLE ------------------------------------------------------------
-
-private:
-  /**
-   * Initializes the object.  It should not be used.
-   */
-  MccRiboseAdjacencyCstStat () { }
-public:
-
-  /**
-   * Initializes the object.
-   * @param f the FG struct.
-   * @param mx the maximum adjacency value.
-   */
-  MccRiboseAdjacencyCstStat (MccFragGenStruc *f, float mx)
-    : fg_struc (f), the_max (mx) { }
-
-  /**
-   * Initializes the object with the rights content.
-   * @param right the object to copy.
-   */
-  MccRiboseAdjacencyCstStat (const MccRiboseAdjacencyCstStat &right);
-
-  /**
-   * Destroys the structure.
-   */
-  virtual ~MccRiboseAdjacencyCstStat () { delete fg_struc; }
-
-  // OPERATORS ------------------------------------------------------------
-
-  /**
-   * Assigns the rights content into the object.
-   * @param right the object to copy.
-   * @return itself.
-   */
-  MccRiboseAdjacencyCstStat& operator= (const MccRiboseAdjacencyCstStat &right);
-
-  // ACCESS ---------------------------------------------------------------
-
-  // METHODS --------------------------------------------------------------
-
-  /**
-   * Replicates the object.
-   * @return a copy of the current object.
-   */
-  virtual MccRiboseAdjacencyCstStat* clone () const
-  { return new MccRiboseAdjacencyCstStat (*this); }
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -3470,11 +3552,11 @@ struct MccMultimerCstStat : public MccPStruct
 
 
 /**
- * @short Struct representing the AST node "display_db" statement.
+ * @short Struct representing the AST node "db_display" statement.
  *
  * @author Philippe Thibault <thibaup@iro.umontreal.ca>
  */
-struct MccDisplayDBStat : public MccPStruct
+struct MccDBDisplayStat : public MccPStruct
 {
 
   // LIFECYCLE ------------------------------------------------------------
@@ -3482,18 +3564,18 @@ struct MccDisplayDBStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccDisplayDBStat () { }
+  MccDBDisplayStat () { }
 
   /**
    * Initializes the object with the right struct.
    * @param right the struct to copy.
    */
-  MccDisplayDBStat (const MccDisplayDBStat &right) { }
+  MccDBDisplayStat (const MccDBDisplayStat &right) { }
 
   /**
    * Destroys the object.
    */
-  virtual ~MccDisplayDBStat () {  }
+  virtual ~MccDBDisplayStat () {  }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -3502,7 +3584,7 @@ struct MccDisplayDBStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  MccDisplayDBStat& operator= (const MccDisplayDBStat &right) { return *this; }
+  MccDBDisplayStat& operator= (const MccDBDisplayStat &right) { return *this; }
 
   // ACCESS ---------------------------------------------------------------
 
@@ -3512,7 +3594,7 @@ struct MccDisplayDBStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  MccDisplayDBStat* clone () const { return new MccDisplayDBStat (*this); }
+  MccDBDisplayStat* clone () const { return new MccDBDisplayStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -3617,6 +3699,83 @@ public:
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
 
+
+/**
+ * @short Struct representing the AST node "db_filter" statement.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccDBFilterStat : public MccPStruct
+{
+
+  map< char, float >* cutoffs_asp;
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+private:
+  /**
+   * Initializes the object.  It should never be used.
+   */
+  MccDBFilterStat () { }
+public:
+
+  /**
+   * Initializes the object.
+   * @param f the FG structure to display.
+   */
+  MccDBFilterStat (map< char, float >* cutmap);
+
+  /**
+   * Initializes the object with the right struct.
+   * @param right the struct to copy.
+   */
+  MccDBFilterStat (const MccDBFilterStat &right);
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccDBFilterStat ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccDBFilterStat& operator= (const MccDBFilterStat &right);
+
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  MccDBFilterStat* clone () const { return new MccDBFilterStat (*this); }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
 
 
 /**
@@ -3963,9 +4122,9 @@ public:
 struct MccFilePdbOutput : public MccOutputMode
 {
   /**
-   * The C form that will be used for file output.
+   * The filename for ouput (without extension)
    */
-  char *form;
+  string filename;
 
   /**
    * The boolean indicating if the files will be zipped.
@@ -3976,27 +4135,37 @@ struct MccFilePdbOutput : public MccOutputMode
 
   // LIFECYCLE ------------------------------------------------------------
 
-protected:
+public:
   
   /**
    * Initializes the object.  It should never be used.
    */
-  MccFilePdbOutput () { }
-  
-public:
+  MccFilePdbOutput () 
+    : filename ("unamed"),
+      zipped (false),
+      mult_file (true)
+  { }
 
   /**
    * Initializes the object.
-   * @param f the C form that will be used for file output.
+   * @param fn the C form that will be used for file output.
    * @param z the boolean indicating if the files will be zipped.
    */
-  MccFilePdbOutput (char *f, bool z, bool m) : form (f), zipped (z), mult_file (m) { }
+  MccFilePdbOutput (const string& fn, bool z, bool m) 
+    : filename (fn), 
+      zipped (z), 
+      mult_file (m) 
+  { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccFilePdbOutput (const MccFilePdbOutput &right);
+  MccFilePdbOutput (const MccFilePdbOutput &right)
+    : filename (right.filename),
+      zipped (right.zipped),
+      mult_file (right.mult_file)
+  { }
 
   /**
    * Copies the object.
@@ -4007,7 +4176,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccFilePdbOutput () { delete[] form; }
+  virtual ~MccFilePdbOutput () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4054,9 +4223,9 @@ public:
 struct MccFileBinaryOutput : public MccOutputMode
 {
   /**
-   * The C form that will be used for file output.
+   * The filename for ouput (without extension)
    */
-  char *form;
+  string filename;
 
   /**
    * The boolean indicating if the files will be zipped.
@@ -4068,27 +4237,37 @@ struct MccFileBinaryOutput : public MccOutputMode
 
   // LIFECYCLE ------------------------------------------------------------
 
-protected:
+public:
   
   /**
    * Initializes the object.  It should never be used.
    */
-  MccFileBinaryOutput () { }
-  
-public:
+  MccFileBinaryOutput () 
+    : filename ("unamed"),
+      zipped (false),
+      mult_file (true)
+  { }
 
   /**
    * Initializes the object.
-   * @param f the C form that will be used for file output.
+   * @param fn the C form that will be used for file output.
    * @param z the boolean indicating if the files will be zipped.
    */
-  MccFileBinaryOutput (char *f, bool z, bool m) : form (f), zipped (z), mult_file (m) { }
+  MccFileBinaryOutput (const string& fn, bool z, bool m) 
+    : filename (fn), 
+      zipped (z), 
+      mult_file (m) 
+  { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccFileBinaryOutput (const MccFileBinaryOutput &right);
+  MccFileBinaryOutput (const MccFileBinaryOutput &right)
+    : filename (right.filename),
+      zipped (right.zipped),
+      mult_file (right.mult_file)
+  { }
 
   /**
    * Copies the object.
@@ -4100,7 +4279,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccFileBinaryOutput () { delete[] form; }
+  virtual ~MccFileBinaryOutput () {  }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4149,7 +4328,7 @@ struct MccSocketBinaryOutput : public MccOutputMode
   /**
    * The server name.
    */
-  char *serverName;
+  string serverName;
 
   /**
    * The port number.
@@ -4157,22 +4336,25 @@ struct MccSocketBinaryOutput : public MccOutputMode
   int port;
 
   /**
-   * The C form that will be used for the model name.
+   * Model name for identification.
    */
-  char *modelName;
+  string modelName;
 
   bool mult_file;
 
-protected:
-  
   // LIFECYCLE ------------------------------------------------------------
+
+public:
   
   /**
-   * Initializes the object.  It should never be used.
+   * Initializes the object. 
    */
-  MccSocketBinaryOutput () { }
-  
-public:
+  MccSocketBinaryOutput () 
+    : serverName ("localhost"),
+      port (6666),
+      modelName ("unamed"),
+      mult_file (true)
+  { }
 
   /**
    * Initializes the object.
@@ -4180,14 +4362,19 @@ public:
    * @param sp the server port number.
    * @param mn the C form that will be used for the model name.
    */
-  MccSocketBinaryOutput (char *sn, int sp, char *mn, bool m)
+  MccSocketBinaryOutput (const string& sn, int sp, const string& mn, bool m)
     : serverName (sn), port (sp), modelName (mn), mult_file (m) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccSocketBinaryOutput (const MccSocketBinaryOutput &right);
+  MccSocketBinaryOutput (const MccSocketBinaryOutput &right)
+    : serverName (right.serverName),
+      port (right.port),
+      modelName (right.modelName),
+      mult_file (right.mult_file)
+  { }
 
   /**
    * Copies the object.
@@ -4199,8 +4386,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccSocketBinaryOutput ()
-  { delete[] serverName; delete[] modelName; }
+  virtual ~MccSocketBinaryOutput () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4246,9 +4432,9 @@ public:
 struct MccFileRnamlOutput : public MccOutputMode
 {
   /**
-   * The output file name.
+   * The filename for ouput (without extension)
    */
-  char *name;
+  string filename;
 
   /**
    * The boolean indicating if the files will be zipped.
@@ -4259,27 +4445,37 @@ struct MccFileRnamlOutput : public MccOutputMode
 
   // LIFECYCLE ------------------------------------------------------------
 
-protected:
+public:
   
   /**
-   * Initializes the object.  It should never be used.
+   * Initializes the object.  
    */
-  MccFileRnamlOutput () { }
-  
-public:
+  MccFileRnamlOutput () 
+    : filename ("unamed"),
+      zipped (false),
+      mult_file (true)
+  { }
 
   /**
    * Initializes the object.
    * @param name the ouput file name.
    * @param z the boolean indicating if the files will be zipped.
    */
-  MccFileRnamlOutput (char *name, bool z, bool m) : name (name), zipped (z), mult_file (m) { }
+  MccFileRnamlOutput (const string& fn, bool z, bool m) 
+    : filename (fn), 
+      zipped (z), 
+      mult_file (m) 
+  { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccFileRnamlOutput (const MccFileRnamlOutput &right);
+  MccFileRnamlOutput (const MccFileRnamlOutput &right)
+    : filename (right.filename),
+      zipped (right.zipped),
+      mult_file (right.mult_file)
+  { }
 
   /**
    * Copies the object.
@@ -4290,7 +4486,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccFileRnamlOutput () { delete[] name; }
+  virtual ~MccFileRnamlOutput () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4393,32 +4589,32 @@ public:
 struct MccFilePdbInput : public MccInputMode
 {
   /**
-   * The file name.  It is usually in C form.
+   * The file name. 
    */
-  char *name;  
-  
-protected:
-  
+  string filename;
+    
   // LIFECYCLE ------------------------------------------------------------
+
+public:
 
   /**
    * Initializes the object.  It should not be used.
    */
-  MccFilePdbInput () { }
-
-public:
+  MccFilePdbInput ()
+    : filename ("unamed") 
+  { }
 
   /**
    * Initializes the object with a name.
    * @param n the name of the input file(s).
    */
-  MccFilePdbInput (char *n) : name (n) { }
+  MccFilePdbInput (const string& n) : filename (n) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccFilePdbInput (const MccFilePdbInput &right);
+  MccFilePdbInput (const MccFilePdbInput &right) : filename (right.filename) { }
 
   /**
    * Copies the object.
@@ -4430,7 +4626,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccFilePdbInput () { delete[] name; }
+  virtual ~MccFilePdbInput () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4476,18 +4672,20 @@ public:
 struct MccFileBinaryInput : public MccInputMode
 {
   /**
-   * The file name.  It is usually in C form.
+   * The file name.  
    */
-  char *name;  
-  
-protected:
-  
+  string filename;  
+    
   // LIFECYCLE ------------------------------------------------------------
 
+public:
+
   /**
-   * Initializes the object.  It should not be used.
+   * Initializes the object.
    */
-  MccFileBinaryInput () { }
+  MccFileBinaryInput ()
+    : filename ("unamed")
+  { }
 
 public:
 
@@ -4495,13 +4693,13 @@ public:
    * Initializes the object with a name.
    * @param n the name of the input file(s).
    */
-  MccFileBinaryInput (char *n) : name (n) { }
+  MccFileBinaryInput (const string& n) : filename (n) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccFileBinaryInput (const MccFileBinaryInput &right);
+  MccFileBinaryInput (const MccFileBinaryInput &right) : filename (right.filename) { }
 
   /**
    * Copies the object.
@@ -4513,7 +4711,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccFileBinaryInput () { delete[] name; }
+  virtual ~MccFileBinaryInput () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4561,28 +4759,30 @@ struct MccSocketBinaryInput : public MccInputMode
   /**
    * The server name.
    */
-  char *serverName;
+  string serverName;
 
   /**
-   * The server port number.
+   * The port number.
    */
   int port;
-  
+
   /**
-   * The file name.  It is usually in C form.
+   * Model name for identification.
    */
-  char *modelName;  
-  
-protected:
+  string modelName;
   
   // LIFECYCLE ------------------------------------------------------------
 
-  /**
-   * Initializes the object.  It should not be used.
-   */
-  MccSocketBinaryInput () { }
-
 public:
+
+  /**
+   * Initializes the object. 
+   */
+  MccSocketBinaryInput () 
+    : serverName ("localhost"),
+      port (6666),
+      modelName ("unamed")
+  { }
 
   /**
    * Initializes the object with a name.
@@ -4590,14 +4790,18 @@ public:
    * @param p the port number.
    * @param mn the name of the input models.
    */
-  MccSocketBinaryInput (char *sn, int p, char *mn)
-    : serverName (sn), port (p), modelName (mn) { }
+  MccSocketBinaryInput (const string& sn, int sp, const string& mn)
+    : serverName (sn), port (sp), modelName (mn) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccSocketBinaryInput (const MccSocketBinaryInput &right);
+  MccSocketBinaryInput (const MccSocketBinaryInput &right)
+    : serverName (right.serverName),
+      port (right.port),
+      modelName (right.modelName)
+  { }
 
   /**
    * Copies the object.
@@ -4609,7 +4813,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccSocketBinaryInput () { delete[] serverName; delete[] modelName; }
+  virtual ~MccSocketBinaryInput () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4655,32 +4859,32 @@ public:
 struct MccFileRnamlInput : public MccInputMode
 {
   /**
-   * The file name.
+   * The file name. 
    */
-  char *name;  
-  
-protected:
+  string filename;
   
   // LIFECYCLE ------------------------------------------------------------
+
+public:
 
   /**
    * Initializes the object.  It should not be used.
    */
-  MccFileRnamlInput () { }
-
-public:
+  MccFileRnamlInput ()
+    : filename ("unamed") 
+  { }
 
   /**
    * Initializes the object with a name.
    * @param n the name of the input file(s).
    */
-  MccFileRnamlInput (char *n) : name (n) { }
+  MccFileRnamlInput (const string& n) : filename (n) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccFileRnamlInput (const MccFileRnamlInput &right);
+  MccFileRnamlInput (const MccFileRnamlInput &right) : filename (right.filename) { }
 
   /**
    * Copies the object.
@@ -4692,7 +4896,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccFileRnamlInput () { delete[] name; }
+  virtual ~MccFileRnamlInput () {  }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4729,6 +4933,178 @@ public:
 };
 
 
+/**
+ * @short Struct representing the AST node of the "db_insert" form.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccDBSetVersionStat : public MccPStruct
+{
+  
+  string dbversion;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+
+  /**
+   * Initializes the object.  It should not be used.
+   */
+  MccDBSetVersionStat () { }
+
+public:
+
+  /**
+   * Initializes the object.
+   */
+  MccDBSetVersionStat (const string& vstr)
+    : dbversion (vstr)
+  { }
+
+  /**
+   * Initializes the struct with the rights content.
+   * @param right the object to copy.
+   */
+  MccDBSetVersionStat (const MccDBSetVersionStat &right)
+    : dbversion (right.dbversion)
+  { }
+  
+  /**
+   * Destroys the structure.  Clears the vector of sub-structures.
+   */
+  virtual ~MccDBSetVersionStat ()
+  { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccDBSetVersionStat& operator= (const MccDBSetVersionStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccDBSetVersionStat* clone () const { return new MccDBSetVersionStat (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+
+  // I/O ------------------------------------------------------------
+
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
+ * @short Struct representing the AST node of the "db_insert" form.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccDBInsertStat : public MccPStruct
+{
+  
+  map< char, float >* cutoffs_asp;
+
+  /**
+   * The input model mode.
+   */
+  MccInputMode *inputMode;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+
+  /**
+   * Initializes the object.  It should not be used.
+   */
+  MccDBInsertStat () { }
+
+public:
+
+  /**
+   * Initializes the object.
+   */
+  MccDBInsertStat (map< char, float >* cutmap, MccInputMode *im)
+    : cutoffs_asp (cutmap),
+      inputMode (im)
+  { 
+
+  }
+
+  /**
+   * Initializes the struct with the rights content.
+   * @param right the object to copy.
+   */
+  MccDBInsertStat (const MccDBInsertStat &right);
+  
+  /**
+   * Destroys the structure.  Clears the vector of sub-structures.
+   */
+  virtual ~MccDBInsertStat ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccDBInsertStat& operator= (const MccDBInsertStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccDBInsertStat* clone () const { return new MccDBInsertStat (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+
+  // I/O ------------------------------------------------------------
+
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
 
 /**
  * @short Struct representing the AST node "explore".
@@ -4737,124 +5113,54 @@ public:
  */
 struct MccExploreStat : public MccPStruct
 {
-
-  /**
-   * @short Sub-structure containing a parameter name/value pair
-   */
-  struct _ParamStruc
-  {
-    /**
-     * The parameter's name.
-     */
-    char* name;
-    
-    /**
-     * The parameter's value.
-     */
-    float value;
-
-    // LIFECYCLE ------------------------------------------------------------
-
-    _ParamStruc () : name (strdup ("")), value (-1) { }
-
-    _ParamStruc (char* n, float v) : name (strdup (n)), value (v) { }
-
-    _ParamStruc (const _ParamStruc& right) : name (strdup (right.name)), value (right.value) { }
-
-    ~_ParamStruc () { delete[] name; }
-    
-    _ParamStruc* clone () const { return new _ParamStruc (*this); }
-
-    // OPERATORS ------------------------------------------------------------
-    
-    _ParamStruc& operator= (const _ParamStruc& right);
-
-    // ACCESS ---------------------------------------------------------------
-    
-    // METHODS --------------------------------------------------------------
-
-    /**
-     * Accepts the visitor and calls it on itself.
-     * @param visitor the visitor.
-     */
-    void accept (MccVisitor *visitor);
-
-    // I/O ------------------------------------------------------------------
-    
-    /**
-     * Displays the structure.
-     * @param os the output stream where the message is displayed.
-     */
-    void display (ostream &os) const;
-
-    /**
-     * Displays the script in human readable form.
-     * @param os the output stream used.
-     * @param ident the identation level.
-     */
-    void ppdisplay (ostream &os, int indent = 0) const;
-    
-  };
   
   /**
    * The FG struct to explore.
    */
-  MccFragGenStruc *fg_struc;
+  MccFragGenStruc fg_struc;
+  
+  /**
+   * Parameters to the explored FG.
+   */
+  map< string, string > fg_parameters;
 
   /**
-   * The explore algorithm name id.
+   * Parameters to the global exploration mechanism.
    */
-  char* algo;
-  
-  /**
-   * The parameters vector.
-   */
-  vector< _ParamStruc* >* params;
-  
+  map< string, string > exp_parameters;
+
   /**
    * The model cache.
    */
-  MccRMSDModelFilter *filter;
-
-  /**
-   * The exploration duration limit.
-   */
-  int timelimit;
+  MccRMSDModelFilter* filter;
   
   /**
    * The explore output file structure.
    */
-  MccOutputMode *expOutput;
-  
-protected:
+  MccOutputMode* output;
   
   // LIFECYCLE ------------------------------------------------------------
 
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccExploreStat () { }
-  
 public:
 
   /**
    * Initializes the object.
-   * @param fg the FG struct to explore.
-   * @param mc the model cache.
-   * @param ef the explore output file structure.
    */
-  MccExploreStat (MccFragGenStruc* fg,
-		  char* an,
-		  vector< _ParamStruc* >* psv,
-		  MccRMSDModelFilter *f,
-		  int tmax,
-		  MccOutputMode *ef)
+  MccExploreStat () :
+    filter (0),
+    output (0)
+  { }
+
+  MccExploreStat (const MccFragGenStruc& fg,
+		  const map< string, string >& fg_par,
+		  const map< string, string >& exp_par,
+		  MccRMSDModelFilter* f,
+		  MccOutputMode* ef)
     : fg_struc (fg),
-      algo (strdup (an)),
-      params (psv),
+      fg_parameters (fg_par),
+      exp_parameters (exp_par),
       filter (f),
-      timelimit (tmax),
-      expOutput (ef)
+      output (ef)
   { }
 
   /**
@@ -5591,32 +5897,34 @@ struct MccNotesStat : public MccPStruct
 
 
 /**
- * @short Struct representing the AST node "relations" statement.
+ * @short Struct representing the AST node "relation" statement.
  *
- * The struct contains a local substatement: _RelationsStruc that contains each
+ * The struct contains a local substatement: _RelationStruc that contains each
  * pairing description.
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccRelationsStat : public MccPStruct
+struct MccRelationStat : public MccPStruct
 {
   /**
    * @short Sub-structure containing the pairing informations.
    *
    * @author Martin Larose <larosem@iro.umontreal.ca>
    */
-  struct _RelationsStruc
+  struct _RelationStruc
   {
     
-    /**
-     * The list of residue reference pairs. Each string represents a pair
-     * of residue references. Two forms are possible:
-     *
-     *  o "<char><int><' '><char><int>" for a single relation specification
-     *  o "<char><int><'-'><char><int>" for a relation range specification
-     *
-     */
-    vector< char* > *resrefs;
+//     /**
+//      * The list of residue reference pairs. Each string represents a pair
+//      * of residue references. Two forms are possible:
+//      *
+//      *  o "<char><int><' '><char><int>" for a single relation specification
+//      *  o "<char><int><'-'><char><int>" for a relation range specification
+//      *
+//      */
+//     vector< char* > *resrefs;
+
+    MccResidueNamePairs* rnpairs;
 
     /**
      * The query expression structure.
@@ -5635,7 +5943,7 @@ struct MccRelationsStat : public MccPStruct
     /**
      * Initializes the object.  It should never be used.
      */
-    _RelationsStruc () { }
+    _RelationStruc () { }
     
   public:
 
@@ -5645,19 +5953,21 @@ struct MccRelationsStat : public MccPStruct
      * @param e the query expression structure.
      * @param s the sampling size structure.
      */
-    _RelationsStruc (vector< char* > *refs, MccQueryExpr *e, MccSamplingSize *s)
-      : resrefs (refs), expr (e), ssize (s) { }
+//     _RelationStruc (vector< char* > *refs, MccQueryExpr *e, MccSamplingSize *s)
+//       : resrefs (refs), expr (e), ssize (s) { }
+    _RelationStruc (MccResidueNamePairs* rnp, MccQueryExpr *e, MccSamplingSize *s)
+      : rnpairs (rnp), expr (e), ssize (s) { }
 
     /**
      * Initializes the object with the rights content.
      * @param right the object to copy.
      */
-    _RelationsStruc (const _RelationsStruc &right);
+    _RelationStruc (const _RelationStruc &right);
 
     /**
      * Destroys the object.
      */
-    ~_RelationsStruc ();
+    ~_RelationStruc ();
 
     // OPERATORS ------------------------------------------------------------
 
@@ -5666,7 +5976,7 @@ struct MccRelationsStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    _RelationsStruc& operator= (const _RelationsStruc &right);
+    _RelationStruc& operator= (const _RelationStruc &right);
   
     // ACCESS ---------------------------------------------------------------
     
@@ -5676,7 +5986,7 @@ struct MccRelationsStat : public MccPStruct
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _RelationsStruc* clone () const { return new _RelationsStruc (*this); }
+    _RelationStruc* clone () const { return new _RelationStruc (*this); }
     
     /**
      * Accepts the visitor and calls it on itself.
@@ -5703,7 +6013,7 @@ struct MccRelationsStat : public MccPStruct
   /**
    * The vector containing the pairing sub-structures.
    */
-  vector< _RelationsStruc* > *strucs;
+  vector< _RelationStruc* > *strucs;
 
 
   // LIFECYCLE ------------------------------------------------------------
@@ -5711,24 +6021,24 @@ struct MccRelationsStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccRelationsStat () : strucs (new vector< _RelationsStruc* > ()) { }
+  MccRelationStat () : strucs (new vector< _RelationStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param psv the vector containing the pairing sub-structures.
    */
-  MccRelationsStat (vector< _RelationsStruc* > *psv) : strucs (psv) { }
+  MccRelationStat (vector< _RelationStruc* > *psv) : strucs (psv) { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccRelationsStat (const MccRelationsStat &right);
+  MccRelationStat (const MccRelationStat &right);
 
   /**
    * Destroys the object.
    */
-  virtual ~MccRelationsStat ();
+  virtual ~MccRelationStat ();
 
   // OPERATORS ------------------------------------------------------------
 
@@ -5737,7 +6047,7 @@ struct MccRelationsStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  MccRelationsStat& operator= (const MccRelationsStat &right);
+  MccRelationStat& operator= (const MccRelationStat &right);
   
   // ACCESS ---------------------------------------------------------------
   
@@ -5747,7 +6057,7 @@ struct MccRelationsStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-   virtual MccRelationsStat* clone () const { return new MccRelationsStat (*this); }
+   virtual MccRelationStat* clone () const { return new MccRelationStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -5761,11 +6071,281 @@ struct MccRelationsStat : public MccPStruct
    * @param e the query expression structure.
    * @param s the sampling size structure.
    */   
-  void genRelationsStruc (vector< char* > *refs,
-			  MccQueryExpr *e,
-			  MccSamplingSize *s)
-  { strucs->push_back (new _RelationsStruc (refs, e, s)); }
+  void genRelationStruc (MccResidueNamePairs* rnp,
+			 MccQueryExpr *e,
+			 MccSamplingSize *s)
+  { 
+    strucs->push_back (new _RelationStruc (rnp, e, s)); 
+  }
   
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
+ * @short Struct representing the AST node "ribose_rst" statement.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccBacktrackRstStat : public MccPStruct
+{
+  /**
+   * The FG struct on which the restraint applies.
+   */
+  MccFragGenStruc fg_struc;
+
+  map< string, string > parameters;
+
+  // LIFECYCLE ------------------------------------------------------------
+    
+  /**
+   * Default constructor must not be used.
+   */
+  MccBacktrackRstStat () { }
+
+  /**
+   * Initializes the object.
+   */
+  MccBacktrackRstStat (const MccFragGenStruc& fg, const map< string, string >& par);
+
+  /**
+   * Initializes the object with the rights content.
+   * @param rrst the object to copy.
+   */
+  MccBacktrackRstStat (const MccBacktrackRstStat& rrst);
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccBacktrackRstStat () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param rrst the object to copy.
+   * @return itself.
+   */
+  MccBacktrackRstStat& operator= (const MccBacktrackRstStat& rrst);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccBacktrackRstStat* clone () const 
+  { 
+    return new MccBacktrackRstStat (*this); 
+  }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+ 
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
+ * @short Struct representing the AST node "ribose_rst" statement.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccRiboseRstStat : public MccPStruct
+{
+  /**
+   * The FG struct on which the restraint applies.
+   */
+  MccFragGenStruc fg_struc;
+
+  MccResidueNameSingletons restrictions;
+
+  map< string, string > parameters;
+
+  // LIFECYCLE ------------------------------------------------------------
+    
+  /**
+   * Default constructor must not be used.
+   */
+  MccRiboseRstStat () { }
+
+  /**
+   * Initializes the object.
+   */
+  MccRiboseRstStat (const MccFragGenStruc& fg, const map< string, string >& par);
+
+  /**
+   * Initializes the object.
+   */
+  MccRiboseRstStat (const MccFragGenStruc& fg, 
+		    const MccResidueNameSingletons& res,
+		    const map< string, string >& par);
+
+
+
+  /**
+   * Initializes the object with the rights content.
+   * @param rrst the object to copy.
+   */
+  MccRiboseRstStat (const MccRiboseRstStat& rrst);
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccRiboseRstStat () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param rrst the object to copy.
+   * @return itself.
+   */
+  MccRiboseRstStat& operator= (const MccRiboseRstStat& rrst);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccRiboseRstStat* clone () const 
+  { 
+    return new MccRiboseRstStat (*this); 
+  }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+ 
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
+ * @short Struct representing the AST node "implicit_phosphate_rst" statement.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccImplicitPhosphateRstStat : public MccPStruct
+{
+  /**
+   * The FG struct on which the restraint applies.
+   */
+  MccFragGenStruc fg_struc;
+
+  MccResidueNamePairs restrictions;
+
+  map< string, string > parameters;
+
+  // LIFECYCLE ------------------------------------------------------------
+    
+  /**
+   * Default constructor must not be used.
+   */
+  MccImplicitPhosphateRstStat () { }
+
+  /**
+   * Initializes the object.
+   */
+  MccImplicitPhosphateRstStat (const MccFragGenStruc& fg, const map< string, string >& par);
+
+  /**
+   * Initializes the object.
+   */
+  MccImplicitPhosphateRstStat (const MccFragGenStruc& fg, 
+			       const MccResidueNamePairs& res,
+			       const map< string, string >& par);
+
+
+
+  /**
+   * Initializes the object with the rights content.
+   * @param rrst the object to copy.
+   */
+  MccImplicitPhosphateRstStat (const MccImplicitPhosphateRstStat& rrst);
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccImplicitPhosphateRstStat () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param rrst the object to copy.
+   * @return itself.
+   */
+  MccImplicitPhosphateRstStat& operator= (const MccImplicitPhosphateRstStat& rrst);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccImplicitPhosphateRstStat* clone () const 
+  { 
+    return new MccImplicitPhosphateRstStat (*this); 
+  }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+ 
   // I/O  -----------------------------------------------------------------
   
   /**
@@ -5854,22 +6434,22 @@ struct MccQuitStat : public MccPStruct
 
 
 /**
- * @short Struct representing the "relation_cst" statement.
+ * @short Struct representing the "implicit_relation" statement.
  *
  * This statement generate constraints between two residues related together
- * by properties.  This struct owns a local struct _RelationStruc
+ * by properties.  This struct owns a local struct _ImplicitRelationStruc
  * that contains the informations on the constraints.
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccRelationCstStat : public MccPStruct
+struct MccImplicitRelationCstStat : public MccPStruct
 {
   /**
    * @short Sub-struct containing a relation constraint description.
    *
    * @author Martin Larose <larosem@iro.umontreal.ca>
    */
-  struct _RelationStruc
+  struct _ImplicitRelationStruc
   {
     /**
      * The first residue name.
@@ -5893,7 +6473,7 @@ struct MccRelationCstStat : public MccPStruct
     /**
      * Initializes the object.  It should never be used.
      */
-    _RelationStruc () { }
+    _ImplicitRelationStruc () { }
 
   public:
 
@@ -5903,7 +6483,7 @@ struct MccRelationCstStat : public MccPStruct
      * @param r2 the second residue name.
      * @param e the query expression.
      */
-    _RelationStruc (MccResidueName *r1, MccResidueName *r2, MccQueryExpr *e)
+    _ImplicitRelationStruc (MccResidueName *r1, MccResidueName *r2, MccQueryExpr *e)
       : ref (r1), res (r2), expr (e)
     { }
 
@@ -5911,18 +6491,18 @@ struct MccRelationCstStat : public MccPStruct
      * Initializes the object with the rights content.
      * @param right the object to copy.
      */
-    _RelationStruc (const _RelationStruc &right);
+    _ImplicitRelationStruc (const _ImplicitRelationStruc &right);
 
     /**
      * Replicates the object.
      * @return a copy of the current object.
      */
-    _RelationStruc* clone () const { return new _RelationStruc (*this); }
+    _ImplicitRelationStruc* clone () const { return new _ImplicitRelationStruc (*this); }
 
     /**
      * Destroys the residue names and atom names.
      */
-    ~_RelationStruc ();
+    ~_ImplicitRelationStruc ();
 
     // OPERATORS ------------------------------------------------------------
 
@@ -5931,7 +6511,7 @@ struct MccRelationCstStat : public MccPStruct
      * @param right the object to copy.
      * @return itself.
      */
-    _RelationStruc& operator= (const _RelationStruc &right);
+    _ImplicitRelationStruc& operator= (const _ImplicitRelationStruc &right);
     
     // ACCESS ---------------------------------------------------------------
 
@@ -5960,9 +6540,9 @@ struct MccRelationCstStat : public MccPStruct
   };
 
   /**
-   * The vector of _RelationStruc.
+   * The vector of _ImplicitRelationStruc.
    */
-  vector< _RelationStruc* > *strucs;
+  vector< _ImplicitRelationStruc* > *strucs;
 
   
   // LIFECYCLE ------------------------------------------------------------
@@ -5970,31 +6550,31 @@ struct MccRelationCstStat : public MccPStruct
   /**
    * Initializes the object.
    */
-  MccRelationCstStat () : strucs (new vector< _RelationStruc* > ()) { }
+  MccImplicitRelationCstStat () : strucs (new vector< _ImplicitRelationStruc* > ()) { }
 
   /**
    * Initializes the object.
    * @param asv the relation sub-structure vector.
    */
-  MccRelationCstStat (vector< _RelationStruc* > *asv) : strucs (asv) { }
+  MccImplicitRelationCstStat (vector< _ImplicitRelationStruc* > *asv) : strucs (asv) { }
   
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccRelationCstStat (const MccRelationCstStat &right);
+  MccImplicitRelationCstStat (const MccImplicitRelationCstStat &right);
   
   /**
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccRelationCstStat* clone () const
-  { return new MccRelationCstStat (*this); }
+  virtual MccImplicitRelationCstStat* clone () const
+  { return new MccImplicitRelationCstStat (*this); }
 
   /**
    * Destroys the vector of sub-structures.
    */
-  virtual ~MccRelationCstStat ();
+  virtual ~MccImplicitRelationCstStat ();
 
   // OPERATORS ------------------------------------------------------------
 
@@ -6003,7 +6583,7 @@ struct MccRelationCstStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  MccRelationCstStat& operator= (const MccRelationCstStat &right);
+  MccImplicitRelationCstStat& operator= (const MccImplicitRelationCstStat &right);
 
   // ACCESS ---------------------------------------------------------------
   
@@ -6119,31 +6699,31 @@ public:
 
 
 /**
- * @short Struct representing the "reset_db" statement in AST form.
+ * @short Struct representing the "db_reset" statement in AST form.
  *
  * This statement resets the database file.
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
-struct MccResetDBStat : public MccPStruct
+struct MccDBResetStat : public MccPStruct
 {
   // LIFECYCLE ------------------------------------------------------------
   
   /**
    * Initializes the object.
    */
-  MccResetDBStat () { }
+  MccDBResetStat () { }
 
   /**
    * Initializes the object with the rights content.
    * @param right the object to copy.
    */
-  MccResetDBStat (const MccResetDBStat &right) { }
+  MccDBResetStat (const MccDBResetStat &right) { }
 
   /**
    * Destroys the object.
    */
-  virtual ~MccResetDBStat () { }
+  virtual ~MccDBResetStat () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -6152,7 +6732,7 @@ struct MccResetDBStat : public MccPStruct
    * @param right the object to copy.
    * @return itself.
    */
-  MccResetDBStat& operator= (const MccResetDBStat &right)
+  MccDBResetStat& operator= (const MccDBResetStat &right)
   { return *this; }
   
   // ACCESS ---------------------------------------------------------------
@@ -6163,7 +6743,7 @@ struct MccResetDBStat : public MccPStruct
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccResetDBStat* clone () const { return new MccResetDBStat (*this); }
+  virtual MccDBResetStat* clone () const { return new MccDBResetStat (*this); }
     
   /**
    * Accepts the visitor and calls it on itself.
@@ -6177,7 +6757,7 @@ struct MccResetDBStat : public MccPStruct
    * Displays the structure.
    * @param os the output stream where the message is displayed.
    */
-  virtual void display (ostream &os) const { os << "reset_db"; }
+  virtual void display (ostream &os) const { os << "db_reset"; }
 
   /**
    * Displays the script in human readable form.
@@ -6855,6 +7435,166 @@ struct MccVersion : public MccPStruct
 
 
 /**
+ * @short Struct representing the AST node "report_implicit_phosphate" statement.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccReportImplicitPhosphateStat : public MccPStruct
+{
+  /**
+   * The FG struct on which the restraint applies.
+   */
+  MccFragGenStruc fg_struc;
+
+  // LIFECYCLE ------------------------------------------------------------
+    
+  /**
+   * Default constructor must not be used.
+   */
+  MccReportImplicitPhosphateStat () { }
+
+  /**
+   * Initializes the object.
+   */
+  MccReportImplicitPhosphateStat (const MccFragGenStruc& fg);
+
+  /**
+   * Initializes the object with the rights content.
+   * @param rrst the object to copy.
+   */
+  MccReportImplicitPhosphateStat (const MccReportImplicitPhosphateStat& obj);
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccReportImplicitPhosphateStat () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param rrst the object to copy.
+   * @return itself.
+   */
+  MccReportImplicitPhosphateStat& operator= (const MccReportImplicitPhosphateStat& obj);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccReportImplicitPhosphateStat* clone () const 
+  { 
+    return new MccReportImplicitPhosphateStat (*this); 
+  }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+ 
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
+ * @short Struct representing the AST node "report_ribose" statement.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccReportRiboseStat : public MccPStruct
+{
+  /**
+   * The FG struct on which the restraint applies.
+   */
+  MccFragGenStruc fg_struc;
+
+  // LIFECYCLE ------------------------------------------------------------
+    
+  /**
+   * Default constructor must not be used.
+   */
+  MccReportRiboseStat () { }
+
+  /**
+   * Initializes the object.
+   */
+  MccReportRiboseStat (const MccFragGenStruc& fg);
+
+  /**
+   * Initializes the object with the rights content.
+   * @param rrst the object to copy.
+   */
+  MccReportRiboseStat (const MccReportRiboseStat& obj);
+
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccReportRiboseStat () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param rrst the object to copy.
+   * @return itself.
+   */
+  MccReportRiboseStat& operator= (const MccReportRiboseStat& obj);
+  
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccReportRiboseStat* clone () const 
+  { 
+    return new MccReportRiboseStat (*this); 
+  }
+    
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+ 
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
  * @short Basic visitor class for the parser structures.
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
@@ -6905,6 +7645,18 @@ public:
    * @param struc the MccResidueName structure.
    */
   virtual void visit (MccResidueName *struc) = 0;
+
+  /**
+   * Visits the MccResidueNamePairs structure.
+   * @param struc the MccResidueNamePairs structure.
+   */
+  virtual void visit (MccResidueNamePairs *struc) = 0;
+
+  /**
+   * Visits the MccResidueNameSingletons structure.
+   * @param struc the MccResidueNameSingletons structure.
+   */
+  virtual void visit (MccResidueNameSingletons *struc) = 0;
 
   /**
    * Visits the MccQTrueFunc structure.
@@ -6986,16 +7738,28 @@ public:
   virtual void visit (MccAddPdbStat *struc) = 0;
 
   /**
+   * Visits the MccDBSetVersionStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccDBSetVersionStat *struc) = 0;
+
+  /**
+   * Visits the MccDBInsertStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccDBInsertStat *struc) = 0;
+
+  /**
    * Visits the MccBaseAdjacencyCstStat structure.
    * @param struc the evaluated structure.
    */
   virtual void visit (MccBaseAdjacencyCstStat *struc) = 0;
   
-  /**
-   * Visits the MccRiboseAdjacencyCstStat structure.
-   * @param struc the evaluated structure.
-   */
-  virtual void visit (MccRiboseAdjacencyCstStat *struc) = 0;
+//   /**
+//    * Visits the MccRiboseAdjacencyCstStat structure.
+//    * @param struc the evaluated structure.
+//    */
+//   virtual void visit (MccRiboseAdjacencyCstStat *struc) = 0;
   
   /**
    * Visits the MccAngleCstStat::_AngleStruc structure.
@@ -7076,16 +7840,22 @@ public:
   virtual void visit (MccMultimerCstStat *struc) = 0;
   
   /**
-   * Visits the MccDisplayDBStat structure.
+   * Visits the MccDBDisplayStat structure.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccDisplayDBStat *struc) = 0;
+  virtual void visit (MccDBDisplayStat *struc) = 0;
 
   /**
    * Visits the MccDisplayFGStat structure.
    * @param struc the evaluated structure.
    */
   virtual void visit (MccDisplayFGStat *struc) = 0;
+
+  /**
+   * Visits the MccDBFilterStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccDBFilterStat *struc) = 0;
 
   /**
    * Visits the MccDistCstStat::_DistStruc sub-structure.
@@ -7152,12 +7922,6 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void visit (MccFileRnamlInput *struc) = 0;
-
-  /**
-   * Visits the MccExploreStat sub-structure _ParamStruc.
-   * @param struc the evaluated structure.
-   */
-  virtual void visit (MccExploreStat::_ParamStruc *struc) = 0;
   
   /**
    * Visits the MccExploreStat structure.
@@ -7208,17 +7972,35 @@ public:
   virtual void visit (MccNotesStat *struc) = 0;
 
   /**
-   * Visits the local MccRelationsStat sub-structure _RelationsStruc.
+   * Visits the local MccImplicitRelationStat sub-structure _ImplicitRelationStruc.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccRelationsStat::_RelationsStruc *struc) = 0;
+  virtual void visit (MccRelationStat::_RelationStruc *struc) = 0;
   
   /**
-   * Visits the MccRelationsStat structure.
+   * Visits the MccRelationStat structure.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccRelationsStat *struc) = 0;
-  
+  virtual void visit (MccRelationStat *struc) = 0;
+
+  /**
+   * Visits the MccBacktrackRstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccBacktrackRstStat *struc) = 0;
+
+  /**
+   * Visits the MccImplicitPhosphateRstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccImplicitPhosphateRstStat *struc) = 0;
+
+  /**
+   * Visits the MccRiboseRstStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccRiboseRstStat *struc) = 0;
+
   /**
    * Visits the MccQuitStat structure.
    * @param struc the evaluated structure.
@@ -7226,16 +8008,16 @@ public:
   virtual void visit (MccQuitStat *struc) = 0;
 
   /**
-   * Visits the MccRelationCstStat::_RelationStruc structure.
+   * Visits the MccImplicitRelationCstStat::_ImplicitRelationStruc structure.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccRelationCstStat::_RelationStruc *struc) = 0;
+  virtual void visit (MccImplicitRelationCstStat::_ImplicitRelationStruc *struc) = 0;
   
   /**
-   * Visits the MccRelationCstStat structure.
+   * Visits the MccImplicitRelationCstStat structure.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccRelationCstStat *struc) = 0;
+  virtual void visit (MccImplicitRelationCstStat *struc) = 0;
   
   /**
    * Visits the MccRemarkStat structure.
@@ -7244,10 +8026,10 @@ public:
   virtual void visit (MccRemarkStat *struc) = 0;
 
   /**
-   * Visits the MccResetDBStat structure.
+   * Visits the MccDBResetStat structure.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccResetDBStat *struc) = 0;
+  virtual void visit (MccDBResetStat *struc) = 0;
   
   /**
    * Visits the MccResetStat structure.
@@ -7303,10 +8085,13 @@ public:
    */
   virtual void visit (MccVersion *struc) = 0;
 
+  virtual void visit (MccReportImplicitPhosphateStat *struc) = 0;
+
+  virtual void visit (MccReportRiboseStat *struc) = 0;
+
   // I/O  -----------------------------------------------------------------
 
 };
-
 
 
 /**

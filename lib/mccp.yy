@@ -74,56 +74,64 @@ INTEGER_LIT  (-?{DIGIT}+)
 <INITIAL,QUERIES>&&           return TOK_AND;
 <INITIAL,QUERIES>!            return TOK_NOT;
 
-add_pdb          return TOK_ADDPDB;
-base_adjacency   return TOK_BASEADJACENCY;
-ribose_adjacency return TOK_RIBOADJACENCY;
-angle            return TOK_ANGLE;
-angstroms        return TOK_ANGSTROMS;
-Angstroms        return TOK_ANGSTROMS;
-angstrom         return TOK_ANGSTROMS;
-Angstrom         return TOK_ANGSTROMS;
-as_is            return TOK_ASIS;
-backtrack        return TOK_BACKTRACK;
-cache            return TOK_CACHE;
-change_id        return TOK_CHANGEID;
-cutoff           return TOK_CUTOFF;
-cycle            return TOK_CYCLE;
-display_db       return TOK_DISPLAYDB;
-display_fg       return TOK_DISPLAYFG;
-distance         return TOK_DISTANCE;
-env              return TOK_ENV;
-explore          return TOK_EXPLORE;
-bin              return TOK_BINARY;
-pdb              return TOK_PDB;
-rnaml            return TOK_RNAML;
-fixed_distance   return TOK_FIXEDDIST;
-library          return TOK_LIBRARY;
-merge            return TOK_MERGE;
-multimer         return TOK_MULTIMER;
-multiple         return TOK_MULTIPLE;
-new_tag          return TOK_NEWTAG;
-note             return TOK_NOTE;
-notes            return TOK_NOTES;
-place            return TOK_PLACE;
-quit             return TOK_QUIT;
-relation_cst     return TOK_RELATIONCST;
-relations        return TOK_RELATIONS;
-remark           return TOK_REMARK;
-clash            return TOK_CLASH;
-reset            return TOK_RESET;
-reset_db         return TOK_RESETDB;
-restore          return TOK_RESTORE;
-rmsd             return TOK_RMSD;
-sequence         return TOK_SEQUENCE;
-single           return TOK_SINGLE;
-socket           return TOK_SOCKET;
-source           return TOK_SOURCE;
-strip            return TOK_STRIP;
-time_limit       return TOK_TIMELIMIT;
-torsion          return TOK_TORSION;
-vdw_distance     return TOK_VDWDIST;
-version          return TOK_VERSION;
-zipped           return TOK_ZIPPED;
+add_pdb           return TOK_ADDPDB;
+base_adjacency    return TOK_BASEADJACENCY;
+angle             return TOK_ANGLE;
+angstroms         return TOK_ANGSTROMS;
+Angstroms         return TOK_ANGSTROMS;
+angstrom          return TOK_ANGSTROMS;
+Angstrom          return TOK_ANGSTROMS;
+as_is             return TOK_ASIS;
+backtrack         return TOK_BACKTRACK;
+cache             return TOK_CACHE;
+change_id         return TOK_CHANGEID;
+cutoff            return TOK_CUTOFF;
+cycle             return TOK_CYCLE;
+db_display        return TOK_DBDISPLAY;
+db_filter         return TOK_DBFILTER;
+db_insert         return TOK_DBINSERT;
+db_reset          return TOK_DBRESET;
+db_version        return TOK_DBVERSION;
+display_fg        return TOK_DISPLAYFG;
+distance          return TOK_DISTANCE;
+env               return TOK_ENV;
+explore           return TOK_EXPLORE;
+bin               return TOK_BINARY;
+pdb               return TOK_PDB;
+rnaml             return TOK_RNAML;
+fixed_distance    return TOK_FIXEDDIST;
+implicit_relation return TOK_IMPLICITRELATION;
+library           return TOK_LIBRARY;
+merge             return TOK_MERGE;
+multimer          return TOK_MULTIMER;
+multiple          return TOK_MULTIPLE;
+new_tag           return TOK_NEWTAG;
+note              return TOK_NOTE;
+notes             return TOK_NOTES;
+option            return TOK_OPTION;
+parameter         return TOK_PARAMETER;
+place             return TOK_PLACE;
+quit              return TOK_QUIT;
+relation          return TOK_RELATION;
+remark            return TOK_REMARK;
+backtrack_rst     return TOK_BACKTRACK_RST;
+implicit_phosphate_rst return TOK_IMPLICITPHOSPHATERST;
+ribose_rst        return TOK_RIBOSERST;
+clash             return TOK_CLASH;
+reset             return TOK_RESET;
+restore           return TOK_RESTORE;
+rmsd              return TOK_RMSD;
+sequence          return TOK_SEQUENCE;
+single            return TOK_SINGLE;
+socket            return TOK_SOCKET;
+source            return TOK_SOURCE;
+strip             return TOK_STRIP;
+torsion           return TOK_TORSION;
+vdw_distance      return TOK_VDWDIST;
+version           return TOK_VERSION;
+zipped            return TOK_ZIPPED;
+report_implicit_phosphate return TOK_REPORTIMPLICITPHOSPHATE;
+report_ribose     return TOK_REPORTRIBOSE;
 
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
@@ -132,18 +140,17 @@ zipped           return TOK_ZIPPED;
 
 {LETTER}{DIGIT}+  mcclval.textval = mcccopy (mcctext); return TOK_RESNAME;
 
-{LETTER}{DIGIT}+\-{LETTER}{DIGIT}+|{DIGIT}+\-{LETTER}{DIGIT}+|{LETTER}{DIGIT}+\-{DIGIT}+|{DIGIT}+\-{DIGIT}+ mcclval.textval = mcccopy (mcctext); return TOK_RESNAME_RANGE;
+
 
 {DIGIT}{LETTER}{LETTER}?{DIGIT}[\*M]? {
                                         mcclval.textval = mcccopy (mcctext);
 					return TOK_ATOM;
                                       }
 
-[-_<>a-zA-Z][-_<>\'\.\*a-zA-Z0-9]*  {
+[_\-\.a-zA-Z0-9][_\-\.\'a-zA-Z0-9]*  {
                                        mcclval.textval = mcccopy (mcctext);
 				       return TOK_IDENT;
                                      }
-
 
 
            /** Definition of QUOTES indentifiers.  */

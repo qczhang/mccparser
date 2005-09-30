@@ -36,12 +36,12 @@
   float floatval;
   pair< char, float >* cutoffval;
   map< char, float >* cutoffmap;
-  //pair< bool, bool >* twoboolval;
+  map< string, string >* stringmap;
   char *textval;
   MccPStruct *mccval;
   vector< MccPStruct* > *vmccval;
-  vector< MccRelationsStat::_RelationsStruc* > *rsv;
-  MccRelationsStat::_RelationsStruc *rs;
+  vector< MccRelationStat::_RelationStruc* > *rsv;
+  MccRelationStat::_RelationStruc *rs;
   vector< MccAngleCstStat::_AngleStruc* > *asv;
   MccAngleCstStat::_AngleStruc *as;
   vector< MccMultimerCstStat::_MultimerStruc* > *cysv;
@@ -49,8 +49,8 @@
   vector< MccDistCstStat::_DistStruc* > *dsv;
   MccDistCstStat::_DistStruc *ds;
   vector< MccTorsionCstStat::_TorsionStruc* > *tsv;
-  MccRelationCstStat::_RelationStruc *rels;
-  vector< MccRelationCstStat::_RelationStruc* > *relsv;
+  MccImplicitRelationCstStat::_ImplicitRelationStruc *rels;
+  vector< MccImplicitRelationCstStat::_ImplicitRelationStruc* > *relsv;
   MccTorsionCstStat::_TorsionStruc *ts;
   vector< MccAddPdbStat::_AddPdbStruc* > *addsv;
   MccAddPdbStat::_AddPdbStruc *adds;
@@ -59,14 +59,14 @@
   MccQueryExpr *qs;
   MccQFunc *qfunc;
   MccASFunc *asfunc;
-  vector< MccExploreStat::_ParamStruc* > *expsv;
-  MccExploreStat::_ParamStruc *exps;
   vector< MccBacktrackExpr::_GenBTStruc* > *btsv;
   MccBacktrackExpr::_GenBTStruc *bts;
   vector< MccLibraryExpr::_LibStruc* > *lsv;
   MccLibraryExpr::_LibStruc *ls;
   vector< MccResidueName* > *rrv;
-  MccResidueName *rr;
+  MccResidueName *rn;
+  MccResidueNamePairs *rnp;
+  MccResidueNameSingletons *rns;
   MccFragGenStruc *fgr;
   MccFGExp *fgs;
   MccOutputMode *expo;
@@ -93,23 +93,28 @@
 %token TOK_FACE
 %token TOK_ADDPDB
 %token TOK_BASEADJACENCY
-%token TOK_RIBOADJACENCY
 %token TOK_ANGLE
 %token TOK_ANGSTROMS
 %token TOK_ANY
 %token TOK_ASIS
 %token TOK_BACKTRACK
+%token TOK_BACKTRACK_RST
 %token TOK_CACHE
 %token TOK_CHANGEID
 %token TOK_CUTOFF
 %token TOK_CYCLE
-%token TOK_DISPLAYDB
+%token TOK_DBDISPLAY
+%token TOK_DBFILTER
+%token TOK_DBINSERT
+%token TOK_DBRESET
+%token TOK_DBVERSION
 %token TOK_DISPLAYFG
 %token TOK_DISTANCE
 %token TOK_ENV
 %token TOK_EXPLORE
 %token TOK_FILENAME
 %token TOK_FIXEDDIST
+%token TOK_IMPLICITRELATION
 %token TOK_LIBRARY
 %token TOK_MERGE
 %token TOK_MULTIMER
@@ -118,33 +123,32 @@
 %token TOK_NOTE
 %token TOK_NOTES
 %token TOK_BINARY
+%token TOK_OPTION
 %token TOK_PDB
+%token TOK_PARAMETER
 %token TOK_RNAML
 %token TOK_PLACE
 %token TOK_PSEATOMS
 %token TOK_QUIT
-%token TOK_RELATIONCST
-%token TOK_RELATIONS
+%token TOK_RELATION
 %token TOK_REMARK
 %token TOK_CLASH
 %token TOK_RESET
-%token TOK_RESETDB
 %token TOK_RESTORE
+%token TOK_IMPLICITPHOSPHATERST
+%token TOK_RIBOSERST
 %token TOK_RMSD
 %token TOK_SEQUENCE
 %token TOK_SINGLE
 %token TOK_SOCKET
 %token TOK_SOURCE
 %token TOK_STRIP
-%token TOK_TIMELIMIT
 %token TOK_TORSION
 %token TOK_VDWDIST
 %token TOK_VERSION
 %token TOK_ZIPPED
-%token TOK_SEC
-%token TOK_MIN
-%token TOK_HR
-%token TOK_DAY
+%token TOK_REPORTIMPLICITPHOSPHATE
+%token TOK_REPORTRIBOSE
 %token <intval> TOK_INTEGER
 %token <floatval> TOK_FLOAT
 %token <textval> TOK_RESNAME
@@ -158,26 +162,21 @@
 %type <mccval> sequence
 %type <mccval> assign
 %type <smpls> sampling
-%type <mccval> relations
+%type <mccval> relation
 %type <rsv> reldef_plus
 %type <rs> reldef
-%type <expsv> explore_param_star
-%type <exps> explore_param
 %type <mccval> explore
+%type <stringmap> explore_param_opt
+%type <stringmap> explore_option_opt
 %type <mccval> restore
 %type <expo> output_mode_opt
 %type <expo> output_mode
 %type <mf> model_filter_opt
 %type <mf> model_filter
-%type <intval>  timelimit_opt
-%type <intval>  timelimit_exp
-%type <intval>  timelimit_plus
-%type <intval> timelimit
 %type <boolval> zfile_opt
 %type <boolval> mfile_opt
 %type <mccval> source
 %type <mccval> baseAdjCst
-%type <mccval> riboAdjCst
 %type <mccval> angleCst
 %type <asv> angledef_plus
 %type <as> angledef
@@ -193,28 +192,38 @@
 %type <mccval> torsionCst
 %type <tsv> torsiondef_plus
 %type <ts> torsiondef
+
+%type <mccval> backtrackRst
+%type <mccval> riboseRst
+%type <mccval> implicitpo4Rst
+%type <stringmap> keyValue_plus
+
 %type <mccval> newtag
 %type <mccval> addpdb
 %type <addsv> addpdbdefs_plus
 %type <adds> addpdbdefs
- //%type <twofloatval> cutoff_opt
 %type <cutoffval> cutoff
 %type <cutoffmap> cutoff_plus
 %type <cutoffmap> cutoff_opt
 %type <textv> pdbfile_plus
-%type <mccval> displaydb
+%type <mccval> dbdisplay
+%type <mccval> dbfilter
+%type <mccval> dbinsert
+%type <mccval> dbreset
+%type <mccval> dbversion
 %type <mccval> displayfg
 %type <mccval> env
 %type <mccval> note
 %type <mccval> notes
 %type <relsv> relationdef_plus
 %type <rels> relationdef
-%type <mccval> relationCst
+%type <mccval> implicitRelCst
 %type <mccval> remark
 %type <mccval> reset
-%type <mccval> resetdb
 %type <mccval> version
 %type <mccval> quit
+%type <mccval> reportImplicitPhosphate
+%type <mccval> reportRibose
 
 %type <qsv> queryexp_plus
 %type <qs> queryexp
@@ -247,14 +256,17 @@
 
 %type <rrv> residueRef_star
 %type <rrv> residueRef_plus
-%type <rr> residueRef
-%type <textv> residueRef_pair_plus
-%type <textval> residueRef_pair
+%type <rn> residueRef
+%type <rnp> residueRef_pair_plus
+%type <rnp> residueRef_pair
+%type <rns> residueRef_singleton_plus
+%type <rns> residueRef_singleton
 %type <textval> atomRef
 %type <fgr> fgRef_opt
 %type <fgr> fgRef
 
 %type <textval> ident_plus
+%type <textval> str
 %type <floatval> flt
 %expect 1
 
@@ -280,30 +292,37 @@ statement_star:   /* empty */
 
 statement:   sequence { $$ = $1; }
            | assign { $$ = $1; }
-           | relations { $$ = $1; }
+           | relation { $$ = $1; }
            | explore { $$ = $1; }
            | restore { $$ = $1; }
            | source { $$ = $1; }
            | baseAdjCst { $$ = $1; }
-           | riboAdjCst { $$ = $1; }
            | angleCst { $$ = $1; }
            | clashCst { $$ = $1; }
            | multimerCst { $$ = $1; }
            | distCst { $$ = $1; }
-           | relationCst { $$ = $1; }
+           | implicitRelCst { $$ = $1; }
            | torsionCst { $$ = $1; }
+           | backtrackRst { $$ = $1; }
+           | implicitpo4Rst { $$ = $1; }
+           | riboseRst { $$ = $1; }
            | newtag { $$ = $1; }
            | addpdb { $$ = $1; }
-           | displaydb { $$ = $1; }
+           | dbdisplay { $$ = $1; }
+           | dbinsert { $$ = $1; }
+           | dbfilter { $$ = $1; }
+           | dbreset { $$ = $1; }
+           | dbversion { $$ = $1; }
            | displayfg { $$ = $1; }
            | env { $$ = $1; }
            | note { $$ = $1; }
            | notes { $$ = $1; }
            | remark { $$ = $1; }
            | reset { $$ = $1; }
-           | resetdb { $$ = $1; }
            | version { $$ = $1; }
            | quit { $$ = $1; }
+           | reportImplicitPhosphate { $$ = $1; }
+           | reportRibose { $$ = $1; }
 ;
 
 
@@ -319,11 +338,11 @@ assign:    TOK_IDENT TOK_ASSIGN fgexp { $$ = new MccAssignStat ($1, $3); }
 ;
 
 
-relations:
+relation:
 
-TOK_RELATIONS TOK_LPAREN reldef_plus TOK_RPAREN
+TOK_RELATION TOK_LPAREN reldef_plus TOK_RPAREN
 {
-  $$ = new MccRelationsStat ($3);
+  $$ = new MccRelationStat ($3);
 }
 ;
 
@@ -332,7 +351,7 @@ reldef_plus:
 
 reldef
 {
-  $$ = new vector< MccRelationsStat::_RelationsStruc* > (1, $1);
+  $$ = new vector< MccRelationStat::_RelationStruc* > (1, $1);
 }
 | reldef_plus reldef
 {
@@ -346,77 +365,47 @@ reldef:
 
 residueRef_pair_plus queryexp sampling
 {
-  $$ = new MccRelationsStat::_RelationsStruc ($1, $2, $3);
-}
-;
-
-
-residueRef_pair_plus:
-
-residueRef_pair
-{
-  $$ = new vector< char* > (1, $1);
-}
-| residueRef_pair_plus TOK_COMMA residueRef_pair
-{
-  $$ = $1;
-  $$->push_back ($3);
-}
-;
-
-
-residueRef_pair:
-
-residueRef residueRef
-{
-  ostringstream oss;
-  if (' ' != $1->id)
-    oss << $1->id;
-  oss << $1->no << ' ';
-  if (' ' != $2->id)
-    oss << $2->id;
-  oss << $2->no;
-  $$ = strdup (oss.str ().c_str ());
-  delete $1;
-  delete $2;
-}
-| TOK_RESNAME_RANGE
-{
-  $$ = $1;
+  $$ = new MccRelationStat::_RelationStruc ($1, $2, $3);
 }
 ;
 
 
 explore:
 
-TOK_EXPLORE TOK_LPAREN fgRef TOK_IDENT explore_param_star model_filter_opt timelimit_opt output_mode_opt TOK_RPAREN
+TOK_EXPLORE TOK_LPAREN fgRef explore_param_opt explore_option_opt model_filter_opt output_mode_opt TOK_RPAREN
 {
-  $$ = new MccExploreStat ($3, $4, $5, $6, $7, $8);
-  delete[] $4;
+  $$ = new MccExploreStat (*$3, *$4, *$5, $6, $7);
+  delete $3;
+  delete $4;
+  delete $5;
 }
 ;
 
 
-explore_param_star:
+explore_param_opt:
 
 /* empty */
 {
-  $$ = new vector< MccExploreStat::_ParamStruc* > ();
+  $$ = new map< string, string > ();
 }
-| explore_param_star explore_param
+|
+TOK_PARAMETER TOK_LPAREN keyValue_plus TOK_RPAREN
 {
-  $$ = $1;
-  $$->push_back ($2);
+  $$ = $3;
 }
 ;
 
 
-explore_param:
+explore_option_opt:
 
-TOK_STRING flt
+/* empty */
 {
-  $$ = new MccExploreStat::_ParamStruc ($1, $2);
-  delete[] $1;
+  $$ = new map< string, string > ();
+}
+|
+TOK_OPTION TOK_LPAREN keyValue_plus TOK_RPAREN
+{
+  $$ = $3;
 }
 ;
 
@@ -442,10 +431,17 @@ model_filter: TOK_RMSD TOK_LPAREN flt atomset_opt TOK_RPAREN
 
 
 
-output_mode_opt:   /* empty */ { $$ = 0; }
-                   | output_mode { $$ = $1; }
-;
+output_mode_opt:   
 
+/* empty */ 
+{ 
+  $$ = 0; 
+}
+| output_mode 
+{ 
+  $$ = $1; 
+}
+;
 
 
 output_mode:  
@@ -453,87 +449,92 @@ output_mode:
 TOK_PDB TOK_LPAREN TOK_STRING zfile_opt mfile_opt TOK_RPAREN
 {
   $$ = new MccFilePdbOutput ($3, $4, $5);
+  delete[] $3;
 }
 | TOK_BINARY TOK_LPAREN TOK_STRING zfile_opt mfile_opt TOK_RPAREN
 {
   $$ = new MccFileBinaryOutput ($3, $4, $5);
+  delete[] $3;
 }
 | TOK_RNAML TOK_LPAREN TOK_STRING zfile_opt mfile_opt TOK_RPAREN
 {
   $$ = new MccFileRnamlOutput ($3, $4, $5);
+  delete[] $3;
 }
 | TOK_SOCKET TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING mfile_opt TOK_RPAREN
 {
   $$ = new MccSocketBinaryOutput ($3, $4, $5, $6);
+  delete[] $3;
+  delete[] $5;
 }
 ;
 
 
-timelimit_opt:
+// timelimit_opt:
 
-/* empty */
-{
-  $$ = -1;
-}
-| timelimit_exp
-{
-  $$ = $1;
-}
-;
-
-
-timelimit_exp:
-
-TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN
-{
-  $$ = $3;
-}
-;
+// /* empty */
+// {
+//   $$ = -1;
+// }
+// | timelimit_exp
+// {
+//   $$ = $1;
+// }
+// ;
 
 
-timelimit_plus:
+// timelimit_exp:
 
-timelimit
-{ 
-  $$ = $1;
-}
-| timelimit_plus timelimit
-{
-  $$ = $1 + $2;
-}
-;
+// TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN
+// {
+//   $$ = $3;
+// }
+// ;
 
 
-timelimit:
+// timelimit_plus:
 
-TOK_INTEGER TOK_STRING
-{
-  $$ = 0;
-  switch ($2[0])
-  {
-  case 's':
-  case 'S':
-    $$ = $1; 
-    break;
-  case 'm':
-  case 'M':
-    $$ = $1 * 60;
-    break;
-  case 'h':
-  case 'H':
-    $$ = $1 * 3600; 
-    break;
-  case 'd':
-  case 'D':
-    $$ = $1 * 86400; 
-    break;
-  default:
-    delete[] $2;
-    mccerror ("unknown time expression");
-  }
-  delete[] $2;
-}
-;
+// timelimit
+// { 
+//   $$ = $1;
+// }
+// | timelimit_plus timelimit
+// {
+//   $$ = $1 + $2;
+// }
+// ;
+
+
+// timelimit:
+
+// TOK_INTEGER TOK_STRING
+// {
+//   $$ = 0;
+//   switch ($2[0])
+//   {
+//   case 's':
+//   case 'S':
+//     $$ = $1; 
+//     break;
+//   case 'm':
+//   case 'M':
+//     $$ = $1 * 60;
+//     break;
+//   case 'h':
+//   case 'H':
+//     $$ = $1 * 3600; 
+//     break;
+//   case 'd':
+//   case 'D':
+//     $$ = $1 * 86400; 
+//     break;
+//   default:
+//     delete[] $2;
+//     mccerror ("unknown time expression");
+//   }
+//   delete[] $2;
+// }
+// ;
 
 
 zfile_opt:   /* empty */ { $$ = false; }
@@ -564,13 +565,13 @@ TOK_BASEADJACENCY TOK_LPAREN fgRef TOK_INTEGER TOK_PERCENT TOK_RPAREN
 ;
 
 
-riboAdjCst:
+// riboAdjCst:
 
-TOK_RIBOADJACENCY TOK_LPAREN fgRef flt TOK_RPAREN
-{
-  $$ = new MccRiboseAdjacencyCstStat ($3, $4);
-}
-;
+// TOK_RIBOADJACENCY TOK_LPAREN fgRef flt TOK_RPAREN
+// {
+//   $$ = new MccRiboseAdjacencyCstStat ($3, $4);
+// }
+// ;
 
 
 angleCst:   TOK_ANGLE TOK_LPAREN angledef_plus TOK_RPAREN
@@ -736,16 +737,90 @@ distdef:   residueRef TOK_COLON atomRef residueRef TOK_COLON atomRef flt flt
 ;
 
 
-relationCst:   TOK_RELATIONCST TOK_LPAREN relationdef_plus TOK_RPAREN
-               {
-		 $$ = new MccRelationCstStat ($3);
-	       }
+backtrackRst:
+
+TOK_BACKTRACK_RST TOK_LPAREN fgRef keyValue_plus TOK_RPAREN
+{
+  $$ = new MccBacktrackRstStat (*$3, *$4);
+  delete $3;
+  delete $4;
+}
+;
+
+
+implicitpo4Rst:
+
+TOK_IMPLICITPHOSPHATERST TOK_LPAREN fgRef keyValue_plus TOK_RPAREN
+{
+  $$ = new MccImplicitPhosphateRstStat (*$3, *$4);
+  delete $3;
+  delete $4;
+}
+|
+TOK_IMPLICITPHOSPHATERST TOK_LPAREN fgRef TOK_LBRACKET residueRef_pair_plus TOK_RBRACKET keyValue_plus TOK_RPAREN
+{
+  $$ = new MccImplicitPhosphateRstStat (*$3, *$5, *$7);
+  delete $3;
+  delete $5;
+  delete $7;
+}
+;
+
+
+riboseRst:
+
+TOK_RIBOSERST TOK_LPAREN fgRef keyValue_plus TOK_RPAREN
+{
+  $$ = new MccRiboseRstStat (*$3, *$4);
+  delete $3;
+  delete $4;
+}
+|
+TOK_RIBOSERST TOK_LPAREN fgRef TOK_LBRACKET residueRef_singleton_plus TOK_RBRACKET keyValue_plus TOK_RPAREN
+{
+  $$ = new MccRiboseRstStat (*$3, *$5, *$7);
+  delete $3;
+  delete $5;
+  delete $7;
+}
+;
+
+
+
+
+keyValue_plus:
+
+str TOK_ASSIGN str
+{
+  pair< string, string > entry ($1, $3);
+  $$ = new map< string, string > ();
+  $$->insert (entry);
+  delete[] $1;
+  delete[] $3;
+}
+| keyValue_plus TOK_COMMA str TOK_ASSIGN str
+{
+  pair< string, string > entry ($3, $5);
+  $$ = $1;
+  $$->insert (entry);
+  delete[] $3;
+  delete[] $5;
+}
+;
+
+
+implicitRelCst:   
+
+TOK_IMPLICITRELATION TOK_LPAREN relationdef_plus TOK_RPAREN
+{
+  $$ = new MccImplicitRelationCstStat ($3);
+}
 ;
 
 
 relationdef_plus:   relationdef
                   {
-		    $$ = new vector< MccRelationCstStat::_RelationStruc* > (1, $1);
+		    $$ = new vector< MccImplicitRelationCstStat::_ImplicitRelationStruc* > (1, $1);
 		  }
                | relationdef_plus relationdef
                   {
@@ -757,7 +832,7 @@ relationdef_plus:   relationdef
 
 relationdef:   residueRef residueRef queryexp
              {
-	       $$ = new MccRelationCstStat::_RelationStruc ($1, $2, $3);
+	       $$ = new MccImplicitRelationCstStat::_ImplicitRelationStruc ($1, $2, $3);
 	     }
 ;
 
@@ -827,16 +902,16 @@ cutoff_opt:
 {
   $$ = new map< char, float > ();
 }
-| TOK_CUTOFF flt
+| TOK_CUTOFF TOK_LPAREN flt TOK_RPAREN 
 {
   $$ = new map< char, float > ();
-  $$->insert (make_pair ('A', $2));
-  $$->insert (make_pair ('S', $2));
-  $$->insert (make_pair ('P', $2));
+  $$->insert (make_pair ('A', $3));
+  $$->insert (make_pair ('S', $3));
+  $$->insert (make_pair ('P', $3));
 }
-| TOK_CUTOFF cutoff_plus
+| TOK_CUTOFF TOK_LPAREN cutoff_plus TOK_RPAREN 
 {
-  $$ = $2;
+  $$ = $3;
 }
 ;
 
@@ -879,18 +954,64 @@ pdbfile_plus:   TOK_STRING
 		 }
 ;
 
-displaydb:   TOK_DISPLAYDB
-              {
-		$$ = new MccDisplayDBStat ();
-	      }
+
+dbdisplay:   
+
+TOK_DBDISPLAY
+{
+  $$ = new MccDBDisplayStat ();
+}
 ;
+
+
+dbfilter:   
+
+TOK_DBFILTER TOK_LPAREN cutoff_opt TOK_RPAREN
+{
+  $$ = new MccDBFilterStat ($3);
+}
+;
+
+
+dbinsert:   
+
+TOK_DBINSERT TOK_LPAREN cutoff_opt input_mode TOK_RPAREN
+{
+  $$ = new MccDBInsertStat ($3, $4);
+}
+;
+
+
+dbreset:
+   
+TOK_DBRESET
+{ 
+  $$ = new MccDBResetStat (); 
+}
+;
+
+
+dbversion:   
+
+TOK_DBVERSION TOK_LPAREN TOK_STRING TOK_RPAREN
+{
+  $$ = new MccDBSetVersionStat ($3);
+  delete[] $3;
+}
+;
+
+
+
 
 displayfg:   TOK_DISPLAYFG TOK_LPAREN fgRef TOK_RPAREN
               {
 		$$ = new MccDisplayFGStat ($3);
 	      }
 ;
-  
+
+
+
+
 env:   TOK_ENV { $$ = new MccEnvStat (); }
 ;
 
@@ -916,15 +1037,31 @@ reset:   TOK_RESET { $$ = new MccResetStat (); }
 ;
 
 
-resetdb:   TOK_RESETDB { $$ = new MccResetDBStat (); }
-;
-
-
 version:   TOK_VERSION { $$ = new MccVersion (); }
 ;
 
 
 quit:   TOK_QUIT { $$ = new MccQuitStat (); }
+;
+
+
+reportImplicitPhosphate:
+
+TOK_REPORTIMPLICITPHOSPHATE TOK_LPAREN fgRef TOK_RPAREN
+{
+  $$ = new MccReportImplicitPhosphateStat (*$3);
+  delete $3;
+}
+;
+
+
+reportRibose:
+
+TOK_REPORTRIBOSE TOK_LPAREN fgRef TOK_RPAREN
+{
+  $$ = new MccReportRiboseStat (*$3);
+  delete $3;
+}
 ;
 
 
@@ -1093,18 +1230,23 @@ input_mode:
 TOK_BINARY TOK_LPAREN TOK_STRING TOK_RPAREN
 {
   $$ = new MccFileBinaryInput ($3);
+  delete[] $3;
 }
 | TOK_PDB TOK_LPAREN TOK_STRING TOK_RPAREN
 {
   $$ = new MccFilePdbInput ($3);
+  delete[] $3;
 }
 | TOK_SOCKET TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
 {
   $$ = new MccSocketBinaryInput ($3, $4, $5);
+  delete[] $3;
+  delete[] $5;
 }
 | TOK_RNAML TOK_LPAREN TOK_STRING TOK_RPAREN
 {
   $$ = new MccFileRnamlInput ($3);
+  delete[] $3;
 }
 ;
 
@@ -1186,19 +1328,104 @@ residueRef:   TOK_INTEGER { $$ = new MccResidueName ($1); }
 ;
 
 
+residueRef_pair_plus:
+
+residueRef_pair
+{
+  $$ = $1;
+}
+| residueRef_pair_plus TOK_COMMA residueRef_pair
+{
+  $$ = $1;
+  $$->add (*$3);
+  delete $3;
+}
+;
+
+
+residueRef_pair:
+
+residueRef residueRef
+{
+  $$ = new MccResidueNamePairs ();
+  $$->add (*$1, *$2);
+  delete $1;
+  delete $2;
+}
+| residueRef TOK_COLON residueRef
+{
+  $$ = new MccResidueNamePairs ();
+  $$->addRange (*$1, *$3);
+  delete $1;
+  delete $3;
+}
+;
+
+
+residueRef_singleton_plus:
+
+residueRef_singleton
+{
+  $$ = $1;
+}
+| residueRef_singleton_plus TOK_COMMA residueRef_singleton
+{
+  $$ = $1;
+  $$->add (*$3);
+  delete $3;
+}
+;
+
+
+residueRef_singleton:
+
+residueRef
+{
+  $$ = new MccResidueNameSingletons ();
+  $$->add (*$1);
+  delete $1;
+}
+| residueRef TOK_COLON residueRef
+{
+  $$ = new MccResidueNameSingletons ();
+  $$->addRange (*$1, *$3);
+  delete $1;
+  delete $3;
+}
+;
+
+
 atomRef:   TOK_IDENT { $$ = $1; }
          | TOK_RESNAME { $$ = $1; }
          | TOK_ATOM { $$ = $1; }
 ;
 
 
-fgRef_opt:   /* empty */ { $$ = 0; }
-           | fgRef { $$ = $1; }
+fgRef_opt:   
+
+/* empty */ 
+{ 
+  $$ = 0; 
+}
+| fgRef 
+{ 
+  $$ = $1; 
+}
 ;
 
 
-fgRef:   TOK_IDENT { $$ = new MccFragGenStruc ($1); }
-       | TOK_QUOTED_IDENT { $$ = new MccFragGenStruc ($1, true); }
+fgRef:   
+
+TOK_IDENT 
+{ 
+  $$ = new MccFragGenStruc ($1);
+  delete[] $1; 
+}
+| TOK_QUOTED_IDENT 
+{ 
+  $$ = new MccFragGenStruc ($1, true); 
+  delete[] $1; 
+}
 ;
 
 
@@ -1218,6 +1445,39 @@ flt:   TOK_INTEGER { $$ = $1; }
      | TOK_FLOAT { $$ = $1; }
 ;
 
+
+
+str:
+
+TOK_STRING
+{
+  $$ = $1;
+}
+| TOK_IDENT
+{
+  $$ = $1;
+}
+| TOK_QUOTED_IDENT
+{
+  $$ = $1;
+}
+| flt
+{
+  ostringstream oss;
+  oss.setf (ios::fixed, ios::floatfield);
+  oss.precision (15);
+  oss << $1;
+  $$ = strdup (oss.str ().c_str ());
+}
+| flt TOK_PERCENT
+{
+  ostringstream oss;
+  oss.setf (ios::fixed, ios::floatfield);
+  oss.precision (15);
+  oss << ($1 / 100.0);
+  $$ = strdup (oss.str ().c_str ());
+}
+;
 
 %%
 
