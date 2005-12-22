@@ -7,6 +7,11 @@
 // $Id$
 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+
 #include <math.h>
 #include <string.h>
 
@@ -655,192 +660,98 @@ MccASOrFunc::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccAddPdbStat::_AddPdbStruc::_AddPdbStruc (const MccAddPdbStat::_AddPdbStruc &right)
-  : strs (new vector< char* > ())
+MccRMSDResidueViewCache::MccRMSDResidueViewCache (float th, MccASFunc* asfn, bool af)
+  : MccResidueViewCache (),
+    threshold (th),
+    atomset (asfn),
+    alignflag (af)
 {
-  vector< char* >::const_iterator cit;
-
-  for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
-  {
-    char *str = new char[strlen (*cit) + 1];
-
-    strcpy (str, *cit);
-    strs->push_back (str);
-  }
 }
 
 
-
-MccAddPdbStat::_AddPdbStruc::~_AddPdbStruc ()
+MccResidueViewCache* 
+MccRMSDResidueViewCache::clone () const
 {
-  vector< char* >::iterator it;
-
-  for (it = strs->begin (); it != strs->end (); ++it)
-    delete [] *it;
-  delete strs;
+  return new MccRMSDResidueViewCache (this->threshold, 
+				      0 == this->atomset ? 0 : this->atomset->clone (), 
+				      this->alignflag);
 }
 
 
-
-MccAddPdbStat::_AddPdbStruc&
-MccAddPdbStat::_AddPdbStruc::operator= (const MccAddPdbStat::_AddPdbStruc &right)
+MccRMSDResidueViewCache::~MccResidueViewCache ()
 {
-  if (this != &right)
-  {
-    vector< char* >::const_iterator cit;
-    vector< char* >::iterator it;      
-      
-    for (it = strs->begin (); it != strs->end (); ++it)
-      delete[] *it;
-    strs->clear ();
-    for (cit = right.strs->begin (); cit != right.strs->end (); ++cit)
-    {
-      char *str = new char[strlen (*cit) + 1];
-	  
-      strcpy (str, *cit);
-      strs->push_back (str);
-    }
-  }
-  return *this;
+  if (this->atomset)
+    delete this->atomset;
 }
 
 
-      
 void
-MccAddPdbStat::_AddPdbStruc::accept (MccVisitor *visitor)
+MccRMSDResidueViewCache::accept (MccVisitor *visitor)
 {
   visitor->visit (this);
 }
 
 
-
 void
-MccAddPdbStat::_AddPdbStruc::display (ostream &os) const
+MccRMSDResidueViewCache::display (ostream &os) const
 {
-  vector< char* >::iterator it;
+  os << "rmsd (" << this->threshold;
 
-  for (it = strs->begin (); it != strs->end (); ++it)
-    os << "  \"" << *it << "\"";
+  if (this->atomset)
+    this->atomset->display (os << " ");
+
+  os << " " << this->alignflag << ")";
 }
-
-
-
-void
-MccAddPdbStat::_AddPdbStruc::ppdisplay (ostream &os, int indent) const
-{
-  vector< char* >::iterator it;
-
-  for (it = strs->begin (); it != strs->end (); ++it)
-  {
-    os << endl;
-    whitespaces (os, indent);
-    os << "\"" << *it << "\"";
-  }
-}
-
-
-
-MccAddPdbStat::MccAddPdbStat (const MccAddPdbStat &right)
-  : strucs (new vector< _AddPdbStruc* > ()),
-    cutoffs_asp (new map< char, float > (*right.cutoffs_asp))
-{
-  vector< _AddPdbStruc* >::const_iterator cit;
-  
-  for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-    strucs->push_back ((*cit)->clone ());
-}
-
-
-
-MccAddPdbStat::~MccAddPdbStat ()
-{
-  vector< _AddPdbStruc* >::iterator it;
-
-  for (it = strucs->begin (); it != strucs->end (); ++it)
-    delete *it;
-  delete strucs;
-
-  delete this->cutoffs_asp;
-}
-
-
-
-MccAddPdbStat&
-MccAddPdbStat::operator= (const MccAddPdbStat &right)
-{
-  if (this != &right)
-  {
-    vector< _AddPdbStruc* >::const_iterator cit;
-    vector< _AddPdbStruc* >::iterator it;
-
-    for (it = strucs->begin (); it != strucs->end (); ++it)
-      delete *it;
-    strucs->clear ();
-
-    for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
-      strucs->push_back ((*cit)->clone ());
-
-    delete this->cutoffs_asp;
-    this->cutoffs_asp = new map< char, float > (*right.cutoffs_asp);
-  }
-  return *this;
-}
-
-
-  
-void
-MccAddPdbStat::accept (MccVisitor *visitor)
-{
-  visitor->visit (this);
-}
-
 
 
 void
-MccAddPdbStat::display (ostream &os) const
+MccRMSDResidueViewCache::ppdisplay (ostream &os, int indent) const
 {
-  vector< _AddPdbStruc* >::iterator it;
-  map< char, float >::iterator cit;
-
-  os << "add_pdb (";
-  
-  if (!this->cutoffs_asp->empty ())
-  {
-    os << " cutoff";
-    for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
-      os << ' ' << cit->first << " = " << cit->second;
-  }
-
-  for (it = strucs->begin (); it != strucs->end (); ++it)
-    (*it)->display (os << ' ');
-  os << ')';
-}
-  
-
-
-void
-MccAddPdbStat::ppdisplay (ostream &os, int indent) const
-{
-  vector< _AddPdbStruc* >::iterator it;
-  map< char, float >::iterator cit;
-
-  os << "add_pdb" << endl;
-  whitespaces (os, indent + 2);
-  os << '(';
-  if (!this->cutoffs_asp->empty ())
-  {
-    whitespaces (os, indent + 4);
-    os << "cutoff";
-    for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
-      os << ' ' << cit->first << " = " << cit->second;
-  }
-  for (it = strucs->begin (); it != strucs->end (); ++it)
-  {
-    (*it)->ppdisplay (os, indent + 4);
-  }
   os << endl;
-  whitespaces (os, indent + 2);
-  os << ')' << endl;
+  whitespaces (os, indent);
+  this->display (os);
+}
+
+
+MccTFODResidueViewCache::MccTFODResidueViewCache (float th)
+  : MccResidueViewCache (),
+    threshold (th)
+{
+}
+
+
+MccResidueViewCache* 
+MccTFODResidueViewCache::clone () const
+{
+  return new MccTFODResidueViewCache (this->threshold);
+}
+
+
+MccTFODResidueViewCache::~MccResidueViewCache ()
+{
+}
+
+
+void
+MccTFODResidueViewCache::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccTFODResidueViewCache::display (ostream &os) const
+{
+  os << "tfod (" << this->threshold << ")";
+}
+
+
+void
+MccTFODResidueViewCache::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  this->display (os);
 }
 
 
@@ -1694,21 +1605,17 @@ MccCycleExpr::ppdisplay (ostream &os, int indent) const
 }
 
 
-
 MccCacheExpr::MccCacheExpr (const MccCacheExpr &right)
-  : fgref (right.fgref->clone ()),
-    filter (right.filter)
+  : fg (right.fg),
+    cache (0 == right.cache ? 0 : right.cache->clone ())
 { 
-  if (this->filter)
-    this->filter = this->filter->clone ();
 }
 
 
 MccCacheExpr::~MccCacheExpr ()
 {
-  delete this->fgref;
-  if (this->filter)
-    delete this->filter;
+  if (this->cache)
+    delete this->cache;
 }
 
 
@@ -1717,19 +1624,14 @@ MccCacheExpr::operator= (const MccCacheExpr &right)
 {
   if (this != &right)
   {
-    delete this->fgref;
-    this->fgref = right.fgref->clone ();
-    if (this->filter)
-    {
-      delete this->filter;
-      this->filter = 0;
-    }
-    if (right.filter)
-      this->filter = right.filter->clone ();
+    this->fg = right.fg;
+
+    delete this->cache;
+    if ((this->cache = right.cache))
+      this->cache = this->cache->clone ();
   }
   return *this;
 }
-
 
 
 void
@@ -1739,31 +1641,22 @@ MccCacheExpr::accept (MccVisitor *visitor)
 }
 
 
-
 void
 MccCacheExpr::display (ostream &os) const
 {
   os << "cache (";
-  fgref->display (os);
-  if (this->filter)
-    filter->display (os);
+  fg.display (os);
+  if (this->cache)
+    this->cache->display (os << " ");
   os << ')';
 }
-
 
 
 void
 MccCacheExpr::ppdisplay (ostream &os, int indent) const
 {
-  os << "cache (";
-  fgref->ppdisplay (os, indent);
-  os << endl;
-  if (this->filter)
-  {
-    whitespaces (os, indent + 4);
-    filter->ppdisplay (os, indent);
-  }
-  os << ')' << endl;
+  // no indent for an assignable
+  this->display (os);
 }
 
 
@@ -2546,7 +2439,6 @@ MccFileRnamlInput::display (ostream &os) const
 
 MccExploreStat::MccExploreStat (const MccExploreStat &right)
   : fg_struc (right.fg_struc),
-    fg_parameters (right.fg_parameters),
     exp_parameters (right.exp_parameters),
     filter (0 == right.filter ? 0 : right.filter->clone ()),
     output (0 == right.output ? 0 : right.output->clone ())
@@ -2568,7 +2460,6 @@ MccExploreStat::operator= (const MccExploreStat &right)
   if (this != &right)
   {
     this->fg_struc = right.fg_struc;
-    this->fg_parameters = right.fg_parameters;
     this->exp_parameters = right.exp_parameters;
     this->filter = 0 == right.filter ? 0 : right.filter->clone ();
     this->output = 0 == right.output ? 0 : right.output->clone ();
@@ -2594,14 +2485,6 @@ MccExploreStat::display (ostream &os) const
   os << "explore (";
   this->fg_struc.display (os);
   
-  if (!this->fg_parameters.empty ())
-  {
-    os << " parameter (";
-    for (it = this->fg_parameters.begin (); it != this->fg_parameters.end (); ++it)
-      os << " " << it->first << " = " << it->second;
-    os << ")";
-  }
-
   if (!this->exp_parameters.empty ())
   {
     os << " option (";
@@ -2639,22 +2522,6 @@ MccExploreStat::ppdisplay (ostream &os, int indent) const
 
   whitespaces (os, indent + 2);
   this->fg_struc.display (os);
-
-  if (!this->fg_parameters.empty ())
-  {
-    os << endl;
-    whitespaces (os, indent + 2);
-    os << "parameter" << endl;
-    whitespaces (os, indent + 2);
-    os << "(" << endl;
-    for (it = this->fg_parameters.begin (); it != this->fg_parameters.end (); ++it)
-    {
-      whitespaces (os, indent + 4);
-      os << it->first << " = " << it->second << endl;
-    }
-    whitespaces (os, indent + 2);
-    os << ")";
-  }
 
   if (!this->exp_parameters.empty ())
   {
@@ -2864,7 +2731,8 @@ MccLibraryExpr::_ChangeChainStruc::ppdisplay (ostream &os, int indent) const
 MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
   : inputMode (right.inputMode->clone ()),
     strucs (new vector< MccLibraryExpr::_LibStruc* > ()),
-    asis (right.asis)
+    asis (right.asis),
+    library (0 == right.library ? 0 : right.library->clone ())
 {
   vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
   
@@ -2882,6 +2750,9 @@ MccLibraryExpr::~MccLibraryExpr ()
   for (it = strucs->begin (); it != strucs->end (); it++)
     delete *it;
   delete strucs;
+
+  if (this->library)
+    delete this->library;
 }
 
 
@@ -2902,6 +2773,11 @@ MccLibraryExpr::operator= (const MccLibraryExpr &right)
     for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
       strucs->push_back ((*cit)->clone ());
     asis = right.asis;
+
+    if (this->library)
+      delete this->library;
+    if ((this->library = right.library))
+      this->library = this->library->clone ();
   }
   return *this;
 }
@@ -2923,13 +2799,19 @@ MccLibraryExpr::display (ostream &os) const
 
   os << "library (";
   inputMode->display (os);
+
   for (it = strucs->begin (); it != strucs->end (); it++)
   {
     os << ' ';
     (*it)->display (os);
   }
+
   if (this->asis)
     os << " as_is";
+
+  if (this->library)
+    this->library->display (os << " ");
+
   os << ')';
 }
 
@@ -2945,14 +2827,20 @@ MccLibraryExpr::ppdisplay (ostream &os, int indent) const
   os << '(' << endl;
   whitespaces (os, indent + 4);
   inputMode->ppdisplay (os, indent);
+
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
+
   if (this->asis)
   {
     os << endl;
     whitespaces (os, indent + 4);
     os << "as_is";
   }
+
+  if (this->library)
+    this->library->ppdisplay (os, indent + 4);
+
   os << endl;
   whitespaces (os, indent + 2);
   os << ')' << endl;
@@ -3855,56 +3743,6 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccRMSDModelFilter&
-MccRMSDModelFilter::operator= (const MccRMSDModelFilter &right)
-{
-  if (this != &right)
-  {
-    rmsBound = right.rmsBound;
-    if (this->atomset)
-    {
-      delete this->atomset;
-      this->atomset = 0;
-    }
-    if (right.atomset)
-      this->atomset = right.atomset->clone ();
-  }
-  return *this;
-}
-
-
-
-void
-MccRMSDModelFilter::accept (MccVisitor *visitor)
-{
-  visitor->visit (this);
-}
-
-
-
-void
-MccRMSDModelFilter::display (ostream &os) const
-{
-  os << "rmsd (" << rmsBound;
-  if (this->atomset)
-    this->atomset->display (os);
-  os << ")";
-}
-
-
-
-void
-MccRMSDModelFilter::ppdisplay (ostream &os, int indent) const
-{
-  os << endl;
-  whitespaces (os, indent);
-  os << "rmsd (" << rmsBound;
-  if (this->atomset)
-    this->atomset->display (os);
-  os << ")";
-}
-
-
 MccSamplingSize::MccSamplingSize (float ssize, bool pflag)
   : discrete (pflag)
 {
@@ -3964,10 +3802,10 @@ MccSamplingSize::display (ostream &os) const
 
 MccSequenceStat::MccSequenceStat (const MccSequenceStat &right)
   : type (right.type),
-    res (new MccResidueName (*right.res))
+    res (new MccResidueName (*right.res)),
+    seq (right.seq)
 {
-  seq = new char[strlen (right.seq) + 1];
-  strcpy (seq, right.seq);
+
 }
 
 
@@ -3980,9 +3818,7 @@ MccSequenceStat::operator= (const MccSequenceStat &right)
     type = right.type;
     delete res;
     res = new MccResidueName (*right.res);
-    delete[] seq;
-    seq = new char[strlen (right.seq) + 1];
-    strcpy (seq, right.seq);
+    this->seq = right.seq;
   }
   return *this;
 }
@@ -4010,9 +3846,8 @@ MccSequenceStat::display (ostream &os) const
 void
 MccSequenceStat::ppdisplay (ostream &os, int indent) const
 {
-  os << "sequence (" << type << ' ';
-  res->ppdisplay (os, indent);
-  os << ' ' << seq << ')' << endl;
+  whitespaces (os, indent);
+  this->display (os);
 }
 
 

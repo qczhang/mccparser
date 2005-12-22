@@ -52,8 +52,6 @@
   MccImplicitRelationCstStat::_ImplicitRelationStruc *rels;
   vector< MccImplicitRelationCstStat::_ImplicitRelationStruc* > *relsv;
   MccTorsionCstStat::_TorsionStruc *ts;
-  vector< MccAddPdbStat::_AddPdbStruc* > *addsv;
-  MccAddPdbStat::_AddPdbStruc *adds;
   vector< char* > *textv;
   vector< MccQueryExpr* > *qsv;
   MccQueryExpr *qs;
@@ -72,7 +70,7 @@
   MccOutputMode *expo;
   MccInputMode *inmo;
   MccSamplingSize *smpls;
-  MccRMSDModelFilter *mf;
+  MccResidueViewCache* rvc;
 }
 
 
@@ -80,7 +78,6 @@
 %token TOK_RBRACE
 %token TOK_COMMA
 %token TOK_COLON
-%token TOK_DASH
 %token TOK_LBRACKET
 %token TOK_RBRACKET
 %token TOK_PERCENT
@@ -91,14 +88,14 @@
 %token TOK_AND
 %token TOK_NOT
 %token TOK_FACE
-%token TOK_ADDPDB
-%token TOK_BASEADJACENCY
+
+%token TOK_ALIGN
 %token TOK_ANGLE
-%token TOK_ANGSTROMS
 %token TOK_ANY
 %token TOK_ASIS
 %token TOK_BACKTRACK
 %token TOK_BACKTRACK_RST
+%token TOK_BASEADJACENCY
 %token TOK_CACHE
 %token TOK_CHANGEID
 %token TOK_CUTOFF
@@ -125,10 +122,8 @@
 %token TOK_BINARY
 %token TOK_OPTION
 %token TOK_PDB
-%token TOK_PARAMETER
 %token TOK_RNAML
 %token TOK_PLACE
-%token TOK_PSEATOMS
 %token TOK_QUIT
 %token TOK_RELATION
 %token TOK_REMARK
@@ -144,6 +139,7 @@
 %token TOK_SOURCE
 %token TOK_STRIP
 %token TOK_TORSION
+%token TOK_TFOD
 %token TOK_VDWDIST
 %token TOK_VERSION
 %token TOK_ZIPPED
@@ -152,7 +148,6 @@
 %token <intval> TOK_INTEGER
 %token <floatval> TOK_FLOAT
 %token <textval> TOK_RESNAME
-%token <textval> TOK_RESNAME_RANGE
 %token <textval> TOK_ATOM
 %token <textval> TOK_IDENT
 %token <textval> TOK_QUOTED_IDENT
@@ -166,13 +161,12 @@
 %type <rsv> reldef_plus
 %type <rs> reldef
 %type <mccval> explore
-%type <stringmap> explore_param_opt
 %type <stringmap> explore_option_opt
 %type <mccval> restore
 %type <expo> output_mode_opt
 %type <expo> output_mode
-%type <mf> model_filter_opt
-%type <mf> model_filter
+%type <rvc> rv_cache_opt
+%type <rvc> rv_cache
 %type <boolval> zfile_opt
 %type <boolval> mfile_opt
 %type <mccval> source
@@ -199,13 +193,9 @@
 %type <stringmap> keyValue_plus
 
 %type <mccval> newtag
-%type <mccval> addpdb
-%type <addsv> addpdbdefs_plus
-%type <adds> addpdbdefs
 %type <cutoffval> cutoff
 %type <cutoffmap> cutoff_plus
 %type <cutoffmap> cutoff_opt
-%type <textv> pdbfile_plus
 %type <mccval> dbdisplay
 %type <mccval> dbfilter
 %type <mccval> dbinsert
@@ -307,7 +297,6 @@ statement:   sequence { $$ = $1; }
            | implicitpo4Rst { $$ = $1; }
            | riboseRst { $$ = $1; }
            | newtag { $$ = $1; }
-           | addpdb { $$ = $1; }
            | dbdisplay { $$ = $1; }
            | dbinsert { $$ = $1; }
            | dbfilter { $$ = $1; }
@@ -330,6 +319,7 @@ sequence:  TOK_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
             {
 	      $$ = new MccSequenceStat ($3[0], $4, $5);
 	      delete[] $3;
+	      delete[] $5;
 	    }
 ;
 
@@ -372,26 +362,11 @@ residueRef_pair_plus queryexp sampling
 
 explore:
 
-TOK_EXPLORE TOK_LPAREN fgRef explore_param_opt explore_option_opt model_filter_opt output_mode_opt TOK_RPAREN
+TOK_EXPLORE TOK_LPAREN fgRef explore_option_opt rv_cache_opt output_mode_opt TOK_RPAREN
 {
-  $$ = new MccExploreStat (*$3, *$4, *$5, $6, $7);
+  $$ = new MccExploreStat (*$3, *$4, $5, $6);
   delete $3;
   delete $4;
-  delete $5;
-}
-;
-
-
-explore_param_opt:
-
-/* empty */
-{
-  $$ = new map< string, string > ();
-}
-|
-TOK_PARAMETER TOK_LPAREN keyValue_plus TOK_RPAREN
-{
-  $$ = $3;
 }
 ;
 
@@ -417,18 +392,34 @@ restore:   TOK_RESTORE TOK_LPAREN TOK_STRING output_mode_opt TOK_RPAREN
 ;
 
 
-model_filter_opt: /* empty */ { $$ = 0; }
-                  | model_filter { $$ = $1; }
+rv_cache_opt: 
+
+/* empty */ 
+{ 
+  $$ = 0; 
+}
+| rv_cache 
+{ 
+  $$ = $1; 
+}
 ;
 
 
+rv_cache: 
 
-model_filter: TOK_RMSD TOK_LPAREN flt atomset_opt TOK_RPAREN
-             {
-	       $$ = new MccRMSDModelFilter ($3, $4);
-	     }
+TOK_RMSD TOK_LPAREN flt atomset_opt TOK_RPAREN
+{
+  $$ = new MccRMSDResidueViewCache ($3, $4);
+}
+| TOK_RMSD TOK_LPAREN flt atomset_opt TOK_ALIGN TOK_RPAREN
+{
+  $$ = new MccRMSDResidueViewCache ($3, $4, true);
+}
+| TOK_TFOD TOK_LPAREN flt TOK_RPAREN
+{
+  $$ = new MccTFODResidueViewCache ($3);
+}
 ;
-
 
 
 output_mode_opt:   
@@ -786,8 +777,6 @@ TOK_RIBOSERST TOK_LPAREN fgRef TOK_LBRACKET residueRef_singleton_plus TOK_RBRACK
 ;
 
 
-
-
 keyValue_plus:
 
 str TOK_ASSIGN str
@@ -870,32 +859,6 @@ newtag:   TOK_NEWTAG TOK_LPAREN TOK_STRING queryexp_plus TOK_RPAREN
 ;
 
 
-addpdb:   TOK_ADDPDB TOK_LPAREN cutoff_opt addpdbdefs_plus TOK_RPAREN
-           {
-	     $$ = new MccAddPdbStat ($3, $4);
-	   }
-;
-
-
-addpdbdefs_plus:   addpdbdefs
-                    {
-		      $$ = new vector< MccAddPdbStat::_AddPdbStruc* > (1, $1);
-		    }
-                 | addpdbdefs_plus addpdbdefs
-                    {
-		      $$ = $1;
-		      $$->push_back ($2);
-		    }
-;
-
-
-addpdbdefs:   pdbfile_plus
-               {
-		 $$ = new MccAddPdbStat::_AddPdbStruc ($1);
-	       }
-;
-
-
 cutoff_opt:
 
 /* empty */
@@ -943,18 +906,6 @@ TOK_IDENT TOK_ASSIGN flt
 ;
 
 	 
-pdbfile_plus:   TOK_STRING
-                 {
-		   $$ = new vector< char* > (1, $1);
-		 }
-              | pdbfile_plus TOK_STRING
-                 {
-		   $$ = $1;
-		   $$->push_back ($2);
-		 }
-;
-
-
 dbdisplay:   
 
 TOK_DBDISPLAY
@@ -1209,10 +1160,13 @@ cycleexp:   TOK_CYCLE TOK_LPAREN residueRef_star TOK_RPAREN
 ;
 
 
-cacheexp:   TOK_CACHE TOK_LPAREN fgRef model_filter_opt TOK_RPAREN
-             {
-	       $$ = new MccCacheExpr ($3, $4);
-	     }
+cacheexp:   
+
+TOK_CACHE TOK_LPAREN fgRef rv_cache_opt TOK_RPAREN
+{
+  $$ = new MccCacheExpr (*$3, $4);
+  delete $3;
+}
 ;
 
 

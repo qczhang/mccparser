@@ -62,7 +62,6 @@ INTEGER_LIT  (-?{DIGIT}+)
 <INITIAL,QUERIES>\/\/.*
 ,            return TOK_COMMA;
 :            return TOK_COLON;
--            return TOK_DASH;
 \[           return TOK_LBRACKET;
 \]           return TOK_RBRACKET;
 \%           return TOK_PERCENT;
@@ -74,15 +73,12 @@ INTEGER_LIT  (-?{DIGIT}+)
 <INITIAL,QUERIES>&&           return TOK_AND;
 <INITIAL,QUERIES>!            return TOK_NOT;
 
-add_pdb           return TOK_ADDPDB;
-base_adjacency    return TOK_BASEADJACENCY;
+
+aligned           return TOK_ALIGN;
 angle             return TOK_ANGLE;
-angstroms         return TOK_ANGSTROMS;
-Angstroms         return TOK_ANGSTROMS;
-angstrom          return TOK_ANGSTROMS;
-Angstrom          return TOK_ANGSTROMS;
 as_is             return TOK_ASIS;
 backtrack         return TOK_BACKTRACK;
+base_adjacency    return TOK_BASEADJACENCY;
 cache             return TOK_CACHE;
 change_id         return TOK_CHANGEID;
 cutoff            return TOK_CUTOFF;
@@ -109,7 +105,6 @@ new_tag           return TOK_NEWTAG;
 note              return TOK_NOTE;
 notes             return TOK_NOTES;
 option            return TOK_OPTION;
-parameter         return TOK_PARAMETER;
 place             return TOK_PLACE;
 quit              return TOK_QUIT;
 relation          return TOK_RELATION;
@@ -126,6 +121,7 @@ single            return TOK_SINGLE;
 socket            return TOK_SOCKET;
 source            return TOK_SOURCE;
 strip             return TOK_STRIP;
+tfod              return TOK_TFOD;
 torsion           return TOK_TORSION;
 vdw_distance      return TOK_VDWDIST;
 version           return TOK_VERSION;

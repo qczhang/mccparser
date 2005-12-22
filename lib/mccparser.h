@@ -1851,74 +1851,134 @@ public:
 };
   
 
+
 /**
- * @short Struct representing the rmsd filter cache.
+ * @short Struct representing the abstract residue view cache.
  *
  * @author Philippe Thibault <philippe.thibault@umontreal.ca>
  */
-struct MccRMSDModelFilter 
+struct MccResidueViewCache
 {
-  /**
-   * The rms bound.
-   */
-  float rmsBound;
-
-  /**
-   * The atomset filter expression.
-   */
-  MccASFunc* atomset;
-  
-  // LIFECYCLE ------------------------------------------------------------
 
 public:
-  
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccRMSDModelFilter () 
-    : rmsBound (numeric_limits< float >::max ()),
-      atomset (0)
-  { }
+
+  // LIFECYCLE ------------------------------------------------------------
 
   /**
    * Initializes the object.
-   * @param rb the rms bound.
-   * @param asfn atomset filter expression.
    */
-  MccRMSDModelFilter (float rb, MccASFunc* asfn)
-    : rmsBound (rb), atomset (asfn) { }
-
-  /**
-   * Initializes the object with the rights content.
-   * @param right the object to copy.
-   */
-  MccRMSDModelFilter (const MccRMSDModelFilter &right)
-    : rmsBound (right.rmsBound),
-      atomset (right.atomset)
-  { if (this->atomset) this->atomset = this->atomset->clone (); }
+  MccResidueViewCache () { }
+  
+private:
+  
+  MccResidueViewCache (const MccResidueViewCache& mrvc) { }
+  
+public:
 
   /**
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccRMSDModelFilter* clone () const { return new MccRMSDModelFilter (*this); }
+  virtual MccResidueViewCache* clone () const = 0;
     
   /**
    * Destroys the object.
    */
-  virtual ~MccRMSDModelFilter ()
-  { if (this->atomset) delete this->atomset; }
-  
+  virtual ~MccResidueViewCache () { }
 
   // OPERATORS ------------------------------------------------------------
 
-  /**
-   * Assigns the rights content into the object.
-   * @param right the object to copy.
-   * @return itself.
-   */
-  MccRMSDModelFilter& operator= (const MccRMSDModelFilter &right);
+private:
+
+  MccResidueViewCache& operator= (const MccResidueViewCache& mrvc) { return *this; }
+
+public:
+
+  // ACCESS ---------------------------------------------------------------
   
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor) = 0;
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const = 0;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
+};  
+
+
+/**
+ * @short Struct representing the RMSD filtered residue view cache.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccRMSDResidueViewCache : public MccResidueViewCache
+{
+  /**
+   * Minimal RMSD threshold (Angstroms).
+   */
+  float threshold;
+
+  /**
+   * Optional atom filter expression.
+   */
+  MccASFunc* atomset;
+
+  /**
+   * Optional structure alignment flag.
+   */
+  bool alignflag;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+public:
+
+  /**
+   * Initializes the object.  
+   */
+  MccRMSDResidueViewCache (float th = 0.5, MccASFunc* asfn = 0, bool af = false);
+  
+private:
+  
+  MccRMSDResidueViewCache (const MccRMSDResidueViewCache& mrrvc) { }
+  MccRMSDResidueViewCache (const MccResidueViewCache& mrvc) { }
+  
+public:
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccResidueViewCache* clone () const;
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccRMSDResidueViewCache ();
+
+  // OPERATORS ------------------------------------------------------------
+
+private:
+
+  MccRMSDResidueViewCache& operator= (const MccRMSDResidueViewCache& mrvc) { return *this; }
+  MccRMSDResidueViewCache& operator= (const MccResidueViewCache& mrrvc) { return *this; }
+
+public:
+
   // ACCESS ---------------------------------------------------------------
   
   // METHODS --------------------------------------------------------------
@@ -1947,154 +2007,53 @@ public:
 
 
 /**
- * @short Struct representing the AST node of the "add_pdb" form.
+ * @short Struct representing the TFOD filtered residue view cache.
  *
- * This structure is a vector of sub-structures _AddPdbStruc.
- * Sub-structures can be added via the GenPdbStruc method.
- *
- * @author Martin Larose <larosem@iro.umontreal.ca>
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
  */
-struct MccAddPdbStat : public MccPStruct
+struct MccTFODResidueViewCache : public MccResidueViewCache
 {
-  /**
-   * @short Sub-structure containing the pdb files associated with the cutoffs.
-   *
-   * @author Martin Larose <larosem@iro.umontreal.ca>
-   */
-  struct _AddPdbStruc
-  {
-  
-    /**
-     * Vector of pdb file names.
-     */
-    vector< char* > *strs;
-
-
-    // LIFECYCLE ------------------------------------------------------------
-
-  private:
-    /**
-     * Initializes the struct.  It should not be used.
-     */
-    _AddPdbStruc () { }
-  public:
-
-    /**
-     * Initializes the struct.
-     * @param s the vector of pdb file names.
-     */
-    _AddPdbStruc (vector< char* > *s)
-      : strs (s) { }
-
-    /**
-     * Initializes the struct with the rights content.
-     * @param right the object to copy.
-     */
-    _AddPdbStruc (const _AddPdbStruc &right);
-     
-    /**
-     * Destroys the structure.  Clears the vector of file names.
-     */
-    ~_AddPdbStruc ();
-
-    // OPERATORS ------------------------------------------------------------
-
-    /**
-     * Assigns the rights content into the object.
-     * @param right the object to copy.
-     * @return itself.
-     */
-    _AddPdbStruc& operator= (const _AddPdbStruc &right);
-
-    // ACCESS ---------------------------------------------------------------
-
-    // METHODS --------------------------------------------------------------
-
-    /**
-     * Replicates the object.
-     * @return a copy of the current object.
-     */
-    _AddPdbStruc* clone () const { return new _AddPdbStruc (*this); }
-
-    /**
-     * Accepts the visitor and calls it on itself.
-     * @param visitor the visitor.
-     */
-    void accept (MccVisitor *visitor);
-
-    // I/O ------------------------------------------------------------
-
-    /**
-     * Displays the substructure.
-     * @param os the output stream where the message is displayed.
-     */
-    void display (ostream &os) const;
-
-    /**
-     * Displays the script in human readable form.
-     * @param os the output stream used.
-     * @param ident the identation level.
-     */
-    void ppdisplay (ostream &os, int indent = 0) const;
-  };
-
-  /**
-   * The vector containing the sub-structures.
-   */
-  vector< _AddPdbStruc* > *strucs;
-  
-  map< char, float >* cutoffs_asp;
+  float threshold;
 
   // LIFECYCLE ------------------------------------------------------------
 
-  /**
-   * Initializes the object.
-   */
-  MccAddPdbStat ()
-    : strucs (new vector< _AddPdbStruc* > ()),
-      cutoffs_asp (new map< char, float > ())
-  { }
+public:
 
   /**
-   * Initializes the object.
-   * @param apsv the add_pdb sub-structure vector.
-   * @param cut the cutoff value.
+   * Initializes the object.  
    */
-  MccAddPdbStat (map< char, float >* cutmap,
-		 vector< _AddPdbStruc* > *apsv)
-    : strucs (apsv),
-      cutoffs_asp (cutmap)
-  { }
-
-  /**
-   * Initializes the struct with the rights content.
-   * @param right the object to copy.
-   */
-  MccAddPdbStat (const MccAddPdbStat &right);
+  MccTFODResidueViewCache (float th = 0.5);
   
-  /**
-   * Destroys the structure.  Clears the vector of sub-structures.
-   */
-  virtual ~MccAddPdbStat ();
-
-  // OPERATORS ------------------------------------------------------------
-
-  /**
-   * Assigns the rights content into the object.
-   * @param right the object to copy.
-   * @return itself.
-   */
-  MccAddPdbStat& operator= (const MccAddPdbStat &right);
+private:
   
-  // ACCESS ---------------------------------------------------------------
-
-  // METHODS --------------------------------------------------------------
+  MccTFODResidueViewCache (const MccTFODResidueViewCache& mrrvc) { }
+  MccTFODResidueViewCache (const MccResidueViewCache& mrvc) { }
+  
+public:
 
   /**
    * Replicates the object.
    * @return a copy of the current object.
    */
-  virtual MccAddPdbStat* clone () const { return new MccAddPdbStat (*this); }
+  virtual MccResidueViewCache* clone () const;
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccTFODResidueViewCache ();
+
+  // OPERATORS ------------------------------------------------------------
+
+private:
+
+  MccTFODResidueViewCache& operator= (const MccTFODResidueViewCache& mrvc) { return *this; }
+  MccTFODResidueViewCache& operator= (const MccResidueViewCache& mrrvc) { return *this; }
+
+public:
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
 
   /**
    * Accepts the visitor and calls it on itself.
@@ -2102,17 +2061,8 @@ struct MccAddPdbStat : public MccPStruct
    */
   virtual void accept (MccVisitor *visitor);
 
-  /**
-   * Generates a new sub-structure and puts it in the vector.
-   * @param ctc the transfo cutoff value.
-   * @param ccc the confo cutoff value.
-   * @param s the vector of pdb file names.
-   */
-  void GenPdbStruc (vector< char* > *s)
-  { strucs->push_back (new _AddPdbStruc (s)); }
-
-  // I/O ------------------------------------------------------------
-
+  // I/O  -----------------------------------------------------------------
+  
   /**
    * Displays the structure.
    * @param os the output stream where the message is displayed.
@@ -2125,7 +2075,7 @@ struct MccAddPdbStat : public MccPStruct
    * @param ident the identation level.
    */
   virtual void ppdisplay (ostream &os, int indent = 0) const;
-};
+};  
 
 
 /**
@@ -3178,12 +3128,12 @@ struct MccCacheExpr : public MccFGExp
   /**
    * The FG structure to cache.
    */
-  MccFragGenStruc *fgref;
+  MccFragGenStruc fg;
 
   /**
    * The model cache.
    */
-  MccRMSDModelFilter *filter;
+  MccResidueViewCache* cache;
   
 protected:
   
@@ -3201,8 +3151,11 @@ public:
    * @param f the FG structure to cache.
    * @param c the model filter structure.
    */
-  MccCacheExpr (MccFragGenStruc *f, MccRMSDModelFilter *c)
-    : fgref (f), filter (c) { }
+  MccCacheExpr (const MccFragGenStruc& mfgs, MccResidueViewCache* mrvc = 0)
+    : fg (mfgs),
+      cache (mrvc)
+  {
+  }
 
   /**
    * Initializes the object with the rights content.
@@ -5120,11 +5073,6 @@ struct MccExploreStat : public MccPStruct
   MccFragGenStruc fg_struc;
   
   /**
-   * Parameters to the explored FG.
-   */
-  map< string, string > fg_parameters;
-
-  /**
    * Parameters to the global exploration mechanism.
    */
   map< string, string > exp_parameters;
@@ -5132,7 +5080,7 @@ struct MccExploreStat : public MccPStruct
   /**
    * The model cache.
    */
-  MccRMSDModelFilter* filter;
+  MccResidueViewCache* filter;
   
   /**
    * The explore output file structure.
@@ -5152,14 +5100,12 @@ public:
   { }
 
   MccExploreStat (const MccFragGenStruc& fg,
-		  const map< string, string >& fg_par,
 		  const map< string, string >& exp_par,
-		  MccRMSDModelFilter* f,
+		  MccResidueViewCache* mrvc,
 		  MccOutputMode* ef)
     : fg_struc (fg),
-      fg_parameters (fg_par),
       exp_parameters (exp_par),
-      filter (f),
+      filter (mrvc),
       output (ef)
   { }
 
@@ -5555,6 +5501,8 @@ struct MccLibraryExpr : public MccFGExp
    * Flag acknowledging if model should be pre-filtered by constraints.
    */
   bool asis;
+
+  MccResidueViewCache* library;
   
 protected:
   
@@ -5572,8 +5520,16 @@ public:
    * @param im the input model mode.
    * @param lsv the vector containing the library sub-structures.
    */
-  MccLibraryExpr (MccInputMode *im, vector< _LibStruc* > *lsv, bool asis_flag)
-    : inputMode (im), strucs (lsv), asis (asis_flag) { }
+  MccLibraryExpr (MccInputMode *im, 
+		  vector< _LibStruc* > *lsv, 
+		  bool asis_flag,
+		  MccResidueViewCache* mrvc = 0)
+    : inputMode (im), 
+      strucs (lsv), 
+      asis (asis_flag),
+      library (mrvc)
+  { 
+  }
 
   /**
    * Initializes the object with the rights content.
@@ -6939,6 +6895,7 @@ public:
  */
 struct MccSequenceStat : public MccPStruct
 {
+
   /**
    * The type of the defined sequence [pdr].
    */
@@ -6952,7 +6909,7 @@ struct MccSequenceStat : public MccPStruct
   /**
    * The sequence.
    */
-  char *seq;
+  string seq;
 
 protected:
 
@@ -6967,12 +6924,12 @@ public:
 
   /**
    * Initializes the object.
-   * @param typ the type of the defined sequence.
+   * @param t the type of the defined sequence.
    * @param res the residue name of the first residue in the sequence.
    * @param str the sequence.
    */
-  MccSequenceStat (char typ, MccResidueName *r, char *str)
-    : type (typ), res (r), seq (str)
+  MccSequenceStat (char t, MccResidueName *r, const string& s)
+    : type (t), res (r), seq (s)
   { }
 
   /**
@@ -6984,7 +6941,7 @@ public:
   /**
    * Destroys the object.
    */
-  virtual ~MccSequenceStat () { delete res; delete[] seq; }
+  virtual ~MccSequenceStat () { delete res; }
 
   // OPERATORS -----------------------------------------------------------
 
@@ -7724,18 +7681,17 @@ public:
    */
   virtual void visit (MccASOrFunc *struc) = 0;
 
-  
   /**
-   * Visits the MccAddPdbStat::_AddPdbStruc structure.
+   * Visits the MccRMSDResidueViewCache structure.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccAddPdbStat::_AddPdbStruc *struc) = 0;
+  virtual void visit (MccRMSDResidueViewCache* struc) = 0;
 
   /**
-   * Visits the MccAddPdbStat structure.
+   * Visits the MccTFODResidueViewCache structure.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccAddPdbStat *struc) = 0;
+  virtual void visit (MccTFODResidueViewCache* struc) = 0;
 
   /**
    * Visits the MccDBSetVersionStat structure.
@@ -7754,12 +7710,6 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void visit (MccBaseAdjacencyCstStat *struc) = 0;
-  
-//   /**
-//    * Visits the MccRiboseAdjacencyCstStat structure.
-//    * @param struc the evaluated structure.
-//    */
-//   virtual void visit (MccRiboseAdjacencyCstStat *struc) = 0;
   
   /**
    * Visits the MccAngleCstStat::_AngleStruc structure.
@@ -8042,12 +7992,6 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void visit (MccRestoreStat *struc) = 0;
-  
-  /**
-   * Visits the MccRMSDModelFilter structure.
-   * @param struc the evaluated structure.
-   */
-  virtual void visit (MccRMSDModelFilter *struc) = 0;
   
   /**
    * Visits the MccSamplingSize structure.
