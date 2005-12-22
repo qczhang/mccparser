@@ -1,6 +1,34 @@
+2005-12-22  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* lib/Makefile.in, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
+	updated with mcsym-4.0.0-rc2
+
+	* docs/Manual.tex: marked as outdated, need update.
+
+2005-09-30  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* config.h.in, configure, configure.in: *** empty log message ***
+
+	* lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
+	last update with mcsym-4.0.0-rc1
+
+	* lib/Version.cc, lib/Version.h:
+	new Version class that wraps compilation and version info.
+
+2005-05-12  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* configure, configure.in, docs/Manual.tex, lib/Makefile.in, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
+	updates for version 1.5
+
+2005-05-10  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* config.guess, config.sub: updated files
+
 2005-01-24  Philippe Thibault  <philippe.thibault@umontreal.ca>
 
-	* mccp.y, mccp.yy, mccparser.cc, mccparser.h:
+	* ChangeLog: *** empty log message ***
+
+	* configure, configure.in, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
 	new version 1.5 to be used with mcsym-4.0.0
 	doc still not updated :(
 
