@@ -678,7 +678,7 @@ MccRMSDResidueViewCache::clone () const
 }
 
 
-MccRMSDResidueViewCache::~MccResidueViewCache ()
+MccRMSDResidueViewCache::~MccRMSDResidueViewCache ()
 {
   if (this->atomset)
     delete this->atomset;
@@ -727,7 +727,7 @@ MccTFODResidueViewCache::clone () const
 }
 
 
-MccTFODResidueViewCache::~MccResidueViewCache ()
+MccTFODResidueViewCache::~MccTFODResidueViewCache ()
 {
 }
 
