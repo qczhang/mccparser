@@ -2217,14 +2217,14 @@ struct MccAngleCstStat : public MccPStruct
     char *at3;
 
     /**
-     * The minimum angle value (in degrees).
+     * The target angle value (in degrees).
      */
-    float dist_min;
+    float angle;
 
     /**
-     * The maximum angle value (in degrees).
+     * The absolute error value (in degrees).
      */
-    float dist_max;
+    float error;
 
     
     // LIFECYCLE ------------------------------------------------------------
@@ -2248,9 +2248,9 @@ struct MccAngleCstStat : public MccPStruct
      * @param mx the maximum angle value (in degrees).
      */
     _AngleStruc (MccResidueName *r1, char *a1, MccResidueName *r2, char *a2,
-		 MccResidueName *r3, char *a3, float mn, float mx)
+		 MccResidueName *r3, char *a3, float a, float e)
       : res1 (r1), at1 (a1), res2 (r2), at2 (a2), res3 (r3), at3 (a3),
-	dist_min (mn), dist_max (mx)
+	angle (a), error (e)
     { }
 
     /**
@@ -7133,14 +7133,14 @@ struct MccTorsionCstStat : public MccPStruct
     char *at4;
     
     /**
-     * The minimum torsion angle value (in degrees).
+     * The target torsion angle value (in degrees).
      */
-    float min;
+    float angle;
 
     /**
-     * The maximum torsion angle value (in degrees).
+     * The absolute error value (in degrees).
      */
-    float max;
+    float error;
     
 
     // LIFECYCLE ------------------------------------------------------------
@@ -7167,10 +7167,10 @@ struct MccTorsionCstStat : public MccPStruct
      */
     _TorsionStruc (MccResidueName *r1, char *a1, MccResidueName *r2, char *a2,
 		   MccResidueName *r3, char *a3, MccResidueName *r4, char *a4,
-		   float mn, float mx)
+		   float a, float e)
       : res1 (r1), at1 (a1), res2 (r2), at2 (a2),
 	res3 (r3), at3 (a3), res4 (r4), at4 (a4),
-	min (mn), max (mx)
+	angle (a), error (e)
     { }
 
     /**

@@ -256,7 +256,7 @@
 %type <fgr> fgRef
 
 %type <textval> ident_plus
-%type <textval> str
+%type <textval> strVal
 %type <floatval> flt
 %expect 1
 
@@ -779,7 +779,7 @@ TOK_RIBOSERST TOK_LPAREN fgRef TOK_LBRACKET residueRef_singleton_plus TOK_RBRACK
 
 keyValue_plus:
 
-str TOK_ASSIGN str
+strVal TOK_ASSIGN strVal
 {
   pair< string, string > entry ($1, $3);
   $$ = new map< string, string > ();
@@ -787,7 +787,7 @@ str TOK_ASSIGN str
   delete[] $1;
   delete[] $3;
 }
-| keyValue_plus TOK_COMMA str TOK_ASSIGN str
+| keyValue_plus TOK_COMMA strVal TOK_ASSIGN strVal
 {
   pair< string, string > entry ($3, $5);
   $$ = $1;
@@ -1401,7 +1401,7 @@ flt:   TOK_INTEGER { $$ = $1; }
 
 
 
-str:
+strVal:
 
 TOK_STRING
 {

@@ -928,8 +928,8 @@ MccAngleCstStat::_AngleStruc::_AngleStruc (const MccAngleCstStat::_AngleStruc &r
   : res1 (new MccResidueName (*right.res1)),
     res2 (new MccResidueName (*right.res2)),
     res3 (new MccResidueName (*right.res3)),
-    dist_min (right.dist_min),
-    dist_max (right.dist_max)
+    angle (right.angle),
+    error (right.error)
 {
   at1 = new char[strlen (right.at1) + 1];
   strcpy (at1, right.at1);
@@ -973,8 +973,8 @@ MccAngleCstStat::_AngleStruc::operator= (const MccAngleCstStat::_AngleStruc &rig
     delete[] at3;
     at3 = new char[strlen (right.at3) + 1];
     strcpy (at3, right.at3);
-    dist_min = right.dist_min;
-    dist_max = right.dist_max;
+    angle = right.angle;
+    error = right.error;
   }
   return *this;
 }
@@ -997,7 +997,7 @@ MccAngleCstStat::_AngleStruc::display (ostream &os) const
   res2->display (os);
   os << ":" << at2 << ' ';
   res3->display (os);
-  os << ":" << at3 << ' ' << dist_min << ' ' << dist_max;
+  os << ":" << at3 << ' ' << angle << ' ' << error;
 }
 
 
@@ -1012,7 +1012,7 @@ MccAngleCstStat::_AngleStruc::ppdisplay (ostream &os, int indent) const
   res2->ppdisplay (os, indent);
   os << ":" << at2 << ' ';
   res3->ppdisplay (os, indent);
-  os << ":" << at3 << ' ' << dist_min << ' ' << dist_max;
+  os << ":" << at3 << ' ' << angle << ' ' << error;
 }
 
 
@@ -3896,8 +3896,8 @@ MccTorsionCstStat::_TorsionStruc::_TorsionStruc (const MccTorsionCstStat::_Torsi
     res2 (new MccResidueName (*right.res2)),
     res3 (new MccResidueName (*right.res3)),
     res4 (new MccResidueName (*right.res4)),
-    min (right.min),
-    max (right.max)
+    angle (right.angle),
+    error (right.error)
 {
   at1 = new char[strlen (right.at1) + 1];
   strcpy (at1, right.at1);
@@ -3950,8 +3950,8 @@ MccTorsionCstStat::_TorsionStruc::operator= (const MccTorsionCstStat::_TorsionSt
     delete at4;
     at4 = new char[strlen (right.at4) + 1];
     strcpy (at4, right.at4);
-    min = right.min;
-    max = right.max;
+    angle = right.angle;
+    error = right.error;
   }
   return *this;
 }
@@ -3976,7 +3976,7 @@ MccTorsionCstStat::_TorsionStruc::display (ostream &os) const
   res3->display (os);
   os << ':' << at3 << ' ';
   res4->display (os);
-  os << ':' << at4 << ' ' << min << ' ' << max;
+  os << ':' << at4 << ' ' << angle << ' ' << error;
 }
 
 
@@ -3993,7 +3993,7 @@ MccTorsionCstStat::_TorsionStruc::ppdisplay (ostream &os, int indent) const
   res3->ppdisplay (os, indent);
   os << ':' << at3 << ' ';
   res4->ppdisplay (os, indent);
-  os << ':' << at4 << ' ' << min << ' ' << max;
+  os << ':' << at4 << ' ' << angle << ' ' << error;
 }
 
 
