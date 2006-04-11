@@ -148,6 +148,7 @@
 %token <intval> TOK_INTEGER
 %token <floatval> TOK_FLOAT
 %token <textval> TOK_RESNAME
+%token <textval> TOK_RELATIVE_RESNAME
 %token <textval> TOK_ATOM
 %token <textval> TOK_IDENT
 %token <textval> TOK_QUOTED_IDENT
@@ -1269,16 +1270,42 @@ residueRef_plus:   residueRef { $$ = new vector< MccResidueName* > (1, $1); }
 ;
 		 
 
-residueRef:   TOK_INTEGER { $$ = new MccResidueName ($1); }
-            | TOK_RESNAME
-               {
-		 char tmp_char;
-		 int tmp_int;
-		 
-		 sscanf ($1, "%c%d", &tmp_char, &tmp_int); 
-		 $$ = new MccResidueName (tmp_char, tmp_int);
-		 delete $1;
-	       }
+residueRef:   
+
+TOK_INTEGER 
+{ 
+  $$ = new MccResidueName ($1); 
+}
+| TOK_RESNAME
+{
+  char tmp_char;
+  int tmp_int;
+  
+  sscanf ($1, "%c%d", &tmp_char, &tmp_int); 
+  $$ = new MccResidueName (tmp_char, tmp_int);
+  delete $1;
+}
+| TOK_RELATIVE_RESNAME
+{
+  char tmp_char;
+  int tmp_int;
+  
+  sscanf ($1, "%c%d", &tmp_char, &tmp_int); 
+  $$ = new MccResidueName (tmp_char, tmp_int);
+  delete $1;
+}
+| TOK_QUOTED_IDENT TOK_INTEGER
+{
+  if (strlen ($1) > 1)
+  {
+    ostringstream oss;
+    oss << "invalid multicharacter chain ID \'" << $1 << "\'";
+    mccerror (oss.str ().c_str ());
+  }
+
+  $$ = new MccResidueName ($1[0], $2);
+  delete $1;
+}
 ;
 
 

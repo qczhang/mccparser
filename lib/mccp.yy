@@ -135,7 +135,7 @@ report_ribose     return TOK_REPORTRIBOSE;
 {INTEGER_LIT}\.{DIGIT}*  mcclval.floatval = atof (mcctext); return TOK_FLOAT;
 
 {LETTER}{DIGIT}+  mcclval.textval = mcccopy (mcctext); return TOK_RESNAME;
-
+\#{DIGIT}+  mcclval.textval = mcccopy (mcctext); return TOK_RELATIVE_RESNAME;
 
 
 {DIGIT}{LETTER}{LETTER}?{DIGIT}[\*M]? {
