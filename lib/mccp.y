@@ -315,12 +315,18 @@ statement:   sequence { $$ = $1; }
 ;
 
 
-sequence:  TOK_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
-            {
-	      $$ = new MccSequenceStat ($3[0], $4, $5);
-	      delete[] $3;
-	      delete[] $5;
-	    }
+sequence:  
+TOK_SEQUENCE TOK_LPAREN TOK_IDENT residueRef ident_plus TOK_RPAREN
+{
+  $$ = new MccSequenceStat ($3[0], $4, $5);
+  delete[] $3;
+  delete[] $5;
+}
+| TOK_SEQUENCE TOK_LPAREN residueRef ident_plus TOK_RPAREN
+{
+  $$ = new MccSequenceStat ('r', $3, $4);
+  delete[] $4;
+}
 ;
 
 
