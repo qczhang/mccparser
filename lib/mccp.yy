@@ -65,6 +65,7 @@ INTEGER_LIT  (-?{DIGIT}+)
 \[           return TOK_LBRACKET;
 \]           return TOK_RBRACKET;
 \%           return TOK_PERCENT;
+\<\-         return TOK_LARROW;
 <INITIAL,QUERIES>\(        return TOK_LPAREN;
 <INITIAL,QUERIES>\)        return TOK_RPAREN;
 =            return TOK_ASSIGN;

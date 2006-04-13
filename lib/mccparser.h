@@ -5166,342 +5166,34 @@ public:
 /**
  * @short Struct representing a "library" AST node.
  *
- * The struct contains a local hierarchy of statements: _LibStruc (the
- * parent), _StripStruc (for the "strip" substatement) and _ChangeIdStruc
- * (for the "change_id" substatement).
- *
  * @author Martin Larose <larosem@iro.umontreal.ca>
  */
 struct MccLibraryExpr : public MccFGExp
 {
-  /**
-   * @short Parent struct for the MccLibraryExpr sub-structures.
-   *
-   * @author Martin Larose <larosem@iro.umontreal.ca>
-   */
-  struct _LibStruc
-  {
-
-    // LIFECYCLE ------------------------------------------------------------
-    
-    /**
-     * Initializes the object.  It should never be used.
-     */
-    _LibStruc () { }
-    
-    /**
-     * Initializes the object with the rights content.
-     * @param right the object to copy.
-     */
-    _LibStruc (const _LibStruc &right) { }
-
-    /**
-     * Destroys the object.  The destruction is controlled by the children
-     * of the structure.
-     */
-    virtual ~_LibStruc () { }
-
-    // OPERATORS ------------------------------------------------------------
-
-    /**
-     * Assigns the rights content into the object.
-     * @param right the object to copy.
-     * @return itself.
-     */
-    _LibStruc& operator= (const _LibStruc &right) { return *this; }
-  
-    // ACCESS ---------------------------------------------------------------
-    
-    // METHODS --------------------------------------------------------------
-
-    /**
-     * Replicates the object.  The replication is controlled by the children.
-     * @return a copy of the current object.
-     */
-    virtual _LibStruc* clone () const = 0;
-    
-    /**
-     * Accepts the visitor and calls it on itself.
-     * @param visitor the visitor.
-     */
-    virtual void accept (MccVisitor *visitor) = 0;
-
-    // I/O  -----------------------------------------------------------------
-    
-    /**
-     * Displays the structure.
-     * @param os the output stream where the message is displayed.
-     */
-    virtual void display (ostream &os) const = 0;
-
-    /**
-     * Displays the script in human readable form.
-     * @param os the output stream used.
-     * @param ident the identation level.
-     */
-    virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
-  };
   
   /**
-   * @short Struct containing the residue names to strip.
-   *
-   * @author Martin Larose <larosem@iro.umontreal.ca>
+   * The input model modes.
    */
-  struct _StripStruc : public _LibStruc
-  {
-    /**
-     * The residue name vector.
-     */
-    vector< MccResidueName* > *res_vec;
-    
-    // LIFECYCLE ------------------------------------------------------------
-
-  private:
-    /**
-     * Initializes the object.  It should never be used.
-     */
-    _StripStruc ()
-      : _LibStruc (), res_vec (0) { }
-    
-  public:
-
-    /**
-     * Initializes the object.
-     * @param rv the residue name vector
-     */
-    _StripStruc (vector< MccResidueName* > *rv)
-      : _LibStruc (), res_vec (rv) { }
-
-    /**
-     * Initializes the object with the rights content.
-     * @param right the object to copy.
-     */
-    _StripStruc (const _StripStruc &right);
-
-    virtual ~_StripStruc ();
-    
-    // OPERATORS ------------------------------------------------------------
-
-    /**
-     * Assigns the rights content into the object.
-     * @param right the object to copy.
-     * @return itself.
-     */
-    _StripStruc& operator= (const _StripStruc &right);
-  
-    // ACCESS ---------------------------------------------------------------
-    
-    // METHODS --------------------------------------------------------------
-
-    /**
-     * Replicates the object.
-     * @return a copy of the current object.
-     */
-    virtual _StripStruc* clone () const { return new _StripStruc (*this); }
-    
-    /**
-     * Accepts the visitor and calls it on itself.
-     * @param visitor the visitor.
-     */
-    virtual void accept (MccVisitor *visitor);
-
-    // I/O  -----------------------------------------------------------------
-    
-    /**
-     * Displays the structure.
-     * @param os the output stream where the message is displayed.
-     */
-    virtual void display (ostream &os) const;
-
-    /**
-     * Displays the script in human readable form.
-     * @param os the output stream used.
-     * @param ident the identation level.
-     */
-    virtual void ppdisplay (ostream &os, int indent = 0) const;
-  };
+  vector< MccInputMode* > inputModes;
 
   /**
-   * @short Struct containing the residue id to change.
-   *
-   * @author Martin Larose <larosem@iro.umontreal.ca>
+   * Original residue names to be changed.
    */
-  struct _ChangeIdStruc : public _LibStruc
-  {
-    // LIFECYCLE ------------------------------------------------------------
-
-    MccResidueName* old_id;
-    MccResidueName* new_id;
-    
-  private:
-    
-    /**
-     * Initializes the object.  It should never be used.
-     */
-    _ChangeIdStruc () : _LibStruc () { }
-    
-  public:
-
-    /**
-     * Initializes the object.
-     * @param o the old residue ID.
-     * @param n the new residue ID.
-     */
-    _ChangeIdStruc (MccResidueName* o, MccResidueName* n)
-      : _LibStruc (), old_id (o), new_id (n) { }
-
-    /**
-     * Initializes the object with the rights content.
-     * @param right the object to copy.
-     */
-    _ChangeIdStruc (const _ChangeIdStruc &right)
-      : _LibStruc (right),
-	old_id (right.old_id->clone ()),
-	new_id (right.new_id->clone ())
-    { }
-
-    virtual ~_ChangeIdStruc ();
-    
-    // OPERATORS ------------------------------------------------------------
-
-    /**
-     * Assigns the rights content into the object.
-     * @param right the object to copy.
-     * @return itself.
-     */
-    _ChangeIdStruc& operator= (const _ChangeIdStruc &right);
-  
-    // ACCESS ---------------------------------------------------------------
-    
-    // METHODS --------------------------------------------------------------
-
-    /**
-     * Replicates the object.
-     * @return a copy of the current object.
-     */
-    virtual _ChangeIdStruc* clone () const { return new _ChangeIdStruc (*this); }
-    
-    /**
-     * Accepts the visitor and calls it on itself.
-     * @param visitor the visitor.
-     */
-    virtual void accept (MccVisitor *visitor);
-
-    // I/O  -----------------------------------------------------------------
-    
-    /**
-     * Displays the structure.
-     * @param os the output stream where the message is displayed.
-     */
-    virtual void display (ostream &os) const;
-
-    /**
-     * Displays the script in human readable form.
-     * @param os the output stream used.
-     * @param ident the identation level.
-     */
-    virtual void ppdisplay (ostream &os, int indent = 0) const;
-  };
-
-  
-  /**
-   * @short Struct containing the chain id to change.
-   *
-   * @author Martin Larose <larosem@iro.umontreal.ca>
-   */
-  struct _ChangeChainStruc : public _LibStruc
-  {
-    // LIFECYCLE ------------------------------------------------------------
-
-    char old_chain;
-    char new_chain;
-    
-  private:
-    
-    /**
-     * Initializes the object.  It should never be used.
-     */
-    _ChangeChainStruc () : _LibStruc () { }
-    
-  public:
-
-    /**
-     * Initializes the object.
-     * @param o the old residue chain ID.
-     * @param n the new residue chain ID.
-     */
-    _ChangeChainStruc (char o, char n)
-      : _LibStruc (), old_chain (o), new_chain (n) { }
-
-    /**
-     * Initializes the object with the rights content.
-     * @param right the object to copy.
-     */
-    _ChangeChainStruc (const _ChangeChainStruc &right)
-      : _LibStruc (right),
-	old_chain (right.old_chain),
-	new_chain (right.new_chain)
-    { }
-
-    virtual ~_ChangeChainStruc () { }
-    
-    // OPERATORS ------------------------------------------------------------
-
-    /**
-     * Assigns the rights content into the object.
-     * @param right the object to copy.
-     * @return itself.
-     */
-    _ChangeChainStruc& operator= (const _ChangeChainStruc &right);
-  
-    // ACCESS ---------------------------------------------------------------
-    
-    // METHODS --------------------------------------------------------------
-
-    /**
-     * Replicates the object.
-     * @return a copy of the current object.
-     */
-    virtual _ChangeChainStruc* clone () const { return new _ChangeChainStruc (*this); }
-    
-    /**
-     * Accepts the visitor and calls it on itself.
-     * @param visitor the visitor.
-     */
-    virtual void accept (MccVisitor *visitor);
-
-    // I/O  -----------------------------------------------------------------
-    
-    /**
-     * Displays the structure.
-     * @param os the output stream where the message is displayed.
-     */
-    virtual void display (ostream &os) const;
-
-    /**
-     * Displays the script in human readable form.
-     * @param os the output stream used.
-     * @param ident the identation level.
-     */
-    virtual void ppdisplay (ostream &os, int indent = 0) const;
-  };
-
-  
-  /**
-   * The input model mode.
-   */
-  MccInputMode *inputMode;
+  MccResidueNameSingletons res_from;
 
   /**
-   * The vector containing the sub-structures.
+   * New residue names.
    */
-  vector< _LibStruc* > *strucs;
+  MccResidueNameSingletons res_to;
 
   /**
    * Flag acknowledging if model should be pre-filtered by constraints.
    */
   bool asis;
 
+  /**
+   * Specialized library container (NULL if unspecified).
+   */
   MccResidueViewCache* library;
   
 protected:
@@ -5520,16 +5212,28 @@ public:
    * @param im the input model mode.
    * @param lsv the vector containing the library sub-structures.
    */
-  MccLibraryExpr (MccInputMode *im, 
-		  vector< _LibStruc* > *lsv, 
+  MccLibraryExpr (const vector< MccInputMode* >& imv, 
 		  bool asis_flag,
 		  MccResidueViewCache* mrvc = 0)
-    : inputMode (im), 
-      strucs (lsv), 
+    : inputModes (imv), 
       asis (asis_flag),
       library (mrvc)
   { 
   }
+
+  MccLibraryExpr (const vector< MccInputMode* >& imv,
+		  const MccResidueNameSingletons& from,
+		  const MccResidueNameSingletons& to,
+		  bool asis_flag,
+		  MccResidueViewCache* mrvc = 0)
+    : inputModes (imv), 
+      res_from (from),
+      res_to (to),
+      asis (asis_flag),
+      library (mrvc)
+  { 
+  }
+
 
   /**
    * Initializes the object with the rights content.
@@ -5566,29 +5270,6 @@ public:
    * @param visitor the visitor.
    */
   virtual void accept (MccVisitor *visitor);
-
-  /**
-   * Generates a new strip sub-structure and puts it in the vector.
-   * @param rv the residue name vector.
-   */
-  void genStripStruc (vector< MccResidueName* > *rv)
-  { strucs->push_back (new _StripStruc (rv)); }
-
-  /**
-   * Generates a new ChangeId sub-structure and puts it in the vector.
-   * @param o the old residue ID.
-   * @param n the new residue ID.
-   */
-  void genChangeIdStruc (MccResidueName* o, MccResidueName* n)
-  { strucs->push_back (new _ChangeIdStruc (o, n)); }
-
-  /**
-   * Generates a new ChangeChain sub-structure and puts it in the vector.
-   * @param o the old residue chain ID.
-   * @param n the new residue chain ID.
-   */
-  void genChangeChainStruc (char o, char n)
-  { strucs->push_back (new _ChangeChainStruc (o, n)); }
   
   // I/O  -----------------------------------------------------------------
   
@@ -5605,6 +5286,452 @@ public:
    */
   virtual void ppdisplay (ostream &os, int indent = 0) const;
 };
+
+
+
+// /**
+//  * @short Struct representing a "library" AST node.
+//  *
+//  * The struct contains a local hierarchy of statements: _LibStruc (the
+//  * parent), _StripStruc (for the "strip" substatement) and _ChangeIdStruc
+//  * (for the "change_id" substatement).
+//  *
+//  * @author Martin Larose <larosem@iro.umontreal.ca>
+//  */
+// struct MccLibraryExpr : public MccFGExp
+// {
+//   /**
+//    * @short Parent struct for the MccLibraryExpr sub-structures.
+//    *
+//    * @author Martin Larose <larosem@iro.umontreal.ca>
+//    */
+//   struct _LibStruc
+//   {
+
+//     // LIFECYCLE ------------------------------------------------------------
+    
+//     /**
+//      * Initializes the object.  It should never be used.
+//      */
+//     _LibStruc () { }
+    
+//     /**
+//      * Initializes the object with the rights content.
+//      * @param right the object to copy.
+//      */
+//     _LibStruc (const _LibStruc &right) { }
+
+//     /**
+//      * Destroys the object.  The destruction is controlled by the children
+//      * of the structure.
+//      */
+//     virtual ~_LibStruc () { }
+
+//     // OPERATORS ------------------------------------------------------------
+
+//     /**
+//      * Assigns the rights content into the object.
+//      * @param right the object to copy.
+//      * @return itself.
+//      */
+//     _LibStruc& operator= (const _LibStruc &right) { return *this; }
+  
+//     // ACCESS ---------------------------------------------------------------
+    
+//     // METHODS --------------------------------------------------------------
+
+//     /**
+//      * Replicates the object.  The replication is controlled by the children.
+//      * @return a copy of the current object.
+//      */
+//     virtual _LibStruc* clone () const = 0;
+    
+//     /**
+//      * Accepts the visitor and calls it on itself.
+//      * @param visitor the visitor.
+//      */
+//     virtual void accept (MccVisitor *visitor) = 0;
+
+//     // I/O  -----------------------------------------------------------------
+    
+//     /**
+//      * Displays the structure.
+//      * @param os the output stream where the message is displayed.
+//      */
+//     virtual void display (ostream &os) const = 0;
+
+//     /**
+//      * Displays the script in human readable form.
+//      * @param os the output stream used.
+//      * @param ident the identation level.
+//      */
+//     virtual void ppdisplay (ostream &os, int indent = 0) const = 0;
+//   };
+  
+//   /**
+//    * @short Struct containing the residue names to strip.
+//    *
+//    * @author Martin Larose <larosem@iro.umontreal.ca>
+//    */
+//   struct _StripStruc : public _LibStruc
+//   {
+//     /**
+//      * The residue name vector.
+//      */
+//     vector< MccResidueName* > *res_vec;
+    
+//     // LIFECYCLE ------------------------------------------------------------
+
+//   private:
+//     /**
+//      * Initializes the object.  It should never be used.
+//      */
+//     _StripStruc ()
+//       : _LibStruc (), res_vec (0) { }
+    
+//   public:
+
+//     /**
+//      * Initializes the object.
+//      * @param rv the residue name vector
+//      */
+//     _StripStruc (vector< MccResidueName* > *rv)
+//       : _LibStruc (), res_vec (rv) { }
+
+//     /**
+//      * Initializes the object with the rights content.
+//      * @param right the object to copy.
+//      */
+//     _StripStruc (const _StripStruc &right);
+
+//     virtual ~_StripStruc ();
+    
+//     // OPERATORS ------------------------------------------------------------
+
+//     /**
+//      * Assigns the rights content into the object.
+//      * @param right the object to copy.
+//      * @return itself.
+//      */
+//     _StripStruc& operator= (const _StripStruc &right);
+  
+//     // ACCESS ---------------------------------------------------------------
+    
+//     // METHODS --------------------------------------------------------------
+
+//     /**
+//      * Replicates the object.
+//      * @return a copy of the current object.
+//      */
+//     virtual _StripStruc* clone () const { return new _StripStruc (*this); }
+    
+//     /**
+//      * Accepts the visitor and calls it on itself.
+//      * @param visitor the visitor.
+//      */
+//     virtual void accept (MccVisitor *visitor);
+
+//     // I/O  -----------------------------------------------------------------
+    
+//     /**
+//      * Displays the structure.
+//      * @param os the output stream where the message is displayed.
+//      */
+//     virtual void display (ostream &os) const;
+
+//     /**
+//      * Displays the script in human readable form.
+//      * @param os the output stream used.
+//      * @param ident the identation level.
+//      */
+//     virtual void ppdisplay (ostream &os, int indent = 0) const;
+//   };
+
+//   /**
+//    * @short Struct containing the residue id to change.
+//    *
+//    * @author Martin Larose <larosem@iro.umontreal.ca>
+//    */
+//   struct _ChangeIdStruc : public _LibStruc
+//   {
+//     // LIFECYCLE ------------------------------------------------------------
+
+//     MccResidueName* old_id;
+//     MccResidueName* new_id;
+    
+//   private:
+    
+//     /**
+//      * Initializes the object.  It should never be used.
+//      */
+//     _ChangeIdStruc () : _LibStruc () { }
+    
+//   public:
+
+//     /**
+//      * Initializes the object.
+//      * @param o the old residue ID.
+//      * @param n the new residue ID.
+//      */
+//     _ChangeIdStruc (MccResidueName* o, MccResidueName* n)
+//       : _LibStruc (), old_id (o), new_id (n) { }
+
+//     /**
+//      * Initializes the object with the rights content.
+//      * @param right the object to copy.
+//      */
+//     _ChangeIdStruc (const _ChangeIdStruc &right)
+//       : _LibStruc (right),
+// 	old_id (right.old_id->clone ()),
+// 	new_id (right.new_id->clone ())
+//     { }
+
+//     virtual ~_ChangeIdStruc ();
+    
+//     // OPERATORS ------------------------------------------------------------
+
+//     /**
+//      * Assigns the rights content into the object.
+//      * @param right the object to copy.
+//      * @return itself.
+//      */
+//     _ChangeIdStruc& operator= (const _ChangeIdStruc &right);
+  
+//     // ACCESS ---------------------------------------------------------------
+    
+//     // METHODS --------------------------------------------------------------
+
+//     /**
+//      * Replicates the object.
+//      * @return a copy of the current object.
+//      */
+//     virtual _ChangeIdStruc* clone () const { return new _ChangeIdStruc (*this); }
+    
+//     /**
+//      * Accepts the visitor and calls it on itself.
+//      * @param visitor the visitor.
+//      */
+//     virtual void accept (MccVisitor *visitor);
+
+//     // I/O  -----------------------------------------------------------------
+    
+//     /**
+//      * Displays the structure.
+//      * @param os the output stream where the message is displayed.
+//      */
+//     virtual void display (ostream &os) const;
+
+//     /**
+//      * Displays the script in human readable form.
+//      * @param os the output stream used.
+//      * @param ident the identation level.
+//      */
+//     virtual void ppdisplay (ostream &os, int indent = 0) const;
+//   };
+
+  
+//   /**
+//    * @short Struct containing the chain id to change.
+//    *
+//    * @author Martin Larose <larosem@iro.umontreal.ca>
+//    */
+//   struct _ChangeChainStruc : public _LibStruc
+//   {
+//     // LIFECYCLE ------------------------------------------------------------
+
+//     char old_chain;
+//     char new_chain;
+    
+//   private:
+    
+//     /**
+//      * Initializes the object.  It should never be used.
+//      */
+//     _ChangeChainStruc () : _LibStruc () { }
+    
+//   public:
+
+//     /**
+//      * Initializes the object.
+//      * @param o the old residue chain ID.
+//      * @param n the new residue chain ID.
+//      */
+//     _ChangeChainStruc (char o, char n)
+//       : _LibStruc (), old_chain (o), new_chain (n) { }
+
+//     /**
+//      * Initializes the object with the rights content.
+//      * @param right the object to copy.
+//      */
+//     _ChangeChainStruc (const _ChangeChainStruc &right)
+//       : _LibStruc (right),
+// 	old_chain (right.old_chain),
+// 	new_chain (right.new_chain)
+//     { }
+
+//     virtual ~_ChangeChainStruc () { }
+    
+//     // OPERATORS ------------------------------------------------------------
+
+//     /**
+//      * Assigns the rights content into the object.
+//      * @param right the object to copy.
+//      * @return itself.
+//      */
+//     _ChangeChainStruc& operator= (const _ChangeChainStruc &right);
+  
+//     // ACCESS ---------------------------------------------------------------
+    
+//     // METHODS --------------------------------------------------------------
+
+//     /**
+//      * Replicates the object.
+//      * @return a copy of the current object.
+//      */
+//     virtual _ChangeChainStruc* clone () const { return new _ChangeChainStruc (*this); }
+    
+//     /**
+//      * Accepts the visitor and calls it on itself.
+//      * @param visitor the visitor.
+//      */
+//     virtual void accept (MccVisitor *visitor);
+
+//     // I/O  -----------------------------------------------------------------
+    
+//     /**
+//      * Displays the structure.
+//      * @param os the output stream where the message is displayed.
+//      */
+//     virtual void display (ostream &os) const;
+
+//     /**
+//      * Displays the script in human readable form.
+//      * @param os the output stream used.
+//      * @param ident the identation level.
+//      */
+//     virtual void ppdisplay (ostream &os, int indent = 0) const;
+//   };
+
+  
+//   /**
+//    * The input model mode.
+//    */
+//   MccInputMode *inputMode;
+
+//   /**
+//    * The vector containing the sub-structures.
+//    */
+//   vector< _LibStruc* > *strucs;
+
+//   /**
+//    * Flag acknowledging if model should be pre-filtered by constraints.
+//    */
+//   bool asis;
+
+//   MccResidueViewCache* library;
+  
+// protected:
+  
+//   // LIFECYCLE ------------------------------------------------------------
+    
+//   /**
+//    * Initializes the object.  It should not be used.
+//    */
+//   MccLibraryExpr () { }
+
+// public:
+
+//   /**
+//    * Initializes the object.
+//    * @param im the input model mode.
+//    * @param lsv the vector containing the library sub-structures.
+//    */
+//   MccLibraryExpr (MccInputMode *im, 
+// 		  vector< _LibStruc* > *lsv, 
+// 		  bool asis_flag,
+// 		  MccResidueViewCache* mrvc = 0)
+//     : inputMode (im), 
+//       strucs (lsv), 
+//       asis (asis_flag),
+//       library (mrvc)
+//   { 
+//   }
+
+//   /**
+//    * Initializes the object with the rights content.
+//    * @param right the object to copy.
+//    */
+//   MccLibraryExpr (const MccLibraryExpr &right);
+
+//   /**
+//    * Destroys the object.
+//    */
+//   virtual ~MccLibraryExpr ();
+
+//   // OPERATORS ------------------------------------------------------------
+
+//   /**
+//    * Assigns the rights content into the object.
+//    * @param right the object to copy.
+//    * @return itself.
+//    */
+//   MccLibraryExpr& operator= (const MccLibraryExpr &right);
+  
+//   // ACCESS ---------------------------------------------------------------
+  
+//   // METHODS --------------------------------------------------------------
+
+//   /**
+//    * Replicates the object.
+//    * @return a copy of the current object.
+//    */
+//   virtual MccLibraryExpr* clone () const { return new MccLibraryExpr (*this); }
+    
+//   /**
+//    * Accepts the visitor and calls it on itself.
+//    * @param visitor the visitor.
+//    */
+//   virtual void accept (MccVisitor *visitor);
+
+//   /**
+//    * Generates a new strip sub-structure and puts it in the vector.
+//    * @param rv the residue name vector.
+//    */
+//   void genStripStruc (vector< MccResidueName* > *rv)
+//   { strucs->push_back (new _StripStruc (rv)); }
+
+//   /**
+//    * Generates a new ChangeId sub-structure and puts it in the vector.
+//    * @param o the old residue ID.
+//    * @param n the new residue ID.
+//    */
+//   void genChangeIdStruc (MccResidueName* o, MccResidueName* n)
+//   { strucs->push_back (new _ChangeIdStruc (o, n)); }
+
+//   /**
+//    * Generates a new ChangeChain sub-structure and puts it in the vector.
+//    * @param o the old residue chain ID.
+//    * @param n the new residue chain ID.
+//    */
+//   void genChangeChainStruc (char o, char n)
+//   { strucs->push_back (new _ChangeChainStruc (o, n)); }
+  
+//   // I/O  -----------------------------------------------------------------
+  
+//   /**
+//    * Displays the structure.
+//    * @param os the output stream where the message is displayed.
+//    */
+//   virtual void display (ostream &os) const;
+
+//   /**
+//    * Displays the script in human readable form.
+//    * @param os the output stream used.
+//    * @param ident the identation level.
+//    */
+//   virtual void ppdisplay (ostream &os, int indent = 0) const;
+// };
+
 
 
 /**
@@ -7883,19 +8010,19 @@ public:
    * Visits the local MccLibraryExpr sub-structure _StripStruc.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccLibraryExpr::_StripStruc *struc) = 0;
+  //virtual void visit (MccLibraryExpr::_StripStruc *struc) = 0;
   
   /**
    * Visits the local MccLibraryExpr sub-structure _ChangeIdStruc.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccLibraryExpr::_ChangeIdStruc *struc) = 0;
+  //virtual void visit (MccLibraryExpr::_ChangeIdStruc *struc) = 0;
 
   /**
    * Visits the local MccLibraryExpr sub-structure _ChangeChainStruc.
    * @param struc the evaluated structure.
    */
-  virtual void visit (MccLibraryExpr::_ChangeChainStruc *struc) = 0;
+  //virtual void visit (MccLibraryExpr::_ChangeChainStruc *struc) = 0;
   
   /**
    * Visits the MccMultimerCstStat structure.

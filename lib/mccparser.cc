@@ -2548,208 +2548,27 @@ MccExploreStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccLibraryExpr::_StripStruc::_StripStruc (const MccLibraryExpr::_StripStruc &right)
-  : res_vec (0)
-{
-  if (right.res_vec)
-  {
-    vector< MccResidueName* >::const_iterator cit;
-    res_vec = new vector< MccResidueName* > ();
-    for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
-      res_vec->push_back ((*cit)->clone ());
-  }
-}
-      
-
-MccLibraryExpr::_StripStruc::~_StripStruc ()
-{
-  if (this->res_vec)
-  {
-    vector< MccResidueName* >::iterator it;
-    for (it = this->res_vec->begin (); it != this->res_vec->end (); ++it)
-      delete *it;
-    delete this->res_vec;
-  }
-}
-
-
-MccLibraryExpr::_StripStruc&
-MccLibraryExpr::_StripStruc::operator= (const MccLibraryExpr::_StripStruc &right)
-{
-  if (this != &right)
-  {
-    if (this->res_vec)
-    {
-      vector< MccResidueName* >::iterator it;
-      for (it = this->res_vec->begin (); it != this->res_vec->end (); it++)
-	delete *it;
-      delete this->res_vec;
-      this->res_vec = 0;
-    }
-    if (right.res_vec)
-    {
-      vector< MccResidueName* >::const_iterator cit;
-      this->res_vec = new vector< MccResidueName* > ();
-      for (cit = right.res_vec->begin (); cit != right.res_vec->end (); cit++)
-	this->res_vec->push_back ((*cit)->clone ());
-    }
-  }
-  return *this;
-}
-
-
-void
-MccLibraryExpr::_StripStruc::accept (MccVisitor *visitor)
-{
-  visitor->visit (this);
-}
-
-
-void
-MccLibraryExpr::_StripStruc::display (ostream &os) const
-{
-  vector< MccResidueName* >::iterator it;
-
-  os << "strip (";
-  for (it = res_vec->begin (); it != res_vec->end (); it++)
-  {
-    if (it != res_vec->begin ())
-      os << ' ';
-    (*it)->display (os);
-  }
-  os << ')';
-}
-
-
-void
-MccLibraryExpr::_StripStruc::ppdisplay (ostream &os, int indent) const
-{
-  vector< MccResidueName* >::iterator it;
-
-  os << endl;
-  whitespaces (os, indent);
-  os << "strip (";
-  for (it = res_vec->begin (); it != res_vec->end (); it++)
-  {
-    if (it != res_vec->begin ())
-      os << ' ';
-    (*it)->ppdisplay (os, indent);
-  }
-  os << ')';
-}
-
-
-MccLibraryExpr::_ChangeIdStruc::~_ChangeIdStruc ()
-{
-  delete old_id;
-  delete new_id;
-}
-
-
-MccLibraryExpr::_ChangeIdStruc&
-MccLibraryExpr::_ChangeIdStruc::operator= (const MccLibraryExpr::_ChangeIdStruc &right)
-{
-  if (this != &right)
-  {
-    MccLibraryExpr::_LibStruc::operator= (right);
-    delete this->old_id;
-    this->old_id = right.old_id->clone ();
-    delete this->new_id;
-    this->new_id = right.new_id->clone ();
-  }
-  return *this;
-}
-
-
-void
-MccLibraryExpr::_ChangeIdStruc::accept (MccVisitor *visitor)
-{
-  visitor->visit (this);
-}
-
-
-void
-MccLibraryExpr::_ChangeIdStruc::display (ostream &os) const
-{
-  os << "change_id (";
-  this->old_id->display (os);
-  os << " , ";
-  this->new_id->display (os);
-  os << ")";
-}
-
-
-void
-MccLibraryExpr::_ChangeIdStruc::ppdisplay (ostream &os, int indent) const
-{
-  os << endl;
-  whitespaces (os, indent);
-  os << "change_id (";
-  this->old_id->display (os);
-  os << " , ";
-  this->new_id->display (os);
-  os << ")";
-}
-
-
-MccLibraryExpr::_ChangeChainStruc&
-MccLibraryExpr::_ChangeChainStruc::operator= (const MccLibraryExpr::_ChangeChainStruc &right)
-{
-  if (this != &right)
-  {
-    MccLibraryExpr::_LibStruc::operator= (right);
-    this->old_chain = right.old_chain;
-    this->new_chain = right.new_chain;
-  }
-  return *this;
-}
-
-
-void
-MccLibraryExpr::_ChangeChainStruc::accept (MccVisitor *visitor)
-{
-  visitor->visit (this);
-}
-
-
-void
-MccLibraryExpr::_ChangeChainStruc::display (ostream &os) const
-{
-  os << "change_id (" << this->old_chain << " , " << this->new_chain << ')';
-}
-
-
-void
-MccLibraryExpr::_ChangeChainStruc::ppdisplay (ostream &os, int indent) const
-{
-  os << endl;
-  whitespaces (os, indent);
-  os << "change_id (" << this->old_chain << " , " << this->new_chain << ')';
-}
-
-
 MccLibraryExpr::MccLibraryExpr (const MccLibraryExpr &right)
-  : inputMode (right.inputMode->clone ()),
-    strucs (new vector< MccLibraryExpr::_LibStruc* > ()),
+  : inputModes (right.inputModes),
+    res_from (right.res_from),
+    res_to (right.res_to),
     asis (right.asis),
     library (0 == right.library ? 0 : right.library->clone ())
 {
-  vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
-  
-  for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-    strucs->push_back ((*cit)->clone ());
+  vector< MccInputMode* >::iterator it;
+
+  for (it = this->inputModes.begin (); it != this->inputModes.end (); ++it)
+    *it = (*it)->clone ();
 }
 
 
 
 MccLibraryExpr::~MccLibraryExpr ()
 {
-  vector< _LibStruc* >::iterator it;
+  vector< MccInputMode* >::iterator it;
 
-  delete inputMode;
-  for (it = strucs->begin (); it != strucs->end (); it++)
+  for (it = this->inputModes.begin (); it != this->inputModes.end (); ++it)
     delete *it;
-  delete strucs;
 
   if (this->library)
     delete this->library;
@@ -2762,17 +2581,19 @@ MccLibraryExpr::operator= (const MccLibraryExpr &right)
 {
   if (this != &right)
   {
-    vector< MccLibraryExpr::_LibStruc* >::const_iterator cit;
-    vector< MccLibraryExpr::_LibStruc* >::iterator it;
+    vector< MccInputMode* >::iterator it;
 
-    delete inputMode;
-    inputMode = right.inputMode->clone ();
-    for (it = strucs->begin (); it != strucs->end (); it++)
+    for (it = this->inputModes.begin (); it != this->inputModes.end (); ++it)
       delete *it;
-    strucs->clear ();
-    for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
-      strucs->push_back ((*cit)->clone ());
-    asis = right.asis;
+    
+    this->inputModes = right.inputModes;
+
+    for (it = this->inputModes.begin (); it != this->inputModes.end (); ++it)
+      *it = (*it)->clone ();
+
+    this->res_from = right.res_from;
+    this->res_to = right.res_to;
+    this->asis = right.asis;
 
     if (this->library)
       delete this->library;
@@ -2795,15 +2616,18 @@ MccLibraryExpr::accept (MccVisitor *visitor)
 void
 MccLibraryExpr::display (ostream &os) const
 {
-  vector< _LibStruc* >::iterator it;
+  vector< MccInputMode* >::const_iterator it;
 
   os << "library (";
-  inputMode->display (os);
 
-  for (it = strucs->begin (); it != strucs->end (); it++)
-  {
-    os << ' ';
+  for (it = this->inputModes.begin (); it != this->inputModes.end (); ++it)
     (*it)->display (os);
+
+  if (!this->res_from.empty ())
+  {
+    this->res_from.display (os);
+    os << " <- ";
+    this->res_to.display (os);
   }
 
   if (this->asis)
@@ -2820,16 +2644,24 @@ MccLibraryExpr::display (ostream &os) const
 void
 MccLibraryExpr::ppdisplay (ostream &os, int indent) const
 {
-  vector< _LibStruc* >::iterator it;
+  vector< MccInputMode* >::const_iterator it;
 
+  whitespaces (os, indent);
   os << "library" << endl;
   whitespaces (os, indent + 2);
   os << '(' << endl;
-  whitespaces (os, indent + 4);
-  inputMode->ppdisplay (os, indent);
 
-  for (it = strucs->begin (); it != strucs->end (); it++)
+  for (it = this->inputModes.begin (); it != this->inputModes.end (); ++it)
     (*it)->ppdisplay (os, indent + 4);
+
+  if (!this->res_from.empty ())
+  {
+    os << endl;
+    whitespaces (os, indent + 4);
+    this->res_from.display (os);
+    os << " <- ";
+    this->res_to.display (os);
+  }
 
   if (this->asis)
   {

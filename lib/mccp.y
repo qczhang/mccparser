@@ -59,8 +59,6 @@
   MccASFunc *asfunc;
   vector< MccBacktrackExpr::_GenBTStruc* > *btsv;
   MccBacktrackExpr::_GenBTStruc *bts;
-  vector< MccLibraryExpr::_LibStruc* > *lsv;
-  MccLibraryExpr::_LibStruc *ls;
   vector< MccResidueName* > *rrv;
   MccResidueName *rn;
   MccResidueNamePairs *rnp;
@@ -69,6 +67,7 @@
   MccFGExp *fgs;
   MccOutputMode *expo;
   MccInputMode *inmo;
+  vector< MccInputMode* > *inmov;
   MccSamplingSize *smpls;
   MccResidueViewCache* rvc;
 }
@@ -88,6 +87,7 @@
 %token TOK_AND
 %token TOK_NOT
 %token TOK_FACE
+%token TOK_LARROW
 
 %token TOK_ALIGN
 %token TOK_ANGLE
@@ -240,10 +240,9 @@
 %type <bts> res_place
 %type <fgs> cacheexp
 %type <fgs> libraryexp
+%type <inmov> input_mode_plus
 %type <inmo> input_mode
-%type <lsv> libopt_star
-%type <ls> libopt
-%type <boolval> asis_opt;
+%type <boolval> asis_opt
 
 %type <rrv> residueRef_star
 %type <rrv> residueRef_plus
@@ -462,73 +461,6 @@ TOK_PDB TOK_LPAREN TOK_STRING zfile_opt mfile_opt TOK_RPAREN
 ;
 
 
-// timelimit_opt:
-
-// /* empty */
-// {
-//   $$ = -1;
-// }
-// | timelimit_exp
-// {
-//   $$ = $1;
-// }
-// ;
-
-
-// timelimit_exp:
-
-// TOK_TIMELIMIT TOK_LPAREN timelimit_plus TOK_RPAREN
-// {
-//   $$ = $3;
-// }
-// ;
-
-
-// timelimit_plus:
-
-// timelimit
-// { 
-//   $$ = $1;
-// }
-// | timelimit_plus timelimit
-// {
-//   $$ = $1 + $2;
-// }
-// ;
-
-
-// timelimit:
-
-// TOK_INTEGER TOK_STRING
-// {
-//   $$ = 0;
-//   switch ($2[0])
-//   {
-//   case 's':
-//   case 'S':
-//     $$ = $1; 
-//     break;
-//   case 'm':
-//   case 'M':
-//     $$ = $1 * 60;
-//     break;
-//   case 'h':
-//   case 'H':
-//     $$ = $1 * 3600; 
-//     break;
-//   case 'd':
-//   case 'D':
-//     $$ = $1 * 86400; 
-//     break;
-//   default:
-//     delete[] $2;
-//     mccerror ("unknown time expression");
-//   }
-//   delete[] $2;
-// }
-// ;
-
-
 zfile_opt:   /* empty */ { $$ = false; }
            | TOK_ZIPPED { $$ = true; }
 ;
@@ -555,15 +487,6 @@ TOK_BASEADJACENCY TOK_LPAREN fgRef TOK_INTEGER TOK_PERCENT TOK_RPAREN
   $$ = new MccBaseAdjacencyCstStat ($3, $4);
 }
 ;
-
-
-// riboAdjCst:
-
-// TOK_RIBOADJACENCY TOK_LPAREN fgRef flt TOK_RPAREN
-// {
-//   $$ = new MccRiboseAdjacencyCstStat ($3, $4);
-// }
-// ;
 
 
 angleCst:   TOK_ANGLE TOK_LPAREN angledef_plus TOK_RPAREN
@@ -1173,9 +1096,33 @@ TOK_CACHE TOK_LPAREN fgRef rv_cache_opt TOK_RPAREN
 
 libraryexp:
 
-TOK_LIBRARY TOK_LPAREN input_mode libopt_star asis_opt TOK_RPAREN
+TOK_LIBRARY TOK_LPAREN input_mode_plus asis_opt rv_cache_opt TOK_RPAREN
 {
-  $$ = new MccLibraryExpr ($3, $4, $5);
+  $$ = new MccLibraryExpr (*$3, $4, $5);
+  delete $3;
+}
+|
+TOK_LIBRARY TOK_LPAREN input_mode_plus residueRef_singleton_plus TOK_LARROW residueRef_singleton_plus asis_opt rv_cache_opt TOK_RPAREN
+{
+  $$ = new MccLibraryExpr (*$3, *$4, *$6, $7, $8);
+  delete $3;
+  delete $4;
+  delete $6;
+}
+;
+
+
+input_mode_plus:
+
+input_mode
+{
+  $$ = new vector< MccInputMode* > (1, $1);
+}
+|
+input_mode_plus input_mode
+{
+  $$ = $1;
+  $$->push_back ($2);
 }
 ;
 
@@ -1202,39 +1149,6 @@ TOK_BINARY TOK_LPAREN TOK_STRING TOK_RPAREN
 {
   $$ = new MccFileRnamlInput ($3);
   delete[] $3;
-}
-;
-
-
-libopt_star:
-
-/* empty */
-{
-  $$ = new vector< MccLibraryExpr::_LibStruc* > ();
-}
-| libopt_star libopt
-{
-  $$ = $1;
-  $$->push_back ($2);
-}
-;
-
-
-libopt:
-
-TOK_STRIP TOK_LPAREN residueRef_plus TOK_RPAREN
-{
-  $$ = new MccLibraryExpr::_StripStruc ($3);
-}
-| TOK_CHANGEID TOK_LPAREN residueRef TOK_COMMA residueRef TOK_RPAREN
-{
-  $$ = new MccLibraryExpr::_ChangeIdStruc ($3, $5);
-}
-| TOK_CHANGEID TOK_LPAREN TOK_STRING TOK_COMMA TOK_STRING TOK_RPAREN
-{
-  $$ = new MccLibraryExpr::_ChangeChainStruc ($3[0], $5[0]);
-  delete[] $3;
-  delete[] $5;
 }
 ;
 
