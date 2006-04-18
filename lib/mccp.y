@@ -102,6 +102,7 @@
 %token TOK_CYCLE
 %token TOK_DBDISPLAY
 %token TOK_DBFILTER
+%token TOK_DBINFO
 %token TOK_DBINSERT
 %token TOK_DBRESET
 %token TOK_DBVERSION
@@ -903,7 +904,15 @@ note:   TOK_NOTE TOK_LPAREN TOK_STRING TOK_RPAREN
 ;
 
 
-notes:   TOK_NOTES { $$ = new MccNotesStat (); }
+notes:   
+TOK_NOTES 
+{ 
+  $$ = new MccNotesStat (); 
+}
+| TOK_DBINFO
+{
+  $$ = new MccNotesStat ();
+}
 ;
 
 
