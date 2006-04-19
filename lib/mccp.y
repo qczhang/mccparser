@@ -34,8 +34,6 @@
   int intval;
   bool boolval;
   float floatval;
-  pair< char, float >* cutoffval;
-  map< char, float >* cutoffmap;
   map< string, string >* stringmap;
   char *textval;
   MccPStruct *mccval;
@@ -98,7 +96,6 @@
 %token TOK_BASEADJACENCY
 %token TOK_CACHE
 %token TOK_CHANGEID
-%token TOK_CUTOFF
 %token TOK_CYCLE
 %token TOK_DBDISPLAY
 %token TOK_DBFILTER
@@ -106,6 +103,7 @@
 %token TOK_DBINSERT
 %token TOK_DBRESET
 %token TOK_DBVERSION
+%token TOK_DBNOTE
 %token TOK_DISPLAYFG
 %token TOK_DISTANCE
 %token TOK_ENV
@@ -195,9 +193,6 @@
 %type <stringmap> keyValue_plus
 
 %type <mccval> newtag
-%type <cutoffval> cutoff
-%type <cutoffmap> cutoff_plus
-%type <cutoffmap> cutoff_opt
 %type <mccval> dbdisplay
 %type <mccval> dbfilter
 %type <mccval> dbinsert
@@ -789,53 +784,6 @@ newtag:   TOK_NEWTAG TOK_LPAREN TOK_STRING queryexp_plus TOK_RPAREN
 	   }
 ;
 
-
-cutoff_opt:
-
-/* empty */
-{
-  $$ = new map< char, float > ();
-}
-| TOK_CUTOFF TOK_LPAREN flt TOK_RPAREN 
-{
-  $$ = new map< char, float > ();
-  $$->insert (make_pair ('A', $3));
-  $$->insert (make_pair ('S', $3));
-  $$->insert (make_pair ('P', $3));
-}
-| TOK_CUTOFF TOK_LPAREN cutoff_plus TOK_RPAREN 
-{
-  $$ = $3;
-}
-;
-
-
-cutoff_plus:
-
-cutoff
-{
-  $$ = new map< char, float > ();
-  $$->insert (*$1);
-  delete $1;
-}
-| cutoff_plus cutoff
-{
-  $$ = $1;
-  $$->insert (*$2);
-  delete $2;
-}
-;
-
-
-cutoff:
-
-TOK_IDENT TOK_ASSIGN flt
-{
-  $$ = new pair< char, float > ($1[0], $3);
-  delete[] $1;
-}
-;
-
 	 
 dbdisplay:   
 
@@ -848,7 +796,7 @@ TOK_DBDISPLAY
 
 dbfilter:   
 
-TOK_DBFILTER TOK_LPAREN cutoff_opt TOK_RPAREN
+TOK_DBFILTER TOK_LPAREN flt TOK_RPAREN
 {
   $$ = new MccDBFilterStat ($3);
 }
@@ -857,7 +805,11 @@ TOK_DBFILTER TOK_LPAREN cutoff_opt TOK_RPAREN
 
 dbinsert:   
 
-TOK_DBINSERT TOK_LPAREN cutoff_opt input_mode TOK_RPAREN
+TOK_DBINSERT TOK_LPAREN input_mode TOK_RPAREN
+{
+  $$ = new MccDBInsertStat ($3);
+}
+| TOK_DBINSERT TOK_LPAREN input_mode flt TOK_RPAREN
 {
   $$ = new MccDBInsertStat ($3, $4);
 }
@@ -897,10 +849,16 @@ displayfg:   TOK_DISPLAYFG TOK_LPAREN fgRef TOK_RPAREN
 env:   TOK_ENV { $$ = new MccEnvStat (); }
 ;
 
-note:   TOK_NOTE TOK_LPAREN TOK_STRING TOK_RPAREN
-         {
-	   $$ = new MccNoteStat ($3);
-	 }
+
+note:   
+TOK_NOTE TOK_LPAREN TOK_STRING TOK_RPAREN
+{
+  $$ = new MccNoteStat ($3);
+}
+| TOK_DBNOTE TOK_LPAREN TOK_STRING TOK_RPAREN
+{
+  $$ = new MccNoteStat ($3);
+}
 ;
 
 
