@@ -3661,33 +3661,31 @@ public:
 struct MccDBFilterStat : public MccPStruct
 {
 
-  map< char, float >* cutoffs_asp;
+  /**
+   * THe identity threshold.
+   */
+  float threshold;
   
   // LIFECYCLE ------------------------------------------------------------
 
-private:
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccDBFilterStat () { }
 public:
 
   /**
    * Initializes the object.
    * @param f the FG structure to display.
    */
-  MccDBFilterStat (map< char, float >* cutmap);
+  MccDBFilterStat (float th = -1.0) : threshold (th) { }
 
   /**
    * Initializes the object with the right struct.
    * @param right the struct to copy.
    */
-  MccDBFilterStat (const MccDBFilterStat &right);
+  MccDBFilterStat (const MccDBFilterStat &right) : threshold (right.threshold) { }
 
   /**
    * Destroys the object.
    */
-  virtual ~MccDBFilterStat ();
+  virtual ~MccDBFilterStat () { }
 
   // OPERATORS ------------------------------------------------------------
 
@@ -4977,13 +4975,16 @@ public:
  */
 struct MccDBInsertStat : public MccPStruct
 {
-  
-  map< char, float >* cutoffs_asp;
 
   /**
    * The input model mode.
    */
   MccInputMode *inputMode;
+
+  /**
+   * The identity threshold
+   */
+  float threshold;
 
   // LIFECYCLE ------------------------------------------------------------
 
@@ -4999,9 +5000,9 @@ public:
   /**
    * Initializes the object.
    */
-  MccDBInsertStat (map< char, float >* cutmap, MccInputMode *im)
-    : cutoffs_asp (cutmap),
-      inputMode (im)
+  MccDBInsertStat (MccInputMode *im, float th = -1.0)
+    : inputMode (im),
+      threshold (th)
   { 
 
   }

@@ -791,8 +791,8 @@ MccDBSetVersionStat::ppdisplay (ostream &os, int indent) const
 
 
 MccDBInsertStat::MccDBInsertStat (const MccDBInsertStat &right)
-  : cutoffs_asp (new map< char, float > (*right.cutoffs_asp)),
-    inputMode (right.inputMode->clone ())
+  : inputMode (right.inputMode->clone ()),
+    threshold (right.threshold)
 {
 
 }
@@ -801,7 +801,6 @@ MccDBInsertStat::MccDBInsertStat (const MccDBInsertStat &right)
 
 MccDBInsertStat::~MccDBInsertStat ()
 {
-  delete this->cutoffs_asp;
   delete this->inputMode;
 }
 
@@ -812,11 +811,9 @@ MccDBInsertStat::operator= (const MccDBInsertStat &right)
 {
   if (this != &right)
   {
-    delete this->cutoffs_asp;
-    this->cutoffs_asp = new map< char, float > (*right.cutoffs_asp);
-
     delete this->inputMode;
     this->inputMode = right.inputMode->clone ();
+    this->threshold = right.threshold;
   }
   return *this;
 }
@@ -834,18 +831,11 @@ MccDBInsertStat::accept (MccVisitor *visitor)
 void
 MccDBInsertStat::display (ostream &os) const
 {
-  map< char, float >::iterator cit;
-
   os << "db_insert (";
-  
-  if (!this->cutoffs_asp->empty ())
-  {
-    os << " cutoff";
-    for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
-      os << ' ' << cit->first << " = " << cit->second;
-  }
-
-  this->inputMode->display (os);
+  this->inputMode->display (os); 
+ 
+  if (!(this->threshold < 0.0))
+    os << ' ' << this->threshold;
 
   os << ')';
 }
@@ -855,25 +845,9 @@ MccDBInsertStat::display (ostream &os) const
 void
 MccDBInsertStat::ppdisplay (ostream &os, int indent) const
 {
-  map< char, float >::iterator cit;
-
-  os << "add_pdb" << endl;
-  whitespaces (os, indent + 2);
-  os << '(';
-  if (!this->cutoffs_asp->empty ())
-  {
-    whitespaces (os, indent + 4);
-    os << "cutoff";
-    for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
-      os << ' ' << cit->first << " = " << cit->second;
-  }
-
-  whitespaces (os, indent + 4);
-  this->inputMode->ppdisplay (os, indent);
-
+  whitespaces (os, indent);
+  this->display (os);
   os << endl;
-  whitespaces (os, indent + 2);
-  os << ')' << endl;
 }
 
 
@@ -1947,31 +1921,12 @@ MccDisplayFGStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccDBFilterStat::MccDBFilterStat (map< char, float >* cutmap) 
-  : cutoffs_asp (cutmap) 
-{ 
-    
-}
-
-
-MccDBFilterStat::MccDBFilterStat (const MccDBFilterStat &right)
-  : cutoffs_asp (new map< char, float > (*right.cutoffs_asp))
-{ }
-
-
-MccDBFilterStat::~MccDBFilterStat ()
-{
-  delete this->cutoffs_asp;
-}
-
-
 MccDBFilterStat&
 MccDBFilterStat::operator= (const MccDBFilterStat &right)
 {
   if (this != &right)
   {
-    delete this->cutoffs_asp;
-    this->cutoffs_asp = new map< char, float > (*right.cutoffs_asp);
+    this->threshold = right.threshold;
   }
   return *this;
 }
@@ -1989,12 +1944,7 @@ MccDBFilterStat::accept (MccVisitor *visitor)
 void
 MccDBFilterStat::display (ostream &os) const
 {
-  map< char, float >::iterator cit;
-
-  os << "db_filter (cutoff";
-  for (cit = this->cutoffs_asp->begin (); cit != this->cutoffs_asp->end (); ++cit)
-    os << ' ' << cit->first << " = " << cit->second;
-  os << ")";
+  os << "db_filter (" << this->threshold << ")";
 }
 
 
