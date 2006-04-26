@@ -3317,6 +3317,173 @@ public:
 
 
 /**
+ * @short Struct representing the "cycle" constraint statement.
+ *
+ */
+struct MccCycleCstStat : public MccPStruct
+{
+
+  struct _CycleStruc
+  {
+    /**
+     * The last residue name of teh cycle.
+     */
+    MccResidueName *last;
+
+    /**
+     * The first residue name of the cycle.
+     */
+    MccResidueName *first;
+
+    /**
+     * The distance threshold
+     */
+    float threshold;
+    
+  protected:
+    
+    // LIFECYCLE ------------------------------------------------------------
+
+    /**
+     * Initializes the object.  It should never be used.
+     */
+    _CycleStruc () { }
+
+  public:
+
+    /**
+     * Initializes the object.
+     */
+    _CycleStruc (MccResidueName *lr, MccResidueName *fr, float th)
+      : last (lr), first (fr), threshold (th)
+    { }
+
+    /**
+     * Initializes the object with the rights content.
+     * @param right the object to copy.
+     */
+    _CycleStruc (const _CycleStruc &right);
+
+    /**
+     * Replicates the object.
+     * @return a copy of the current object.
+     */
+    _CycleStruc* clone () const { return new _CycleStruc (*this); }
+
+    /**
+     * Destroys the residue names and atom names.
+     */
+    ~_CycleStruc ();
+
+    // OPERATORS ------------------------------------------------------------
+
+    /**
+     * Assigns the rights content into the object.
+     * @param right the object to copy.
+     * @return itself.
+     */
+    _CycleStruc& operator= (const _CycleStruc &right);
+    
+    // ACCESS ---------------------------------------------------------------
+
+    // METHODS --------------------------------------------------------------
+
+    /**
+     * Accepts the visitor and calls it on itself.
+     * @param visitor the visitor.
+     */
+    void accept (MccVisitor *visitor);
+    
+    // I/O  -----------------------------------------------------------------
+
+    /**
+     * Displays the structure.
+     * @param os the output stream where the message is displayed.
+     */
+    void display (ostream &os) const;
+
+    /**
+     * Displays the script in human readable form.
+     * @param os the output stream used.
+     * @param ident the identation level.
+     */
+    void ppdisplay (ostream &os, int indent = 0) const;
+  };
+
+  /**
+   * The vector of _CycleStruc.
+   */
+  vector< _CycleStruc* > *strucs;
+
+  
+  // LIFECYCLE ------------------------------------------------------------
+
+  /**
+   * Initializes the object.
+   */
+  MccCycleCstStat () : strucs (new vector< _CycleStruc* > ()) { }
+
+  /**
+   * Initializes the object.
+   * @param asv the relation sub-structure vector.
+   */
+  MccCycleCstStat (vector< _CycleStruc* > *asv) : strucs (asv) { }
+  
+  /**
+   * Initializes the object with the rights content.
+   * @param right the object to copy.
+   */
+  MccCycleCstStat (const MccCycleCstStat &right);
+  
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccCycleCstStat* clone () const
+  { return new MccCycleCstStat (*this); }
+
+  /**
+   * Destroys the vector of sub-structures.
+   */
+  virtual ~MccCycleCstStat ();
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccCycleCstStat& operator= (const MccCycleCstStat &right);
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+
+  // I/O ------------------------------------------------------------------
+
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
  * @short Struct representing the AST node "cycle" statement.
  *
  * @author Martin Larose <larosem@iro.umontreal.ca>
@@ -4720,7 +4887,7 @@ struct MccSocketBinaryInput : public MccInputMode
   /**
    * Model name for identification.
    */
-  string modelName;
+  vector< string > modelNames;
   
   // LIFECYCLE ------------------------------------------------------------
 
@@ -4731,8 +4898,7 @@ public:
    */
   MccSocketBinaryInput () 
     : serverName ("localhost"),
-      port (6666),
-      modelName ("unamed")
+      port (6666)
   { }
 
   /**
@@ -4741,8 +4907,8 @@ public:
    * @param p the port number.
    * @param mn the name of the input models.
    */
-  MccSocketBinaryInput (const string& sn, int sp, const string& mn)
-    : serverName (sn), port (sp), modelName (mn) { }
+  MccSocketBinaryInput (const string& sn, int sp, const vector< string >& mns)
+    : serverName (sn), port (sp), modelNames (mns) { }
 
   /**
    * Initializes the object with the rights content.
@@ -4751,7 +4917,7 @@ public:
   MccSocketBinaryInput (const MccSocketBinaryInput &right)
     : serverName (right.serverName),
       port (right.port),
-      modelName (right.modelName)
+      modelNames (right.modelNames)
   { }
 
   /**
@@ -7905,6 +8071,10 @@ public:
    */
   virtual void visit (MccClashCstStat *struc) = 0;
   
+  virtual void visit (MccCycleCstStat::_CycleStruc *struc) = 0;
+  
+  virtual void visit (MccCycleCstStat *struc) = 0;
+
   /**
    * Visits the MccMultimerCstStat::_MultimerStruc sub-structure.
    * @param struc the evaluated structure.

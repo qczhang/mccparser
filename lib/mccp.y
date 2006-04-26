@@ -35,6 +35,7 @@
   bool boolval;
   float floatval;
   map< string, string >* stringmap;
+  vector< string >* strv;
   char *textval;
   MccPStruct *mccval;
   vector< MccPStruct* > *vmccval;
@@ -42,6 +43,8 @@
   MccRelationStat::_RelationStruc *rs;
   vector< MccAngleCstStat::_AngleStruc* > *asv;
   MccAngleCstStat::_AngleStruc *as;
+  MccCycleCstStat::_CycleStruc *cycs;
+  vector< MccCycleCstStat::_CycleStruc* > *cycsv;
   vector< MccMultimerCstStat::_MultimerStruc* > *cysv;
   MccMultimerCstStat::_MultimerStruc *cys;
   vector< MccDistCstStat::_DistStruc* > *dsv;
@@ -95,7 +98,6 @@
 %token TOK_BACKTRACK_RST
 %token TOK_BASEADJACENCY
 %token TOK_CACHE
-%token TOK_CHANGEID
 %token TOK_CYCLE
 %token TOK_DBDISPLAY
 %token TOK_DBFILTER
@@ -127,6 +129,7 @@
 %token TOK_RELATION
 %token TOK_REMARK
 %token TOK_CLASH
+%token TOK_CYCLE
 %token TOK_RESET
 %token TOK_RESTORE
 %token TOK_IMPLICITPHOSPHATERST
@@ -152,6 +155,7 @@
 %token <textval> TOK_IDENT
 %token <textval> TOK_QUOTED_IDENT
 %token <textval> TOK_STRING
+%type<strv> string_plus;
 
 %type <mccval> statement
 %type <mccval> sequence
@@ -171,6 +175,9 @@
 %type <boolval> mfile_opt
 %type <mccval> source
 %type <mccval> baseAdjCst
+%type <mccval> cycleCst
+%type <cycs> cycledef
+%type <cycsv> cycledef_plus
 %type <mccval> angleCst
 %type <asv> angledef_plus
 %type <as> angledef
@@ -285,6 +292,7 @@ statement:   sequence { $$ = $1; }
            | baseAdjCst { $$ = $1; }
            | angleCst { $$ = $1; }
            | clashCst { $$ = $1; }
+           | cycleCst { $$ = $1; }
            | multimerCst { $$ = $1; }
            | distCst { $$ = $1; }
            | implicitRelCst { $$ = $1; }
@@ -724,6 +732,37 @@ strVal TOK_ASSIGN strVal
 ;
 
 
+cycleCst:   
+
+TOK_CYCLE TOK_LPAREN cycledef_plus TOK_RPAREN
+{
+  $$ = new MccCycleCstStat ($3);
+}
+;
+
+
+cycledef_plus:
+
+cycledef
+{
+  $$ = new vector< MccCycleCstStat::_CycleStruc* > (1, $1);
+}
+| cycledef_plus cycledef
+{
+  $$ = $1;
+  $$->push_back ($2);
+}
+;
+
+
+cycledef:
+
+residueRef residueRef flt
+{
+  $$ = new MccCycleCstStat::_CycleStruc ($1, $2, $3);
+}
+
+
 implicitRelCst:   
 
 TOK_IMPLICITRELATION TOK_LPAREN relationdef_plus TOK_RPAREN
@@ -1112,16 +1151,32 @@ TOK_BINARY TOK_LPAREN TOK_STRING TOK_RPAREN
   $$ = new MccFilePdbInput ($3);
   delete[] $3;
 }
-| TOK_SOCKET TOK_LPAREN TOK_STRING TOK_INTEGER TOK_STRING TOK_RPAREN
-{
-  $$ = new MccSocketBinaryInput ($3, $4, $5);
-  delete[] $3;
-  delete[] $5;
-}
 | TOK_RNAML TOK_LPAREN TOK_STRING TOK_RPAREN
 {
   $$ = new MccFileRnamlInput ($3);
   delete[] $3;
+}
+| TOK_SOCKET TOK_LPAREN TOK_STRING TOK_INTEGER string_plus TOK_RPAREN
+{
+  $$ = new MccSocketBinaryInput ($3, $4, *$5);
+  delete[] $3;
+  delete $5;
+}
+;
+
+
+string_plus:
+
+TOK_STRING
+{
+  $$ = new vector< string > (1, $1);
+  delete[] $1;
+}
+| string_plus TOK_STRING
+{
+  $$ = $1;
+  $$->push_back ($2);
+  delete[] $2;
 }
 ;
 

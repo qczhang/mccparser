@@ -1713,6 +1713,150 @@ MccClashCstStat::ppdisplay (ostream &os, int indent) const
 }
 
 
+MccCycleCstStat::_CycleStruc::_CycleStruc (const MccCycleCstStat::_CycleStruc &right)
+  : last (right.last->clone ()),
+    first (right.first->clone ()),
+    threshold (right.threshold)
+{
+}
+
+  
+
+MccCycleCstStat::_CycleStruc::~_CycleStruc ()
+{
+  delete last;
+  delete first;
+}
+
+
+
+MccCycleCstStat::_CycleStruc&
+MccCycleCstStat::_CycleStruc::operator= (const MccCycleCstStat::_CycleStruc &right)
+{
+  if (this != &right)
+  {
+    delete last;
+    last = right.last->clone ();
+    delete first;
+    first = right.first->clone ();
+    this->threshold = right.threshold;
+  }
+  return *this;
+}
+
+  
+
+void
+MccCycleCstStat::_CycleStruc::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+
+void
+MccCycleCstStat::_CycleStruc::display (ostream &os) const
+{
+  last->display (os);
+  os << ' ';
+  first->display (os);
+  os << ' ' << this->threshold;
+}
+
+
+
+void
+MccCycleCstStat::_CycleStruc::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  this->display (os);
+}
+
+
+
+MccCycleCstStat::MccCycleCstStat (const MccCycleCstStat &right)
+  : strucs (new vector< MccCycleCstStat::_CycleStruc* > ())
+{
+  vector< MccCycleCstStat::_CycleStruc* >::const_iterator cit;
+
+  for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
+    strucs->push_back ((*cit)->clone ());
+}
+
+
+
+MccCycleCstStat::~MccCycleCstStat ()
+{
+  vector< _CycleStruc* >::iterator it;
+
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    delete *it;
+  delete strucs;
+}
+
+
+
+MccCycleCstStat&
+MccCycleCstStat::operator= (const MccCycleCstStat &right)
+{
+  if (this != &right)
+  {
+    vector< MccCycleCstStat::_CycleStruc* >::const_iterator cit;
+    vector< MccCycleCstStat::_CycleStruc* >::iterator it;
+
+    for (it = strucs->begin (); it != strucs->end (); it++)
+      delete *it;
+    strucs->clear ();
+    for (cit = right.strucs->begin (); cit != right.strucs->end (); ++cit)
+      strucs->push_back ((*cit)->clone ());
+  }
+  return *this;
+}
+
+
+
+void
+MccCycleCstStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+
+void
+MccCycleCstStat::display (ostream &os) const
+{
+  vector< _CycleStruc* >::iterator it;
+
+  os << "cycle (";
+  for (it = strucs->begin (); it != strucs->end (); it++)
+  {
+    if (it != strucs->begin ())
+      os << ' ';
+    (*it)->display (os);
+  }
+  os << ')';
+}
+
+
+
+void
+MccCycleCstStat::ppdisplay (ostream &os, int indent) const
+{
+  vector< _CycleStruc* >::iterator it;
+
+  os << "relation" << endl;
+  whitespaces (os, indent);
+  os << '(';
+  for (it = strucs->begin (); it != strucs->end (); it++)
+    (*it)->ppdisplay (os, indent + 2);
+  os << endl;
+  whitespaces (os, indent);
+  os << ')' << endl;
+}
+
+
 MccMultimerCstStat::_MultimerStruc::_MultimerStruc (const MccMultimerCstStat::_MultimerStruc &right)
   : res1 (new MccResidueName (*right.res1)),
     res2 (new MccResidueName (*right.res2)),
@@ -2336,7 +2480,7 @@ MccSocketBinaryInput::operator= (const MccSocketBinaryInput &right)
   {
     serverName = right.serverName;
     port = right.port;
-    modelName = right.modelName;
+    modelNames = right.modelNames;
   }
   return *this;
 }
@@ -2354,8 +2498,14 @@ MccSocketBinaryInput::accept (MccVisitor *visitor)
 void
 MccSocketBinaryInput::display (ostream &os) const
 {
-  os << "socket (\"" << serverName << " " << port
-     << " \"" << modelName << "\")";
+  vector< string >::const_iterator it;
+
+  os << "socket (\"" << serverName << " " << port;
+
+  for (it = this->modelNames.begin (); it != this->modelNames.end (); ++it)
+    os << " \"" << *it << "\"";
+
+  os << ")";
 }
 
 

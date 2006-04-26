@@ -81,7 +81,6 @@ as_is             return TOK_ASIS;
 backtrack         return TOK_BACKTRACK;
 base_adjacency    return TOK_BASEADJACENCY;
 cache             return TOK_CACHE;
-change_id         return TOK_CHANGEID;
 cycle             return TOK_CYCLE;
 db_display        return TOK_DBDISPLAY;
 db_filter         return TOK_DBFILTER;
