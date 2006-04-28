@@ -139,7 +139,7 @@ report_ribose     return TOK_REPORTRIBOSE;
 \#{DIGIT}+  mcclval.textval = mcccopy (mcctext); return TOK_RELATIVE_RESNAME;
 
 
-{DIGIT}{LETTER}{LETTER}?{DIGIT}[\*M]? {
+{DIGIT}?{LETTER}{LETTER}?{DIGIT}[\*M]? {
                                         mcclval.textval = mcccopy (mcctext);
 					return TOK_ATOM;
                                       }
