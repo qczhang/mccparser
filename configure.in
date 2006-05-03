@@ -74,4 +74,11 @@ AC_SUBST(LINKOPTIONS)
 AC_SUBST(ARXX)
 AC_SUBST(AROPTIONS)
 
-AC_OUTPUT( Makefile docs/Makefile lib/Makefile )
+AC_OUTPUT([
+Makefile
+mccparser-config
+docs/Makefile
+lib/Makefile
+],[
+chmod +x mccparser-config
+])
