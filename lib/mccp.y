@@ -260,7 +260,11 @@
 
 %type <textval> ident_plus
 %type <textval> strVal
+%type <intval> intgr_percent
+%type <intval> intgr_any
 %type <floatval> flt
+%type <floatval> flt_percent
+%type <floatval> flt_any
 %expect 1
 
 %%
@@ -952,8 +956,20 @@ TOK_REPORTRIBOSE TOK_LPAREN fgRef TOK_RPAREN
 ;
 
 
-sampling: TOK_INTEGER             { $$ = new MccSamplingSize ($1, true); }
-          | flt TOK_PERCENT       { $$ = new MccSamplingSize ($1, false); }
+// sampling: TOK_INTEGER             { $$ = new MccSamplingSize ($1, true); }
+//           | flt TOK_PERCENT       { $$ = new MccSamplingSize ($1, false); }
+// ;
+sampling:
+
+TOK_INTEGER
+{
+  $$ = new MccSamplingSize ($1, true);
+}
+|
+flt_percent
+{
+  $$ = new MccSamplingSize ($1, false);
+}
 ;
 
 
@@ -1364,10 +1380,70 @@ ident_plus:   TOK_IDENT { $$ = $1; }
 ;
 
 
-flt:   TOK_INTEGER { $$ = $1; }
-     | TOK_FLOAT { $$ = $1; }
+
+
+intgr_percent:
+
+TOK_INTEGER TOK_PERCENT
+{
+  $$ = (int)round ((double)$1 / 100.0);
+  //  cout << "intgr_percent: " << $1 << "% = " << $$ << endl;
+}
 ;
 
+
+intgr_any:
+
+TOK_INTEGER
+{
+  $$ = $1;
+  //  cout << "int any " << $1 << endl;
+}
+| intgr_percent
+{
+  $$ = $1;
+  //  cout << "int any (%) " << $1 << endl;
+}
+
+
+flt:   
+
+TOK_INTEGER 
+{ 
+  $$ = $1; 
+  //  cout << "flt (int) " << $1 << endl;
+}
+| TOK_FLOAT 
+{ 
+  $$ = $1; 
+  //  cout << "flt " << $1 << endl;
+}
+;
+
+
+flt_percent:
+
+flt TOK_PERCENT
+{
+  $$ = $1 / 100.0;
+  //  cout << "flt_percent: " << $1 << "% = " << $$ << endl;
+}
+;
+
+
+flt_any:
+
+flt
+{
+  $$ = $1;
+  //  cout << "flt any " << $1 << endl;
+}
+| flt_percent
+{
+  $$ = $1;
+  //  cout << "flt any  (%) " << $1 << endl;
+}
+;
 
 
 strVal:
@@ -1384,7 +1460,7 @@ TOK_STRING
 {
   $$ = $1;
 }
-| flt
+| flt_any
 {
   ostringstream oss;
   oss.setf (ios::fixed, ios::floatfield);
@@ -1392,14 +1468,14 @@ TOK_STRING
   oss << $1;
   $$ = strdup (oss.str ().c_str ());
 }
-| flt TOK_PERCENT
-{
-  ostringstream oss;
-  oss.setf (ios::fixed, ios::floatfield);
-  oss.precision (15);
-  oss << ($1 / 100.0);
-  $$ = strdup (oss.str ().c_str ());
-}
+// | flt TOK_PERCENT
+// {
+//   ostringstream oss;
+//   oss.setf (ios::fixed, ios::floatfield);
+//   oss.precision (15);
+//   oss << ($1 / 100.0);
+//   $$ = strdup (oss.str ().c_str ());
+// }
 ;
 
 %%

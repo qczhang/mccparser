@@ -1,5 +1,15 @@
 #!/bin/sh
 
+#                               -*- Mode: Sh -*- 
+# mccparser-config.in
+# Copyright © 2005 Laboratoire de Biologie Informatique et Théorique
+#                  Université de Montréal.
+# Author           : Philippe Thibault <philippe.thibault@umontreal.ca>
+# Created On       : Wed May  3 11:32:11 2006
+# $Revision$
+# $Id$
+# 
+
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 exec_prefix_set=no
