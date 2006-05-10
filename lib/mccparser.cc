@@ -3681,7 +3681,7 @@ MccSamplingSize::MccSamplingSize (float ssize, bool pflag)
   if (discrete)
     absVal = (int)rint (ssize);
   else
-    propFact = ssize / 100.0;
+    propFact = ssize;
 }
 
 
