@@ -123,6 +123,7 @@ socket            return TOK_SOCKET;
 source            return TOK_SOURCE;
 strip             return TOK_STRIP;
 tfod              return TOK_TFOD;
+threaded          return TOK_THREADED;
 torsion           return TOK_TORSION;
 vdw_distance      return TOK_VDWDIST;
 version           return TOK_VERSION;

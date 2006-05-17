@@ -3829,9 +3829,11 @@ struct MccDBFilterStat : public MccPStruct
 {
 
   /**
-   * THe identity threshold.
+   * The identity threshold.
    */
   float threshold;
+
+  bool threaded;
   
   // LIFECYCLE ------------------------------------------------------------
 
@@ -3841,13 +3843,15 @@ public:
    * Initializes the object.
    * @param f the FG structure to display.
    */
-  MccDBFilterStat (float th = -1.0) : threshold (th) { }
+  MccDBFilterStat (float th = -1.0, bool wth = false) 
+    : threshold (th), threaded (wth) { }
 
   /**
    * Initializes the object with the right struct.
    * @param right the struct to copy.
    */
-  MccDBFilterStat (const MccDBFilterStat &right) : threshold (right.threshold) { }
+  MccDBFilterStat (const MccDBFilterStat &right) 
+    : threshold (right.threshold), threaded (right.threaded) { }
 
   /**
    * Destroys the object.

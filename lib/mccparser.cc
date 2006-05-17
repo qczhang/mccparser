@@ -2071,6 +2071,7 @@ MccDBFilterStat::operator= (const MccDBFilterStat &right)
   if (this != &right)
   {
     this->threshold = right.threshold;
+    this->threaded = right.threaded;
   }
   return *this;
 }
@@ -2088,7 +2089,7 @@ MccDBFilterStat::accept (MccVisitor *visitor)
 void
 MccDBFilterStat::display (ostream &os) const
 {
-  os << "db_filter (" << this->threshold << ")";
+  os << "db_filter (" << this->threshold << (this->threaded ? " threaded" : "") << ")";
 }
 
 

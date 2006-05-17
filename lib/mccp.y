@@ -140,6 +140,7 @@
 %token TOK_SOCKET
 %token TOK_SOURCE
 %token TOK_STRIP
+%token TOK_THREADED
 %token TOK_TORSION
 %token TOK_TFOD
 %token TOK_VDWDIST
@@ -246,6 +247,7 @@
 %type <inmov> input_mode_plus
 %type <inmo> input_mode
 %type <boolval> asis_opt
+%type <boolval> threaded_opt
 
 %type <rrv> residueRef_star
 %type <rrv> residueRef_plus
@@ -839,9 +841,22 @@ TOK_DBDISPLAY
 
 dbfilter:   
 
-TOK_DBFILTER TOK_LPAREN flt TOK_RPAREN
+TOK_DBFILTER TOK_LPAREN flt threaded_opt TOK_RPAREN
 {
-  $$ = new MccDBFilterStat ($3);
+  $$ = new MccDBFilterStat ($3, $4);
+}
+;
+
+
+threaded_opt:
+
+/* empty */
+{
+  $$ = false;
+}
+| TOK_THREADED
+{
+  $$ = true;
 }
 ;
 
