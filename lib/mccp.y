@@ -148,6 +148,7 @@
 %token TOK_ZIPPED
 %token TOK_REPORTIMPLICITPHOSPHATE
 %token TOK_REPORTRIBOSE
+%token TOK_UNSORTED
 %token <intval> TOK_INTEGER
 %token <floatval> TOK_FLOAT
 %token <textval> TOK_RESNAME
@@ -978,12 +979,22 @@ sampling:
 
 TOK_INTEGER
 {
-  $$ = new MccSamplingSize ($1, true);
+  $$ = new MccSamplingSize ($1, true, false);
+}
+|
+TOK_INTEGER TOK_UNSORTED
+{
+  $$ = new MccSamplingSize ($1, true, true);
 }
 |
 flt_percent
 {
-  $$ = new MccSamplingSize ($1, false);
+  $$ = new MccSamplingSize ($1, false, false);
+}
+|
+flt_percent TOK_UNSORTED
+{
+  $$ = new MccSamplingSize ($1, false, true);
 }
 ;
 

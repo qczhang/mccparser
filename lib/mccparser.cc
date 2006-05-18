@@ -3676,8 +3676,9 @@ MccRestoreStat::ppdisplay (ostream &os, int indent) const
 }
 
 
-MccSamplingSize::MccSamplingSize (float ssize, bool pflag)
-  : discrete (pflag)
+MccSamplingSize::MccSamplingSize (float ssize, bool pflag, bool sortflag)
+  : discrete (pflag),
+    unsorted (sortflag)
 {
   if (discrete)
     absVal = (int)rint (ssize);
@@ -3688,7 +3689,8 @@ MccSamplingSize::MccSamplingSize (float ssize, bool pflag)
 
 
 MccSamplingSize::MccSamplingSize (const MccSamplingSize &right)
-  : discrete (right.discrete)
+  : discrete (right.discrete),
+    unsorted (right.unsorted)
 {
   if (discrete)
     absVal = right.absVal;
@@ -3704,6 +3706,7 @@ MccSamplingSize::operator= (const MccSamplingSize &right)
   if (this != &right)
   {
     discrete = right.discrete;
+    unsorted = right.unsorted;
     if (discrete)
       absVal = right.absVal;
     else
@@ -3729,6 +3732,8 @@ MccSamplingSize::display (ostream &os) const
     os << absVal;
   else
     os << propFact * 100.0 << '%';
+  if (unsorted)
+    os << " unsorted";
 }
 
 

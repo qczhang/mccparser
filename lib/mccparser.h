@@ -369,6 +369,8 @@ struct MccSamplingSize
    */
   bool discrete;
 
+  bool unsorted;
+
 protected:
 
   // LIFECYCLE ------------------------------------------------------------
@@ -387,7 +389,7 @@ public:
    * @param pflag flag indicating if ssize is a proportion or an absolute
    * value. 
    */
-  MccSamplingSize (float ssize, bool pflag);
+  MccSamplingSize (float ssize, bool pflag, bool sortflag);
 
   /**
    * Initializes the object with the rights content.
@@ -421,6 +423,8 @@ public:
    * @return true if the sampling is a fixed size.
    */
   bool isDiscrete () const { return discrete; }
+
+  bool isUnsorted () const { return unsorted; }
 
   /**
    * Gets the concrete value of the sampling.

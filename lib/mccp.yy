@@ -130,6 +130,7 @@ version           return TOK_VERSION;
 zipped            return TOK_ZIPPED;
 report_implicit_phosphate return TOK_REPORTIMPLICITPHOSPHATE;
 report_ribose     return TOK_REPORTRIBOSE;
+unsorted          return TOK_UNSORTED;
 
 
 {INTEGER_LIT}     mcclval.intval = atoi (mcctext); return TOK_INTEGER;
