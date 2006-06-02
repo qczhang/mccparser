@@ -2929,22 +2929,16 @@ MccNotesStat::ppdisplay (ostream &os, int indent) const
 
 
 MccRelationStat::_RelationStruc::_RelationStruc (const MccRelationStat::_RelationStruc &right)
-  : rnpairs (right.rnpairs->clone ()),//resrefs (new vector< char* > (right.resrefs->size ())),
+  : rnpairs (right.rnpairs->clone ()),
     expr (right.expr->clone ()),
     ssize (right.ssize->clone ())
 {
-//   vector< char* >::const_iterator it;
-//   for (it = right.resrefs->begin (); right.resrefs->end () != it; ++it)
-//     this->resrefs->push_back (strdup (*it));
+
 }
 
 
 MccRelationStat::_RelationStruc::~_RelationStruc ()
 {
-//   vector< char* >::iterator it;
-//   for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
-//     delete[] *it;
-  //delete this->resrefs;
   delete this->rnpairs;
   delete this->expr;
   delete this->ssize;
@@ -2956,14 +2950,6 @@ MccRelationStat::_RelationStruc::operator= (const MccRelationStat::_RelationStru
 {
   if (this != &right)
   {
-//     vector< char* >::iterator it;
-//     vector< char* >::const_iterator cit;
-//     for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
-//       delete[] *it;
-//     delete this->resrefs;
-//     this->resrefs = new vector< char* > (right.resrefs->size ());
-//     for (cit = right.resrefs->begin (); right.resrefs->end () != cit; ++cit)
-//       this->resrefs->push_back (strdup (*it));
     delete this->rnpairs;
     rnpairs = right.rnpairs->clone ();
     delete expr;
@@ -2985,13 +2971,6 @@ MccRelationStat::_RelationStruc::accept (MccVisitor *visitor)
 void
 MccRelationStat::_RelationStruc::display (ostream &os) const
 {
-//   vector< char* >::const_iterator it;
-//   for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
-//   {
-//     if (this->resrefs->begin () != it)
-//       os << ',';
-//     os << *it;
-//   }
   this->rnpairs->display (os);
   os << ' ';
   this->expr->display (os);
@@ -3005,14 +2984,6 @@ MccRelationStat::_RelationStruc::ppdisplay (ostream &os, int indent) const
 {
   os << endl;
   whitespaces (os, indent);
-//   vector< char* >::const_iterator it;
-//   for (it = this->resrefs->begin (); this->resrefs->end () != it; ++it)
-//   {
-//     if (this->resrefs->begin () != it)
-//       os << ',';
-//     os << *it;
-//   }
-//   os << ' ';
   this->rnpairs->display (os);
   os << ' ';
   this->expr->display (os);
@@ -3022,7 +2993,8 @@ MccRelationStat::_RelationStruc::ppdisplay (ostream &os, int indent) const
 
 
 MccRelationStat::MccRelationStat (const MccRelationStat &right)
-  : strucs (new vector< MccRelationStat::_RelationStruc* > (right.strucs->size ()))
+  : strucs (new vector< MccRelationStat::_RelationStruc* > (right.strucs->size ())),
+    threads (right.threads)
 {
   vector< MccRelationStat::_RelationStruc* >::const_iterator cit;
   for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
@@ -3052,6 +3024,8 @@ MccRelationStat::operator= (const MccRelationStat &right)
     this->strucs = new vector< MccRelationStat::_RelationStruc* > (right.strucs->size ());
     for (cit = right.strucs->begin (); cit != right.strucs->end (); cit++)
       this->strucs->push_back (new MccRelationStat::_RelationStruc (**cit));
+
+    this->threads = right.threads;
   }
   return *this;
 }
@@ -3071,7 +3045,7 @@ MccRelationStat::display (ostream &os) const
 {
   vector< _RelationStruc* >::iterator it;
   
-  os << "pair (";
+  os << "relation (";
   for (it = strucs->begin (); it != strucs->end (); it++)
   {
     if (it != strucs->begin ())
@@ -3079,6 +3053,8 @@ MccRelationStat::display (ostream &os) const
     (*it)->display (os);
   }
   os << ')';
+  if (this->threads > 1)
+    os << ':' << this->threads;
 }
 
 
@@ -3088,14 +3064,17 @@ MccRelationStat::ppdisplay (ostream &os, int indent) const
 {
   vector< _RelationStruc* >::iterator it;
   
-  os << "pair" << endl;
+  os << "relation" << endl;
   whitespaces (os, indent + 2);
   os << '(';
   for (it = strucs->begin (); it != strucs->end (); it++)
     (*it)->ppdisplay (os, indent + 4);
   os << endl;
   whitespaces (os, indent + 2);
-  os << ')' << endl;
+  os << ')';
+  if (this->threads > 1)
+    os << ':' << this->threads;
+  os << endl;
 }
 
 

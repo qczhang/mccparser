@@ -371,14 +371,9 @@ struct MccSamplingSize
 
   bool unsorted;
 
-protected:
+
 
   // LIFECYCLE ------------------------------------------------------------
-
-  /**
-   * Initializes the object.  It should never be used.
-   */
-  MccSamplingSize () { }
   
 public:
   
@@ -389,7 +384,7 @@ public:
    * @param pflag flag indicating if ssize is a proportion or an absolute
    * value. 
    */
-  MccSamplingSize (float ssize, bool pflag, bool sortflag);
+  MccSamplingSize (float ssize = 0, bool pflag = false, bool sortflag = true);
 
   /**
    * Initializes the object with the rights content.
@@ -6273,19 +6268,24 @@ struct MccRelationStat : public MccPStruct
    */
   vector< _RelationStruc* > *strucs;
 
+  int threads;
 
   // LIFECYCLE ------------------------------------------------------------
     
   /**
    * Initializes the object.
    */
-  MccRelationStat () : strucs (new vector< _RelationStruc* > ()) { }
+  MccRelationStat (int th = 1) 
+    : strucs (new vector< _RelationStruc* > ()), threads (th)
+  { }
 
   /**
    * Initializes the object.
    * @param psv the vector containing the pairing sub-structures.
    */
-  MccRelationStat (vector< _RelationStruc* > *psv) : strucs (psv) { }
+  MccRelationStat (vector< _RelationStruc* > *psv, int th = 1) 
+    : strucs (psv), threads (th) 
+  { }
 
   /**
    * Initializes the object with the rights content.

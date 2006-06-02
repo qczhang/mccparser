@@ -34,6 +34,7 @@
   int intval;
   bool boolval;
   float floatval;
+  pair< string, string >* stringpair;
   map< string, string >* stringmap;
   vector< string >* strv;
   char *textval;
@@ -200,6 +201,7 @@
 %type <mccval> riboseRst
 %type <mccval> implicitpo4Rst
 %type <stringmap> keyValue_plus
+%type <stringpair> keyValue
 
 %type <mccval> newtag
 %type <mccval> dbdisplay
@@ -349,7 +351,11 @@ relation:
 
 TOK_RELATION TOK_LPAREN reldef_plus TOK_RPAREN
 {
-  $$ = new MccRelationStat ($3);
+  $$ = new MccRelationStat ($3, 1);
+}
+| TOK_RELATION TOK_LPAREN reldef_plus TOK_LBRACKET TOK_INTEGER TOK_RBRACKET TOK_RPAREN
+{
+  $$ = new MccRelationStat ($3, $5);
 }
 ;
 
@@ -720,21 +726,34 @@ TOK_RIBOSERST TOK_LPAREN fgRef TOK_LBRACKET residueRef_singleton_plus TOK_RBRACK
 
 keyValue_plus:
 
+keyValue
+{
+  $$ = new map< string, string > ();
+  $$->insert (*$1);
+  delete $1;
+}
+| keyValue_plus TOK_COMMA keyValue
+{
+  $$ = $1;
+  $$->insert (*$3);
+  delete $3;
+}
+;
+
+
+keyValue:
+
 strVal TOK_ASSIGN strVal
 {
-  pair< string, string > entry ($1, $3);
-  $$ = new map< string, string > ();
-  $$->insert (entry);
+  $$ = new pair< string, string > ($1, $3);
   delete[] $1;
   delete[] $3;
 }
-| keyValue_plus TOK_COMMA strVal TOK_ASSIGN strVal
+| strVal
 {
-  pair< string, string > entry ($3, $5);
-  $$ = $1;
-  $$->insert (entry);
-  delete[] $3;
-  delete[] $5;
+  string es;
+  $$ = new pair< string, string > ($1, es);
+  delete[] $1;
 }
 ;
 
