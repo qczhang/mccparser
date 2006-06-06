@@ -77,7 +77,6 @@ doc:
 mostlyclean: mostlyclean-recursive mostlyclean-local
 
 mostlyclean-local:
-	@ $(RM) mccparser-config
 
 clean: clean-recursive clean-local
 
@@ -86,7 +85,7 @@ clean-local: mostlyclean-local
 distclean: distclean-recursive distclean-local
 
 distclean-local: clean-local
-	@ $(RM) Makefile config.cache config.h config.log config.status
+	@ $(RM) Makefile config.cache config.h config.log config.status mccparser-config
 
 topclean: topclean-recursive topclean-local
 
@@ -150,7 +149,7 @@ configure: configure.in
 	@ cd $(srcdir) && autoconf configure.in > configure
 
 mccparser-config: config.status $(srcdir)/mccparser-config.in
-	@ cd $(srcdir) && ./config.status $@
+	@ ./config.status $@
 
 # Tell versions [3.59,3.63) of GNU make not to export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

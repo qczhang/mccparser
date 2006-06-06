@@ -353,9 +353,9 @@ TOK_RELATION TOK_LPAREN reldef_plus TOK_RPAREN
 {
   $$ = new MccRelationStat ($3, 1);
 }
-| TOK_RELATION TOK_LPAREN reldef_plus TOK_LBRACKET TOK_INTEGER TOK_RBRACKET TOK_RPAREN
+| TOK_RELATION TOK_LBRACKET TOK_INTEGER TOK_RBRACKET TOK_LPAREN reldef_plus TOK_RPAREN
 {
-  $$ = new MccRelationStat ($3, $5);
+  $$ = new MccRelationStat ($6, $3);
 }
 ;
 
