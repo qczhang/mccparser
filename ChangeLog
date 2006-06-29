@@ -1,3 +1,12 @@
+2006-01-30  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* mccparser.cc: destructor mismatch
+
+2005-12-22  Philippe Thibault  <philippe.thibault@umontreal.ca>
+
+	* Makefile.in, mccp.y, mccp.yy, mccparser.cc, mccparser.h:
+	updated with mcsym 4.0
+
 2005-12-22  Philippe Thibault  <philippe.thibault@umontreal.ca>
 
 	* lib/Makefile.in, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:

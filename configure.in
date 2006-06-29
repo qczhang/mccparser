@@ -54,8 +54,8 @@ if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
 	;;
     esac;
 elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
-	CXXSHFLAGS="$CXXFLAGS -Wall -Wno-deprecated";
-	CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated";
+	CXXSHFLAGS="$CXXFLAGS -Wall";
+	CXXFLAGS="$CXXFLAGS -Wall -fPIC";
 	DEPFLAGS="-MM"
 	LDNAMEPARAM="-Wl,-soname,"
 	LDFLAGS=""

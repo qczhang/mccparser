@@ -135,7 +135,7 @@ dist:
 	  done
 	@ chmod -R a+r $(PACKAGE)-$(VERSION)
 	@ tar chof $(PACKAGE)-$(VERSION).tar $(PACKAGE)-$(VERSION)
-	@ gzip -9 $(PACKAGE)-$(VERSION).tar
+	@ gzip -9f $(PACKAGE)-$(VERSION).tar
 	@ rm -fr $(PACKAGE)-$(VERSION)
 
 
