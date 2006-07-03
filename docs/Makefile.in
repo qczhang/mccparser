@@ -12,6 +12,7 @@
 
 
 PACKAGE = @PACKAGE@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
 VERSION = @VERSION@
 
 srcdir = @srcdir@
@@ -98,8 +99,8 @@ release:
 dist:
 	@ echo "Copying distribution files"
 	@ for file in $(DISTFILES); do \
-	   ln $(srcdir)/$$file ../$(PACKAGE)-$(VERSION)/docs 2> /dev/null \
-	    || cp -p $(srcdir)/$$file ../$(PACKAGE)-$(VERSION)/docs; \
+	   ln $(srcdir)/$$file ../$(PACKAGE_TARNAME)-$(VERSION)/docs 2> /dev/null \
+	    || cp -p $(srcdir)/$$file ../$(PACKAGE_TARNAME)-$(VERSION)/docs; \
 	  done
 
 Makefile: $(srcdir)/Makefile.in ../config.status

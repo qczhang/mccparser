@@ -8,6 +8,7 @@
 
 
 PACKAGE = @PACKAGE@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
 VERSION = @VERSION@
 
 srcdir = @srcdir@
@@ -119,24 +120,24 @@ release:
 	@ rm -fr $(PACKAGE)-$(VERSION)
 
 dist:
-	@ rm -fr $(PACKAGE)-$(VERSION)
-	@ mkdir $(PACKAGE)-$(VERSION)
-	@ chmod 777 $(PACKAGE)-$(VERSION)
+	@ rm -fr $(PACKAGE_TARNAME)-$(VERSION)
+	@ mkdir $(PACKAGE_TARNAME)-$(VERSION)
+	@ chmod 777 $(PACKAGE_TARNAME)-$(VERSION)
 	@ echo Copying distribution files
 	@ for file in $(DISTFILES); do \
-	   ln $(srcdir)/$$file $(PACKAGE)-$(VERSION) 2> /dev/null \
-	     || cp -p $(srcdir)/$$file $(PACKAGE)-$(VERSION); \
+	   ln $(srcdir)/$$file $(PACKAGE_TARNAME)-$(VERSION) 2> /dev/null \
+	     || cp -p $(srcdir)/$$file $(PACKAGE_TARNAME)-$(VERSION); \
 	  done
 	@ for subdir in $(SUBDIRS); do \
 	   echo Making $@ in $$subdir; \
-	   mkdir $(PACKAGE)-$(VERSION)/$$subdir; \
-	   chmod 777 $(PACKAGE)-$(VERSION)/$$subdir; \
+	   mkdir $(PACKAGE_TARNAME)-$(VERSION)/$$subdir; \
+	   chmod 777 $(PACKAGE_TARNAME)-$(VERSION)/$$subdir; \
 	   (cd $$subdir && $(MAKE) $@) || exit 1; \
 	  done
-	@ chmod -R a+r $(PACKAGE)-$(VERSION)
-	@ tar chof $(PACKAGE)-$(VERSION).tar $(PACKAGE)-$(VERSION)
-	@ gzip -9f $(PACKAGE)-$(VERSION).tar
-	@ rm -fr $(PACKAGE)-$(VERSION)
+	@ chmod -R a+r $(PACKAGE_TARNAME)-$(VERSION)
+	@ tar chof $(PACKAGE_TARNAME)-$(VERSION).tar $(PACKAGE_TARNAME)-$(VERSION)
+	@ gzip -9f $(PACKAGE_TARNAME)-$(VERSION).tar
+	@ rm -fr $(PACKAGE_TARNAME)-$(VERSION)
 
 
 Makefile: $(srcdir)/Makefile.in config.status
