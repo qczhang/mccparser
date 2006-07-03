@@ -168,8 +168,8 @@ release: static
 dist:
 	@ echo "Copying distribution files"
 	@ for file in $(DISTFILES); do \
-	   ln $(srcdir)/$$file ../$(PACKAGE_TARNME)-$(VERSION)/lib 2> /dev/null \
-	    || cp -p $(srcdir)/$$file ../$(PACKAGE_TARNME)-$(VERSION)/lib; \
+	   ln $(srcdir)/$$file ../$(PACKAGE_TARNAME)-$(VERSION)/lib 2> /dev/null \
+	    || cp -p $(srcdir)/$$file ../$(PACKAGE_TARNAME)-$(VERSION)/lib; \
 	  done
 
 Makefile: $(srcdir)/Makefile.in ../config.status
