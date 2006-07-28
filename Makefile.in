@@ -32,7 +32,7 @@ SUBDIRS = lib docs
 RELEASESUBDIRS = $(SUBDIRS)
 
 DISTFILES = ChangeLog INSTALL Makefile.in NEWS README config.guess \
-mccparser-config.in config.sub configure.in configure install-sh mkinstalldirs
+mccparser-config.in config.h.in config.sub configure.in configure install-sh mkinstalldirs
 
 
 .SUFFIXES:
