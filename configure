@@ -273,7 +273,7 @@ PACKAGE_VERSION='1.5.0'
 PACKAGE_STRING='MC-CParser 1.5.0'
 PACKAGE_BUGREPORT='mcsym-user@iro.umontreal.ca'
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS SET_MAKE CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT build build_cpu build_vendor build_os host host_cpu host_vendor host_os LEX LEXLIB LEX_OUTPUT_ROOT YACC AR INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION DEPFLAGS LDNAMEPARAM LINKOPTIONS ARXX AROPTIONS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS SET_MAKE CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT build build_cpu build_vendor build_os host host_cpu host_vendor host_os LEX LEXLIB LEX_OUTPUT_ROOT YACC AR INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION DEPFLAGS LINKOPTIONS LDNAMEPARAM LIBEXT LIBALLFLAGSTART LIBALLFLAGSTOP ARXX AROPTIONS LEXEROPTIONS LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -2416,15 +2416,35 @@ if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
 	;;
     esac;
 elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
-	CXXSHFLAGS="$CXXFLAGS -Wall";
-	CXXFLAGS="$CXXFLAGS -Wall -fPIC";
-	DEPFLAGS="-MM"
-	LDNAMEPARAM="-Wl,-soname,"
-	LDFLAGS=""
-	LINKOPTIONS="-shared";
-	ARXX="$AR"
-	AROPTIONS="crs"
+  DEPFLAGS="-M"
+  	case "$host" in
+	    *-darwin*)
+		CXXFLAGS="$CXXFLAGS -Wall"
+		LINKOPTIONS="-dynamiclib"
+		LDNAMEPARAM="-install_name,"
+		LIBEXT="dylib"
+		LIBALLFLAGSTART=""
+		LIBALLFLAGSTOP=""
+                ARXX="$AR"
+                AROPTIONS="crs"
+		LEXEROPTIONS="-d -t";;
+	    *)
+		CXXFLAGS="$CXXFLAGS -Wall -fPIC"
+		LINKOPTIONS="-shared"
+		LDNAMEPARAM="-Wl,-soname,"
+		LIBEXT="so"
+		LIBALLFLAGSTART="-Wl,-whole-archive"
+		LIBALLFLAGSTOP="-Wl,-no-whole-archive"
+		ARXX="$AR"
+		AROPTIONS="crs"
+		LEXEROPTIONS="-d -t --report=all";;
+	esac;
 fi
+
+
+
+
+
 
 
 
@@ -3084,10 +3104,14 @@ s,@INSTALL_DATA@,$INSTALL_DATA,;t t
 s,@PACKAGE@,$PACKAGE,;t t
 s,@VERSION@,$VERSION,;t t
 s,@DEPFLAGS@,$DEPFLAGS,;t t
-s,@LDNAMEPARAM@,$LDNAMEPARAM,;t t
 s,@LINKOPTIONS@,$LINKOPTIONS,;t t
+s,@LDNAMEPARAM@,$LDNAMEPARAM,;t t
+s,@LIBEXT@,$LIBEXT,;t t
+s,@LIBALLFLAGSTART@,$LIBALLFLAGSTART,;t t
+s,@LIBALLFLAGSTOP@,$LIBALLFLAGSTOP,;t t
 s,@ARXX@,$ARXX,;t t
 s,@AROPTIONS@,$AROPTIONS,;t t
+s,@LEXEROPTIONS@,$LEXEROPTIONS,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
