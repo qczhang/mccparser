@@ -54,32 +54,43 @@ if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
 	;;
     esac;
 elif eval "test \"`echo $GXX`\" = yes"; then     # gnu compiler
-	CXXSHFLAGS="$CXXFLAGS -Wall";
-	CXXFLAGS="$CXXFLAGS -Wall -fPIC";
-	DEPFLAGS="-MM"
-	LDNAMEPARAM="-Wl,-soname,"
-	LDFLAGS=""
-	LINKOPTIONS="-shared";
-	ARXX="$AR"
-	AROPTIONS="crs"
+	DEPFLAGS="-M"
+	case "$host" in
+	    *-darwin*)
+		CXXFLAGS="$CXXFLAGS -Wall"
+		LINKOPTIONS="-dynamiclib"
+		LDNAMEPARAM="-install_name,"
+		LIBEXT="dylib"
+		LIBALLFLAGSTART=""
+		LIBALLFLAGSTOP=""
+                ARXX="$AR"
+                AROPTIONS="crs";;
+	    *)
+		CXXFLAGS="$CXXFLAGS -Wall -fPIC"
+		LINKOPTIONS="-shared"
+		LDNAMEPARAM="-Wl,-soname,"
+		LIBEXT="so"
+		LIBALLFLAGSTART="-Wl,-whole-archive"
+		LIBALLFLAGSTOP="-Wl,-no-whole-archive";
+		ARXX="$AR"
+		AROPTIONS="crs";;
+	esac;
 fi
-
 
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
+AC_SUBST(CXXFLAGS)
 AC_SUBST(DEPFLAGS)
-AC_SUBST(LDFLAGS)
-AC_SUBST(LDNAMEPARAM)
 AC_SUBST(LINKOPTIONS)
+AC_SUBST(LDNAMEPARAM)
+AC_SUBST(LIBEXT)
+AC_SUBST(LDFLAGS)
+AC_SUBST(LIBALLFLAGSTART)
+AC_SUBST(LIBALLFLAGSTOP)
 AC_SUBST(ARXX)
 AC_SUBST(AROPTIONS)
 
-AC_OUTPUT([
-Makefile
-mccparser-config
-docs/Makefile
-lib/Makefile
-],[
-echo timestamp > stamp-h
-chmod +x mccparser-config
-])
+AC_CONFIG_FILES([Makefile lib/Makefile docs/Makefile])
+AC_CONFIG_FILES([mccparser-config],[chmod +x mccparser-config])
+AC_CONFIG_FILES([stamp-h])
+AC_OUTPUT

@@ -104,6 +104,7 @@
 %token TOK_DBFILTER
 %token TOK_DBINFO
 %token TOK_DBINSERT
+%token TOK_DBINCLUDE
 %token TOK_DBRESET
 %token TOK_DBVERSION
 %token TOK_DBNOTE
@@ -207,6 +208,7 @@
 %type <mccval> dbdisplay
 %type <mccval> dbfilter
 %type <mccval> dbinsert
+%type <mccval> dbinclude
 %type <mccval> dbreset
 %type <mccval> dbversion
 %type <mccval> displayfg
@@ -312,6 +314,7 @@ statement:   sequence { $$ = $1; }
            | newtag { $$ = $1; }
            | dbdisplay { $$ = $1; }
            | dbinsert { $$ = $1; }
+           | dbinclude { $$ = $1; }
            | dbfilter { $$ = $1; }
            | dbreset { $$ = $1; }
            | dbversion { $$ = $1; }
@@ -890,6 +893,16 @@ TOK_DBINSERT TOK_LPAREN input_mode TOK_RPAREN
 | TOK_DBINSERT TOK_LPAREN input_mode flt TOK_RPAREN
 {
   $$ = new MccDBInsertStat ($3, $4);
+}
+;
+
+
+dbinclude:   
+
+TOK_DBINCLUDE TOK_LPAREN TOK_STRING TOK_RPAREN
+{
+  $$ = new MccDBIncludeStat ($3);
+  delete[] $3;
 }
 ;
 

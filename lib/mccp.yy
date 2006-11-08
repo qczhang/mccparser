@@ -86,6 +86,7 @@ db_display        return TOK_DBDISPLAY;
 db_filter         return TOK_DBFILTER;
 db_info           return TOK_DBINFO;
 db_insert         return TOK_DBINSERT;
+db_include        return TOK_DBINCLUDE;
 db_reset          return TOK_DBRESET;
 db_version        return TOK_DBVERSION;
 db_note           return TOK_DBNOTE;

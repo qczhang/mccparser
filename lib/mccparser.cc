@@ -851,6 +851,43 @@ MccDBInsertStat::ppdisplay (ostream &os, int indent) const
 }
 
 
+MccDBIncludeStat&
+MccDBIncludeStat::operator= (const MccDBIncludeStat &right)
+{
+  if (this != &right)
+  {
+    this->filename = right.filename;
+  }
+  return *this;
+}
+
+
+  
+void
+MccDBIncludeStat::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+
+void
+MccDBIncludeStat::display (ostream &os) const
+{
+  os << "db_include (\"" << this->filename << "\")";
+}
+  
+
+
+void
+MccDBIncludeStat::ppdisplay (ostream &os, int indent) const
+{
+  whitespaces (os, indent);
+  this->display (os);
+  os << endl;
+}
+
+
 MccBaseAdjacencyCstStat::MccBaseAdjacencyCstStat (const MccBaseAdjacencyCstStat &right)
   : fg_struc (new MccFragGenStruc (*right.fg_struc)),
     coverage (right.coverage)

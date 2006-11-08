@@ -26,10 +26,14 @@ DEPFLAGS = @DEPFLAGS@
 DEFS = @DEFS@
 LD = @CXX@
 LINKOPTIONS = @LINKOPTIONS@
+LIBEXT = @LIBEXT@
 LDFLAGS = @LDFLAGS@
 LDNAMEPARAM = @LDNAMEPARAM@
 LIBS = @LIBS@
+LIBALLFLAGSTART = @LIBALLFLAGSTART@
+LIBALLFLAGSTOP = @LIBALLFLAGSTOP@
 
+AR = @AR@
 ARXX = @ARXX@
 AROPTIONS = @AROPTIONS@
 LEX = @LEX@
@@ -70,11 +74,14 @@ LIBRARY = lib$(PACKAGE)
 DISTFILES = Makefile.in $(SOURCES) $(HEADERS) mccp.yy mccp.y
 
 
-all: $(LIBRARY).so.$(VERSION) TAGS
+before-all:
+	@ $(RM) Version.o
 
-all-static static: $(LIBRARY).a TAGS
+all: before-all $(LIBRARY).$(LIBEXT).$(VERSION) TAGS
 
-$(LIBRARY).so.$(VERSION): $(OBJECTS)
+static: before-all $(LIBRARY).a TAGS
+
+$(LIBRARY).$(LIBEXT).$(VERSION): $(OBJECTS)
 	$(CXX) $(LINKOPTIONS) -o $@ $(LDNAMEPARAM)$@ $(LDFLAGS) $^
 	@ ln -sf $@ $(LIBRARY).so
 
@@ -103,7 +110,7 @@ y.tab.o: y.tab.c y.tab.h
 doc:
 
 
-install: $(LIBRARY).so.$(VERSION)
+install: $(LIBRARY).$(LIBEXT).$(VERSION)
 	@ echo Installing $(LIBRARY).so in $(libdir)
 	@ $(srcdir)/../mkinstalldirs $(libdir)
 	@ $(srcdir)/../mkinstalldirs $(includedir)/$(PACKAGE)-$(VERSION)
@@ -138,7 +145,7 @@ uninstall:
 	@ $(RM) $(libdir)/$(LIBRARY).a
 	@ $(RM) $(libdir)/$(LIBRARY)-$(VERSION).a
 	@ $(RM) $(libdir)/$(LIBRARY).so
-	@ $(RM) $(libdir)/$(LIBRARY).so.$(VERSION)
+	@ $(RM) $(libdir)/$(LIBRARY).$(LIBEXT).$(VERSION)
 	@ for file in $(HEADERS); do \
            $(RM) $(includedir)/$(PACKAGE)-$(VERSION)/$$file; \
           done;
@@ -152,7 +159,7 @@ mostlyclean:
 
 clean: mostlyclean
 	@ echo "Cleaning project"
-	@ $(RM) $(LIBRARY).so $(LIBRARY).so.$(VERSION) $(LIBRARY).a
+	@ $(RM) $(LIBRARY).so $(LIBRARY).$(LIBEXT).$(VERSION) $(LIBRARY).a
 	@ $(RM) $(OBJECTS) TAGS
 	@ $(RM) lex.$(LEXERPREFIX).c y.tab.c y.tab.h
 	@ $(RM) *.d

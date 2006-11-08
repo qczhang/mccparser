@@ -32,14 +32,16 @@ SUBDIRS = lib docs
 RELEASESUBDIRS = $(SUBDIRS)
 
 DISTFILES = ChangeLog INSTALL Makefile.in NEWS README config.guess \
-mccparser-config.in config.sub configure.in configure install-sh mkinstalldirs
+config.h.in mccparser-config.in config.sub configure.in configure install-sh mkinstalldirs \
+stamp-h.in
 
+SCRIPTS = mccparser-config
 
 .SUFFIXES:
+.PHONY: doc
 
 
-
-all all-static static:
+all static doc: $(SCRIPTS)
 	@ for subdir in $(SUBDIRS); do \
 	   echo "Building $@ in $$subdir"; \
 	   (cd $$subdir && $(MAKE) $@) || exit 1; \
@@ -68,11 +70,6 @@ uninstall:
 	  done
 	@ $(RM) $(bindir)/mccparser-config
 	@- rmdir -p $(datadir)/$(PACKAGE)/$(VERSION)/doc
-
-
-doc:
-	@ cd docs && $(MAKE) $@
-
 
 
 mostlyclean: mostlyclean-recursive mostlyclean-local
@@ -139,17 +136,27 @@ dist:
 	@ gzip -9f $(PACKAGE_TARNAME)-$(VERSION).tar
 	@ rm -fr $(PACKAGE_TARNAME)-$(VERSION)
 
+$(srcdir)/configure: $(srcdir)/configure.in
+	@ cd $(srcdir) && autoconf
 
-Makefile: $(srcdir)/Makefile.in config.status
-	@ CONFIG_FILES=$@ CONFIG_HEADERS= ./config.status
+$(srcdir)/config.h.in: $(srcdir)/stamp-h.in
 
-config.status: configure
+$(srcdir)/stamp-h.in: $(srcdir)/configure.in
+	@ echo timestamp > $@
+
+config.h: stamp-h
+
+stamp-h: $(srcdir)/config.h.in config.status
+	@ CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
+	@ echo timestamp > $@
+
+Makefile: $(srcdir)/Makefile.in config.status stamp-h
+	@ ./config.status $@
+
+config.status: $(srcdir)/configure
 	@ ./config.status --recheck
 
-configure: configure.in
-	@ cd $(srcdir) && autoconf configure.in > configure
-
-mccparser-config: config.status $(srcdir)/mccparser-config.in
+mccparser-config: $(srcdir)/mccparser-config.in
 	@ ./config.status $@
 
 # Tell versions [3.59,3.63) of GNU make not to export all variables.

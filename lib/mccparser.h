@@ -5230,6 +5230,93 @@ public:
 
 
 /**
+ * @short Struct representing the AST node of the "db_include" form.
+ *
+ * @author Philippe Thibault <philippe.thibault@umontreal.ca>
+ */
+struct MccDBIncludeStat : public MccPStruct
+{
+
+  /**
+   * Database filename.
+   */
+  string filename;
+
+
+  // LIFECYCLE ------------------------------------------------------------
+
+protected:
+
+  /**
+   * Initializes the object.  It should not be used.
+   */
+  MccDBIncludeStat () { }
+
+public:
+
+  /**
+   * Initializes the object.
+   */
+  MccDBIncludeStat (const char* fn)
+    : filename (fn)
+  { }
+
+  /**
+   * Initializes the struct with the rights content.
+   * @param right the object to copy.
+   */
+  MccDBIncludeStat (const MccDBIncludeStat &right)
+    : filename (right.filename)
+  { }
+  
+  /**
+   * Destroys the structure.  Clears the vector of sub-structures.
+   */
+  virtual ~MccDBIncludeStat () { }
+
+  // OPERATORS ------------------------------------------------------------
+
+  /**
+   * Assigns the rights content into the object.
+   * @param right the object to copy.
+   * @return itself.
+   */
+  MccDBIncludeStat& operator= (const MccDBIncludeStat &right);
+  
+  // ACCESS ---------------------------------------------------------------
+
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccDBIncludeStat* clone () const { return new MccDBIncludeStat (*this); }
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+
+  // I/O ------------------------------------------------------------
+
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};
+
+
+/**
  * @short Struct representing the AST node "explore".
  *
  * @author Philippe Thibault <thibaup@iro.umontreal.ca>
@@ -8006,6 +8093,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void visit (MccDBInsertStat *struc) = 0;
+
+  /**
+   * Visits the MccDBIncludeStat structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccDBIncludeStat *struc) = 0;
 
   /**
    * Visits the MccBaseAdjacencyCstStat structure.

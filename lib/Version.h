@@ -17,7 +17,15 @@
 #include <string>
 
 
+namespace mccore
+{
+  class iBinstream;
+  class oBinstream;
+}
+
+
 using namespace std;
+using namespace mccore;
 
 
 namespace mccparser
@@ -30,16 +38,22 @@ namespace mccparser
    */
   class Version 
   {
- 
-    /**
-     * Major version number: <major>.<minor>
-     */
-    int major_version;
+  protected:
 
     /**
-     * Minor version number: <major>.<minor>
+     * Major version number: <major>.<minor>.<revision>
      */
-    int minor_version;
+    short int major_no;
+
+    /**
+     * Minor version number: <major>.<minor>.<revision>
+     */
+    short int minor_no;
+
+    /**
+     * Revision version number: <major>.<minor>.<revision>
+     */
+    short int revision_no;
 
     /**
      * Current CPU architecture string.
@@ -60,7 +74,7 @@ namespace mccparser
      * Current building timestamp.
      */
     string timestamp;
-   
+    
   public:
 
     // LIFECYCLE ------------------------------------------------------------
@@ -70,39 +84,49 @@ namespace mccparser
      */
     Version ();
 
+    Version (const string& strv);
+
     Version (const Version& v);
 
     /**
      * Destructs the object.
      */
-    ~Version () { }
+    virtual ~Version () { }
 
     // OPERATORS ------------------------------------------------------------
 
     Version& operator= (const Version& v);
 
-    bool operator== (const Version& v) const;
+    virtual bool operator== (const Version& v) const;
 
-    bool operator!= (const Version& v) const
-    {
-      return !this->operator== (v);
-    }
+    virtual bool operator!= (const Version& v) const;
 
     // ACCESS ---------------------------------------------------------------
 
-    int getMajorVersion () const
+    int getMajor () const
     {
-      return this->major_version;
+      return this->major_no;
     }
 
-    int getMinorVersion () const
+    int getMinor () const
     {
-      return this->minor_version;
+      return this->minor_no;
+    }
+
+    int getRevision () const
+    {
+      return this->revision_no;
     }
 
     // METHODS --------------------------------------------------------------
 
-    string toString () const;
+    bool equals (const Version& v) const;
+
+    bool compatibleWith (const Version& v) const;
+
+    virtual string toString () const;
+
+    string version () const;
 
     // I/O  -----------------------------------------------------------------
 
@@ -111,7 +135,21 @@ namespace mccparser
      * @param os The stream.
      * @return The written stream.
      */
-    ostream& write (ostream& os) const;
+    virtual ostream& write (ostream& os) const;
+
+    /**
+     * Writes the object to a binary stream.
+     * @param obs The stream.
+     * @return The written stream.
+     */
+    virtual oBinstream& write (oBinstream& obs) const;
+
+    /**
+     * Reads the object from a binary stream.
+     * @param ibs The stream.
+     * @return The read stream.
+     */
+    virtual iBinstream& read (iBinstream& ibs);
 
   };
 
@@ -126,6 +164,25 @@ namespace std
    * @return The written stream.
    */
   ostream& operator<< (ostream &os, const mccparser::Version& obj);
+}
+
+namespace mccore
+{
+  /**
+   * Writes the object to a binary stream.
+   * @param obs The stream.
+   * @param obj The object to write.
+   * @return The written stream.
+   */
+  oBinstream& operator<< (oBinstream &obs, const mccparser::Version& obj);
+
+  /**
+   * Reads the object from a binary stream.
+   * @param ibs The stream.
+   * @param obj The object to read.
+   * @return The read stream.
+   */
+  iBinstream& operator>> (iBinstream &ibs, mccparser::Version& obj);
 }
 
 #endif
