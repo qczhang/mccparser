@@ -43,6 +43,7 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
+buildcmd = $(CXX) $(CXXFLAGS) $(DEFS) -I.. -I$(srcdir) -c
 
 .SUFFIXES:
 
@@ -53,7 +54,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 	      [ -s $@ ] || rm -f $@'
 
 %.o: %.cc
-	$(CXX) $(CXXFLAGS) -I.. -I$(srcdir) $(DEFS) -c $<
+	$(buildcmd) -c $<
 
 % : %.o
 % : %.cc
@@ -74,18 +75,17 @@ LIBRARY = lib$(PACKAGE)
 DISTFILES = Makefile.in $(SOURCES) $(HEADERS) mccp.yy mccp.y
 
 
-before-all:
-	@ $(RM) Version.o
+all: $(LIBRARY).$(LIBEXT).$(VERSION) TAGS
 
-all: before-all $(LIBRARY).$(LIBEXT).$(VERSION) TAGS
-
-static: before-all $(LIBRARY).a TAGS
+static: $(LIBRARY).a TAGS
 
 $(LIBRARY).$(LIBEXT).$(VERSION): $(OBJECTS)
+	$(buildcmd) $(srcdir)/Version.cc
 	$(CXX) $(LINKOPTIONS) -o $@ $(LDNAMEPARAM)$@ $(LDFLAGS) $^
 	@ ln -sf $@ $(LIBRARY).so
 
 $(LIBRARY).a: $(OBJECTS)
+	$(buildcmd) $(srcdir)/Version.cc
 	$(ARXX) $(AROPTIONS) $@ $^
 
 TAGS: $(SOURCES) $(HEADERS)
