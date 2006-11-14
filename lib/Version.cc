@@ -15,9 +15,6 @@
 
 #include <sstream>
 
-#include "mccore/Binstream.h"
-#include "mccore/Messagestream.h"
-
 #include "Version.h"
 
 
@@ -64,9 +61,10 @@ namespace mccparser
     }
     catch (ios::failure& ioex)
     {
-      IntLibException ex ("", __FILE__, __LINE__);
-      ex << "failed to initialize version to \"" << strv << "\": " << ioex.what ();
-      throw ex;
+      cerr << endl
+	   << "ERROR: failed to initialize version to \"" << strv << "\": " << ioex.what () << endl
+	   << endl;
+      throw;
     }
   }
 
@@ -169,39 +167,6 @@ namespace mccparser
   }
 
 
-  oBinstream&
-  Version::write (oBinstream& obs) const
-  {
-    return obs << this->major_no << this->minor_no << this->revision_no
-	       << this->cpu
-	       << this->vendor
-	       << this->os
-	       << this->timestamp;
-  }
-
-
-  iBinstream& 
-  Version::read (iBinstream& ibs)
-  {
-    Version saved = *this;
-
-    this->cpu = this->vendor = this->os = this->timestamp = "unread";
-    this->major_no = this->minor_no = this->revision_no = -1;
-
-    ibs >> this->major_no >> this->minor_no >> this->revision_no
-	>> this->cpu 
-	>> this->vendor 
-	>> this->os
-	>> this->timestamp;
-
-    if (*this != saved)
-      gErr (5) << "Warning: reading data created from package version: " << endl
-	       << "\t" << *this << endl
-	       << "using package version: " << endl
-	       << "\t" << saved << endl;
-
-    return ibs;
-  }
 
 }
 
@@ -211,21 +176,5 @@ namespace std
   operator<< (ostream& os, const mccparser::Version& obj)
   {
     return obj.write (os);
-  }
-}
-
-namespace mccore
-{
-  oBinstream& 
-  operator<< (oBinstream &obs, const mccparser::Version& obj)
-  {
-    return obj.write (obs);
-  }
-
-
-  iBinstream& 
-  operator>> (iBinstream &ibs, mccparser::Version& obj)
-  {
-    return obj.read (ibs);
   }
 }

@@ -32,6 +32,18 @@ AC_PROG_YACC
 AC_PATH_PROG(AR,ar)
 AC_PROG_INSTALL
 
+AC_ARG_ENABLE(shared,
+[  --enable-shared         build dynamic library (default=yes) ],
+SHARED=$enableval,SHARED=yes
+)
+AC_SUBST(SHARED)
+
+AC_ARG_ENABLE(static,
+[  --enable-static         build dynamic library (default=yes) ],
+STATIC=$enableval,STATIC=yes
+)
+AC_SUBST(STATIC)
+
 if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
     case "$host" in
     *-sgi-*)

@@ -17,15 +17,7 @@
 #include <string>
 
 
-namespace mccore
-{
-  class iBinstream;
-  class oBinstream;
-}
-
-
 using namespace std;
-using namespace mccore;
 
 
 namespace mccparser
@@ -137,20 +129,6 @@ namespace mccparser
      */
     virtual ostream& write (ostream& os) const;
 
-    /**
-     * Writes the object to a binary stream.
-     * @param obs The stream.
-     * @return The written stream.
-     */
-    virtual oBinstream& write (oBinstream& obs) const;
-
-    /**
-     * Reads the object from a binary stream.
-     * @param ibs The stream.
-     * @return The read stream.
-     */
-    virtual iBinstream& read (iBinstream& ibs);
-
   };
 
 }
@@ -164,25 +142,6 @@ namespace std
    * @return The written stream.
    */
   ostream& operator<< (ostream &os, const mccparser::Version& obj);
-}
-
-namespace mccore
-{
-  /**
-   * Writes the object to a binary stream.
-   * @param obs The stream.
-   * @param obj The object to write.
-   * @return The written stream.
-   */
-  oBinstream& operator<< (oBinstream &obs, const mccparser::Version& obj);
-
-  /**
-   * Reads the object from a binary stream.
-   * @param ibs The stream.
-   * @param obj The object to read.
-   * @return The read stream.
-   */
-  iBinstream& operator>> (iBinstream &ibs, mccparser::Version& obj);
 }
 
 #endif
