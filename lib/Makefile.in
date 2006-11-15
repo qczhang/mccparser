@@ -59,7 +59,7 @@ buildtoken = .built-token
 
 %.o: %.cc
 	$(buildcmd) $<
-	touch $(buildtoken)
+	@ touch $(buildtoken)
 
 % : %.o
 % : %.cc
