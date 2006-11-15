@@ -47,6 +47,7 @@ SHARED = @SHARED@
 STATIC = @STATIC@
 
 buildcmd = $(CXX) $(CXXFLAGS) $(DEFS) -I.. -I$(srcdir) -c
+buildtoken = .built-token
 
 .SUFFIXES:
 
@@ -57,7 +58,8 @@ buildcmd = $(CXX) $(CXXFLAGS) $(DEFS) -I.. -I$(srcdir) -c
 	      [ -s $@ ] || rm -f $@'
 
 %.o: %.cc
-	$(buildcmd) -c $<
+	$(buildcmd) $<
+	touch $(buildtoken)
 
 % : %.o
 % : %.cc
@@ -94,17 +96,18 @@ else
 	INSTALLSTATICLIBRARY =
 endif
 
-
 all: $(BUILDSTATICLIBRARY) $(BUILDSHAREDLIBRARY) TAGS
 
 $(LIBRARY).$(LIBEXT).$(VERSION): $(OBJECTS)
-	$(buildcmd) $(srcdir)/Version.cc
-	$(CXX) $(LINKOPTIONS) -o $@ $(LDNAMEPARAM)$@ $(LDFLAGS) $^
+	if test -r $(buildtoken); then $(buildcmd) $(srcdir)/Version.cc; fi
+	$(CXX) $(LINKOPTIONS) -o $@ $(LDNAMEPARAM)$@ $(LDFLAGS) $(OBJECTS)
 	@ ln -sf $@ $(LIBRARY).so
+	@ $(RM) $(buildtoken)
 
 $(LIBRARY).a: $(OBJECTS)
-	$(buildcmd) $(srcdir)/Version.cc
-	$(ARXX) $(AROPTIONS) $@ $^
+	@ if test -r $(buildtoken); then $(buildcmd) $(srcdir)/Version.cc; fi
+	$(ARXX) $(AROPTIONS) $@ $(OBJECTS)
+	@ $(RM) $(buildtoken)
 
 TAGS: $(SOURCES) $(HEADERS)
 	@ etags --c++ $^
