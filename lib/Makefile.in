@@ -99,7 +99,7 @@ endif
 all: $(BUILDSTATICLIBRARY) $(BUILDSHAREDLIBRARY) TAGS
 
 $(LIBRARY).$(LIBEXT).$(VERSION): $(OBJECTS)
-	if test -r $(buildtoken); then $(buildcmd) $(srcdir)/Version.cc; fi
+	@ if test -r $(buildtoken); then $(buildcmd) $(srcdir)/Version.cc; fi
 	$(CXX) $(LINKOPTIONS) -o $@ $(LDNAMEPARAM)$@ $(LDFLAGS) $(OBJECTS)
 	@ ln -sf $@ $(LIBRARY).so
 	@ $(RM) $(buildtoken)
