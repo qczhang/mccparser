@@ -1,6 +1,7 @@
 ############################ -*- Mode: Makefile -*- ###########################
 ## Makefile.in
-## Copyright © 2000-02 Laboratoire de Biologie Informatique et Théorique.
+## Copyright © 2000-07 Laboratoire de Biologie Informatique et Théorique.
+##                     Université de Montréal
 ## Author           : Martin Larose
 ## Created On       : Mon Aug 21 16:02:59 2000
 ## Last Modified By : Patrick Gendron
@@ -35,7 +36,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 DISTFILES = Makefile.in Manual.tex
 
 
-all all-static static:
+all all-static static condor:
 
 doc: Manual.pdf Manual.html html texi docbook
 
@@ -65,7 +66,7 @@ Manual.html: Manual.dvi
 	@ latex2html -address "<a href=\"mailto:Webmaster <adbit@iro.umontreal.ca>\">Webmaster</a>" -info "" -no_navigation Manual.tex
 
 
-install install-static:
+install install-static install-condor:
 	@ echo "Documentation not installed.  Use make install-doc."
 
 install-doc: doc

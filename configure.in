@@ -1,6 +1,7 @@
 #                               -*- Mode: Sh -*- 
 # configure.in
-# Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
+# Copyright © 2000-07 Laboratoire de Biologie Informatique et Théorique.
+#                     Université de Montréal
 # Author           : Martin Larose
 # Created On       : Thu Aug 31 13:07:53 2000
 # $Revision$
@@ -43,6 +44,15 @@ AC_ARG_ENABLE(static,
 STATIC=$enableval,STATIC=yes
 )
 AC_SUBST(STATIC)
+
+AC_ARG_WITH(condor,
+    [  --with-condor[=PATH]    enable condor compilation],
+    if eval "test \"`echo $with_condor`\" = yes"; then
+	AC_CHECK_PROG([CONDOR_COMPILE],[condor_compile],[condor_compile])
+    else
+	AC_CHECK_PROG([CONDOR_COMPILE],[condor_compile],[$with_condor/condor_compile],,[$with_condor])
+    fi,
+)
 
 if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
     case "$host" in

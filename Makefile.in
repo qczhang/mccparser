@@ -1,6 +1,7 @@
 #                            -*- Mode: Makefile -*-
 # Makefile.in
-# Copyright © 2000-03 Laboratoire de Biologie Informatique et Théorique.
+# Copyright © 2000-07 Laboratoire de Biologie Informatique et Théorique.
+#                     Université de Montréal
 # Author           : Martin Larose
 # Created On       : Mon Aug 21 15:57:45 2000
 # $Revision$
@@ -41,13 +42,13 @@ SCRIPTS = mccparser-config
 .PHONY: doc
 
 
-all static doc: $(SCRIPTS)
+all static condor doc: $(SCRIPTS)
 	@ for subdir in $(SUBDIRS); do \
 	   echo "Building $@ in $$subdir"; \
 	   (cd $$subdir && $(MAKE) $@) || exit 1; \
 	  done
 
-install install-static install-doc:
+install install-static install-condor install-doc:
 	@ for subdir in $(SUBDIRS); do \
 	   echo "Building $@ in $$subdir"; \
 	   (cd $$subdir && $(MAKE) $@) || exit 1; \

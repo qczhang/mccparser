@@ -273,7 +273,7 @@ PACKAGE_VERSION='1.5.0'
 PACKAGE_STRING='MC-CParser 1.5.0'
 PACKAGE_BUGREPORT='mcsym-user@iro.umontreal.ca'
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS SET_MAKE CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT build build_cpu build_vendor build_os host host_cpu host_vendor host_os LEX LEXLIB LEX_OUTPUT_ROOT YACC AR INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA SHARED STATIC PACKAGE VERSION DEPFLAGS LINKOPTIONS LDNAMEPARAM LIBEXT LIBALLFLAGSTART LIBALLFLAGSTOP ARXX AROPTIONS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS SET_MAKE CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT build build_cpu build_vendor build_os host host_cpu host_vendor host_os LEX LEXLIB LEX_OUTPUT_ROOT YACC AR INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA SHARED STATIC CONDOR_COMPILE PACKAGE VERSION DEPFLAGS LINKOPTIONS LDNAMEPARAM LIBEXT LIBALLFLAGSTART LIBALLFLAGSTOP ARXX AROPTIONS LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -808,6 +808,11 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-shared         build dynamic library (default=yes)
   --enable-static         build dynamic library (default=yes)
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-condor=PATH    enable condor compilation
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -2420,6 +2425,85 @@ else
 fi;
 
 
+
+# Check whether --with-condor or --without-condor was given.
+if test "${with_condor+set}" = set; then
+  withval="$with_condor"
+  if eval "test \"`echo $with_condor`\" = yes"; then
+	# Extract the first word of "condor_compile", so it can be a program name with args.
+set dummy condor_compile; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_CONDOR_COMPILE+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CONDOR_COMPILE"; then
+  ac_cv_prog_CONDOR_COMPILE="$CONDOR_COMPILE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CONDOR_COMPILE="condor_compile"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+CONDOR_COMPILE=$ac_cv_prog_CONDOR_COMPILE
+if test -n "$CONDOR_COMPILE"; then
+  echo "$as_me:$LINENO: result: $CONDOR_COMPILE" >&5
+echo "${ECHO_T}$CONDOR_COMPILE" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+    else
+	# Extract the first word of "condor_compile", so it can be a program name with args.
+set dummy condor_compile; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_CONDOR_COMPILE+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CONDOR_COMPILE"; then
+  ac_cv_prog_CONDOR_COMPILE="$CONDOR_COMPILE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $with_condor
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CONDOR_COMPILE="$with_condor/condor_compile"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+CONDOR_COMPILE=$ac_cv_prog_CONDOR_COMPILE
+if test -n "$CONDOR_COMPILE"; then
+  echo "$as_me:$LINENO: result: $CONDOR_COMPILE" >&5
+echo "${ECHO_T}$CONDOR_COMPILE" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+    fi
+fi;
+
 if eval "test -z \"`echo $GXX`\""; then          # not gnu compiler
     case "$host" in
     *-sgi-*)
@@ -3125,6 +3209,7 @@ s,@INSTALL_SCRIPT@,$INSTALL_SCRIPT,;t t
 s,@INSTALL_DATA@,$INSTALL_DATA,;t t
 s,@SHARED@,$SHARED,;t t
 s,@STATIC@,$STATIC,;t t
+s,@CONDOR_COMPILE@,$CONDOR_COMPILE,;t t
 s,@PACKAGE@,$PACKAGE,;t t
 s,@VERSION@,$VERSION,;t t
 s,@DEPFLAGS@,$DEPFLAGS,;t t
