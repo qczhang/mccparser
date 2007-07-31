@@ -1,6 +1,6 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.cc
-// Copyright © 2000-04 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-04, 07 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // $Revision$
@@ -706,6 +706,63 @@ MccRMSDResidueViewCache::display (ostream &os) const
 
 void
 MccRMSDResidueViewCache::ppdisplay (ostream &os, int indent) const
+{
+  os << endl;
+  whitespaces (os, indent);
+  this->display (os);
+}
+
+
+MccReferenceResidueViewCache::MccReferenceResidueViewCache (MccInputMode *im, MccASFunc* asfn, bool af)
+  : MccResidueViewCache (),
+    inputMode (im),
+    atomset (asfn),
+    alignflag (af)
+{
+}
+
+
+MccResidueViewCache* 
+MccReferenceResidueViewCache::clone () const
+{
+  return new MccReferenceResidueViewCache (this->inputMode->clone (), 
+					   0 == this->atomset ? 0 : this->atomset->clone (), 
+					   this->alignflag);
+}
+
+
+MccReferenceResidueViewCache::~MccReferenceResidueViewCache ()
+{
+  if (this->inputMode)
+    delete this->inputMode;
+  if (this->atomset)
+    delete this->atomset;
+}
+
+
+void
+MccReferenceResidueViewCache::accept (MccVisitor *visitor)
+{
+  visitor->visit (this);
+}
+
+
+void
+MccReferenceResidueViewCache::display (ostream &os) const
+{
+  os << "reference (";
+  if (this->inputMode)
+    this->inputMode->display (os);
+  os << " ";
+  if (this->atomset)
+    this->atomset->display (os << " ");
+
+  os << " " << this->alignflag << ")";
+}
+
+
+void
+MccReferenceResidueViewCache::ppdisplay (ostream &os, int indent) const
 {
   os << endl;
   whitespaces (os, indent);

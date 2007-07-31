@@ -1,6 +1,6 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.yy
- * Copyright © 2000-04 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-04, 07 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:18:19 2000
  * $Revision$
@@ -118,6 +118,7 @@ clash             return TOK_CLASH;
 reset             return TOK_RESET;
 restore           return TOK_RESTORE;
 rmsd              return TOK_RMSD;
+reference         return TOK_REFERENCE;
 sequence          return TOK_SEQUENCE;
 single            return TOK_SINGLE;
 socket            return TOK_SOCKET;

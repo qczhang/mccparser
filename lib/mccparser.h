@@ -1,6 +1,6 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.h
-// Copyright © 2000-04 Laboratoire de Biologie Informatique et Théorique.
+// Copyright © 2000-04, 07 Laboratoire de Biologie Informatique et Théorique.
 // Author           : Martin Larose
 // Created On       : Thu Aug 24 12:14:42 2000
 // $Revision$
@@ -21,6 +21,7 @@
 class MccPStruct;
 class MccVisitor;
 class MccQueryExpr;
+class MccInputMode;
 
 using namespace std;
 
@@ -1975,6 +1976,93 @@ private:
 
   MccRMSDResidueViewCache& operator= (const MccRMSDResidueViewCache& mrvc) { return *this; }
   MccRMSDResidueViewCache& operator= (const MccResidueViewCache& mrrvc) { return *this; }
+
+public:
+
+  // ACCESS ---------------------------------------------------------------
+  
+  // METHODS --------------------------------------------------------------
+
+  /**
+   * Accepts the visitor and calls it on itself.
+   * @param visitor the visitor.
+   */
+  virtual void accept (MccVisitor *visitor);
+
+  // I/O  -----------------------------------------------------------------
+  
+  /**
+   * Displays the structure.
+   * @param os the output stream where the message is displayed.
+   */
+  virtual void display (ostream &os) const;
+
+  /**
+   * Displays the script in human readable form.
+   * @param os the output stream used.
+   * @param ident the identation level.
+   */
+  virtual void ppdisplay (ostream &os, int indent = 0) const;
+};  
+
+
+/**
+ * @short Struct representing a filter on the results based on the closest structure to the given 
+ * reference.
+ *
+ * @author Patrick Gendron <bioinformatique@iric.ca>
+ */
+struct MccReferenceResidueViewCache : public MccResidueViewCache
+{
+  /**
+   * The The input model mode.
+   */
+  MccInputMode *inputMode;
+  //string filename;
+
+  /**
+   * Optional atom filter expression.
+   */
+  MccASFunc* atomset;
+
+  /**
+   * Optional structure alignment flag.
+   */
+  bool alignflag;
+
+  // LIFECYCLE ------------------------------------------------------------
+
+public:
+
+  /**
+   * Initializes the object.  
+   */
+  MccReferenceResidueViewCache (MccInputMode* im = 0, MccASFunc* asfn = 0, bool af = false);
+  
+private:
+  
+  MccReferenceResidueViewCache (const MccReferenceResidueViewCache& mrrvc) { }
+  MccReferenceResidueViewCache (const MccResidueViewCache& mrvc) { }
+  
+public:
+
+  /**
+   * Replicates the object.
+   * @return a copy of the current object.
+   */
+  virtual MccResidueViewCache* clone () const;
+    
+  /**
+   * Destroys the object.
+   */
+  virtual ~MccReferenceResidueViewCache ();
+
+  // OPERATORS ------------------------------------------------------------
+
+private:
+
+  MccReferenceResidueViewCache& operator= (const MccReferenceResidueViewCache& mrvc) { return *this; }
+  MccReferenceResidueViewCache& operator= (const MccResidueViewCache& mrrvc) { return *this; }
 
 public:
 
@@ -8075,6 +8163,12 @@ public:
    * @param struc the evaluated structure.
    */
   virtual void visit (MccRMSDResidueViewCache* struc) = 0;
+
+  /**
+   * Visits the MccReferenceResidueViewCache structure.
+   * @param struc the evaluated structure.
+   */
+  virtual void visit (MccReferenceResidueViewCache* struc) = 0;
 
   /**
    * Visits the MccTFODResidueViewCache structure.

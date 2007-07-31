@@ -1,6 +1,6 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.y
- * Copyright © 2000-04 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-04, 07 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * $Revision$
@@ -137,6 +137,7 @@
 %token TOK_IMPLICITPHOSPHATERST
 %token TOK_RIBOSERST
 %token TOK_RMSD
+%token TOK_REFERENCE
 %token TOK_SEQUENCE
 %token TOK_SINGLE
 %token TOK_SOCKET
@@ -445,7 +446,17 @@ TOK_RMSD TOK_LPAREN flt atomset_opt TOK_RPAREN
 {
   $$ = new MccTFODResidueViewCache ($3);
 }
+| TOK_REFERENCE TOK_LPAREN input_mode atomset_opt TOK_RPAREN
+{
+  $$ = new MccReferenceResidueViewCache ($3, $4);
+}
+| TOK_REFERENCE TOK_LPAREN input_mode atomset_opt TOK_ALIGN TOK_RPAREN
+{
+  $$ = new MccReferenceResidueViewCache ($3, $4, true);
+}
 ;
+
+
 
 
 output_mode_opt:   
