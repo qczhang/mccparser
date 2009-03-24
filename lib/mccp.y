@@ -1,6 +1,6 @@
 /*                               -*- Mode: C++ -*- 
  * mccp.y
- * Copyright © 2000-04, 07 Laboratoire de Biologie Informatique et Théorique.
+ * Copyright © 2000-04, 07, 08 Laboratoire de Biologie Informatique et Théorique.
  * Author           : Martin Larose
  * Created On       : Tue Aug 22 11:43:17 2000
  * $Revision$
@@ -131,7 +131,6 @@
 %token TOK_RELATION
 %token TOK_REMARK
 %token TOK_CLASH
-%token TOK_CYCLE
 %token TOK_RESET
 %token TOK_RESTORE
 %token TOK_IMPLICITPHOSPHATERST
@@ -256,7 +255,9 @@
 %type <boolval> threaded_opt
 
 %type <rrv> residueRef_star
+ /*
 %type <rrv> residueRef_plus
+ */
 %type <rn> residueRef
 %type <rnp> residueRef_pair_plus
 %type <rnp> residueRef_pair
@@ -268,12 +269,14 @@
 
 %type <textval> ident_plus
 %type <textval> strVal
+ /*
 %type <intval> intgr_percent
 %type <intval> intgr_any
+ */
 %type <floatval> flt
 %type <floatval> flt_percent
 %type <floatval> flt_any
-%expect 1
+%expect 0 /* PG 2008-05-22, was 1 */
 
 %%
 
@@ -1287,7 +1290,7 @@ residueRef_star:   /* empty */ { $$ = new vector< MccResidueName* > (); }
 		    }
 ;
 
-
+/*
 residueRef_plus:   residueRef { $$ = new vector< MccResidueName* > (1, $1); }
                  | residueRef_plus residueRef
                     {
@@ -1295,7 +1298,7 @@ residueRef_plus:   residueRef { $$ = new vector< MccResidueName* > (1, $1); }
 		      $$->push_back ($2);
 		    }
 ;
-		 
+*/	 
 
 residueRef:   
 
@@ -1448,15 +1451,12 @@ ident_plus:   TOK_IDENT { $$ = $1; }
 	       }
 ;
 
-
-
-
-intgr_percent:
+/*
+intgr_percent: 
 
 TOK_INTEGER TOK_PERCENT
 {
   $$ = (int)round ((double)$1 / 100.0);
-  //  cout << "intgr_percent: " << $1 << "% = " << $$ << endl;
 }
 ;
 
@@ -1466,14 +1466,12 @@ intgr_any:
 TOK_INTEGER
 {
   $$ = $1;
-  //  cout << "int any " << $1 << endl;
 }
 | intgr_percent
 {
   $$ = $1;
-  //  cout << "int any (%) " << $1 << endl;
 }
-
+*/
 
 flt:   
 
