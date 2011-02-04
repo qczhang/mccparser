@@ -42,7 +42,6 @@ using namespace std;
 
 
 char* mcccopy (const char *str);
-int mcclineno = 0;
 %}
 
 
