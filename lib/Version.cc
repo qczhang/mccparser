@@ -8,10 +8,8 @@
 // $Id$
 // 
 
-#ifdef HAVE_CONFIG_H
+// cmake generated defines
 #include <config.h>
-#endif
-
 
 #include <sstream>
 
@@ -26,10 +24,9 @@ namespace mccparser
       minor_no (-1),
       revision_no (-1),
       cpu (VERSION_CPU),
-      vendor (VERSION_VENDOR),
       os (VERSION_OS)
   {
-    istringstream iss (VERSION);
+    istringstream iss (PACKAGE_VERSION_STRING);
     char dot;
 
     iss >> this->major_no >> dot >> this->minor_no >> dot >> this->revision_no;
@@ -44,7 +41,6 @@ namespace mccparser
       minor_no (-1),
       revision_no (-1),
       cpu (VERSION_CPU),
-      vendor (VERSION_VENDOR),
       os (VERSION_OS)
   {
     istringstream iss;
@@ -74,7 +70,6 @@ namespace mccparser
       minor_no (v.minor_no),
       revision_no (v.revision_no),
       cpu (v.cpu),
-      vendor (v.vendor),
       os (v.os),
       timestamp (v.timestamp)
   {
@@ -91,7 +86,6 @@ namespace mccparser
       this->minor_no = v.minor_no;
       this->revision_no = v.revision_no;
       this->cpu = v.cpu;
-      this->vendor = v.vendor;
       this->os = v.os;
       this->timestamp = v.timestamp;
     }
@@ -107,7 +101,6 @@ namespace mccparser
       this->minor_no == v.minor_no &&
       this->revision_no == v.revision_no &&
       this->cpu == v.cpu &&
-      this->vendor == v.vendor &&
       this->os == v.os &&
       this->timestamp == v.timestamp;
   }
@@ -141,10 +134,9 @@ namespace mccparser
   Version::toString () const
   {
     ostringstream oss;
-    oss << PACKAGE << " " 
+    oss << PACKAGE_NAME << " " 
 	<< this->major_no << "." << this->minor_no << "." << this->revision_no << " " 
 	<< this->cpu << " "
-	<< this->vendor << " "
 	<< this->os << " "
 	<< this->timestamp;
     return oss.str ();
