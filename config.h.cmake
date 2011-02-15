@@ -1,7 +1,7 @@
-/* mccparser is a parser utility tools for MC-Sym
- * Copyright (C) 2008,2009,2010,2011 Institut de recherche en immunologie et en cancérologie
+/* This file is part of mccparser.
  *
- * This file is part of mccparser.
+ * mccparser is a parser utility tools for MC-Sym
+ * Copyright (C) 2008,2009,2010,2011 Institut de recherche en immunologie et en cancérologie
  *
  * mccparser is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

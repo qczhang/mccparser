@@ -31,9 +31,15 @@ if (${BISON_MCCPARSER_DEFINED} AND ${FLEX_MCCFLEXER_DEFINED})
     # ajoute la librarie
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     add_library (mccparser ${MCCPARSER_SOURCES_CC} ${BISON_MCCPARSER_OUTPUTS} ${FLEX_MCCFLEXER_OUTPUTS})
+    set_target_properties(mccparser PROPERTIES VERSION ${MCCPARSER_VERSION_STRING})
 
     # ajoute le target d'installation
     install (TARGETS mccparser DESTINATION lib${LIB_SUFFIX})
+    install(DIRECTORY ./ DESTINATION include/${MCCPARSER_COMPLETE_PACKAGE_NAME} FILES_MATCHING PATTERN "*.h" PATTERN ".svn" EXCLUDE)
+
+    # wrap dans un install(CODE) pour que la commande soit exécuter à l'installation
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/include/${MCCPARSER_COMPLETE_PACKAGE_NAME} ${CMAKE_INSTALL_PREFIX}/include/${PACKAGE_NAME})")
+
 else()
   message(FATAL "Bison/Flex operations failed")
 endif()
