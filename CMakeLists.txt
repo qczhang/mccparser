@@ -113,7 +113,7 @@ set (CPACK_PACKAGE_VERSION_MAJOR ${MCCPARSER_VERSION_MAJOR})
 set (CPACK_PACKAGE_VERSION_MINOR ${MCCPARSER_VERSION_MINOR})
 set (CPACK_PACKAGE_VERSION_PATCH ${MCCPARSER_VERSION_PATCH})
 set (CPACK_PACKAGE_VENDOR "Laboratoire d'ingénierie des ARN")
-set (CPACK_PACKAGE_CONTACT "Jonathan Roy <TO_BE_DECIDED@kekchose.com>")
+set (CPACK_PACKAGE_CONTACT "Jonathan Roy <mctools@iric.ca>")
 set (CPACK_PACKAGE_FILE_NAME ${MCCPARSER_COMPLETE_PACKAGE_NAME})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -124,15 +124,13 @@ else()
 endif()
 
 # CPack spéficique à RPM
-set (CPACK_RPM_PACKAGE_NAME ${CPACK_PACKAGE_NAME}) # comportement par défaut(mais je préfère être explicite 
+set (CPACK_RPM_PACKAGE_NAME ${CPACK_PACKAGE_NAME}) 
 set (CPACK_RPM_PACKAGE_SUMMARY ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
-set (CPACK_RPM_PACKAGE_DESCRIPTION ${PACKAGE_DESCRIPTION}) # TODO: donnez une version plus complète et pas seulement le sommaire
+set (CPACK_RPM_PACKAGE_DESCRIPTION ${PACKAGE_DESCRIPTION}) 
 set (CPACK_RPM_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION})
 set (CPACK_RPM_PACKAGE_VENDOR ${CPACK_PACKAGE_VENDOR})
 set (CPACK_RPM_PACKAGE_LICENSE "GPLv3+")
 set (CPACK_RPM_PACKAGE_GROUP "Applications/Science")
-
-# // TODO: je ne connais pas les versions "minimales" pour laquelle ça fonctionnerait alors je m'abstiens de forcer une contrainte pour l'instant
 set (CPACK_RPM_PACKAGE_REQUIRES "") # "libc6 (>= 2.2.5), cmake (>= 2.6)"
 
 # CPack spécifique à Debian (TODO au besoin)
