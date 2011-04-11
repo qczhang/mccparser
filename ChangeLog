@@ -1,435 +1,515 @@
-2006-01-30  Philippe Thibault  <philippe.thibault@umontreal.ca>
+2011-02-15 16:16  joroy
 
-	* mccparser.cc: destructor mismatch
+	* CMakeLists.txt, cmake, config.h.cmake, lib/CMakeLists.txt: Update
+	  the build system to handle library version and symlinks on the
+	  include directory
+	  
+	  Also remove the uninstall custom target
 
-2005-12-22  Philippe Thibault  <philippe.thibault@umontreal.ca>
+2011-02-07 19:11  joroy
 
-	* Makefile.in, mccp.y, mccp.yy, mccparser.cc, mccparser.h:
-	updated with mcsym 4.0
+	* .cproject, .project, CMakeLists.txt, COPYING, INSTALL,
+	  Makefile.in, cmake, cmake/cmake_uninstall.cmake.in, config.guess,
+	  config.h.cmake, config.h.in, config.sub, configure, configure.in,
+	  install-sh, lib/CMakeLists.txt, lib/Makefile.in, lib/Version.cc,
+	  lib/mccp.yy, lib/mccparser.cc, mccparser-config.in,
+	  mkinstalldirs, stamp-h.in: Update the build system from autoconf
+	  to cmake
 
-2005-12-22  Philippe Thibault  <philippe.thibault@umontreal.ca>
+2011-02-04 19:51  joroy
 
-	* lib/Makefile.in, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
-	updated with mcsym-4.0.0-rc2
+	* .: Create a cmake experimental branch
 
-	* docs/Manual.tex: marked as outdated, need update.
+2011-02-04 19:37  joroy
 
-2005-09-30  Philippe Thibault  <philippe.thibault@umontreal.ca>
+	* Fix a compilation bug
+	  
+	  mcclineno was defined more than one time
 
-	* config.h.in, configure, configure.in: *** empty log message ***
+2009-03-24 14:45  adsoft
 
-	* lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
-	last update with mcsym-4.0.0-rc1
+	* Fixed shift/reduce conflicts
 
-	* lib/Version.cc, lib/Version.h:
-	new Version class that wraps compilation and version info.
+2007-07-31 17:12  adsoft
 
-2005-05-12  Philippe Thibault  <philippe.thibault@umontreal.ca>
+	* Modified version number for new commands
 
-	* configure, configure.in, docs/Manual.tex, lib/Makefile.in, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
-	updates for version 1.5
+2007-07-31 15:52  adsoft
 
-2005-05-10  Philippe Thibault  <philippe.thibault@umontreal.ca>
+	* Added new parser keyword and objects to support a reference
+	  structure cache
 
-	* config.guess, config.sub: updated files
+2007-04-05 22:25  larosem
 
-2005-01-24  Philippe Thibault  <philippe.thibault@umontreal.ca>
+	* condor compilation option added.
 
-	* ChangeLog: *** empty log message ***
+2007-01-19 19:04  thibaup
 
-	* configure, configure.in, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
-	new version 1.5 to be used with mcsym-4.0.0
-	doc still not updated :(
+	* *** empty log message ***
 
-2004-10-08  Philippe Thibault  <philippe.thibault@umontreal.ca>
+2006-11-15 17:45  thibaup
 
-	* mccparser.h, mccparser.cc, mccp.yy, mccp.y:
-	Major update toward new MC-Sym version 4.
-	Major syntax modifications.
-	Doc still to be updated...
+	* *** empty log message ***
 
-2004-10-08  Philippe Thibault  <philippe.thibault@umontreal.ca>
+2006-11-15 17:35  thibaup
 
-	* mccparser.h, mccparser.cc, mccp.yy, mccp.y:
-	Major update toward new MC-Sym version 4.
-	Major syntax modifications.
-	Doc still to be updated...
+	* *** empty log message ***
 
-2004-05-17  Martin Larose  <larosem@yoda.iro.umontreal.ca>
+2006-11-14 16:25  thibaup
 
-	* mccparser.h, mccparser.cc, mccp.yy, mccp.y:
-	Added SocketPdb structures.
+	* - removed all 'static' rules
+	  - added enable-{shared,static}, both on by default
+	  - removed mccore objects into lib/Version
 
-2004-05-17  Martin Larose  <larosem@fortrel.iro.umontreal.ca>
+2006-11-09 13:39  thibaup
 
-	* mccparser.h, mccparser.cc, mccp.yy, mccp.y:
-	Added SocketPdb structures.
+	* rule to always compile Version.o with library
 
-2004-03-18  Philippe Thibault  <thibaup@iro.umontreal.ca>
+2006-11-08 20:44  thibaup
 
-	* mccp.y, mccp.yy, mccparser.cc, mccparser.h:
-	added ast nodes for with-placer mcsym branch
+	* *** empty log message ***
 
-2004-03-18  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-11-08 14:19  thibaup
 
-	* lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h:
-	added ast nodes for with-placer mcsym branch
+	* - configure cleanup
+	  - new statement db_include
 
-2004-03-12  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-07-03 15:00  thibaup
 
-	* configure: [with-placer] : updates
+	* *** empty log message ***
 
-2003-12-22  Martin Larose  <larosem@iro.umontreal.ca>
+2006-07-03 14:51  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, lib/Makefile.in, configure.in, configure, Makefile.in:
-	Merge between mcsym 3.3.2 patches and main trunk.  Now SunPro CC and
-	MipsPro CC compilers compatible.  It also includes statements for
-	rnaml input and output.
+	* New version 1.5.0. No changes from 1.5, just going to 3 digit...
 
-2003-12-10  Martin Larose  <larosem@iro.umontreal.ca>
+2006-06-29 20:07  thibaup
 
-	* configure: SunOS SUNWspro and SGI MIPSpro compiler compatibility
-	update.
+	* corrected rule 'dist'
 
-2003-12-08  Martin Larose  <larosem@iro.umontreal.ca>
+2006-06-06 14:31  thibaup
 
-	* lib/mccparser.h, lib/mccp.y, lib/Makefile.in, configure.in: SunOS
-	SUNWspro and SGI MIPSpro compiler compatibility update.
+	* *** empty log message ***
 
-2003-11-27  Martin Larose  <larosem@iro.umontreal.ca>
+2006-06-02 18:13  thibaup
 
-	* lib/Makefile.in, configure.in, Makefile.in: SunOS SUNWspro and SGI
-	MIPSpro compiler compatibility update.
+	* - new backtrack option 'uncapped'
+	  - threaded MccRelationStat
 
-2003-11-26  Martin Larose  <larosem@iro.umontreal.ca>
+2006-05-18 18:42  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, lib/Makefile.in, configure.in:
-	SunOS SUNWspro and SGI MIPSpro compiler compatibility update.
+	* New option 'unsorted' to relation sampling size to prevent
+	  sorting of
+	  100% sampled set.
 
-2003-11-19  Martin Larose  <larosem@iro.umontreal.ca>
+2006-05-17 13:32  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, lib/Makefile.in, configure.in:
-	SunOS SUNWspro compiler compatibility update.
+	* New option 'threaded' to db_filter, activating multithreading.
 
-2003-11-14  Martin Larose  <larosem@iro.umontreal.ca>
+2006-05-10 18:16  thibaup
 
-	* lib/mccp.y: String deleted, only it's intial character is used.
+	* sampling size correction
 
-2003-11-13  Martin Larose  <larosem@iro.umontreal.ca>
+2006-05-03 15:32  thibaup
 
-	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc: The
-	'file_rnaml' statement added.
+	* *** empty log message ***
 
-2003-10-28  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-05-03 15:31  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
-	[with-placer]: updates
+	* Now using configuration script 'mccparser-config'
 
-2003-09-30  Patrick Gendron  <gendrop@yeti.iro.umontreal.ca>
+2006-04-28 18:26  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Makefile.in, configure.in, configure:
-	Adapted the code to GCC 3.2 and mccore 1.4.
-	Added parser classes and tokens for preliminary cycle construction.
-	Replaced the cycle constraint by a multimer constraint (undocumented).
+	* Modified TOK_ATOM to accept atom names not beginning with a
+	  digit.
 
-2003-09-29  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-04-26 16:26  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
-	[with-placer]: various updates
+	* - New cycle constraint statement.
+	  - Socket input mode now takes a string list for molecule names.
 
-2003-05-28  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-04-19 17:00  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
-	[with-placer]: Added clash cst and build error spec in ribose cst.
+	* alias 'db_note' to 'note'
 
-2003-05-23  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-04-19 16:28  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
-	[with-placer]: Added ribose parameters to build statement and modified
-	closure statement
+	* removed obsolete ASP cutoffs.
 
-2003-05-20  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-04-18 15:51  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
-	[with-placer]: cleanup
+	* New statement 'db_info' as an alias to 'notes'
 
-2003-04-15  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-04-13 19:42  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
-	[with-placer]: added search parameters inside search statement.
+	* default sequence type is RNA
 
-2003-03-26  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2006-04-13 18:13  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
-	[with-placer]: implemented statement placer_explore
+	* - Modified library statement for mcsym-4.0.0
+	  o More than one input statement can be given.
+	  o Numbering transposition: <to> <- <from>, where <to> and <from>
+	  are residue list.
+	  - Allowing quoted chain ID, i.e. residue ref '9'56 for #56 of
+	  chain 9
 
-	* lib/mccparser.h, lib/mccparser.cc [with-placer]: added head resid
-	and tail resid resolution in build statement. 
+2006-04-11 17:29  thibaup
 
-2003-03-24  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+	* - New TOK_RELATIVE_RESNAME allowing character '#' as chain ID.
+	  - Handling of quoted chain ID, e.g. '9'5 is residue no 5 of chain
+	  9.
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y
-	[with-placer]: renamed placer_backtrack statement to placer_build
+2006-04-07 19:13  thibaup
 
-2003-03-21  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+	* re-implemented distance and angle constraint.
 
-	* ChangeLog, lib/mccp.y, lib/mccp.yy, lib/mccparser.cc, lib/mccparser.h
-	[with-placer]: Implemented placer_backtrack statement
+2006-01-30 15:27  thibaup
 
-2003-03-19  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+	* destructor mismatch
 
-	* lib/mccparser.cc [with-placer]: corrections
+2005-12-22 16:02  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc [with-placer]: some
-	corrections.
+	* *** empty log message ***
 
-2003-03-18  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2005-12-22 15:49  thibaup
 
-	* lib/mccp.y, lib/mccparser.h [with-placer]: Added AST node
-	MccPlacerResidueName.
+	* updated with mcsym 4.0
 
-2003-03-17  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2005-12-22 15:47  thibaup
 
-	* lib/mccp.yy, lib/mccp.y, lib/mccparser.cc, lib/mccparser.h:
-	*** empty log message ***
+	* marked as outdated, need update.
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
-	[with-placer] : Added rules and AST nodes for placer_sequence,
-	placer_connect and placer_pair.  They parse as their original
-	counterpart, only the visit method is changed.
+2005-09-30 19:25  thibaup
 
-2002-10-31  Labo Lbit  <adbit@yeti.iro.umontreal.ca>
+	* *** empty log message ***
 
-	* lib/mccp.y: *** empty log message ***
+2005-09-30 19:25  thibaup
 
-	* lib/mccp.y: Minor errors corrected.
+	* last update with mcsym-4.0.0-rc1
 
-2002-10-23  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2005-09-30 19:24  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
-	Added model sorter expression to library fg.
+	* new Version class that wraps compilation and version info.
 
-2002-05-07  Philippe Thibault  <thibaup@yeti.iro.umontreal.ca>
+2005-05-12 15:12  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Manual.tex:
-	Added moses expression and updated doc
+	* updates for version 1.5
 
-2002-02-22  Patrick Gendron  <gendrop@yeti.iro.umontreal.ca>
+2005-05-10 18:38  thibaup
 
-	* lib/Makefile.in, docs/Makefile.in, Makefile.in:
-	Modified makefiles to remove automatic generation of doc.
+	* updated files
 
-2001-12-20  Martin Larose  <larosem@iro.umontreal.ca>
+2005-01-24 17:08  thibaup
 
-	* configure, lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Manual.tex, configure.in, NEWS:
-	Grammar rules changed to introduce exploreLV and a new kind of cache.
+	* *** empty log message ***
 
-2001-12-04  Martin Larose  <larosem@iro.umontreal.ca>
+2005-01-24 17:06  thibaup
 
-	* ChangeLog: *** empty log message ***
+	* new version 1.5 to be used with mcsym-4.0.0
+	  doc still not updated :(
 
-	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc, docs/Manual.tex, docs/Makefile.in, ChangeLog:
-	Merge between [prob-search] and main branch.
+2004-10-08 13:12  thibaup
 
-2001-11-26  Martin Larose  <larosem@iro.umontreal.ca>
+	* Major update toward new MC-Sym version 4.
+	  Major syntax modifications.
+	  Doc still to be updated...
 
-	* lib/mccp.yy, lib/mccp.y, lib/mccparser.h, lib/mccparser.cc, docs/Manual.tex, NEWS:
-	Relation constraint parsing added.
+2004-05-17 19:03  larosem
 
-2001-09-26  Martin Larose  <larosem@iro.umontreal.ca>
+	* Added SocketPdb structures.
 
-	* configure, configure.in: LDFLAGS must not be crunched by it's
-	new definition.
+2004-03-18 18:24  thibaup
 
-	* lib/Makefile.in: -p option removed due to install standards.
+	* added ast nodes for with-placer mcsym branch
 
-2001-09-25  Martin Larose  <larosem@iro.umontreal.ca>
+2003-12-22 22:37  larosem
 
-	* configure, lib/Makefile.in, configure.in, README, Makefile.in:
-	Files from src directory transferred to lib directory.
+	* Merge between mcsym 3.3.2 patches and main trunk. Now SunPro CC
+	  and MipsPro CC compilers compatible. It also includes statements
+	  for rnaml input and output.
 
-	* configure.in, configure: Host detection modified to accept GNU
-	compiler on SGI.
+2003-09-30 15:31  gendrop
 
-2001-08-28  Martin Larose  <larosem@iro.umontreal.ca>
+	* Adapted the code to GCC 3.2 and mccore 1.4.
+	  Added parser classes and tokens for preliminary cycle
+	  construction.
+	  Replaced the cycle constraint by a multimer constraint
+	  (undocumented).
 
-	* lib/Makefile.in: Added -p in INSTALL_DATA variable to preserve
-	time-stamp of copied files.
+2002-10-31 15:38  adbit
 
-2001-08-23  Martin Larose  <larosem@iro.umontreal.ca>
+	* *** empty log message ***
 
-	* docs/Manual.tex, NEWS: Documentation updated.
+2002-10-31 15:24  adbit
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
-	Library loads files in pdb, bin and socket forms.  explore and
-	restore saves in pdb, bin and socket forms.
+	* Minor errors corrected.
 
-2001-08-16  Martin Larose  <larosem@iro.umontreal.ca>
+2002-10-23 13:21  thibaup
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y:
-	Added the socket_bin option on explore and restore.
+	* Added model sorter expression to library fg.
 
-2001-07-09  Labo Lbit  <adbit@fortrel.iro.umontreal.ca>
+2002-05-07 16:30  thibaup
 
-	* docs/Manual.tex, lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y [1.1]: 
-	Transfer of probabilistic syntax in prob-search branch.
+	* Added moses expression and updated doc
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, lib/Makefile.in, docs/Manual.tex, ChangeLog [prob-search]:
-	Transfer of probabilistic syntax written in 3.2.5 in this branch.
+2002-02-22 19:49  gendrop
 
-	* lib/mccparser.h, lib/mccparser.cc, lib/mccp.yy, lib/mccp.y, docs/Manual.tex [1.1]:
-	Support for exploreLV and sampling_factor removed temporarily.
+	* Modified makefiles to remove automatic generation of doc.
 
-2001-07-06  Martin Larose  <larosem@iro.umontreal.ca>
+2001-12-20 14:52  larosem
 
-	* lib/mccp.y: Faces takes the not operator before the identifiers.
+	* Grammar rules changed to introduce exploreLV and a new kind of
+	  cache.
 
-2001-07-04  Martin Larose  <larosem@iro.umontreal.ca>
+2001-12-04 19:52  larosem
 
-	* NEWS, docs/Manual.tex: Grammar documentation updated.
+	* *** empty log message ***
 
-	* src/mccp.yy, src/mccp.y, configure: Grammar corrections.
+2001-12-04 19:52  larosem
 
-2001-07-03  Patrick Gendron  <gendrop@mansarde.IRO.UMontreal.CA>
+	* Merge between [prob-search] and main branch.
 
-	* src/mccparser.cc, src/mccparser.h, src/mccp.y, src/mccp.yy:
-	Added the parser functions for the pairing face operator
+2001-11-26 17:09  larosem
 
-2001-05-09  Philippe Thibault  <thibaup@mansarde.IRO.UMontreal.CA>
+	* Relation constraint parsing added.
 
-	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y
-	[1.1]: added grammar rules for probabilistic search option and
-	sampling
+2001-09-26 19:59  larosem
 
-	* docs/Manual.tex [1.1]: updated documentation for probabilistic
-	search options and sampling
+	* LDFLAGS must not be crunched by it's new definition.
 
-2001-03-22  Martin Larose  <larosem@iro.umontreal.ca>
+2001-09-26 19:54  larosem
 
-	* src/mccp.yy: [1.1] The identifier token is modified to scan
-	atoms correctly.
+	* LDFLAGS must not be crunched by it's new definition.
 
-2001-03-21  Martin Larose  <larosem@iro.umontreal.ca>
+2001-09-26 14:14  larosem
 
-	* src/mccp.yy, src/mccp.y [1.1]: The atom token is added to scan
-	atoms correctly.
+	* -p option removed due to install standards.
 
-2001-03-21  Philippe Thibault  <thibaup@mansarde.IRO.UMontreal.CA>
+2001-09-25 19:58  larosem
 
-	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y
-	[1.1]: Added probabilistic search
+	* Files from src directory transferred to lib directory.
 
-2001-03-15  Labo Lbit  <adbit@mansarde.IRO.UMontreal.CA>
+2001-09-25 19:55  larosem
 
-	* configure, ChangeLog [1.1]: Freezed release for mcsym 3.2.5.
+	* Files transferred to lib directory.
 
-2001-02-09  Martin Larose  <larosem@iro.umontreal.ca>
+2001-09-25 19:42  larosem
 
-	* NEWS: Version 1.2.
+	* Host detection modified to accept GNU compiler on SGI.
 
-	* src/Makefile.in: headers installed in
-	include/mccparser-$(VERSION) directory.  Version number added in
-	the libraries.
+2001-08-28 19:13  larosem
 
-	* src/mccparser.h, src/mccparser.cc: MccVisitor class added.
-	Accept method added for each structures.  Assignment returns a non
-	const structure.
+	* Added -p in INSTALL_DATA variable to preserve time-stamp of
+	  copied files.
 
-	* docs/Manual.tex: MccVisitor documentation added.
+2001-08-23 19:35  larosem
 
-	* configure.in, configure: Version 1.2
+	* Documentation updated.
 
-2001-01-04  Martin Larose  <larosem@iro.umontreal.ca>
+2001-08-23 19:20  larosem
 
-	* src/mccp.yy, NEWS: Parser corrected to accept ^M lines
-	terminators.
+	* Library loads files in pdb, bin and socket forms. explore and
+	  restore saves
+	  in pdb, bin and socket forms.
 
-2000-11-24  Patrick Gendron  <gendrop@sonic04.IRO.UMontreal.CA>
+2001-08-16 23:12  larosem
 
-	* docs/Manual.tex, src/mccp.y, src/mccparser.cc, src/mccparser.h:
-	Added new pair/connect rules for Westhof base-pairs
+	* Added the socket_bin option on explore and restore.
 
-2000-11-10  Martin Larose  <larosem@iro.umontreal.ca>
+2001-07-06 18:06  larosem
 
-	* src/mccparser.h, src/mccparser.cc, src/mccp.y: Enumeration MccAS
-	added to replace the need of UMcsymLib.h.
+	* Faces takes the not operator before the identifiers.
 
-2000-10-25  Patrick Gendron  <gendrop@sonic04.IRO.UMontreal.CA>
+2001-07-04 16:06  larosem
 
-	* src/mccp.y: Debugged the line counter in the shell
+	* *** empty log message ***
 
-2000-10-24  Martin Larose  <larosem@iro.umontreal.ca>
+2001-07-04 16:05  larosem
 
-	* src/mccparser.h, src/mccparser.cc: ppdisplay method added for
-	human readable script output.
+	* Grammar documentation updated.
 
-2000-09-14  Martin Larose  <larosem@iro.umontreal.ca>
+2001-07-04 15:41  larosem
 
-	* docs/Manual.tex: Error in grammar corrected.
+	* Grammar corrections.
 
-	* docs/Manual.tex: Documentation for scanning strings is added.
+2001-07-03 18:08  gendrop
 
-	* src/mccparser.h: Declarations for scanning strings are added.
+	* Added the parser functions for the pairing face operator
 
-	* ChangeLog: Version 1.1.
+2001-03-15 22:22  adbit
 
-	* configure, src/mccparser.h, src/mccparser.cc, src/mccp.yy, docs/Manual.tex, configure.in, NEWS:
-	The parser now includes a interactive interface that can be
-	coupled with different kind of input buffers.
+	* [1.1] Freezed release for mcsym 3.2.5.
 
-2000-09-06  Martin Larose  <larosem@iro.umontreal.ca>
+2001-02-09 16:00  larosem
 
-	* docs/Manual.tex, src/mccparser.h, src/mccp.yy, src/mccp.y, src/Makefile.in:
-	mcc prefix added in the lexer and parser to enable multiple parsers.
+	* *** empty log message ***
 
-2000-09-05  Martin Larose  <larosem@iro.umontreal.ca>
+2001-02-09 15:59  larosem
 
-	* src/mccparser.h, src/mccparser.cc: Rearranged hierarchy.
+	* Version 1.2.
 
-	* src/mccparser.h, src/mccparser.cc, src/mccp.y:
-	MccFGExp structure added.
+2001-02-09 15:53  larosem
 
-	* src/mccp.y: Concatenation bug corrected in rule ident_plus.
+	* headers installed in include/mccparser-$(VERSION) directory.
+	  Version number
+	  added in the libraries.
 
-2000-09-01  Martin Larose  <larosem@iro.umontreal.ca>
+2001-02-09 15:51  larosem
 
-	* src/mccp.yy, src/mccp.y, docs/Manual.tex, docs/Makefile.in:
-	Final revision version 1.0.
+	* MccVisitor class added. Accept method added for each structures.
+	  Assignment returns a non const structure.
 
-2000-08-31  Martin Larose  <larosem@iro.umontreal.ca>
+2001-02-09 15:47  larosem
 
-	* src/mccparser.cc: stdio.h inclusion moved to mccparser.h.
+	* MccVisitor documentation added.
 
-	* src/mccparser.h: stdio.h inclusion added.
+2001-02-09 15:46  larosem
 
-	* src/mccparser.h: yyparse and yyin declaration added.
+	* Version 1.2
 
-	* ChangeLog: Initial release.
+2001-01-04 21:50  larosem
 
-	* configure.in: Header added.
+	* *** empty log message ***
 
-	* src/mccparser.h, src/mccparser.cc, src/mccp.yy, src/mccp.y, src/Makefile.in, docs/Manual.tex, docs/Makefile.in, configure.in, configure, README, NEWS, Makefile.in, INSTALL:
-	Initial release.
+2001-01-04 21:49  larosem
 
-	* src/CRemarkStat.h, src/CResetDBStat.h, src/CResetStat.h, src/CResidueName.h, src/CResidueStat.cc, src/CResidueStat.h, src/CRestoreStat.cc, src/CRestoreStat.h, src/CSequenceStat.cc, src/CSequenceStat.h, src/CSourceStat.cc, src/CSourceStat.h, src/CTorsionCstStat.cc, src/CTorsionCstStat.h, src/CVersionStat.h, src/CAddPdbStat.cc, src/CAdjacencyCstStat.cc, src/CAdjacencyCstStat.h, src/CAngleCstStat.cc, src/CAngleCstStat.h, src/CAssignStat.cc, src/CAssignStat.h, src/CBacktrackExpr.cc, src/CBacktrackExpr.h, src/CCacheExpr.cc, src/CCacheExpr.h, src/CClashCstStat.cc, src/CClashCstStat.h, src/CConnectStat.cc, src/CConnectStat.h, src/CCycleCstStat.cc, src/CCycleCstStat.h, src/CDisplayFGStat.cc, src/CDisplayFGStat.h, src/CDistCstStat.cc, src/CDistCstStat.h, src/CExploreStat.cc, src/CExploreStat.h, src/CFragGenStruc.h, src/CLibraryExpr.cc, src/CLibraryExpr.h, src/CNewTagStat.cc, src/CNewTagStat.h, src/CNoteStat.h, src/CNotesStat.h, src/CPairStat.cc, src/CPairStat.h, src/CQueryExpr.cc, src/CQueryExpr.h, src/CAddPdbStat.h:
-	Files transferred in mccparser.h.
+	* Parser corrected to accept ^M lines terminators.
 
-2000-08-22  Martin Larose  <larosem@iro.umontreal.ca>
+2000-11-24 17:26  gendrop
 
-	* src/lex.yy, src/mccp.yy: Renamed lex.yy to mccp.yy.
+	* Added new pair/connect rules for Westhof base-pairs
 
-	* src/lex.yy, src/tokens.l: Renamed tokens.l to lex.yy.
+2000-11-10 23:20  larosem
 
-2000-08-21  Martin Larose  <larosem@iro.umontreal.ca>
+	* Enumeration MccAS added to replace the need of UMcsymLib.h.
 
-	* src/CStat.h, src/CFGExpr.h, src/CQExpr.h, src/CResidueName.cc, src/CFragGenStruc.cc, src/CEnv.cc, src/CEnv.h, src/CEvalException.cc, src/CEvalException.h:
-	Unneeded file removed.
+2000-10-25 00:15  gendrop
 
-	* src/CEnv.cc, src/CEnv.h, src/CBacktrackExpr.h, src/CCacheExpr.cc, src/CCacheExpr.h, src/CClashCstStat.cc, src/CClashCstStat.h, src/CConnectStat.cc, src/CEvalException.h, src/CExploreStat.cc, src/CExploreStat.h, src/CFGExpr.h, src/CFragGenStruc.cc, src/CFragGenStruc.h, src/CLibraryExpr.cc, src/CQueryExpr.cc, src/CQueryExpr.h, src/CRemarkStat.h, src/CResetDBStat.h, src/CResetStat.h, src/CResidueName.cc, src/CResidueName.h, src/CStat.h, src/CTorsionCstStat.cc, src/CTorsionCstStat.h, src/CVersionStat.h, src/CAddPdbStat.cc, src/CAddPdbStat.h, src/CAdjacencyCstStat.cc, src/CAdjacencyCstStat.h, src/CAngleCstStat.cc, src/CAngleCstStat.h, src/CAssignStat.cc, src/CAssignStat.h, src/CBacktrackExpr.cc, src/CConnectStat.h, src/CCycleCstStat.cc, src/CCycleCstStat.h, src/CDisplayFGStat.cc, src/CDisplayFGStat.h, src/CDistCstStat.cc, src/CDistCstStat.h, src/CEvalException.cc, src/CLibraryExpr.h, src/CNewTagStat.cc, src/CNewTagStat.h, src/CNoteStat.h, src/CNotesStat.h, src/CPairStat.cc, src/CPairStat.h, src/CQExpr.h, src/CResidueStat.cc, src/CResidueStat.h, src/CRestoreStat.cc, src/CRestoreStat.h, src/CSequenceStat.cc, src/CSequenceStat.h, src/CSourceStat.cc, src/CSourceStat.h:
-	Imported files.
+	* Debugged the line counter in the shell
 
-	* ChangeLog, INSTALL, Makefile.in, NEWS, README, config.guess, config.sub, configure, configure.in, docs/Makefile.in, install-sh, mkinstalldirs, src/Makefile.in, src/tokens.l:
-	Created directory structure
+2000-10-24 19:08  larosem
 
-	* ChangeLog, INSTALL, Makefile.in, NEWS, README, config.guess, config.sub, configure, configure.in, docs/Makefile.in, install-sh, mkinstalldirs, src/Makefile.in, src/tokens.l:
-	New file.
+	* ppdisplay method added for human readable script output.
+
+2000-09-14 18:50  larosem
+
+	* Error in grammar corrected.
+
+2000-09-14 17:30  larosem
+
+	* Documentation for scanning strings is added.
+
+2000-09-14 17:27  larosem
+
+	* Declarations for scanning strings are added.
+
+2000-09-14 15:52  larosem
+
+	* Version 1.1.
+
+2000-09-14 15:49  larosem
+
+	* The parser now includes a interactive interface that can be
+	  coupled with
+	  different kind of input buffers.
+
+2000-09-06 20:54  larosem
+
+	* mcc prefix added in the lexer and parser to enable multiple
+	  parsers.
+
+2000-09-05 20:02  larosem
+
+	* Rearranged hierarchy.
+
+2000-09-05 18:01  larosem
+
+	* *** empty log message ***
+
+2000-09-05 17:37  larosem
+
+	* *** empty log message ***
+
+2000-09-05 17:36  larosem
+
+	* MccFGExp structure added.
+
+2000-09-05 15:58  larosem
+
+	* Concatenation bug corrected in rule ident_plus.
+
+2000-09-01 18:09  larosem
+
+	* *** empty log message ***
+
+2000-09-01 17:08  larosem
+
+	* Final revision.
+
+2000-08-31 18:49  larosem
+
+	* stdio.h inclusion moved to mccparser.h.
+
+2000-08-31 18:48  larosem
+
+	* stdio.h inclusion added.
+
+2000-08-31 17:42  larosem
+
+	* yyparse and yyin declaration added.
+
+2000-08-31 17:12  larosem
+
+	* *** empty log message ***
+
+2000-08-31 17:11  larosem
+
+	* Header added.
+
+2000-08-31 17:11  larosem
+
+	* Initial release.
+
+2000-08-31 15:15  larosem
+
+	* Files transferred in mccparser.h
+
+2000-08-22 15:45  larosem
+
+	* Renamed lex.yy to mccp.yy.
+
+2000-08-22 15:14  larosem
+
+	* Renamed tokens.l to lex.yy.
+
+2000-08-21 22:15  larosem
+
+	* Unneeded file
+
+2000-08-21 22:03  larosem
+
+	* Unneeded file
+
+2000-08-21 21:42  larosem
+
+	* Unneeded file
+
+2000-08-21 21:32  larosem
+
+	* Unneeded file
+
+2000-08-21 21:23  larosem
+
+	* Unneeded file
+
+2000-08-21 20:51  larosem
+
+	* Imported files.
+
+2000-08-21 20:34  larosem
+
+	* Initial revision
+
+2000-08-21 20:34  
+
+	* New repository initialized by cvs2svn.
+

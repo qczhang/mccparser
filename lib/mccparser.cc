@@ -1,20 +1,17 @@
 //                              -*- Mode: C++ -*- 
 // mccparser.cc
-// Copyright © 2000-04, 07 Laboratoire de Biologie Informatique et Théorique.
+// Copyright ï¿½ 2000-04, 07 Laboratoire de Biologie Informatique et Thï¿½orique.
 // Author           : Martin Larose
 // Created On       : Fri Aug 25 16:28:36 2000
 // $Revision$
 // $Id$
 
 
-#ifdef HAVE_CONFIG_H
+// cmake generated defines
 #include <config.h>
-#endif
-
 
 #include <math.h>
 #include <string.h>
-
 #include "mccparser.h"
 
 

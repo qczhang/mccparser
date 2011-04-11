@@ -18,7 +18,7 @@
 #include <string.h>
   
 #include "mccparser.h"
-#include "y.tab.h"
+#include "parser.hpp"
   
 #define YY_INPUT(buf,result,max_size) \
         if (interactive_parser) \
